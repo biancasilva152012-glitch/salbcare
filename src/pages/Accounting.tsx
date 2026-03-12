@@ -5,6 +5,7 @@ import InvoicesTab from "@/components/accounting/InvoicesTab";
 import TaxCalculationTab from "@/components/accounting/TaxCalculationTab";
 import AccountingDashboardTab from "@/components/accounting/AccountingDashboardTab";
 import MarketplaceTab from "@/components/accounting/MarketplaceTab";
+import FeatureGate from "@/components/FeatureGate";
 
 const Accounting = () => {
   return (
