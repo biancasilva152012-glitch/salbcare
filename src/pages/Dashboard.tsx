@@ -1,18 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp } from "lucide-react";
+import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
 
-const quickActions = [
+interface QuickAction {
+  icon: typeof Calendar;
+  label: string;
+  to: string;
+  color: string;
+  requiredFeature?: Feature;
+}
+
+const quickActions: QuickAction[] = [
   { icon: Calendar, label: "Agenda", to: "/agenda", color: "from-primary to-secondary" },
   { icon: Users, label: "Pacientes", to: "/patients", color: "from-primary to-secondary" },
   { icon: Video, label: "Telehealth", to: "/telehealth", color: "from-primary to-secondary" },
   { icon: DollarSign, label: "Financeiro", to: "/financial", color: "from-primary to-secondary" },
-  { icon: Calculator, label: "Contabilidade", to: "/accounting", color: "from-primary to-secondary" },
-  { icon: Scale, label: "Jurídico", to: "/legal", color: "from-primary to-secondary" },
+  { icon: Calculator, label: "Contabilidade", to: "/accounting", requiredFeature: "accounting_marketplace", color: "from-primary to-secondary" },
+  { icon: Scale, label: "Jurídico", to: "/legal", requiredFeature: "legal_marketplace", color: "from-primary to-secondary" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
