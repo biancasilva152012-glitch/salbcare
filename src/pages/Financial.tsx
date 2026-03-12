@@ -246,8 +246,8 @@ const Financial = () => {
         </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
-          {transactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação encontrada</p>}
-          {transactions.map((t) => (
+          {filteredTransactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação neste mês</p>}
+          {filteredTransactions.map((t) => (
             <div key={t.id} className="glass-card flex items-center justify-between p-3">
               <div className="flex items-center gap-3">
                 <div className={`flex h-9 w-9 items-center justify-center rounded-full ${t.type === "income" ? "bg-success/10" : "bg-destructive/10"}`}>
