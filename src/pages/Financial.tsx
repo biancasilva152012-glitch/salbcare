@@ -204,6 +204,25 @@ const Financial = () => {
           <button onClick={() => setFilterMonth(addMonths(filterMonth, 1))} className="p-1 rounded-md hover:bg-accent"><ChevronRight className="h-4 w-4 text-muted-foreground" /></button>
         </div>
 
+        {/* Category Filter */}
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+          <button
+            onClick={() => setFilterCategory("all")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterCategory === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Todas
+          </button>
+          {categories.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => setFilterCategory(c.value)}
+              className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterCategory === c.value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
         <div className="grid grid-cols-3 gap-2">
           <div className="glass-card p-3 text-center">
             <TrendingUp className="mx-auto h-4 w-4 text-success mb-1" />
