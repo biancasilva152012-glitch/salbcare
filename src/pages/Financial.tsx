@@ -168,6 +168,7 @@ const Financial = () => {
               <TransactionForm isEdit={false} />
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {/* Month Filter */}
