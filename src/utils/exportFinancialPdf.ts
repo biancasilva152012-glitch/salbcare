@@ -9,7 +9,18 @@ interface Transaction {
   amount: number;
   type: string;
   date: string;
+  category?: string;
 }
+
+const categoryLabels: Record<string, string> = {
+  consulta: "Consulta",
+  material: "Material",
+  aluguel: "Aluguel",
+  salario: "Salário",
+  equipamento: "Equipamento",
+  marketing: "Marketing",
+  outros: "Outros",
+};
 
 export function exportFinancialPdf(
   transactions: Transaction[],
