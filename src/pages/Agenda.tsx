@@ -14,8 +14,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
+import PatientSearchInput from "@/components/agenda/PatientSearchInput";
 
-const emptyForm = { patient_name: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
+const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 
 const Agenda = () => {
   const { user } = useAuth();
@@ -53,12 +54,13 @@ const Agenda = () => {
       const { error } = await supabase.from("appointments").insert({
         user_id: user!.id,
         patient_name: form.patient_name,
+        patient_id: form.patient_id || null,
         date: form.date,
         time: form.time,
         appointment_type: form.appointment_type,
         notes: form.notes || null,
         professional_id: form.professional_id || null,
-      } as any);
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -74,12 +76,13 @@ const Agenda = () => {
     mutationFn: async () => {
       const { error } = await supabase.from("appointments").update({
         patient_name: form.patient_name,
+        patient_id: form.patient_id || null,
         date: form.date,
         time: form.time,
         appointment_type: form.appointment_type,
         notes: form.notes || null,
         professional_id: form.professional_id || null,
-      } as any).eq("id", editId!);
+      }).eq("id", editId!);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -108,11 +111,12 @@ const Agenda = () => {
     setEditId(apt.id);
     setForm({
       patient_name: apt.patient_name,
+      patient_id: apt.patient_id || "",
       date: apt.date,
       time: apt.time,
       appointment_type: apt.appointment_type,
       notes: apt.notes || "",
-      professional_id: (apt as any).professional_id || "",
+      professional_id: apt.professional_id || "",
     });
     setEditOpen(true);
   };
@@ -126,8 +130,8 @@ const Agenda = () => {
     .filter((a) => a.patient_name.toLowerCase().includes(search.toLowerCase()))
     .filter((a) => {
       if (!canUseTeam || filterProfessional === "all") return true;
-      if (filterProfessional === "unassigned") return !(a as any).professional_id;
-      return (a as any).professional_id === filterProfessional;
+      if (filterProfessional === "unassigned") return !a.professional_id;
+      return a.professional_id === filterProfessional;
     });
 
   const grouped = filtered.reduce<Record<string, typeof appointments>>((acc, a) => {
@@ -139,7 +143,11 @@ const Agenda = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
         <Label>Paciente</Label>
-        <Input placeholder="Nome do paciente" value={form.patient_name} onChange={(e) => setForm({ ...form, patient_name: e.target.value })} className="bg-accent border-border" />
+        <PatientSearchInput
+          value={form.patient_name}
+          patientId={form.patient_id}
+          onChange={(name, id) => setForm({ ...form, patient_name: name, patient_id: id })}
+        />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
@@ -243,7 +251,7 @@ const Agenda = () => {
               </h3>
               <div className="space-y-2">
                 {apts.sort((a, b) => a.time.localeCompare(b.time)).map((apt) => {
-                  const profName = getProfessionalName((apt as any).professional_id);
+                  const profName = getProfessionalName(apt.professional_id);
                   return (
                     <div key={apt.id} className="glass-card p-3">
                       <div className="flex items-center justify-between">
