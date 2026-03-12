@@ -73,20 +73,22 @@ export function exportFinancialPdf(
     .map((t) => [
       new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR"),
       t.description,
+      categoryLabels[t.category || "outros"] || "Outros",
       t.type === "income" ? "Receita" : "Despesa",
       `${t.type === "income" ? "+" : "-"}${fmt(Number(t.amount))}`,
     ]);
 
   autoTable(doc, {
     startY: 72,
-    head: [["Data", "Descrição", "Tipo", "Valor"]],
-    body: rows.length > 0 ? rows : [["—", "Nenhuma transação neste mês", "—", "—"]],
+    head: [["Data", "Descrição", "Categoria", "Tipo", "Valor"]],
+    body: rows.length > 0 ? rows : [["—", "Nenhuma transação neste mês", "—", "—", "—"]],
     styles: { fontSize: 9, cellPadding: 3 },
     headStyles: { fillColor: [60, 60, 60], textColor: 255 },
     columnStyles: {
-      0: { cellWidth: 28 },
-      2: { cellWidth: 24 },
-      3: { cellWidth: 36, halign: "right" },
+      0: { cellWidth: 24 },
+      2: { cellWidth: 26 },
+      3: { cellWidth: 22 },
+      4: { cellWidth: 34, halign: "right" },
     },
   });
 
