@@ -278,7 +278,10 @@ const Financial = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t.description}</p>
-                  <p className="text-xs text-muted-foreground">{new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{categories.find(c => c.value === t.category)?.label || "Outros"}</span>
+                    <p className="text-xs text-muted-foreground">{new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
