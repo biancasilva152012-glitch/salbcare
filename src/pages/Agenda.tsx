@@ -130,8 +130,8 @@ const Agenda = () => {
     .filter((a) => a.patient_name.toLowerCase().includes(search.toLowerCase()))
     .filter((a) => {
       if (!canUseTeam || filterProfessional === "all") return true;
-      if (filterProfessional === "unassigned") return !(a as any).professional_id;
-      return (a as any).professional_id === filterProfessional;
+      if (filterProfessional === "unassigned") return !a.professional_id;
+      return a.professional_id === filterProfessional;
     });
 
   const grouped = filtered.reduce<Record<string, typeof appointments>>((acc, a) => {
