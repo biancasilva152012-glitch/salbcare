@@ -18,7 +18,7 @@ const professionalTypeLabels: Record<string, string> = {
 const Profile = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const [showPlans, setShowPlans] = useState(false);
+  
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
