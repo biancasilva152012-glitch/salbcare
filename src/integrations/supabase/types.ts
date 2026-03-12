@@ -202,6 +202,80 @@ export type Database = {
         }
         Relationships: []
       }
+      lawyers: {
+        Row: {
+          consultation_price: number
+          created_at: string
+          id: string
+          name: string
+          rating: number
+          reviews_count: number
+          specialty: string
+        }
+        Insert: {
+          consultation_price: number
+          created_at?: string
+          id?: string
+          name: string
+          rating?: number
+          reviews_count?: number
+          specialty: string
+        }
+        Update: {
+          consultation_price?: number
+          created_at?: string
+          id?: string
+          name?: string
+          rating?: number
+          reviews_count?: number
+          specialty?: string
+        }
+        Relationships: []
+      }
+      legal_consultations: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          lawyer_id: string
+          notes: string | null
+          status: string
+          time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          lawyer_id: string
+          notes?: string | null
+          status?: string
+          time: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          lawyer_id?: string
+          notes?: string | null
+          status?: string
+          time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_consultations_lawyer_id_fkey"
+            columns: ["lawyer_id"]
+            isOneToOne: false
+            referencedRelation: "lawyers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_hires: {
         Row: {
           created_at: string
