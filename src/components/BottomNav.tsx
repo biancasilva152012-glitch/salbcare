@@ -1,0 +1,39 @@
+import { NavLink, useLocation } from "react-router-dom";
+import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
+
+const navItems = [
+  { to: "/dashboard", icon: Home, label: "Home" },
+  { to: "/agenda", icon: Calendar, label: "Agenda" },
+  { to: "/patients", icon: Users, label: "Pacientes" },
+  { to: "/financial", icon: DollarSign, label: "Financeiro" },
+  { to: "/profile", icon: User, label: "Perfil" },
+];
+
+const BottomNav = () => {
+  const location = useLocation();
+  const hideOn = ["/", "/login", "/register", "/forgot-password"];
+  if (hideOn.includes(location.pathname)) return null;
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-lg items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
+        {navItems.map(({ to, icon: Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-0.5 py-2.5 px-3 text-xs transition-colors ${
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              }`
+            }
+          >
+            <Icon className="h-5 w-5" />
+            <span className="font-medium">{label}</span>
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  );
+};
+
+export default BottomNav;
