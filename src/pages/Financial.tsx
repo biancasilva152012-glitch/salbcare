@@ -95,9 +95,15 @@ const Financial = () => {
     setEditOpen(true);
   };
 
-  const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
-  const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+  const filterKey = format(filterMonth, "yyyy-MM");
+  const filteredTransactions = transactions.filter((t) => t.date.substring(0, 7) === filterKey);
+
+  const totalIncome = filteredTransactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+  const totalExpense = filteredTransactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
   const profit = totalIncome - totalExpense;
+
+  const filterLabel = format(filterMonth, "MMMM yyyy", { locale: ptBR });
+  const capitalizedLabel = filterLabel.charAt(0).toUpperCase() + filterLabel.slice(1);
 
   const monthlyData = useMemo(() => {
     const now = new Date();
