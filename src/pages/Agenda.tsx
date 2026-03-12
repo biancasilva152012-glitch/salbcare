@@ -31,7 +31,7 @@ const Agenda = () => {
   const [appointments, setAppointments] = useState(initialAppointments);
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [newApt, setNewApt] = useState({ patient: "", date: "", time: "", type: "presencial" as const, notes: "" });
+  const [newApt, setNewApt] = useState<{ patient: string; date: string; time: string; type: "presencial" | "telehealth"; notes: string }>({ patient: "", date: "", time: "", type: "presencial", notes: "" });
 
   const filtered = appointments.filter(
     (a) => a.status !== "cancelled" && a.patient.toLowerCase().includes(search.toLowerCase())
