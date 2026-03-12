@@ -192,12 +192,8 @@ const Financial = () => {
             <p className="text-sm font-bold text-primary">R$ {profit.toLocaleString("pt-BR")}</p>
           </div>
         </div>
-          <div className="glass-card p-3 text-center">
-            <DollarSign className="mx-auto h-4 w-4 text-primary mb-1" />
-            <p className="text-xs text-muted-foreground">Lucro</p>
-            <p className="text-sm font-bold text-primary">R$ {profit.toLocaleString("pt-BR")}</p>
-          </div>
-        </div>
+
+
 
         <Tabs defaultValue="bar" className="w-full">
           <TabsList className="w-full">
