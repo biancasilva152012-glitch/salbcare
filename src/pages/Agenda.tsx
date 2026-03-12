@@ -187,7 +187,7 @@ const Agenda = () => {
             </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Nova Consulta</DialogTitle></DialogHeader>
-              <AppointmentForm isEdit={false} />
+              {renderAppointmentForm(false)}
             </DialogContent>
           </Dialog>
         </div>
