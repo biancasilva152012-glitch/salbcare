@@ -208,6 +208,7 @@ const Patients = () => {
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div><span className="text-muted-foreground">Telefone:</span> {selected.phone || "—"}</div>
+              <div><span className="text-muted-foreground">E-mail:</span> {(selected as any).email || "—"}</div>
               <div><span className="text-muted-foreground">Nascimento:</span> {selected.birth_date ? new Date(selected.birth_date + "T12:00:00").toLocaleDateString("pt-BR") : "—"}</div>
             </div>
             {selected.notes && <div className="text-sm"><span className="text-muted-foreground">Notas:</span> {selected.notes}</div>}
