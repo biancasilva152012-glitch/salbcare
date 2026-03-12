@@ -135,7 +135,7 @@ const Agenda = () => {
     return acc;
   }, {});
 
-  const AppointmentForm = ({ isEdit }: { isEdit: boolean }) => (
+  const renderAppointmentForm = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
         <Label>Paciente</Label>
@@ -187,7 +187,7 @@ const Agenda = () => {
             </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Nova Consulta</DialogTitle></DialogHeader>
-              <AppointmentForm isEdit={false} />
+              {renderAppointmentForm(false)}
             </DialogContent>
           </Dialog>
         </div>
@@ -228,7 +228,7 @@ const Agenda = () => {
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="bg-card border-border">
             <DialogHeader><DialogTitle>Editar Consulta</DialogTitle></DialogHeader>
-            <AppointmentForm isEdit={true} />
+            {renderAppointmentForm(true)}
           </DialogContent>
         </Dialog>
 
