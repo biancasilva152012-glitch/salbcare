@@ -143,7 +143,11 @@ const Agenda = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
         <Label>Paciente</Label>
-        <Input placeholder="Nome do paciente" value={form.patient_name} onChange={(e) => setForm({ ...form, patient_name: e.target.value })} className="bg-accent border-border" />
+        <PatientSearchInput
+          value={form.patient_name}
+          patientId={form.patient_id}
+          onChange={(name, id) => setForm({ ...form, patient_name: name, patient_id: id })}
+        />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
