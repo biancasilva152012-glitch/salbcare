@@ -251,7 +251,7 @@ const Agenda = () => {
               </h3>
               <div className="space-y-2">
                 {apts.sort((a, b) => a.time.localeCompare(b.time)).map((apt) => {
-                  const profName = getProfessionalName((apt as any).professional_id);
+                  const profName = getProfessionalName(apt.professional_id);
                   return (
                     <div key={apt.id} className="glass-card p-3">
                       <div className="flex items-center justify-between">
