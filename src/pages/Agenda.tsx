@@ -76,12 +76,13 @@ const Agenda = () => {
     mutationFn: async () => {
       const { error } = await supabase.from("appointments").update({
         patient_name: form.patient_name,
+        patient_id: form.patient_id || null,
         date: form.date,
         time: form.time,
         appointment_type: form.appointment_type,
         notes: form.notes || null,
         professional_id: form.professional_id || null,
-      } as any).eq("id", editId!);
+      }).eq("id", editId!);
       if (error) throw error;
     },
     onSuccess: () => {
