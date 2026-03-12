@@ -270,6 +270,9 @@ const Financial = () => {
             <TabsTrigger value="bar" className="flex-1 text-xs">Barras</TabsTrigger>
             <TabsTrigger value="line" className="flex-1 text-xs">Evolução</TabsTrigger>
             <TabsTrigger value="pie" className="flex-1 text-xs">Categorias</TabsTrigger>
+            <TabsTrigger value="advanced" className="flex-1 text-xs gap-1">
+              <Crown className="h-3 w-3" /> Avançado
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="bar">
             <div className="glass-card p-3">
