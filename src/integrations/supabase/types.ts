@@ -53,6 +53,7 @@ export type Database = {
           notes: string | null
           patient_id: string | null
           patient_name: string
+          professional_id: string | null
           status: string
           time: string
           updated_at: string
@@ -66,6 +67,7 @@ export type Database = {
           notes?: string | null
           patient_id?: string | null
           patient_name: string
+          professional_id?: string | null
           status?: string
           time: string
           updated_at?: string
@@ -79,6 +81,7 @@ export type Database = {
           notes?: string | null
           patient_id?: string | null
           patient_name?: string
+          professional_id?: string | null
           status?: string
           time?: string
           updated_at?: string
@@ -90,6 +93,13 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
             referencedColumns: ["id"]
           },
         ]
