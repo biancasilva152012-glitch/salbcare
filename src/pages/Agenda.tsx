@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon } from "lucide-react";
+import { format, parse } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
@@ -150,8 +155,51 @@ const Agenda = () => {
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
-        <div className="space-y-1.5"><Label>Hora</Label><Input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} className="bg-accent border-border" /></div>
+        <div className="space-y-1.5">
+          <Label>Data</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal bg-accent border-border",
+                  !form.date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {form.date
+                  ? format(parse(form.date, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
+                  : "Selecionar"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={form.date ? parse(form.date, "yyyy-MM-dd", new Date()) : undefined}
+                onSelect={(d) => setForm({ ...form, date: d ? format(d, "yyyy-MM-dd") : "" })}
+                locale={ptBR}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Hora</Label>
+          <Select value={form.time} onValueChange={(v) => setForm({ ...form, time: v })}>
+            <SelectTrigger className="bg-accent border-border">
+              <SelectValue placeholder="Horário" />
+            </SelectTrigger>
+            <SelectContent className="max-h-48">
+              {Array.from({ length: 28 }, (_, i) => {
+                const h = Math.floor(i / 2) + 7;
+                const m = i % 2 === 0 ? "00" : "30";
+                const val = `${String(h).padStart(2, "0")}:${m}`;
+                return <SelectItem key={val} value={val}>{val}</SelectItem>;
+              })}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="space-y-1.5">
         <Label>Tipo</Label>
