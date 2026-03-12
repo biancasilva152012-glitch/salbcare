@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LegalDashboardTab from "@/components/legal/LegalDashboardTab";
 import LawyerMarketplaceTab from "@/components/legal/LawyerMarketplaceTab";
 import LegalTemplatesTab from "@/components/legal/LegalTemplatesTab";
+import FeatureGate from "@/components/FeatureGate";
 
 const Legal = () => {
   return (
