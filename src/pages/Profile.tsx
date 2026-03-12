@@ -1,4 +1,5 @@
 import { LogOut, User, CreditCard, ChevronRight } from "lucide-react";
+import { PLANS } from "@/config/plans";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
