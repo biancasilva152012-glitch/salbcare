@@ -117,7 +117,38 @@ const Patients = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5"><Label>Nome</Label><Input placeholder="Nome completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Telefone</Label><Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-accent border-border" /></div>
-      <div className="space-y-1.5"><Label>Data de nascimento</Label><Input type="date" value={form.birth_date} onChange={(e) => setForm({ ...form, birth_date: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5">
+        <Label>Data de nascimento</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal bg-accent border-border",
+                !form.birth_date && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {form.birth_date
+                ? format(parse(form.birth_date, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
+                : "Selecionar data"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={form.birth_date ? parse(form.birth_date, "yyyy-MM-dd", new Date()) : undefined}
+              onSelect={(d) => setForm({ ...form, birth_date: d ? format(d, "yyyy-MM-dd") : "" })}
+              locale={ptBR}
+              captionLayout="dropdown-buttons"
+              fromYear={1920}
+              toYear={new Date().getFullYear()}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
       <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Histórico médico</Label><Textarea placeholder="Histórico..." value={form.medical_history} onChange={(e) => setForm({ ...form, medical_history: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
