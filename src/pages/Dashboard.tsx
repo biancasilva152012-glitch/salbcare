@@ -2,13 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
-
-const todayAppointments = [
-  { id: 1, patient: "Maria Santos", time: "09:00", type: "Presencial" },
-  { id: 2, patient: "João Oliveira", time: "10:30", type: "Telehealth" },
-  { id: 3, patient: "Ana Costa", time: "14:00", type: "Presencial" },
-  { id: 4, patient: "Pedro Lima", time: "16:00", type: "Telehealth" },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const quickActions = [
   { icon: Calendar, label: "Agenda", to: "/agenda", color: "from-primary to-secondary" },
@@ -19,29 +15,54 @@ const quickActions = [
   { icon: Scale, label: "Jurídico", to: "/legal", color: "from-primary to-secondary" },
 ];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0 },
-};
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
+const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data: todayAppointments = [] } = useQuery({
+    queryKey: ["today-appointments", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("appointments").select("*").eq("user_id", user!.id).eq("date", today).eq("status", "scheduled").order("time");
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  const { data: monthlyBalance } = useQuery({
+    queryKey: ["monthly-balance", user?.id],
+    queryFn: async () => {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      const { data } = await supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).gte("date", startOfMonth.toISOString().split("T")[0]);
+      const income = (data || []).filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+      const expense = (data || []).filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+      return income - expense;
+    },
+    enabled: !!user,
+  });
 
   return (
     <PageContainer>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-        {/* Header */}
         <motion.div variants={item}>
           <p className="text-sm text-muted-foreground">Bem-vindo(a) de volta</p>
-          <h1 className="text-2xl font-bold">Dr. João Silva</h1>
+          <h1 className="text-2xl font-bold">{profile?.name || "Profissional"}</h1>
         </motion.div>
 
-        {/* Summary Cards */}
         <motion.div variants={item} className="grid grid-cols-2 gap-3">
           <div className="glass-card p-4 space-y-1">
             <div className="flex items-center gap-2 text-primary">
@@ -53,22 +74,17 @@ const Dashboard = () => {
           <div className="glass-card p-4 space-y-1">
             <div className="flex items-center gap-2 text-success">
               <TrendingUp className="h-4 w-4" />
-              <span className="text-xs font-medium text-muted-foreground">Receita mensal</span>
+              <span className="text-xs font-medium text-muted-foreground">Saldo mensal</span>
             </div>
-            <p className="text-2xl font-bold">R$ 12.450</p>
+            <p className="text-2xl font-bold">R$ {(monthlyBalance ?? 0).toLocaleString("pt-BR")}</p>
           </div>
         </motion.div>
 
-        {/* Quick Actions */}
         <motion.div variants={item}>
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Acesso rápido</h2>
           <div className="grid grid-cols-3 gap-3">
             {quickActions.map(({ icon: Icon, label, to }) => (
-              <button
-                key={to}
-                onClick={() => navigate(to)}
-                className="glass-card flex flex-col items-center gap-2 p-4 transition-all hover:border-primary/50 active:scale-95"
-              >
+              <button key={to} onClick={() => navigate(to)} className="glass-card flex flex-col items-center gap-2 p-4 transition-all hover:border-primary/50 active:scale-95">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary">
                   <Icon className="h-5 w-5 text-primary-foreground" />
                 </div>
@@ -78,19 +94,21 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Today's Appointments */}
         <motion.div variants={item}>
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Consultas de hoje</h2>
           <div className="space-y-2">
+            {todayAppointments.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhuma consulta agendada para hoje</p>
+            )}
             {todayAppointments.map((apt) => (
               <div key={apt.id} className="glass-card flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
-                    {apt.patient.split(" ").map((n) => n[0]).join("")}
+                    {apt.patient_name.split(" ").map((n: string) => n[0]).join("")}
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{apt.patient}</p>
-                    <p className="text-xs text-muted-foreground">{apt.type}</p>
+                    <p className="text-sm font-medium">{apt.patient_name}</p>
+                    <p className="text-xs text-muted-foreground">{apt.appointment_type === "presencial" ? "Presencial" : "Telehealth"}</p>
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-primary">{apt.time}</span>

@@ -7,40 +7,49 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PageContainer from "@/components/PageContainer";
-
-interface Transaction {
-  id: number;
-  description: string;
-  amount: number;
-  type: "income" | "expense";
-  date: string;
-}
-
-const initialTransactions: Transaction[] = [
-  { id: 1, description: "Consulta - Maria Santos", amount: 350, type: "income", date: "2026-03-12" },
-  { id: 2, description: "Consulta - João Oliveira", amount: 250, type: "income", date: "2026-03-11" },
-  { id: 3, description: "Aluguel consultório", amount: 2500, type: "expense", date: "2026-03-10" },
-  { id: 4, description: "Consulta - Ana Costa", amount: 400, type: "income", date: "2026-03-09" },
-  { id: 5, description: "Material de escritório", amount: 180, type: "expense", date: "2026-03-08" },
-  { id: 6, description: "Consulta - Pedro Lima", amount: 300, type: "income", date: "2026-03-07" },
-  { id: 7, description: "Plataforma Telehealth", amount: 79, type: "expense", date: "2026-03-05" },
-  { id: 8, description: "Consulta - Carla Souza", amount: 350, type: "income", date: "2026-03-04" },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Financial = () => {
-  const [transactions, setTransactions] = useState(initialTransactions);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [newT, setNewT] = useState({ description: "", amount: "", type: "income" as "income" | "expense", date: "" });
 
-  const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
-  const profit = totalIncome - totalExpense;
+  const { data: transactions = [] } = useQuery({
+    queryKey: ["financial", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("financial_transactions").select("*").eq("user_id", user!.id).order("date", { ascending: false });
+      return data || [];
+    },
+    enabled: !!user,
+  });
 
-  const handleAdd = () => {
-    setTransactions([...transactions, { ...newT, amount: Number(newT.amount), id: Date.now() }]);
-    setNewT({ description: "", amount: "", type: "income", date: "" });
-    setOpen(false);
-  };
+  const addMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("financial_transactions").insert({
+        user_id: user!.id,
+        description: newT.description,
+        amount: Number(newT.amount),
+        type: newT.type,
+        date: newT.date,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["financial"] });
+      setNewT({ description: "", amount: "", type: "income", date: "" });
+      setOpen(false);
+      toast.success("Transação adicionada!");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+  const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+  const profit = totalIncome - totalExpense;
 
   return (
     <PageContainer>
@@ -69,13 +78,14 @@ const Financial = () => {
                   </div>
                 </div>
                 <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={newT.date} onChange={(e) => setNewT({ ...newT, date: e.target.value })} className="bg-accent border-border" /></div>
-                <Button onClick={handleAdd} className="w-full gradient-primary font-semibold">Adicionar</Button>
+                <Button onClick={() => addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending}>
+                  {addMutation.isPending ? "Adicionando..." : "Adicionar"}
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        {/* Summary */}
         <div className="grid grid-cols-3 gap-2">
           <div className="glass-card p-3 text-center">
             <TrendingUp className="mx-auto h-4 w-4 text-success mb-1" />
@@ -94,9 +104,9 @@ const Financial = () => {
           </div>
         </div>
 
-        {/* Transaction list */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
-          {transactions.sort((a, b) => b.date.localeCompare(a.date)).map((t) => (
+          {transactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação encontrada</p>}
+          {transactions.map((t) => (
             <div key={t.id} className="glass-card flex items-center justify-between p-3">
               <div className="flex items-center gap-3">
                 <div className={`flex h-9 w-9 items-center justify-center rounded-full ${t.type === "income" ? "bg-success/10" : "bg-destructive/10"}`}>
@@ -108,7 +118,7 @@ const Financial = () => {
                 </div>
               </div>
               <span className={`text-sm font-semibold ${t.type === "income" ? "text-success" : "text-destructive"}`}>
-                {t.type === "income" ? "+" : "-"}R$ {t.amount.toLocaleString("pt-BR")}
+                {t.type === "income" ? "+" : "-"}R$ {Number(t.amount).toLocaleString("pt-BR")}
               </span>
             </div>
           ))}

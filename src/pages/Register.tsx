@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const professionalTypes = [
   { value: "medico", label: "Médico(a)" },
@@ -19,10 +21,34 @@ const professionalTypes = [
 const Register = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "", phone: "", professional_type: "" });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    if (!form.professional_type) {
+      toast.error("Selecione o tipo profissional");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: {
+          name: form.name,
+          phone: form.phone,
+          professional_type: form.professional_type,
+        },
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Conta criada! Verifique seu email para confirmar.");
+      navigate("/login");
+    }
   };
 
   return (
@@ -44,11 +70,11 @@ const Register = () => {
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="name">Nome completo</Label>
-            <Input id="name" placeholder="Dr. João Silva" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" />
+            <Input id="name" placeholder="Dr. João Silva" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" required />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-accent border-border" />
+            <Input id="email" type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-accent border-border" required />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="phone">Telefone</Label>
@@ -69,11 +95,11 @@ const Register = () => {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Senha</Label>
-            <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-accent border-border" />
+            <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-accent border-border" required minLength={6} />
           </div>
 
-          <Button type="submit" className="w-full gradient-primary font-semibold mt-2">
-            Cadastrar
+          <Button type="submit" className="w-full gradient-primary font-semibold mt-2" disabled={loading}>
+            {loading ? "Cadastrando..." : "Cadastrar"}
           </Button>
         </form>
 
