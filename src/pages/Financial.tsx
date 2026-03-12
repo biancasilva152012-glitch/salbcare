@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2 } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { format, subMonths } from "date-fns";
+import { format, subMonths, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const chartConfig = {
@@ -33,6 +33,7 @@ const Financial = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
+  const [filterMonth, setFilterMonth] = useState(new Date());
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["financial", user?.id],
@@ -94,9 +95,15 @@ const Financial = () => {
     setEditOpen(true);
   };
 
-  const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
-  const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+  const filterKey = format(filterMonth, "yyyy-MM");
+  const filteredTransactions = transactions.filter((t) => t.date.substring(0, 7) === filterKey);
+
+  const totalIncome = filteredTransactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+  const totalExpense = filteredTransactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
   const profit = totalIncome - totalExpense;
+
+  const filterLabel = format(filterMonth, "MMMM yyyy", { locale: ptBR });
+  const capitalizedLabel = filterLabel.charAt(0).toUpperCase() + filterLabel.slice(1);
 
   const monthlyData = useMemo(() => {
     const now = new Date();
@@ -158,6 +165,16 @@ const Financial = () => {
           </Dialog>
         </div>
 
+        {/* Month Filter */}
+        <div className="flex items-center justify-between glass-card p-2.5">
+          <button onClick={() => setFilterMonth(subMonths(filterMonth, 1))} className="p-1 rounded-md hover:bg-accent"><ChevronLeft className="h-4 w-4 text-muted-foreground" /></button>
+          <div className="flex items-center gap-1.5">
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-sm font-medium">{capitalizedLabel}</span>
+          </div>
+          <button onClick={() => setFilterMonth(addMonths(filterMonth, 1))} className="p-1 rounded-md hover:bg-accent"><ChevronRight className="h-4 w-4 text-muted-foreground" /></button>
+        </div>
+
         <div className="grid grid-cols-3 gap-2">
           <div className="glass-card p-3 text-center">
             <TrendingUp className="mx-auto h-4 w-4 text-success mb-1" />
@@ -175,6 +192,8 @@ const Financial = () => {
             <p className="text-sm font-bold text-primary">R$ {profit.toLocaleString("pt-BR")}</p>
           </div>
         </div>
+
+
 
         <Tabs defaultValue="bar" className="w-full">
           <TabsList className="w-full">
@@ -223,8 +242,8 @@ const Financial = () => {
         </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
-          {transactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação encontrada</p>}
-          {transactions.map((t) => (
+          {filteredTransactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação neste mês</p>}
+          {filteredTransactions.map((t) => (
             <div key={t.id} className="glass-card flex items-center justify-between p-3">
               <div className="flex items-center gap-3">
                 <div className={`flex h-9 w-9 items-center justify-center rounded-full ${t.type === "income" ? "bg-success/10" : "bg-destructive/10"}`}>
