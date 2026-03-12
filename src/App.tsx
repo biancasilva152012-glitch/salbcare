@@ -18,6 +18,7 @@ import Financial from "./pages/Financial";
 import Accounting from "./pages/Accounting";
 import Legal from "./pages/Legal";
 import Profile from "./pages/Profile";
+import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
