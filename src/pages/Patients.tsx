@@ -93,7 +93,7 @@ const Patients = () => {
 
   const openEdit = (p: Tables<"patients">) => {
     setEditId(p.id);
-    setForm({ name: p.name, phone: p.phone || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "" });
+    setForm({ name: p.name, phone: p.phone || "", email: (p as any).email || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "" });
     setEditOpen(true);
   };
 
