@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,12 +14,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+const emptyForm = { patient_name: "", date: "", time: "", appointment_type: "presencial", notes: "" };
+
 const Agenda = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [newApt, setNewApt] = useState({ patient_name: "", date: "", time: "", appointment_type: "presencial", notes: "" });
+  const [editOpen, setEditOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const { data: appointments = [] } = useQuery({
     queryKey: ["appointments", user?.id],
@@ -32,86 +37,101 @@ const Agenda = () => {
   const addMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("appointments").insert({
-        user_id: user!.id,
-        patient_name: newApt.patient_name,
-        date: newApt.date,
-        time: newApt.time,
-        appointment_type: newApt.appointment_type,
-        notes: newApt.notes || null,
+        user_id: user!.id, patient_name: form.patient_name, date: form.date,
+        time: form.time, appointment_type: form.appointment_type, notes: form.notes || null,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
-      setNewApt({ patient_name: "", date: "", time: "", appointment_type: "presencial", notes: "" });
+      setForm(emptyForm);
       setOpen(false);
       toast.success("Consulta agendada!");
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const cancelMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("appointments").update({ status: "cancelled" }).eq("id", id);
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("appointments").update({
+        patient_name: form.patient_name, date: form.date, time: form.time,
+        appointment_type: form.appointment_type, notes: form.notes || null,
+      }).eq("id", editId!);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
-      toast.success("Consulta cancelada");
+      setForm(emptyForm);
+      setEditOpen(false);
+      setEditId(null);
+      toast.success("Consulta atualizada!");
     },
+    onError: (e: Error) => toast.error(e.message),
   });
 
-  const filtered = appointments.filter((a) => a.patient_name.toLowerCase().includes(search.toLowerCase()));
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("appointments").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success("Consulta excluída!");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
+  const openEdit = (apt: typeof appointments[0]) => {
+    setEditId(apt.id);
+    setForm({ patient_name: apt.patient_name, date: apt.date, time: apt.time, appointment_type: apt.appointment_type, notes: apt.notes || "" });
+    setEditOpen(true);
+  };
+
+  const filtered = appointments.filter((a) => a.patient_name.toLowerCase().includes(search.toLowerCase()));
   const grouped = filtered.reduce<Record<string, typeof appointments>>((acc, a) => {
     (acc[a.date] = acc[a.date] || []).push(a);
     return acc;
   }, {});
+
+  const AppointmentForm = ({ isEdit }: { isEdit: boolean }) => (
+    <div className="space-y-3 pt-2">
+      <div className="space-y-1.5">
+        <Label>Paciente</Label>
+        <Input placeholder="Nome do paciente" value={form.patient_name} onChange={(e) => setForm({ ...form, patient_name: e.target.value })} className="bg-accent border-border" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
+        <div className="space-y-1.5"><Label>Hora</Label><Input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} className="bg-accent border-border" /></div>
+      </div>
+      <div className="space-y-1.5">
+        <Label>Tipo</Label>
+        <Select value={form.appointment_type} onValueChange={(v) => setForm({ ...form, appointment_type: v })}>
+          <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="presencial">Presencial</SelectItem>
+            <SelectItem value="telehealth">Telehealth</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
+      <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
+        {isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Agendando..." : "Agendar")}
+      </Button>
+    </div>
+  );
 
   return (
     <PageContainer>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Agenda</h1>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
             <DialogTrigger asChild>
               <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Nova</Button>
             </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Nova Consulta</DialogTitle></DialogHeader>
-              <div className="space-y-3 pt-2">
-                <div className="space-y-1.5">
-                  <Label>Paciente</Label>
-                  <Input placeholder="Nome do paciente" value={newApt.patient_name} onChange={(e) => setNewApt({ ...newApt, patient_name: e.target.value })} className="bg-accent border-border" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label>Data</Label>
-                    <Input type="date" value={newApt.date} onChange={(e) => setNewApt({ ...newApt, date: e.target.value })} className="bg-accent border-border" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Hora</Label>
-                    <Input type="time" value={newApt.time} onChange={(e) => setNewApt({ ...newApt, time: e.target.value })} className="bg-accent border-border" />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Tipo</Label>
-                  <Select value={newApt.appointment_type} onValueChange={(v) => setNewApt({ ...newApt, appointment_type: v })}>
-                    <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="presencial">Presencial</SelectItem>
-                      <SelectItem value="telehealth">Telehealth</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Observações</Label>
-                  <Textarea placeholder="Notas..." value={newApt.notes} onChange={(e) => setNewApt({ ...newApt, notes: e.target.value })} className="bg-accent border-border" />
-                </div>
-                <Button onClick={() => addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending}>
-                  {addMutation.isPending ? "Agendando..." : "Agendar"}
-                </Button>
-              </div>
+              <AppointmentForm isEdit={false} />
             </DialogContent>
           </Dialog>
         </div>
@@ -120,6 +140,14 @@ const Agenda = () => {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Buscar paciente..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
         </div>
+
+        {/* Edit Dialog */}
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent className="bg-card border-border">
+            <DialogHeader><DialogTitle>Editar Consulta</DialogTitle></DialogHeader>
+            <AppointmentForm isEdit={true} />
+          </DialogContent>
+        </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           {Object.keys(grouped).length === 0 && (
@@ -147,9 +175,24 @@ const Agenda = () => {
                           </div>
                         </div>
                       </div>
-                      <button onClick={() => cancelMutation.mutate(apt.id)} className="text-xs text-destructive hover:underline">
-                        Cancelar
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="bg-card border-border">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir consulta?</AlertDialogTitle>
+                              <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
                   </div>
                 ))}
