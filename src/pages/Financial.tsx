@@ -33,6 +33,7 @@ const Financial = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
+  const [filterMonth, setFilterMonth] = useState(new Date());
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["financial", user?.id],
