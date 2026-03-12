@@ -62,7 +62,7 @@ const Patients = () => {
   const updateMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("patients").update({
-        name: form.name, phone: form.phone || null,
+        name: form.name, phone: form.phone || null, email: form.email || null,
         birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
       }).eq("id", editId!);
       if (error) throw error;
