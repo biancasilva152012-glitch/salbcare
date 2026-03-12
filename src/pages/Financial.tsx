@@ -45,6 +45,7 @@ const Financial = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [filterMonth, setFilterMonth] = useState(new Date());
+  const [filterCategory, setFilterCategory] = useState<string>("all");
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["financial", user?.id],
@@ -107,7 +108,8 @@ const Financial = () => {
   };
 
   const filterKey = format(filterMonth, "yyyy-MM");
-  const filteredTransactions = transactions.filter((t) => t.date.substring(0, 7) === filterKey);
+  const filteredByMonth = transactions.filter((t) => t.date.substring(0, 7) === filterKey);
+  const filteredTransactions = filterCategory === "all" ? filteredByMonth : filteredByMonth.filter((t) => t.category === filterCategory);
 
   const totalIncome = filteredTransactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
   const totalExpense = filteredTransactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
@@ -200,6 +202,25 @@ const Financial = () => {
             <span className="text-sm font-medium">{capitalizedLabel}</span>
           </div>
           <button onClick={() => setFilterMonth(addMonths(filterMonth, 1))} className="p-1 rounded-md hover:bg-accent"><ChevronRight className="h-4 w-4 text-muted-foreground" /></button>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+          <button
+            onClick={() => setFilterCategory("all")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterCategory === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Todas
+          </button>
+          {categories.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => setFilterCategory(c.value)}
+              className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterCategory === c.value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+            >
+              {c.label}
+            </button>
+          ))}
         </div>
 
         <div className="grid grid-cols-3 gap-2">
