@@ -111,11 +111,12 @@ const Agenda = () => {
     setEditId(apt.id);
     setForm({
       patient_name: apt.patient_name,
+      patient_id: apt.patient_id || "",
       date: apt.date,
       time: apt.time,
       appointment_type: apt.appointment_type,
       notes: apt.notes || "",
-      professional_id: (apt as any).professional_id || "",
+      professional_id: apt.professional_id || "",
     });
     setEditOpen(true);
   };
