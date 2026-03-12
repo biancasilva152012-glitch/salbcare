@@ -1,18 +1,10 @@
-import { motion } from "framer-motion";
-import { LogOut, User, CreditCard, ChevronRight, Check } from "lucide-react";
+import { LogOut, User, CreditCard, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
-import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-
-const plans = [
-  { name: "Básico", price: "R$ 39", features: ["Agenda", "Pacientes", "Telehealth", "Financeiro básico"], id: "basic" },
-  { name: "Profissional", price: "R$ 79", features: ["Tudo do Básico", "Relatórios financeiros", "Contabilidade", "Suporte jurídico"], id: "professional" },
-  { name: "Clínica", price: "R$ 149", features: ["Múltiplos profissionais", "Dashboard avançado", "Suporte prioritário"], id: "clinic" },
-];
 
 const professionalTypeLabels: Record<string, string> = {
   medico: "Médico(a)",
