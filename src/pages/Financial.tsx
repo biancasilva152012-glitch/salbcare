@@ -19,6 +19,8 @@ import { format, subMonths, addMonths } from "date-fns";
 import { exportFinancialPdf } from "@/utils/exportFinancialPdf";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
+import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
+import FeatureGate from "@/components/FeatureGate";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
