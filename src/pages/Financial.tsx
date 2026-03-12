@@ -165,6 +165,16 @@ const Financial = () => {
           </Dialog>
         </div>
 
+        {/* Month Filter */}
+        <div className="flex items-center justify-between glass-card p-2.5">
+          <button onClick={() => setFilterMonth(subMonths(filterMonth, 1))} className="p-1 rounded-md hover:bg-accent"><ChevronLeft className="h-4 w-4 text-muted-foreground" /></button>
+          <div className="flex items-center gap-1.5">
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-sm font-medium">{capitalizedLabel}</span>
+          </div>
+          <button onClick={() => setFilterMonth(addMonths(filterMonth, 1))} className="p-1 rounded-md hover:bg-accent"><ChevronRight className="h-4 w-4 text-muted-foreground" /></button>
+        </div>
+
         <div className="grid grid-cols-3 gap-2">
           <div className="glass-card p-3 text-center">
             <TrendingUp className="mx-auto h-4 w-4 text-success mb-1" />
@@ -176,6 +186,12 @@ const Financial = () => {
             <p className="text-xs text-muted-foreground">Despesas</p>
             <p className="text-sm font-bold text-destructive">R$ {totalExpense.toLocaleString("pt-BR")}</p>
           </div>
+          <div className="glass-card p-3 text-center">
+            <DollarSign className="mx-auto h-4 w-4 text-primary mb-1" />
+            <p className="text-xs text-muted-foreground">Lucro</p>
+            <p className="text-sm font-bold text-primary">R$ {profit.toLocaleString("pt-BR")}</p>
+          </div>
+        </div>
           <div className="glass-card p-3 text-center">
             <DollarSign className="mx-auto h-4 w-4 text-primary mb-1" />
             <p className="text-xs text-muted-foreground">Lucro</p>
