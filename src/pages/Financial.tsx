@@ -58,7 +58,7 @@ const Financial = () => {
   const addMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").insert({
-        user_id: user!.id, description: form.description, amount: Number(form.amount), type: form.type, date: form.date,
+        user_id: user!.id, description: form.description, amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
       });
       if (error) throw error;
     },
