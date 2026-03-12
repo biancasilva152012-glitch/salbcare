@@ -40,6 +40,7 @@ const emptyForm = { description: "", amount: "", type: "income" as "income" | "e
 
 const Financial = () => {
   const { user } = useAuth();
+  const { hasAccess } = useFeatureGate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
