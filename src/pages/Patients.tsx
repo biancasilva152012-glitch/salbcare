@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
 
-const emptyForm = { name: "", phone: "", birth_date: "", notes: "", medical_history: "" };
+const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "" };
 
 const Patients = () => {
   const { user } = useAuth();
@@ -45,7 +45,7 @@ const Patients = () => {
   const addMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("patients").insert({
-        user_id: user!.id, name: form.name, phone: form.phone || null,
+        user_id: user!.id, name: form.name, phone: form.phone || null, email: form.email || null,
         birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
       });
       if (error) throw error;
@@ -62,7 +62,7 @@ const Patients = () => {
   const updateMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("patients").update({
-        name: form.name, phone: form.phone || null,
+        name: form.name, phone: form.phone || null, email: form.email || null,
         birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
       }).eq("id", editId!);
       if (error) throw error;
@@ -93,7 +93,7 @@ const Patients = () => {
 
   const openEdit = (p: Tables<"patients">) => {
     setEditId(p.id);
-    setForm({ name: p.name, phone: p.phone || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "" });
+    setForm({ name: p.name, phone: p.phone || "", email: (p as any).email || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "" });
     setEditOpen(true);
   };
 
@@ -117,6 +117,7 @@ const Patients = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5"><Label>Nome</Label><Input placeholder="Nome completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Telefone</Label><Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5"><Label>E-mail</Label><Input type="email" placeholder="paciente@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5">
         <Label>Data de nascimento</Label>
         <Popover>
@@ -207,6 +208,7 @@ const Patients = () => {
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div><span className="text-muted-foreground">Telefone:</span> {selected.phone || "—"}</div>
+              <div><span className="text-muted-foreground">E-mail:</span> {(selected as any).email || "—"}</div>
               <div><span className="text-muted-foreground">Nascimento:</span> {selected.birth_date ? new Date(selected.birth_date + "T12:00:00").toLocaleDateString("pt-BR") : "—"}</div>
             </div>
             {selected.notes && <div className="text-sm"><span className="text-muted-foreground">Notas:</span> {selected.notes}</div>}

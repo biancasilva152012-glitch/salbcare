@@ -6,6 +6,7 @@ import { ptBR } from "date-fns/locale";
 interface PatientData {
   name: string;
   phone: string | null;
+  email?: string | null;
   birth_date: string | null;
   notes: string | null;
   medical_history: string | null;
@@ -54,6 +55,7 @@ export function exportPatientPdf(
 
   const info: [string, string][] = [
     ["Telefone", patient.phone || "Não informado"],
+    ["E-mail", patient.email || "Não informado"],
     ["Data de Nascimento", patient.birth_date
       ? format(new Date(patient.birth_date + "T12:00:00"), "dd/MM/yyyy")
       : "Não informada"],

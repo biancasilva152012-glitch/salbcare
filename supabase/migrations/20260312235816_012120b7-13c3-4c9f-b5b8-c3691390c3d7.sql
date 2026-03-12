@@ -1,0 +1,1 @@
+ALTER TABLE public.patients ADD COLUMN email text DEFAULT NULL;
