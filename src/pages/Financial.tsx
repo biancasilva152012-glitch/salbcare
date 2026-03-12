@@ -1,20 +1,21 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from "recharts";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { format, parseISO, startOfMonth, subMonths } from "date-fns";
+import { format, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const chartConfig = {
@@ -23,11 +24,15 @@ const chartConfig = {
   profit: { label: "Lucro", color: "hsl(var(--primary))" },
 };
 
+const emptyForm = { description: "", amount: "", type: "income" as "income" | "expense", date: "" };
+
 const Financial = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [newT, setNewT] = useState({ description: "", amount: "", type: "income" as "income" | "expense", date: "" });
+  const [editOpen, setEditOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["financial", user?.id],
@@ -41,22 +46,53 @@ const Financial = () => {
   const addMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").insert({
-        user_id: user!.id,
-        description: newT.description,
-        amount: Number(newT.amount),
-        type: newT.type,
-        date: newT.date,
+        user_id: user!.id, description: form.description, amount: Number(form.amount), type: form.type, date: form.date,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial"] });
-      setNewT({ description: "", amount: "", type: "income", date: "" });
+      setForm(emptyForm);
       setOpen(false);
       toast.success("Transação adicionada!");
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("financial_transactions").update({
+        description: form.description, amount: Number(form.amount), type: form.type, date: form.date,
+      }).eq("id", editId!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["financial"] });
+      setForm(emptyForm);
+      setEditOpen(false);
+      setEditId(null);
+      toast.success("Transação atualizada!");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("financial_transactions").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["financial"] });
+      toast.success("Transação excluída!");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const openEdit = (t: typeof transactions[0]) => {
+    setEditId(t.id);
+    setForm({ description: t.description, amount: String(t.amount), type: t.type as "income" | "expense", date: t.date });
+    setEditOpen(true);
+  };
 
   const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
   const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
@@ -83,37 +119,41 @@ const Financial = () => {
     return Object.values(months);
   }, [transactions]);
 
+  const TransactionForm = ({ isEdit }: { isEdit: boolean }) => (
+    <div className="space-y-3 pt-2">
+      <div className="space-y-1.5"><Label>Descrição</Label><Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="number" placeholder="0,00" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="bg-accent border-border" /></div>
+        <div className="space-y-1.5">
+          <Label>Tipo</Label>
+          <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as "income" | "expense" })}>
+            <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="income">Receita</SelectItem>
+              <SelectItem value="expense">Despesa</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
+      <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
+        {isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Adicionando..." : "Adicionar")}
+      </Button>
+    </div>
+  );
+
   return (
     <PageContainer>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Financeiro</h1>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
             <DialogTrigger asChild>
               <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
             </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
-              <div className="space-y-3 pt-2">
-                <div className="space-y-1.5"><Label>Descrição</Label><Input placeholder="Ex: Consulta particular" value={newT.description} onChange={(e) => setNewT({ ...newT, description: e.target.value })} className="bg-accent border-border" /></div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="number" placeholder="0,00" value={newT.amount} onChange={(e) => setNewT({ ...newT, amount: e.target.value })} className="bg-accent border-border" /></div>
-                  <div className="space-y-1.5">
-                    <Label>Tipo</Label>
-                    <Select value={newT.type} onValueChange={(v) => setNewT({ ...newT, type: v as "income" | "expense" })}>
-                      <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="income">Receita</SelectItem>
-                        <SelectItem value="expense">Despesa</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={newT.date} onChange={(e) => setNewT({ ...newT, date: e.target.value })} className="bg-accent border-border" /></div>
-                <Button onClick={() => addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending}>
-                  {addMutation.isPending ? "Adicionando..." : "Adicionar"}
-                </Button>
-              </div>
+              <TransactionForm isEdit={false} />
             </DialogContent>
           </Dialog>
         </div>
@@ -136,7 +176,6 @@ const Financial = () => {
           </div>
         </div>
 
-        {/* Charts */}
         <Tabs defaultValue="bar" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="bar" className="flex-1 text-xs">Barras</TabsTrigger>
@@ -175,6 +214,14 @@ const Financial = () => {
           </TabsContent>
         </Tabs>
 
+        {/* Edit Dialog */}
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent className="bg-card border-border">
+            <DialogHeader><DialogTitle>Editar Transação</DialogTitle></DialogHeader>
+            <TransactionForm isEdit={true} />
+          </DialogContent>
+        </Dialog>
+
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
           {transactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação encontrada</p>}
           {transactions.map((t) => (
@@ -188,9 +235,27 @@ const Financial = () => {
                   <p className="text-xs text-muted-foreground">{new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR")}</p>
                 </div>
               </div>
-              <span className={`text-sm font-semibold ${t.type === "income" ? "text-success" : "text-destructive"}`}>
-                {t.type === "income" ? "+" : "-"}R$ {Number(t.amount).toLocaleString("pt-BR")}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`text-sm font-semibold ${t.type === "income" ? "text-success" : "text-destructive"}`}>
+                  {t.type === "income" ? "+" : "-"}R$ {Number(t.amount).toLocaleString("pt-BR")}
+                </span>
+                <button onClick={() => openEdit(t)} className="text-primary hover:text-primary/80"><Pencil className="h-3.5 w-3.5" /></button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="text-destructive hover:text-destructive/80"><Trash2 className="h-3.5 w-3.5" /></button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-card border-border">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Excluir transação?</AlertDialogTitle>
+                      <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => deleteMutation.mutate(t.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           ))}
         </motion.div>

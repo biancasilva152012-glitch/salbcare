@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, ChevronRight } from "lucide-react";
+import { Plus, Search, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
@@ -13,13 +14,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 
+const emptyForm = { name: "", phone: "", birth_date: "", notes: "", medical_history: "" };
+
 const Patients = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Tables<"patients"> | null>(null);
   const [open, setOpen] = useState(false);
-  const [newP, setNewP] = useState({ name: "", phone: "", birth_date: "", notes: "", medical_history: "" });
+  const [editOpen, setEditOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const { data: patients = [] } = useQuery({
     queryKey: ["patients", user?.id],
@@ -33,47 +38,85 @@ const Patients = () => {
   const addMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("patients").insert({
-        user_id: user!.id,
-        name: newP.name,
-        phone: newP.phone || null,
-        birth_date: newP.birth_date || null,
-        notes: newP.notes || null,
-        medical_history: newP.medical_history || null,
+        user_id: user!.id, name: form.name, phone: form.phone || null,
+        birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patients"] });
-      setNewP({ name: "", phone: "", birth_date: "", notes: "", medical_history: "" });
+      setForm(emptyForm);
       setOpen(false);
       toast.success("Paciente cadastrado!");
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("patients").update({
+        name: form.name, phone: form.phone || null,
+        birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
+      }).eq("id", editId!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      setForm(emptyForm);
+      setEditOpen(false);
+      setEditId(null);
+      if (selected && selected.id === editId) setSelected(null);
+      toast.success("Paciente atualizado!");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("patients").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      setSelected(null);
+      toast.success("Paciente excluído!");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const openEdit = (p: Tables<"patients">) => {
+    setEditId(p.id);
+    setForm({ name: p.name, phone: p.phone || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "" });
+    setEditOpen(true);
+  };
+
   const filtered = patients.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
+
+  const PatientForm = ({ isEdit }: { isEdit: boolean }) => (
+    <div className="space-y-3 pt-2">
+      <div className="space-y-1.5"><Label>Nome</Label><Input placeholder="Nome completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5"><Label>Telefone</Label><Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5"><Label>Data de nascimento</Label><Input type="date" value={form.birth_date} onChange={(e) => setForm({ ...form, birth_date: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5"><Label>Histórico médico</Label><Textarea placeholder="Histórico..." value={form.medical_history} onChange={(e) => setForm({ ...form, medical_history: e.target.value })} className="bg-accent border-border" /></div>
+      <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
+        {isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Cadastrando..." : "Cadastrar")}
+      </Button>
+    </div>
+  );
 
   return (
     <PageContainer>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Pacientes</h1>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
             <DialogTrigger asChild>
               <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
             </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
-              <div className="space-y-3 pt-2">
-                <div className="space-y-1.5"><Label>Nome</Label><Input placeholder="Nome completo" value={newP.name} onChange={(e) => setNewP({ ...newP, name: e.target.value })} className="bg-accent border-border" /></div>
-                <div className="space-y-1.5"><Label>Telefone</Label><Input placeholder="(11) 99999-9999" value={newP.phone} onChange={(e) => setNewP({ ...newP, phone: e.target.value })} className="bg-accent border-border" /></div>
-                <div className="space-y-1.5"><Label>Data de nascimento</Label><Input type="date" value={newP.birth_date} onChange={(e) => setNewP({ ...newP, birth_date: e.target.value })} className="bg-accent border-border" /></div>
-                <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={newP.notes} onChange={(e) => setNewP({ ...newP, notes: e.target.value })} className="bg-accent border-border" /></div>
-                <div className="space-y-1.5"><Label>Histórico médico</Label><Textarea placeholder="Histórico..." value={newP.medical_history} onChange={(e) => setNewP({ ...newP, medical_history: e.target.value })} className="bg-accent border-border" /></div>
-                <Button onClick={() => addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending}>
-                  {addMutation.isPending ? "Cadastrando..." : "Cadastrar"}
-                </Button>
-              </div>
+              <PatientForm isEdit={false} />
             </DialogContent>
           </Dialog>
         </div>
@@ -87,7 +130,25 @@ const Patients = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">{selected.name}</h2>
-              <button onClick={() => setSelected(null)} className="text-xs text-muted-foreground hover:text-foreground">Fechar</button>
+              <div className="flex items-center gap-2">
+                <button onClick={() => openEdit(selected)} className="text-xs text-primary hover:underline flex items-center gap-1"><Pencil className="h-3 w-3" /> Editar</button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="text-xs text-destructive hover:underline flex items-center gap-1"><Trash2 className="h-3 w-3" /> Excluir</button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-card border-border">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Excluir paciente?</AlertDialogTitle>
+                      <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => deleteMutation.mutate(selected.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <button onClick={() => setSelected(null)} className="text-xs text-muted-foreground hover:text-foreground">Fechar</button>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div><span className="text-muted-foreground">Telefone:</span> {selected.phone || "—"}</div>
@@ -102,6 +163,14 @@ const Patients = () => {
             )}
           </motion.div>
         )}
+
+        {/* Edit Dialog */}
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent className="bg-card border-border">
+            <DialogHeader><DialogTitle>Editar Paciente</DialogTitle></DialogHeader>
+            <PatientForm isEdit={true} />
+          </DialogContent>
+        </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
           {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhum paciente encontrado</p>}
