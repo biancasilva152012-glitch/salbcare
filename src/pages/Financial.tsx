@@ -45,6 +45,7 @@ const Financial = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [filterMonth, setFilterMonth] = useState(new Date());
+  const [filterCategory, setFilterCategory] = useState<string>("all");
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["financial", user?.id],
