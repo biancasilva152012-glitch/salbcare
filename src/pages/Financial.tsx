@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,11 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, ResponsiveContainer } from "recharts";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { format, parseISO, startOfMonth, subMonths } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+const chartConfig = {
+  income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
+  expense: { label: "Despesas", color: "hsl(var(--destructive))" },
+  profit: { label: "Lucro", color: "hsl(var(--primary))" },
+};
 
 const Financial = () => {
   const { user } = useAuth();
@@ -50,6 +61,27 @@ const Financial = () => {
   const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
   const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
   const profit = totalIncome - totalExpense;
+
+  const monthlyData = useMemo(() => {
+    const now = new Date();
+    const months: Record<string, { month: string; income: number; expense: number; profit: number }> = {};
+    for (let i = 5; i >= 0; i--) {
+      const d = subMonths(now, i);
+      const key = format(d, "yyyy-MM");
+      const label = format(d, "MMM", { locale: ptBR });
+      months[key] = { month: label.charAt(0).toUpperCase() + label.slice(1), income: 0, expense: 0, profit: 0 };
+    }
+    transactions.forEach((t) => {
+      const key = t.date.substring(0, 7);
+      if (months[key]) {
+        const amt = Number(t.amount);
+        if (t.type === "income") months[key].income += amt;
+        else months[key].expense += amt;
+        months[key].profit = months[key].income - months[key].expense;
+      }
+    });
+    return Object.values(months);
+  }, [transactions]);
 
   return (
     <PageContainer>
@@ -103,6 +135,45 @@ const Financial = () => {
             <p className="text-sm font-bold text-primary">R$ {profit.toLocaleString("pt-BR")}</p>
           </div>
         </div>
+
+        {/* Charts */}
+        <Tabs defaultValue="bar" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="bar" className="flex-1 text-xs">Barras</TabsTrigger>
+            <TabsTrigger value="line" className="flex-1 text-xs">Evolução</TabsTrigger>
+          </TabsList>
+          <TabsContent value="bar">
+            <div className="glass-card p-3">
+              <p className="text-xs text-muted-foreground mb-2">Receitas vs Despesas (6 meses)</p>
+              <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                <BarChart data={monthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                  <XAxis dataKey="month" tick={{ fontSize: 10 }} className="fill-muted-foreground" />
+                  <YAxis tick={{ fontSize: 10 }} className="fill-muted-foreground" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="income" fill="var(--color-income)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="expense" fill="var(--color-expense)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ChartContainer>
+            </div>
+          </TabsContent>
+          <TabsContent value="line">
+            <div className="glass-card p-3">
+              <p className="text-xs text-muted-foreground mb-2">Evolução do Lucro (6 meses)</p>
+              <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                <LineChart data={monthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                  <XAxis dataKey="month" tick={{ fontSize: 10 }} className="fill-muted-foreground" />
+                  <YAxis tick={{ fontSize: 10 }} className="fill-muted-foreground" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line type="monotone" dataKey="income" stroke="var(--color-income)" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="expense" stroke="var(--color-expense)" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="profit" stroke="var(--color-profit)" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+                </LineChart>
+              </ChartContainer>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
           {transactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação encontrada</p>}
