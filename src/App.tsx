@@ -9,6 +9,7 @@ import Splash from "./pages/Splash";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Agenda from "./pages/Agenda";
 import Patients from "./pages/Patients";
