@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, ChevronRight, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -8,10 +8,12 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
+import PatientDocuments from "@/components/patients/PatientDocuments";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
 
 const emptyForm = { name: "", phone: "", birth_date: "", notes: "", medical_history: "" };
@@ -90,9 +92,23 @@ const Patients = () => {
     setEditOpen(true);
   };
 
+  const handleExportPdf = async (patient: Tables<"patients">) => {
+    try {
+      const [{ data: appts }, { data: docs }] = await Promise.all([
+        supabase.from("appointments").select("date, time, appointment_type, notes, status").eq("user_id", user!.id).eq("patient_id", patient.id).order("date", { ascending: false }),
+        supabase.from("patient_documents").select("file_name, description, created_at").eq("patient_id", patient.id).order("created_at", { ascending: false }),
+      ]);
+
+      exportPatientPdf(patient, appts || [], docs || []);
+      toast.success("PDF gerado com sucesso!");
+    } catch {
+      toast.error("Erro ao gerar PDF");
+    }
+  };
+
   const filtered = patients.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
 
-  const PatientForm = ({ isEdit }: { isEdit: boolean }) => (
+  const renderPatientForm = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5"><Label>Nome</Label><Input placeholder="Nome completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Telefone</Label><Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-accent border-border" /></div>
@@ -116,7 +132,7 @@ const Patients = () => {
             </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
-              <PatientForm isEdit={false} />
+              {renderPatientForm(false)}
             </DialogContent>
           </Dialog>
         </div>
@@ -131,6 +147,9 @@ const Patients = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">{selected.name}</h2>
               <div className="flex items-center gap-2">
+                <button onClick={() => handleExportPdf(selected)} className="text-xs text-primary hover:underline flex items-center gap-1">
+                  <FileDown className="h-3 w-3" /> PDF
+                </button>
                 <button onClick={() => openEdit(selected)} className="text-xs text-primary hover:underline flex items-center gap-1"><Pencil className="h-3 w-3" /> Editar</button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -161,6 +180,9 @@ const Patients = () => {
                 <p className="mt-1">{selected.medical_history}</p>
               </div>
             )}
+
+            {/* Documents Section */}
+            <PatientDocuments patientId={selected.id} />
           </motion.div>
         )}
 
@@ -168,7 +190,7 @@ const Patients = () => {
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="bg-card border-border">
             <DialogHeader><DialogTitle>Editar Paciente</DialogTitle></DialogHeader>
-            <PatientForm isEdit={true} />
+            {renderPatientForm(true)}
           </DialogContent>
         </Dialog>
 
