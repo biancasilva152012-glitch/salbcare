@@ -74,7 +74,7 @@ const Financial = () => {
   const updateMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").update({
-        description: form.description, amount: Number(form.amount), type: form.type, date: form.date,
+        description: form.description, amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
       }).eq("id", editId!);
       if (error) throw error;
     },
