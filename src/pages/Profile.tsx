@@ -44,7 +44,7 @@ const Profile = () => {
           </div>
           <h1 className="text-xl font-bold">{profile?.name || "Profissional"}</h1>
           <p className="text-sm text-muted-foreground">
-            {professionalTypeLabels[profile?.professional_type || ""] || profile?.professional_type} • Plano {plans.find(p => p.id === profile?.plan)?.name || "Básico"}
+            {professionalTypeLabels[profile?.professional_type || ""] || profile?.professional_type} • Plano {Object.values(PLANS).find(p => p.name.toLowerCase() === profile?.plan || p.name === profile?.plan)?.name || "Básico"}
           </p>
         </div>
 
