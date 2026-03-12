@@ -20,7 +20,7 @@ const Legal = () => {
 
           <TabsContent value="dashboard"><LegalDashboardTab /></TabsContent>
           <TabsContent value="templates"><LegalTemplatesTab /></TabsContent>
-          <TabsContent value="marketplace"><LawyerMarketplaceTab /></TabsContent>
+          <TabsContent value="marketplace"><FeatureGate feature="legal_marketplace"><LawyerMarketplaceTab /></FeatureGate></TabsContent>
         </Tabs>
       </div>
     </PageContainer>
