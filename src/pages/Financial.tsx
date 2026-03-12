@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter, FileDown } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter, FileDown, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -19,6 +19,8 @@ import { format, subMonths, addMonths } from "date-fns";
 import { exportFinancialPdf } from "@/utils/exportFinancialPdf";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
+import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
+import FeatureGate from "@/components/FeatureGate";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
@@ -268,6 +270,9 @@ const Financial = () => {
             <TabsTrigger value="bar" className="flex-1 text-xs">Barras</TabsTrigger>
             <TabsTrigger value="line" className="flex-1 text-xs">Evolução</TabsTrigger>
             <TabsTrigger value="pie" className="flex-1 text-xs">Categorias</TabsTrigger>
+            <TabsTrigger value="advanced" className="flex-1 text-xs gap-1">
+              <Crown className="h-3 w-3" /> Avançado
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="bar">
             <div className="glass-card p-3">
@@ -341,6 +346,11 @@ const Financial = () => {
                 </div>
               )}
             </div>
+          </TabsContent>
+          <TabsContent value="advanced">
+            <FeatureGate feature="advanced_financial_dashboard">
+              <AdvancedFinancialDashboard transactions={transactions} />
+            </FeatureGate>
           </TabsContent>
         </Tabs>
 
