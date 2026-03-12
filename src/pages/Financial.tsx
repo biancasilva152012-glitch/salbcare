@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format, subMonths, addMonths } from "date-fns";
+import { exportFinancialPdf } from "@/utils/exportFinancialPdf";
 import { ptBR } from "date-fns/locale";
 
 const chartConfig = {
@@ -154,15 +155,20 @@ const Financial = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Financeiro</h1>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" className="gap-1" onClick={() => exportFinancialPdf(transactions, filterMonth)}>
+              <FileDown className="h-4 w-4" /> PDF
+            </Button>
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
+              </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
               <TransactionForm isEdit={false} />
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {/* Month Filter */}
