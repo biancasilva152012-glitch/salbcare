@@ -30,6 +30,7 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { hasAccess } = useFeatureGate();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
