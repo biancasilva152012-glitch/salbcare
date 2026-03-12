@@ -341,6 +341,48 @@ export type Database = {
         }
         Relationships: []
       }
+      professionals: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          crm: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          specialty: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          crm?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          specialty?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          crm?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          specialty?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
