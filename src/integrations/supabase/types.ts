@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounting_partners: {
+        Row: {
+          company_name: string
+          created_at: string
+          id: string
+          monthly_price: number
+          rating: number
+          reviews_count: number
+          specialty: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          id?: string
+          monthly_price: number
+          rating?: number
+          reviews_count?: number
+          specialty?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          id?: string
+          monthly_price?: number
+          rating?: number
+          reviews_count?: number
+          specialty?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           appointment_type: string
@@ -64,6 +94,45 @@ export type Database = {
           },
         ]
       }
+      cnpj_requests: {
+        Row: {
+          city: string
+          cpf: string
+          created_at: string
+          documents: string | null
+          id: string
+          name: string
+          profession: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city: string
+          cpf: string
+          created_at?: string
+          documents?: string | null
+          id?: string
+          name: string
+          profession: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          cpf?: string
+          created_at?: string
+          documents?: string | null
+          id?: string
+          name?: string
+          profession?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_transactions: {
         Row: {
           amount: number
@@ -96,6 +165,71 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          id: string
+          patient_name: string
+          payment_method: string
+          service: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string
+          id?: string
+          patient_name: string
+          payment_method?: string
+          service: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+          patient_name?: string
+          payment_method?: string
+          service?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      partner_hires: {
+        Row: {
+          created_at: string
+          id: string
+          partner_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          partner_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          partner_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_hires_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "accounting_partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patients: {
         Row: {
