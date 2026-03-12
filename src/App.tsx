@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Agenda from "./pages/Agenda";
 import Patients from "./pages/Patients";
 import Telehealth from "./pages/Telehealth";
+import Professionals from "./pages/Professionals";
 import Financial from "./pages/Financial";
 import Accounting from "./pages/Accounting";
 import Legal from "./pages/Legal";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/agenda" element={<ProtectedRoute><Agenda /></ProtectedRoute>} />
             <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
             <Route path="/telehealth" element={<ProtectedRoute><Telehealth /></ProtectedRoute>} />
+            <Route path="/professionals" element={<ProtectedRoute><Professionals /></ProtectedRoute>} />
             <Route path="/financial" element={<ProtectedRoute><Financial /></ProtectedRoute>} />
             <Route path="/accounting" element={<ProtectedRoute><Accounting /></ProtectedRoute>} />
             <Route path="/legal" element={<ProtectedRoute><Legal /></ProtectedRoute>} />

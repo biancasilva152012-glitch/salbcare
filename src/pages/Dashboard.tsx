@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock } from "lucide-react";
+import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,7 @@ const quickActions: QuickAction[] = [
   { icon: DollarSign, label: "Financeiro", to: "/financial", color: "from-primary to-secondary" },
   { icon: Calculator, label: "Contabilidade", to: "/accounting", requiredFeature: "accounting_marketplace", color: "from-primary to-secondary" },
   { icon: Scale, label: "Jurídico", to: "/legal", requiredFeature: "legal_marketplace", color: "from-primary to-secondary" },
+  { icon: UserCog, label: "Equipe", to: "/professionals", requiredFeature: "multi_professionals", color: "from-primary to-secondary" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
