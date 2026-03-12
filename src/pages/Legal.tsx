@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LegalDashboardTab from "@/components/legal/LegalDashboardTab";
 import LawyerMarketplaceTab from "@/components/legal/LawyerMarketplaceTab";
 import LegalTemplatesTab from "@/components/legal/LegalTemplatesTab";
+import FeatureGate from "@/components/FeatureGate";
 
 const Legal = () => {
   return (
@@ -19,7 +20,7 @@ const Legal = () => {
 
           <TabsContent value="dashboard"><LegalDashboardTab /></TabsContent>
           <TabsContent value="templates"><LegalTemplatesTab /></TabsContent>
-          <TabsContent value="marketplace"><LawyerMarketplaceTab /></TabsContent>
+          <TabsContent value="marketplace"><FeatureGate feature="legal_marketplace"><LawyerMarketplaceTab /></FeatureGate></TabsContent>
         </Tabs>
       </div>
     </PageContainer>

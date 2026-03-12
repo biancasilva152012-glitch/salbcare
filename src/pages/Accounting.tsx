@@ -5,6 +5,7 @@ import InvoicesTab from "@/components/accounting/InvoicesTab";
 import TaxCalculationTab from "@/components/accounting/TaxCalculationTab";
 import AccountingDashboardTab from "@/components/accounting/AccountingDashboardTab";
 import MarketplaceTab from "@/components/accounting/MarketplaceTab";
+import FeatureGate from "@/components/FeatureGate";
 
 const Accounting = () => {
   return (
@@ -25,7 +26,7 @@ const Accounting = () => {
           <TabsContent value="cnpj"><CnpjRequestTab /></TabsContent>
           <TabsContent value="invoices"><InvoicesTab /></TabsContent>
           <TabsContent value="taxes"><TaxCalculationTab /></TabsContent>
-          <TabsContent value="marketplace"><MarketplaceTab /></TabsContent>
+          <TabsContent value="marketplace"><FeatureGate feature="accounting_marketplace"><MarketplaceTab /></FeatureGate></TabsContent>
         </Tabs>
       </div>
     </PageContainer>

@@ -17,6 +17,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format, subMonths, addMonths } from "date-fns";
 import { exportFinancialPdf } from "@/utils/exportFinancialPdf";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
 
 const chartConfig = {
@@ -39,6 +40,7 @@ const emptyForm = { description: "", amount: "", type: "income" as "income" | "e
 
 const Financial = () => {
   const { user } = useAuth();
+  const { hasAccess } = useFeatureGate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -195,9 +197,11 @@ const Financial = () => {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Financeiro</h1>
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" className="gap-1" onClick={() => exportFinancialPdf(transactions, filterMonth)}>
-              <FileDown className="h-4 w-4" /> PDF
-            </Button>
+            {hasAccess("pdf_export") && (
+              <Button size="sm" variant="outline" className="gap-1" onClick={() => exportFinancialPdf(transactions, filterMonth)}>
+                <FileDown className="h-4 w-4" /> PDF
+              </Button>
+            )}
             <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
