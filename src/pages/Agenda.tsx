@@ -135,7 +135,7 @@ const Agenda = () => {
     return acc;
   }, {});
 
-  const AppointmentForm = ({ isEdit }: { isEdit: boolean }) => (
+  const renderAppointmentForm = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
         <Label>Paciente</Label>
