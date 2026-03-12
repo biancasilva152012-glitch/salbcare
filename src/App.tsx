@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Agenda from "./pages/Agenda";
 import Patients from "./pages/Patients";
 import Telehealth from "./pages/Telehealth";
+import Professionals from "./pages/Professionals";
 import Financial from "./pages/Financial";
 import Accounting from "./pages/Accounting";
 import Legal from "./pages/Legal";
