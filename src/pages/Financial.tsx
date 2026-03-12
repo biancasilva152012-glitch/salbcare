@@ -25,7 +25,17 @@ const chartConfig = {
   profit: { label: "Lucro", color: "hsl(var(--primary))" },
 };
 
-const emptyForm = { description: "", amount: "", type: "income" as "income" | "expense", date: "" };
+const categories = [
+  { value: "consulta", label: "Consulta" },
+  { value: "material", label: "Material" },
+  { value: "aluguel", label: "Aluguel" },
+  { value: "salario", label: "Salário" },
+  { value: "equipamento", label: "Equipamento" },
+  { value: "marketing", label: "Marketing" },
+  { value: "outros", label: "Outros" },
+];
+
+const emptyForm = { description: "", amount: "", type: "income" as "income" | "expense", date: "", category: "outros" };
 
 const Financial = () => {
   const { user } = useAuth();
