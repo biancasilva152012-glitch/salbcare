@@ -228,7 +228,7 @@ const Agenda = () => {
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="bg-card border-border">
             <DialogHeader><DialogTitle>Editar Consulta</DialogTitle></DialogHeader>
-            <AppointmentForm isEdit={true} />
+            {renderAppointmentForm(true)}
           </DialogContent>
         </Dialog>
 
