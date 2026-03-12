@@ -139,6 +139,22 @@ const Financial = () => {
     return Object.values(months);
   }, [transactions]);
 
+  const categoryColors = ["#2dd4bf", "#f97316", "#8b5cf6", "#ec4899", "#3b82f6", "#eab308", "#6b7280"];
+
+  const categoryData = useMemo(() => {
+    const byCategory: Record<string, number> = {};
+    filteredByMonth
+      .filter((t) => t.type === "expense")
+      .forEach((t) => {
+        const cat = t.category || "outros";
+        byCategory[cat] = (byCategory[cat] || 0) + Number(t.amount);
+      });
+    return Object.entries(byCategory).map(([key, value]) => ({
+      name: categories.find((c) => c.value === key)?.label || "Outros",
+      value,
+    }));
+  }, [filteredByMonth]);
+
   const TransactionForm = ({ isEdit }: { isEdit: boolean }) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5"><Label>Descrição</Label><Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" /></div>
