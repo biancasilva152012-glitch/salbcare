@@ -25,7 +25,17 @@ const chartConfig = {
   profit: { label: "Lucro", color: "hsl(var(--primary))" },
 };
 
-const emptyForm = { description: "", amount: "", type: "income" as "income" | "expense", date: "" };
+const categories = [
+  { value: "consulta", label: "Consulta" },
+  { value: "material", label: "Material" },
+  { value: "aluguel", label: "Aluguel" },
+  { value: "salario", label: "Salário" },
+  { value: "equipamento", label: "Equipamento" },
+  { value: "marketing", label: "Marketing" },
+  { value: "outros", label: "Outros" },
+];
+
+const emptyForm = { description: "", amount: "", type: "income" as "income" | "expense", date: "", category: "outros" };
 
 const Financial = () => {
   const { user } = useAuth();
@@ -48,7 +58,7 @@ const Financial = () => {
   const addMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").insert({
-        user_id: user!.id, description: form.description, amount: Number(form.amount), type: form.type, date: form.date,
+        user_id: user!.id, description: form.description, amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
       });
       if (error) throw error;
     },
@@ -64,7 +74,7 @@ const Financial = () => {
   const updateMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").update({
-        description: form.description, amount: Number(form.amount), type: form.type, date: form.date,
+        description: form.description, amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
       }).eq("id", editId!);
       if (error) throw error;
     },
@@ -92,7 +102,7 @@ const Financial = () => {
 
   const openEdit = (t: typeof transactions[0]) => {
     setEditId(t.id);
-    setForm({ description: t.description, amount: String(t.amount), type: t.type as "income" | "expense", date: t.date });
+    setForm({ description: t.description, amount: String(t.amount), type: t.type as "income" | "expense", date: t.date, category: t.category || "outros" });
     setEditOpen(true);
   };
 
@@ -142,6 +152,17 @@ const Financial = () => {
             </SelectContent>
           </Select>
         </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label>Categoria</Label>
+        <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+          <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {categories.map((c) => (
+              <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
@@ -257,7 +278,10 @@ const Financial = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t.description}</p>
-                  <p className="text-xs text-muted-foreground">{new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{categories.find(c => c.value === t.category)?.label || "Outros"}</span>
+                    <p className="text-xs text-muted-foreground">{new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
