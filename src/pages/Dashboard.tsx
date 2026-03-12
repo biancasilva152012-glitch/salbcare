@@ -22,6 +22,7 @@ const quickActions: QuickAction[] = [
   { icon: DollarSign, label: "Financeiro", to: "/financial", color: "from-primary to-secondary" },
   { icon: Calculator, label: "Contabilidade", to: "/accounting", requiredFeature: "accounting_marketplace", color: "from-primary to-secondary" },
   { icon: Scale, label: "Jurídico", to: "/legal", requiredFeature: "legal_marketplace", color: "from-primary to-secondary" },
+  { icon: UserCog, label: "Equipe", to: "/professionals", requiredFeature: "multi_professionals", color: "from-primary to-secondary" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
