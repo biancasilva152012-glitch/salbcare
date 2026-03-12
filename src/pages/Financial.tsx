@@ -347,6 +347,11 @@ const Financial = () => {
               )}
             </div>
           </TabsContent>
+          <TabsContent value="advanced">
+            <FeatureGate feature="advanced_financial_dashboard">
+              <AdvancedFinancialDashboard transactions={transactions} />
+            </FeatureGate>
+          </TabsContent>
         </Tabs>
 
         {/* Edit Dialog */}
