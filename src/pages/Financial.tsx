@@ -263,6 +263,7 @@ const Financial = () => {
           <TabsList className="w-full">
             <TabsTrigger value="bar" className="flex-1 text-xs">Barras</TabsTrigger>
             <TabsTrigger value="line" className="flex-1 text-xs">Evolução</TabsTrigger>
+            <TabsTrigger value="pie" className="flex-1 text-xs">Categorias</TabsTrigger>
           </TabsList>
           <TabsContent value="bar">
             <div className="glass-card p-3">
@@ -293,6 +294,48 @@ const Financial = () => {
                   <Line type="monotone" dataKey="profit" stroke="var(--color-profit)" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
                 </LineChart>
               </ChartContainer>
+            </div>
+          </TabsContent>
+          <TabsContent value="pie">
+            <div className="glass-card p-3">
+              <p className="text-xs text-muted-foreground mb-2">Despesas por Categoria ({capitalizedLabel})</p>
+              {categoryData.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-10">Sem despesas neste mês</p>
+              ) : (
+                <div className="h-[220px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={categoryData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        paddingAngle={3}
+                        dataKey="value"
+                        nameKey="name"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        labelLine={false}
+                      >
+                        {categoryData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={categoryColors[index % categoryColors.length]} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip
+                        content={({ active, payload }) => {
+                          if (!active || !payload?.length) return null;
+                          return (
+                            <div className="rounded-md bg-popover px-3 py-2 text-xs shadow-md border border-border">
+                              <p className="font-medium">{payload[0].name}</p>
+                              <p className="text-muted-foreground">R$ {Number(payload[0].value).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+                            </div>
+                          );
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
