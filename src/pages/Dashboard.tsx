@@ -93,14 +93,26 @@ const Dashboard = () => {
         <motion.div variants={item}>
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Acesso rápido</h2>
           <div className="grid grid-cols-3 gap-3">
-            {quickActions.map(({ icon: Icon, label, to }) => (
-              <button key={to} onClick={() => navigate(to)} className="glass-card flex flex-col items-center gap-2 p-4 transition-all hover:border-primary/50 active:scale-95">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary">
-                  <Icon className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="text-xs font-medium">{label}</span>
-              </button>
-            ))}
+            {quickActions.map(({ icon: Icon, label, to, requiredFeature }) => {
+              const locked = requiredFeature && !hasAccess(requiredFeature);
+              return (
+                <button
+                  key={to}
+                  onClick={() => navigate(locked ? "/subscription" : to)}
+                  className={`glass-card relative flex flex-col items-center gap-2 p-4 transition-all active:scale-95 ${locked ? "opacity-70 hover:border-primary/30" : "hover:border-primary/50"}`}
+                >
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${locked ? "bg-muted" : "gradient-primary"}`}>
+                    {locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Icon className="h-5 w-5 text-primary-foreground" />}
+                  </div>
+                  <span className="text-xs font-medium">{label}</span>
+                  {locked && (
+                    <span className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">
+                      PRO
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </motion.div>
 
