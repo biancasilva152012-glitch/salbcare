@@ -17,6 +17,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format, subMonths, addMonths } from "date-fns";
 import { exportFinancialPdf } from "@/utils/exportFinancialPdf";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
 
 const chartConfig = {
