@@ -14,7 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_type: string
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          patient_id: string | null
+          patient_name: string
+          status: string
+          time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appointment_type?: string
+          created_at?: string
+          date: string
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          patient_name: string
+          status?: string
+          time: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appointment_type?: string
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          status?: string
+          time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          description: string
+          id: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string
+          description: string
+          id?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      patients: {
+        Row: {
+          birth_date: string | null
+          created_at: string
+          id: string
+          medical_history: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date?: string | null
+          created_at?: string
+          id?: string
+          medical_history?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string | null
+          created_at?: string
+          id?: string
+          medical_history?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          plan: string
+          professional_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          plan?: string
+          professional_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          plan?: string
+          professional_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      teleconsultations: {
+        Row: {
+          created_at: string
+          date: string
+          duration: number | null
+          id: string
+          notes: string | null
+          patient_id: string | null
+          patient_name: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          duration?: number | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          patient_name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          duration?: number | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teleconsultations_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
