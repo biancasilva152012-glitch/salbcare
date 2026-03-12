@@ -54,12 +54,13 @@ const Agenda = () => {
       const { error } = await supabase.from("appointments").insert({
         user_id: user!.id,
         patient_name: form.patient_name,
+        patient_id: form.patient_id || null,
         date: form.date,
         time: form.time,
         appointment_type: form.appointment_type,
         notes: form.notes || null,
         professional_id: form.professional_id || null,
-      } as any);
+      });
       if (error) throw error;
     },
     onSuccess: () => {
