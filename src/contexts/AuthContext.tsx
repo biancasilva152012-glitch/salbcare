@@ -42,9 +42,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription");
       if (error) throw error;
+
+      let plan: PlanKey = getPlanByProductId(data.product_id);
+
+      // If no active Stripe subscription, fallback to plan stored in profile
+      if (!data.subscribed) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("plan")
+            .eq("user_id", user.id)
+            .single();
+          if (profile?.plan && (profile.plan === "professional" || profile.plan === "clinic")) {
+            plan = profile.plan as PlanKey;
+          }
+        }
+      }
+
       setSubscription({
         subscribed: data.subscribed || false,
-        plan: getPlanByProductId(data.product_id),
+        plan,
         subscriptionEnd: data.subscription_end || null,
         loading: false,
       });
