@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog } from "lucide-react";
+import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,6 +49,15 @@ const Dashboard = () => {
     queryFn: async () => {
       const { data } = await supabase.from("appointments").select("*").eq("user_id", user!.id).eq("date", today).eq("status", "scheduled").order("time");
       return data || [];
+    },
+    enabled: !!user,
+  });
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("is_admin_or_contador", { _user_id: user!.id });
+      return !!data;
     },
     enabled: !!user,
   });
@@ -116,6 +125,23 @@ const Dashboard = () => {
             })}
           </div>
         </motion.div>
+
+        {isAdmin && (
+          <motion.div variants={item}>
+            <button
+              onClick={() => navigate("/admin")}
+              className="glass-card flex w-full items-center gap-3 p-4 transition-all active:scale-[0.98] hover:border-primary/50"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
+                <Shield className="h-5 w-5 text-destructive" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold">Painel Admin</p>
+                <p className="text-xs text-muted-foreground">Gerenciar assinaturas e usuários</p>
+              </div>
+            </button>
+          </motion.div>
+        )}
 
         <motion.div variants={item}>
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Consultas de hoje</h2>
