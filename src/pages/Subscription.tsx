@@ -17,6 +17,7 @@ const planIcons: Record<PlanKey, typeof Zap> = {
 
 const Subscription = () => {
   const { subscription, refreshSubscription } = useAuth();
+  const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
 
