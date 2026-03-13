@@ -191,7 +191,7 @@ const InvoicesTab = () => {
               </div>
               <div className="space-y-1.5"><Label>Bairro *</Label><Input value={form.address_neighborhood} onChange={f("address_neighborhood")} className="bg-accent border-border" /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1.5 col-span-1"><Label>CEP *</Label><Input value={form.address_zip} onChange={f("address_zip")} placeholder="00000-000" className="bg-accent border-border" /></div>
+                <div className="space-y-1.5 col-span-1"><Label>CEP *</Label><Input value={form.address_zip} onChange={(e) => setForm(prev => ({ ...prev, address_zip: maskCep(e.target.value) }))} placeholder="00000-000" className="bg-accent border-border" /></div>
                 <div className="space-y-1.5"><Label>Cidade *</Label><Input value={form.address_city} onChange={f("address_city")} className="bg-accent border-border" /></div>
                 <div className="space-y-1.5">
                   <Label>UF *</Label>
