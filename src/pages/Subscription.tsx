@@ -131,15 +131,10 @@ const Subscription = () => {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => handleCheckout(key)}
+                    onClick={() => navigate(`/checkout?plan=${key}`)}
                     className="w-full gradient-primary font-semibold"
-                    disabled={!!loadingPlan}
                   >
-                    {loadingPlan === key ? (
-                      <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Processando...</>
-                    ) : (
-                      "Assinar"
-                    )}
+                    Assinar com PIX
                   </Button>
                 )}
               </div>
