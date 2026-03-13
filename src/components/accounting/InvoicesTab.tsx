@@ -246,6 +246,15 @@ const InvoicesTab = () => {
                   {inv.service} • {new Date(inv.date + "T12:00:00").toLocaleDateString("pt-BR")}
                   {(inv as any).service_code && ` • LC ${(inv as any).service_code}`}
                 </p>
+                {inv.status === "pending" ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] mt-1 px-1.5 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400">
+                    <Clock className="h-2.5 w-2.5" /> Pendente de emissão pelo contador
+                  </span>
+                ) : inv.status === "issued" ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] mt-1 px-1.5 py-0.5 rounded-full bg-success/10 text-success">
+                    <CheckCircle className="h-2.5 w-2.5" /> Emitida
+                  </span>
+                ) : null}
               </div>
             </div>
             <div className="flex items-center gap-2">
