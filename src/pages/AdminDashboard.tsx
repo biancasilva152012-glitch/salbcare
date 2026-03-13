@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   Shield, CreditCard, Building2, Clock, Ban,
-  CheckCircle, Eye, UserX, Users, ArrowLeft, Loader2,
+  CheckCircle, Eye, UserX, Users, ArrowLeft, Loader2, MessageCircle,
 } from "lucide-react";
 import { getTrialDaysRemaining } from "@/config/plans";
 
@@ -321,6 +321,22 @@ const AdminDashboard = () => {
                         </div>
                       )}
                     </div>
+                    {r.city && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1 text-xs mt-1"
+                        asChild
+                      >
+                        <a
+                          href={`https://wa.me/55${r.city.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${r.name}, sou do SalbCare e gostaria de falar sobre sua solicitação de CNPJ.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" /> Chamar no WhatsApp
+                        </a>
+                      </Button>
+                    )}
                   </motion.div>
                 );
               })
