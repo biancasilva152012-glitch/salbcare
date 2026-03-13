@@ -18,12 +18,20 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
       toast.error(error.message);
-    } else {
-      navigate("/dashboard");
+    } else if (authData.user) {
+      // Check if user needs onboarding
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("trial_start_date, payment_status")
+        .eq("user_id", authData.user.id)
+        .single();
+      
+      const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
+      navigate(needsOnboarding ? "/onboarding" : "/dashboard");
     }
   };
 
