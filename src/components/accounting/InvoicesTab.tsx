@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Receipt, Trash2, FileJson } from "lucide-react";
+import { Plus, Receipt, Trash2, FileJson, Clock, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { downloadAbrasfJson } from "@/utils/exportAbrasf";
 
@@ -246,6 +246,15 @@ const InvoicesTab = () => {
                   {inv.service} • {new Date(inv.date + "T12:00:00").toLocaleDateString("pt-BR")}
                   {(inv as any).service_code && ` • LC ${(inv as any).service_code}`}
                 </p>
+                {inv.status === "pending" ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] mt-1 px-1.5 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400">
+                    <Clock className="h-2.5 w-2.5" /> Pendente de emissão pelo contador
+                  </span>
+                ) : inv.status === "issued" ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] mt-1 px-1.5 py-0.5 rounded-full bg-success/10 text-success">
+                    <CheckCircle className="h-2.5 w-2.5" /> Emitida
+                  </span>
+                ) : null}
               </div>
             </div>
             <div className="flex items-center gap-2">
