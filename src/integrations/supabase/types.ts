@@ -178,35 +178,65 @@ export type Database = {
       }
       invoices: {
         Row: {
+          address_city: string | null
+          address_complement: string | null
+          address_neighborhood: string | null
+          address_number: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
           amount: number
+          cpf_cnpj: string | null
           created_at: string
           date: string
           id: string
+          iss_rate: number | null
           patient_name: string
           payment_method: string
           service: string
+          service_code: string | null
           status: string
           user_id: string
         }
         Insert: {
+          address_city?: string | null
+          address_complement?: string | null
+          address_neighborhood?: string | null
+          address_number?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
           amount: number
+          cpf_cnpj?: string | null
           created_at?: string
           date?: string
           id?: string
+          iss_rate?: number | null
           patient_name: string
           payment_method?: string
           service: string
+          service_code?: string | null
           status?: string
           user_id: string
         }
         Update: {
+          address_city?: string | null
+          address_complement?: string | null
+          address_neighborhood?: string | null
+          address_number?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
           amount?: number
+          cpf_cnpj?: string | null
           created_at?: string
           date?: string
           id?: string
+          iss_rate?: number | null
           patient_name?: string
           payment_method?: string
           service?: string
+          service_code?: string | null
           status?: string
           user_id?: string
         }
