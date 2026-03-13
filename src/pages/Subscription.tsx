@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PLANS, PlanKey } from "@/config/plans";
 import { toast } from "sonner";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 const planIcons: Record<PlanKey, typeof Zap> = {
   basic: Zap,
@@ -17,6 +17,7 @@ const planIcons: Record<PlanKey, typeof Zap> = {
 
 const Subscription = () => {
   const { subscription, refreshSubscription } = useAuth();
+  const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
 
@@ -130,15 +131,10 @@ const Subscription = () => {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => handleCheckout(key)}
+                    onClick={() => navigate(`/checkout?plan=${key}`)}
                     className="w-full gradient-primary font-semibold"
-                    disabled={!!loadingPlan}
                   >
-                    {loadingPlan === key ? (
-                      <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Processando...</>
-                    ) : (
-                      "Assinar"
-                    )}
+                    Assinar com PIX
                   </Button>
                 )}
               </div>

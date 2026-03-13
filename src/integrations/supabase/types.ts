@@ -474,9 +474,11 @@ export type Database = {
           email: string
           id: string
           name: string
+          payment_status: string
           phone: string | null
           plan: string
           professional_type: string
+          trial_start_date: string | null
           updated_at: string
           user_id: string
         }
@@ -486,9 +488,11 @@ export type Database = {
           email: string
           id?: string
           name: string
+          payment_status?: string
           phone?: string | null
           plan?: string
           professional_type?: string
+          trial_start_date?: string | null
           updated_at?: string
           user_id: string
         }
@@ -498,9 +502,11 @@ export type Database = {
           email?: string
           id?: string
           name?: string
+          payment_status?: string
           phone?: string | null
           plan?: string
           professional_type?: string
+          trial_start_date?: string | null
           updated_at?: string
           user_id?: string
         }

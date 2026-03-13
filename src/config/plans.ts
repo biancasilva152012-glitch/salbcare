@@ -13,6 +13,7 @@ export const PLANS = {
   },
   professional: {
     name: "Profissional",
+    subtitle: "Com Contador",
     price: 79,
     price_id: "price_1TAILDBUEEEAHx2hUax01AKh",
     product_id: "prod_U8ZUsScx3u9Uyk",
@@ -20,12 +21,12 @@ export const PLANS = {
     features: [
       "Todos os recursos do Básico",
       "Relatórios financeiros em PDF",
-      "Marketplace de contabilidade",
+      "Gestão de CNPJ e NF pelo contador",
       "Marketplace jurídico",
     ],
   },
   clinic: {
-    name: "Clínica",
+    name: "Premium",
     price: 149,
     price_id: "price_1TAILaBUEEEAHx2hpX5ekogA",
     product_id: "prod_U8ZU7fGeFAqwdu",
@@ -46,4 +47,16 @@ export function getPlanByProductId(productId: string | null): PlanKey {
     if (plan.product_id === productId) return key as PlanKey;
   }
   return "basic";
+}
+
+export function getTrialDaysRemaining(trialStartDate: string | null): number {
+  if (!trialStartDate) return 0;
+  const start = new Date(trialStartDate);
+  const now = new Date();
+  const diff = 7 - Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+  return Math.max(0, diff);
+}
+
+export function isTrialActive(trialStartDate: string | null): boolean {
+  return getTrialDaysRemaining(trialStartDate) > 0;
 }
