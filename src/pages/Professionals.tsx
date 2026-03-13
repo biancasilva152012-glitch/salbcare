@@ -143,7 +143,7 @@ const ProfessionalsContent = () => {
         </div>
         <div className="space-y-1.5">
           <Label>Telefone</Label>
-          <Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-accent border-border" />
+          <Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })} className="bg-accent border-border" />
         </div>
       </div>
       <div className="space-y-1.5">

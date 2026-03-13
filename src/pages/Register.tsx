@@ -79,7 +79,7 @@ const Register = () => {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="phone">Telefone</Label>
-            <Input id="phone" placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-accent border-border" />
+            <Input id="phone" placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })} className="bg-accent border-border" />
           </div>
           <div className="space-y-1.5">
             <Label>Tipo profissional</Label>
