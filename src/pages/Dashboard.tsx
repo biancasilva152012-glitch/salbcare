@@ -126,6 +126,23 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
+        {isAdmin && (
+          <motion.div variants={item}>
+            <button
+              onClick={() => navigate("/admin")}
+              className="glass-card flex w-full items-center gap-3 p-4 transition-all active:scale-[0.98] hover:border-primary/50"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
+                <Shield className="h-5 w-5 text-destructive" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold">Painel Admin</p>
+                <p className="text-xs text-muted-foreground">Gerenciar assinaturas e usuários</p>
+              </div>
+            </button>
+          </motion.div>
+        )}
+
         <motion.div variants={item}>
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Consultas de hoje</h2>
           <div className="space-y-2">
