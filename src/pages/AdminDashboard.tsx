@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   Shield, CreditCard, Building2, Clock, Ban,
-  CheckCircle, Eye, UserX, Users, ArrowLeft, Loader2,
+  CheckCircle, Eye, UserX, Users, ArrowLeft, Loader2, MessageCircle,
 } from "lucide-react";
 import { getTrialDaysRemaining } from "@/config/plans";
 
