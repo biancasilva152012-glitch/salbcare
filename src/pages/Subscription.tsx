@@ -130,12 +130,26 @@ const Subscription = () => {
                     Plano Atual
                   </Button>
                 ) : (
-                  <Button
-                    onClick={() => navigate(`/checkout?plan=${key}`)}
-                    className="w-full gradient-primary font-semibold"
-                  >
-                    Assinar com PIX
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => navigate(`/checkout?plan=${key}`)}
+                      className="flex-1 gradient-primary font-semibold"
+                    >
+                      Pagar com PIX
+                    </Button>
+                    <Button
+                      onClick={() => handleCheckout(key)}
+                      variant="outline"
+                      className="flex-1 font-semibold"
+                      disabled={loadingPlan === key}
+                    >
+                      {loadingPlan === key ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        "Cartão de Crédito"
+                      )}
+                    </Button>
+                  </div>
                 )}
               </div>
             );
