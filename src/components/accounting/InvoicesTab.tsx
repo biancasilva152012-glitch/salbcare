@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { maskCpfCnpj, maskCep } from "@/utils/masks";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -179,7 +180,7 @@ const InvoicesTab = () => {
               {/* Tomador */}
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tomador do Serviço</p>
               <div className="space-y-1.5"><Label>Nome / Razão Social *</Label><Input value={form.patient_name} onChange={f("patient_name")} className="bg-accent border-border" /></div>
-              <div className="space-y-1.5"><Label>CPF / CNPJ *</Label><Input value={form.cpf_cnpj} onChange={f("cpf_cnpj")} placeholder="000.000.000-00 ou 00.000.000/0001-00" className="bg-accent border-border" /></div>
+              <div className="space-y-1.5"><Label>CPF / CNPJ *</Label><Input value={form.cpf_cnpj} onChange={(e) => setForm(prev => ({ ...prev, cpf_cnpj: maskCpfCnpj(e.target.value) }))} placeholder="000.000.000-00 ou 00.000.000/0001-00" className="bg-accent border-border" /></div>
 
               {/* Endereço */}
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-2">Endereço do Tomador</p>
@@ -190,7 +191,7 @@ const InvoicesTab = () => {
               </div>
               <div className="space-y-1.5"><Label>Bairro *</Label><Input value={form.address_neighborhood} onChange={f("address_neighborhood")} className="bg-accent border-border" /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1.5 col-span-1"><Label>CEP *</Label><Input value={form.address_zip} onChange={f("address_zip")} placeholder="00000-000" className="bg-accent border-border" /></div>
+                <div className="space-y-1.5 col-span-1"><Label>CEP *</Label><Input value={form.address_zip} onChange={(e) => setForm(prev => ({ ...prev, address_zip: maskCep(e.target.value) }))} placeholder="00000-000" className="bg-accent border-border" /></div>
                 <div className="space-y-1.5"><Label>Cidade *</Label><Input value={form.address_city} onChange={f("address_city")} className="bg-accent border-border" /></div>
                 <div className="space-y-1.5">
                   <Label>UF *</Label>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { maskCpf, maskPhone } from "@/utils/masks";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -126,7 +127,7 @@ const CnpjRequestTab = () => {
               <Label>CPF *</Label>
               <Input
                 value={form.cpf}
-                onChange={(e) => setForm({ ...form, cpf: e.target.value })}
+                onChange={(e) => setForm({ ...form, cpf: maskCpf(e.target.value) })}
                 placeholder="000.000.000-00"
                 className="bg-accent border-border"
                 maxLength={14}
@@ -136,7 +137,7 @@ const CnpjRequestTab = () => {
               <Label>WhatsApp *</Label>
               <Input
                 value={form.whatsapp}
-                onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+                onChange={(e) => setForm({ ...form, whatsapp: maskPhone(e.target.value) })}
                 placeholder="(11) 99999-9999"
                 className="bg-accent border-border"
                 maxLength={15}
