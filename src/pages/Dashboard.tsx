@@ -53,6 +53,15 @@ const Dashboard = () => {
     enabled: !!user,
   });
 
+  const { data: isAdmin } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("is_admin_or_contador", { _user_id: user!.id });
+      return !!data;
+    },
+    enabled: !!user,
+  });
+
   const { data: monthlyBalance } = useQuery({
     queryKey: ["monthly-balance", user?.id],
     queryFn: async () => {
