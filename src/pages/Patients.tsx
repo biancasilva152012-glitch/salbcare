@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
 import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon } from "lucide-react";
 import { format, parse } from "date-fns";

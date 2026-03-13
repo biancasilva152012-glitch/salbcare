@@ -137,7 +137,7 @@ const CnpjRequestTab = () => {
               <Label>WhatsApp *</Label>
               <Input
                 value={form.whatsapp}
-                onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+                onChange={(e) => setForm({ ...form, whatsapp: maskPhone(e.target.value) })}
                 placeholder="(11) 99999-9999"
                 className="bg-accent border-border"
                 maxLength={15}

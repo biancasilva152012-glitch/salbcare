@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
 import { Plus, Search, Pencil, Trash2, UserCheck, UserX, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
