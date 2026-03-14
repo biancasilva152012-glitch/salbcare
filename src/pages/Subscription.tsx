@@ -69,20 +69,13 @@ const Subscription = () => {
         {/* Value proposition banner */}
         <div className="glass-card p-4 space-y-3">
           <div className="flex items-center gap-2">
-            <TrendingDown className="h-5 w-5 text-primary shrink-0" />
-            <p className="text-sm font-semibold">Por que a SALBCARE custa menos?</p>
+            <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
+            <p className="text-sm font-semibold">Contadores especializados em saúde</p>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Outros softwares cobram R$ 150–300/mês e você ainda precisa pagar um contador por fora (R$ 200–500/mês). 
-            Na SALBCARE, o <span className="text-foreground font-medium">contador especialista em saúde já está incluso</span> no plano Profissional por apenas R$ 99/mês. 
-            Economia real de até R$ 400/mês.
+            Nos planos Profissional e Clínica, a SALBCARE conecta você a contadores parceiros com experiência no setor de saúde. 
+            Os <span className="text-foreground font-medium">honorários são cobrados diretamente pelo contador</span>, de acordo com os serviços realizados.
           </p>
-          <div className="flex items-center gap-2 pt-1">
-            <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-            <p className="text-[11px] text-muted-foreground">
-              Todas as obrigações fiscais e contábeis são tratadas por profissional habilitado, 100% dentro da lei.
-            </p>
-          </div>
         </div>
 
         {subscription.subscribed && (
