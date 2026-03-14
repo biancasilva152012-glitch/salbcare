@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
-import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon } from "lucide-react";
+import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -254,7 +255,18 @@ const Patients = () => {
         </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
-          {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhum paciente encontrado</p>}
+          {filtered.length === 0 && !search && (
+            <EmptyState
+              icon={Users}
+              title="Nenhum paciente cadastrado"
+              description="Nenhum paciente cadastrado ainda. Você pode cadastrar manualmente ou aguardar o primeiro agendamento online."
+              actionLabel="Cadastrar paciente"
+              onAction={() => { setForm(emptyForm); setOpen(true); }}
+            />
+          )}
+          {filtered.length === 0 && search && (
+            <p className="text-sm text-muted-foreground text-center py-8">Nenhum paciente encontrado</p>
+          )}
           {filtered.map((p) => (
             <button key={p.id} onClick={() => setSelected(p)} className="glass-card flex w-full items-center justify-between p-3 text-left transition-all hover:border-primary/50">
               <div className="flex items-center gap-3">

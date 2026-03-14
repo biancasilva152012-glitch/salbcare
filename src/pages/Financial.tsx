@@ -21,6 +21,7 @@ import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
 import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
 import FeatureGate from "@/components/FeatureGate";
+import EmptyState from "@/components/EmptyState";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
@@ -363,7 +364,18 @@ const Financial = () => {
         </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
-          {filteredTransactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação neste mês</p>}
+          {filteredTransactions.length === 0 && transactions.length === 0 && (
+            <EmptyState
+              icon={DollarSign}
+              title="Nenhum lançamento ainda"
+              description="Seus lançamentos aparecerão aqui. Registre sua primeira receita para começar a ver seu lucro real."
+              actionLabel="Registrar receita"
+              onAction={() => { setForm({ ...emptyForm, type: "income" }); setOpen(true); }}
+            />
+          )}
+          {filteredTransactions.length === 0 && transactions.length > 0 && (
+            <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação neste mês</p>
+          )}
           {filteredTransactions.map((t) => (
             <div key={t.id} className="glass-card flex items-center justify-between p-3">
               <div className="flex items-center gap-3">

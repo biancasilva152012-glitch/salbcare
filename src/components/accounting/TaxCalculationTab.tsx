@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { Calculator, TrendingUp, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
+import TechTermTooltip from "@/components/TechTermTooltip";
 
 const TaxCalculationTab = () => {
   const { user } = useAuth();
@@ -73,10 +74,10 @@ const TaxCalculationTab = () => {
   const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 
   const taxItems = [
-    { label: "Simples Nacional", rate: pct(taxes.simples.rate), monthly: taxes.simples.monthly, annual: taxes.simples.annual, color: "text-blue-400" },
-    { label: "ISS", rate: pct(taxes.iss.rate), monthly: taxes.iss.monthly, annual: taxes.iss.annual, color: "text-purple-400" },
-    { label: "INSS", rate: "11%", monthly: taxes.inss.monthly, annual: taxes.inss.annual, color: "text-orange-400" },
-    { label: "IR", rate: pct(taxes.ir.rate), monthly: taxes.ir.monthly, annual: taxes.ir.annual, color: "text-red-400" },
+    { label: "Simples Nacional", rate: pct(taxes.simples.rate), monthly: taxes.simples.monthly, annual: taxes.simples.annual, color: "text-blue-400", term: "Simples Nacional" },
+    { label: "ISS", rate: pct(taxes.iss.rate), monthly: taxes.iss.monthly, annual: taxes.iss.annual, color: "text-purple-400", term: "ISS" },
+    { label: "INSS", rate: "11%", monthly: taxes.inss.monthly, annual: taxes.inss.annual, color: "text-orange-400", term: "INSS" },
+    { label: "IR", rate: pct(taxes.ir.rate), monthly: taxes.ir.monthly, annual: taxes.ir.annual, color: "text-red-400", term: "IR" },
   ];
 
   return (
@@ -104,7 +105,7 @@ const TaxCalculationTab = () => {
           <div key={tax.label} className="glass-card p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className={`text-sm font-semibold ${tax.color}`}>{tax.label}</span>
+                <span className={`text-sm font-semibold ${tax.color}`}><TechTermTooltip term={tax.term}>{tax.label}</TechTermTooltip></span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{tax.rate}</span>
               </div>
             </div>
