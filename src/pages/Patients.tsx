@@ -274,7 +274,7 @@ const Patients = () => {
           {filtered.length === 0 && search && (
             <p className="text-sm text-muted-foreground text-center py-8">Nenhum paciente encontrado</p>
           )}
-          {filtered.map((p) => (
+          {pagination.paginatedItems.map((p) => (
             <button key={p.id} onClick={() => setSelected(p)} className="glass-card flex w-full items-center justify-between p-3 text-left transition-all hover:border-primary/50">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
@@ -288,6 +288,15 @@ const Patients = () => {
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
           ))}
+          <ListPagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalItems}
+            hasNext={pagination.hasNext}
+            hasPrev={pagination.hasPrev}
+            onNext={pagination.nextPage}
+            onPrev={pagination.prevPage}
+          />
         </motion.div>
       </div>
     </PageContainer>
