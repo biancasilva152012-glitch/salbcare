@@ -149,6 +149,9 @@ const Agenda = () => {
     return acc;
   }, {});
 
+  const allDateKeys = Object.keys(grouped).sort();
+  const pagination = usePagination(allDateKeys);
+  const paginatedGroupKeys = pagination.paginatedItems;
   const renderAppointmentForm = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
