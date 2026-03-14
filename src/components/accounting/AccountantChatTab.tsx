@@ -42,7 +42,7 @@ const AccountantChatTab = () => {
 
   const sendMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("chat_messages").insert({
+      const { error } = await (supabase as any).from("chat_messages").insert({
         user_id: user!.id,
         content: message,
         sender: "user",
