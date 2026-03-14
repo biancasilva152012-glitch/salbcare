@@ -103,7 +103,7 @@ const Profile = () => {
       setCorrectText("");
       setCorrectOpen(false);
     } catch {
-      toast.error("Erro ao enviar solicitação.");
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setSendingCorrection(false);
     }
