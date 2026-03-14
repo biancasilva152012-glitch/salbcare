@@ -17,9 +17,32 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const specialties = [
+  // Medicina
   "Clínico Geral", "Cardiologia", "Dermatologia", "Endocrinologia",
   "Ginecologia", "Neurologia", "Oftalmologia", "Ortopedia",
-  "Pediatria", "Psicologia", "Psiquiatria", "Nutrição", "Fisioterapia", "Outro",
+  "Pediatria", "Psiquiatria",
+  // Odontologia
+  "Odontologia Geral", "Ortodontia", "Implantodontia", "Endodontia",
+  "Periodontia", "Odontopediatria", "Cirurgia Bucomaxilofacial",
+  // Psicologia
+  "Psicologia Clínica", "Neuropsicologia", "Psicologia Organizacional",
+  // Fisioterapia
+  "Fisioterapia Geral", "Fisioterapia Ortopédica", "Fisioterapia Respiratória",
+  "Fisioterapia Neurológica", "Fisioterapia Esportiva", "Pilates Clínico",
+  // Nutrição
+  "Nutrição Clínica", "Nutrição Esportiva", "Nutrição Materno-Infantil",
+  // Enfermagem
+  "Enfermagem Geral", "Enfermagem Obstétrica", "Enfermagem do Trabalho",
+  // Fonoaudiologia
+  "Fonoaudiologia Clínica", "Audiologia", "Motricidade Orofacial",
+  // Terapia Ocupacional
+  "Terapia Ocupacional",
+  // Farmácia
+  "Farmácia Clínica",
+  // Biomedicina
+  "Biomedicina",
+  // Outros
+  "Outro",
 ];
 
 const emptyForm = { name: "", email: "", phone: "", specialty: "", crm: "", status: "active" };
@@ -135,7 +158,7 @@ const ProfessionalsContent = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
         <Label>Nome completo</Label>
-        <Input placeholder="Dr. João Silva" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" />
+        <Input placeholder="Nome do profissional" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
