@@ -4,6 +4,7 @@ import { format } from "date-fns";
 interface PrescriptionData {
   doctorName: string;
   doctorType: string;
+  doctorCrm: string;
   patientName: string;
   prescription: string;
   certificate: string;
