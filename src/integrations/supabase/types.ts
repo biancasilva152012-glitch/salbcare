@@ -392,10 +392,12 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          initial_anamnesis: string | null
           medical_history: string | null
           name: string
           notes: string | null
           phone: string | null
+          procedure_performed: string | null
           updated_at: string
           user_id: string
         }
@@ -404,10 +406,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          initial_anamnesis?: string | null
           medical_history?: string | null
           name: string
           notes?: string | null
           phone?: string | null
+          procedure_performed?: string | null
           updated_at?: string
           user_id: string
         }
@@ -416,10 +420,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          initial_anamnesis?: string | null
           medical_history?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
+          procedure_performed?: string | null
           updated_at?: string
           user_id?: string
         }
