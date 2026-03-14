@@ -168,6 +168,10 @@ const Patients = () => {
     </div>
   );
 
+  if (isLoading) {
+    return <PageContainer><PageSkeleton variant="list" /></PageContainer>;
+  }
+
   return (
     <PageContainer>
       <div className="space-y-5">
