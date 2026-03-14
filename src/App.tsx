@@ -34,6 +34,7 @@ const Subscription = lazy(() => import("./pages/Subscription"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const PatientBooking = lazy(() => import("./pages/PatientBooking"));
+const PatientRoom = lazy(() => import("./pages/PatientRoom"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
