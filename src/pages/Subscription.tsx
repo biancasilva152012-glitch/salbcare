@@ -62,7 +62,7 @@ const Subscription = () => {
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">Planos SALBCARE</h1>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-            O menor preço do mercado com assessoria contábil especializada em saúde inclusa. Nenhum concorrente oferece isso.
+            Gestão completa para profissionais de saúde. A SALBCARE conecta você a contadores especializados em saúde.
           </p>
         </div>
 
