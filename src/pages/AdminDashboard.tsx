@@ -111,7 +111,7 @@ const AdminDashboard = () => {
       .update({ payment_status: "active" })
       .eq("user_id", profile.user_id);
     if (error) {
-      toast.error(error.message);
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } else {
       toast.success(`Assinatura de ${profile.name} aprovada!`);
       setProfiles((prev) =>
