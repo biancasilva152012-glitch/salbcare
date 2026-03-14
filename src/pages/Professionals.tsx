@@ -131,7 +131,7 @@ const ProfessionalsContent = () => {
       queryClient.invalidateQueries({ queryKey: ["professionals"] });
       toast.success("Status atualizado!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const openEdit = (p: typeof professionals[0]) => {

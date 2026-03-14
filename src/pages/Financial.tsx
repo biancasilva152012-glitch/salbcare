@@ -103,7 +103,7 @@ const Financial = () => {
       queryClient.invalidateQueries({ queryKey: ["financial"] });
       toast.success("Transação excluída!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const openEdit = (t: typeof transactions[0]) => {

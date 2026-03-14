@@ -41,7 +41,7 @@ const PatientDocuments = ({ patientId }: PatientDocumentsProps) => {
       queryClient.invalidateQueries({ queryKey: ["patient-documents", patientId] });
       toast.success("Documento excluído!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

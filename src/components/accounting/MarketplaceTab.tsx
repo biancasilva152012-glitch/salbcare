@@ -46,7 +46,7 @@ const MarketplaceTab = () => {
       queryClient.invalidateQueries({ queryKey: ["partner_hires"] });
       toast.success("Parceiro contratado com sucesso!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   return (

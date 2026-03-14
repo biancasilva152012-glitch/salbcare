@@ -111,7 +111,7 @@ const Agenda = () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       toast.success("Consulta excluída!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const openEdit = (apt: typeof appointments[0]) => {
