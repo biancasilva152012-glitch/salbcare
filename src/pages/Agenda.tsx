@@ -326,7 +326,8 @@ const Agenda = () => {
           {Object.keys(grouped).length === 0 && search && (
             <p className="text-sm text-muted-foreground text-center py-8">Nenhuma consulta encontrada</p>
           )}
-          {Object.entries(grouped).sort().map(([date, apts]) => (
+          {paginatedGroupKeys.map((date) => {
+            const apts = grouped[date];
             <div key={date}>
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {new Date(date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
