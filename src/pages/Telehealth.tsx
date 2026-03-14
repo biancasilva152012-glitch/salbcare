@@ -25,7 +25,7 @@ const Telehealth = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, professional_type, phone")
+        .select("name, professional_type, phone, crm")
         .eq("user_id", user!.id)
         .single();
       return data;
