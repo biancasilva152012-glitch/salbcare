@@ -4,6 +4,7 @@ import { format } from "date-fns";
 interface PrescriptionData {
   doctorName: string;
   doctorType: string;
+  doctorCrm: string;
   patientName: string;
   prescription: string;
   certificate: string;
@@ -34,7 +35,7 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text(`Dr(a). ${data.doctorName}`, 14, 28);
-  doc.text(data.doctorType, 14, 34);
+  doc.text(`${data.doctorType}${data.doctorCrm ? ` — ${data.doctorCrm}` : ""}`, 14, 34);
 
   // Date on right
   doc.setTextColor(160, 170, 180);
@@ -138,7 +139,7 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100);
   doc.setFontSize(9);
-  doc.text(data.doctorType, pageWidth / 2, y, { align: "center" });
+  doc.text(`${data.doctorType}${data.doctorCrm ? ` — ${data.doctorCrm}` : ""}`, pageWidth / 2, y, { align: "center" });
 
   // Footer
   const pageCount = doc.getNumberOfPages();

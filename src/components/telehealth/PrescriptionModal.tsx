@@ -17,6 +17,7 @@ interface PrescriptionModalProps {
   teleconsultationId: string;
   doctorName: string;
   doctorType: string;
+  doctorCrm: string;
   userId: string;
 }
 
@@ -31,6 +32,7 @@ const PrescriptionModal = ({
   teleconsultationId,
   doctorName,
   doctorType,
+  doctorCrm,
   userId,
 }: PrescriptionModalProps) => {
   const [step, setStep] = useState<Step>("form");
@@ -51,6 +53,7 @@ const PrescriptionModal = ({
       const doc = generatePrescriptionPdf({
         doctorName,
         doctorType,
+        doctorCrm,
         patientName,
         prescription,
         certificate,

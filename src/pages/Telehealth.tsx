@@ -25,7 +25,7 @@ const Telehealth = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, professional_type")
+        .select("name, professional_type, phone, crm")
         .eq("user_id", user!.id)
         .single();
       return data;
@@ -198,6 +198,7 @@ const Telehealth = () => {
           teleconsultationId={prescriptionTc.id}
           doctorName={profile?.name || ""}
           doctorType={professionalTypeLabel(profile?.professional_type || "medico")}
+          doctorCrm={profile?.crm || ""}
           userId={user?.id || ""}
         />
       )}

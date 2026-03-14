@@ -471,6 +471,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          crm: string | null
           email: string
           id: string
           name: string
@@ -485,6 +486,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          crm?: string | null
           email: string
           id?: string
           name: string
@@ -499,6 +501,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          crm?: string | null
           email?: string
           id?: string
           name?: string
