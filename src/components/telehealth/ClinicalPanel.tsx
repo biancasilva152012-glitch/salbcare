@@ -328,6 +328,88 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, pro
           </div>
         );
       })}
+
+      {/* Certificate Digital Alert - first save */}
+      <AlertDialog open={showCertAlert} onOpenChange={setShowCertAlert}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-2 mb-1">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              <AlertDialogTitle className="text-base">Certificado Digital ICP-Brasil</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-sm leading-relaxed">
+              Para que seu prontuário eletrônico tenha validade legal plena conforme Resolução CFM 1.821/2007, é necessário assinar com certificado digital ICP-Brasil (A1 ou A3).
+              <br /><br />
+              <span className="font-medium text-foreground">Você já possui certificado digital?</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button onClick={handleCertAlertContinue} className="w-full gradient-primary gap-1">
+              <ShieldCheck className="h-4 w-4" /> Sim, tenho certificado
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full gap-1"
+              onClick={() => {
+                setShowCertAlert(false);
+                setShowCertInfoModal(true);
+              }}
+            >
+              Não, quero saber mais
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Certificate Info Modal */}
+      <Dialog open={showCertInfoModal} onOpenChange={setShowCertInfoModal}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              O que é o Certificado Digital ICP-Brasil?
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed pt-2 space-y-3">
+              <p>
+                O certificado digital ICP-Brasil é uma identidade eletrônica que garante autenticidade, integridade e validade jurídica aos documentos assinados digitalmente.
+              </p>
+              <p className="font-medium text-foreground">Tipos de certificado:</p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>A1:</strong> Armazenado no computador, válido por 1 ano. Mais prático para uso diário.</li>
+                <li><strong>A3:</strong> Armazenado em token USB ou cartão, válido por até 3 anos. Mais seguro.</li>
+              </ul>
+              <p className="font-medium text-foreground">Como obter:</p>
+              <ol className="list-decimal pl-4 space-y-1">
+                <li>Acesse o site do ITI (Instituto Nacional de Tecnologia da Informação)</li>
+                <li>Escolha uma Autoridade Certificadora credenciada</li>
+                <li>Faça o pedido online e agende a validação presencial</li>
+                <li>Compareça ao ponto de atendimento com documentos pessoais e do conselho profissional</li>
+              </ol>
+              <p className="text-xs text-muted-foreground">
+                Conforme Resolução CFM nº 1.821/2007 e Lei nº 14.063/2020, o prontuário eletrônico deve ser assinado com certificado digital ICP-Brasil para ter validade legal plena.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button asChild className="w-full gap-1 gradient-primary">
+              <a href="https://www.gov.br/iti/pt-br" target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4" /> Acessar site do ITI (iti.gov.br)
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setShowCertInfoModal(false);
+                setIsFirstSave(false);
+                doSave();
+              }}
+            >
+              Entendi, salvar prontuário mesmo assim
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
