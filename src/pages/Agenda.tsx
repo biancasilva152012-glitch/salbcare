@@ -381,7 +381,16 @@ const Agenda = () => {
                 })}
               </div>
             </div>
-          ))}
+          )})}
+          <ListPagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalItems}
+            hasNext={pagination.hasNext}
+            hasPrev={pagination.hasPrev}
+            onNext={pagination.nextPage}
+            onPrev={pagination.prevPage}
+          />
         </motion.div>
       </div>
     </PageContainer>
