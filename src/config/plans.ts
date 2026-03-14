@@ -1,7 +1,7 @@
 export const PLANS = {
   basic: {
     name: "Básico",
-    price: 39,
+    price: 49,
     price_id: "price_1TAIKjBUEEEAHx2hMtUIiKI9",
     product_id: "prod_U8ZTOS9bhmXXsd",
     features: [
