@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield, MessageCircle } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
+import PageSkeleton from "@/components/PageSkeleton";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,13 +36,14 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
   });
 
   const today = new Date().toISOString().split("T")[0];
@@ -62,6 +64,7 @@ const Dashboard = () => {
       return !!data;
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: monthlyBalance } = useQuery({
@@ -76,6 +79,10 @@ const Dashboard = () => {
     },
     enabled: !!user,
   });
+
+  if (profileLoading) {
+    return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
+  }
 
   return (
     <PageContainer>

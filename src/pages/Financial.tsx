@@ -1,4 +1,7 @@
 import { useState, useMemo } from "react";
+import PageSkeleton from "@/components/PageSkeleton";
+import ListPagination from "@/components/ListPagination";
+import { usePagination } from "@/hooks/usePagination";
 import { motion } from "framer-motion";
 import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter, FileDown, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,7 +55,7 @@ const Financial = () => {
   const [filterMonth, setFilterMonth] = useState(new Date());
   const [filterCategory, setFilterCategory] = useState<string>("all");
 
-  const { data: transactions = [] } = useQuery({
+  const { data: transactions = [], isLoading } = useQuery({
     queryKey: ["financial", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("financial_transactions").select("*").eq("user_id", user!.id).order("date", { ascending: false });
@@ -115,6 +118,7 @@ const Financial = () => {
   const filterKey = format(filterMonth, "yyyy-MM");
   const filteredByMonth = transactions.filter((t) => t.date.substring(0, 7) === filterKey);
   const filteredTransactions = filterCategory === "all" ? filteredByMonth : filteredByMonth.filter((t) => t.category === filterCategory);
+  const txPagination = usePagination(filteredTransactions);
 
   const totalIncome = filteredTransactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
   const totalExpense = filteredTransactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
@@ -193,6 +197,10 @@ const Financial = () => {
       </Button>
     </div>
   );
+
+  if (isLoading) {
+    return <PageContainer><PageSkeleton variant="list" /></PageContainer>;
+  }
 
   return (
     <PageContainer>
@@ -376,7 +384,7 @@ const Financial = () => {
           {filteredTransactions.length === 0 && transactions.length > 0 && (
             <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação neste mês</p>
           )}
-          {filteredTransactions.map((t) => (
+          {txPagination.paginatedItems.map((t) => (
             <div key={t.id} className="glass-card flex items-center justify-between p-3">
               <div className="flex items-center gap-3">
                 <div className={`flex h-9 w-9 items-center justify-center rounded-full ${t.type === "income" ? "bg-success/10" : "bg-destructive/10"}`}>
@@ -413,6 +421,15 @@ const Financial = () => {
               </div>
             </div>
           ))}
+          <ListPagination
+            page={txPagination.page}
+            totalPages={txPagination.totalPages}
+            totalItems={txPagination.totalItems}
+            hasNext={txPagination.hasNext}
+            hasPrev={txPagination.hasPrev}
+            onNext={txPagination.nextPage}
+            onPrev={txPagination.prevPage}
+          />
         </motion.div>
       </div>
     </PageContainer>

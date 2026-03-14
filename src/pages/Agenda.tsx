@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
+import PageSkeleton from "@/components/PageSkeleton";
+import ListPagination from "@/components/ListPagination";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -22,6 +24,7 @@ import { useFeatureGate } from "@/hooks/useFeatureGate";
 import PatientSearchInput from "@/components/agenda/PatientSearchInput";
 import EmptyState from "@/components/EmptyState";
 import { CalendarX, Copy, Link } from "lucide-react";
+import { usePagination } from "@/hooks/usePagination";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 
@@ -47,7 +50,7 @@ const Agenda = () => {
     enabled: !!user && canUseTeam,
   });
 
-  const { data: appointments = [] } = useQuery({
+  const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["appointments", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("appointments").select("*").eq("user_id", user!.id).neq("status", "cancelled").order("date").order("time");
@@ -146,6 +149,9 @@ const Agenda = () => {
     return acc;
   }, {});
 
+  const allDateKeys = Object.keys(grouped).sort();
+  const pagination = usePagination(allDateKeys);
+  const paginatedGroupKeys = pagination.paginatedItems;
   const renderAppointmentForm = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
@@ -234,6 +240,10 @@ const Agenda = () => {
     </div>
   );
 
+  if (isLoading) {
+    return <PageContainer><PageSkeleton variant="list" /></PageContainer>;
+  }
+
   return (
     <PageContainer>
       <div className="space-y-5">
@@ -316,61 +326,73 @@ const Agenda = () => {
           {Object.keys(grouped).length === 0 && search && (
             <p className="text-sm text-muted-foreground text-center py-8">Nenhuma consulta encontrada</p>
           )}
-          {Object.entries(grouped).sort().map(([date, apts]) => (
-            <div key={date}>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {new Date(date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
-              </h3>
-              <div className="space-y-2">
-                {apts.sort((a, b) => a.time.localeCompare(b.time)).map((apt) => {
-                  const profName = getProfessionalName(apt.professional_id);
-                  return (
-                    <div key={apt.id} className="glass-card p-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
-                            {apt.patient_name.split(" ").map((n: string) => n[0]).join("")}
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">{apt.patient_name}</p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3" /> {apt.time.substring(0, 5)}
-                              {apt.appointment_type === "presencial" ? <MapPin className="h-3 w-3 ml-1" /> : <Video className="h-3 w-3 ml-1" />}
-                              {apt.appointment_type === "presencial" ? "Presencial" : "Telehealth"}
+          {paginatedGroupKeys.map((date) => {
+            const apts = grouped[date];
+            return (
+              <div key={date}>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {new Date(date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
+                </h3>
+                <div className="space-y-2">
+                  {apts.sort((a, b) => a.time.localeCompare(b.time)).map((apt) => {
+                    const profName = getProfessionalName(apt.professional_id);
+                    return (
+                      <div key={apt.id} className="glass-card p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
+                              {apt.patient_name.split(" ").map((n: string) => n[0]).join("")}
                             </div>
-                            {profName && (
-                              <div className="flex items-center gap-1 text-[10px] text-primary mt-0.5">
-                                <UserCog className="h-2.5 w-2.5" />
-                                {profName}
+                            <div>
+                              <p className="text-sm font-medium">{apt.patient_name}</p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" /> {apt.time.substring(0, 5)}
+                                {apt.appointment_type === "presencial" ? <MapPin className="h-3 w-3 ml-1" /> : <Video className="h-3 w-3 ml-1" />}
+                                {apt.appointment_type === "presencial" ? "Presencial" : "Telehealth"}
                               </div>
-                            )}
+                              {profName && (
+                                <div className="flex items-center gap-1 text-[10px] text-primary mt-0.5">
+                                  <UserCog className="h-2.5 w-2.5" />
+                                  {profName}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-card border-border">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Excluir consulta?</AlertDialogTitle>
-                                <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="bg-card border-border">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Excluir consulta?</AlertDialogTitle>
+                                  <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
+          <ListPagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalItems}
+            hasNext={pagination.hasNext}
+            hasPrev={pagination.hasPrev}
+            onNext={pagination.nextPage}
+            onPrev={pagination.prevPage}
+          />
         </motion.div>
       </div>
     </PageContainer>
