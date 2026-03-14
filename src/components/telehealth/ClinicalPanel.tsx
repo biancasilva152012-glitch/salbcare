@@ -83,6 +83,7 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, pro
   const [data, setData] = useState<ClinicalData>(initialData);
   const [saving, setSaving] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<Section>>(new Set(["anamnesis"]));
+  const [saved, setSaved] = useState(false);
   const [showCertAlert, setShowCertAlert] = useState(false);
   const [showCertInfoModal, setShowCertInfoModal] = useState(false);
   const [isFirstSave, setIsFirstSave] = useState(true);
