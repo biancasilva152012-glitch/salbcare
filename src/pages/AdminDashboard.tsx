@@ -220,7 +220,7 @@ const AdminDashboard = () => {
           </div>
           <div className="glass-card p-3 text-center">
             <p className="text-2xl font-bold text-primary">{trialUsers.length}</p>
-            <p className="text-[10px] text-muted-foreground">Em Trial</p>
+            <p className="text-[10px] text-muted-foreground">Em Teste</p>
           </div>
           <div className="glass-card p-3 text-center">
             <p className="text-2xl font-bold text-primary">{profiles.length}</p>
