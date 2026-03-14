@@ -114,7 +114,12 @@ const Telehealth = () => {
   return (
     <PageContainer>
       <div className="space-y-5">
-        <h1 className="text-2xl font-bold">Telehealth</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Telehealth</h1>
+          <Button size="sm" variant="outline" onClick={() => setShareOpen(true)} className="gap-1 text-xs">
+            <Link2 className="h-3.5 w-3.5" /> Compartilhar Link
+          </Button>
+        </div>
 
         <div className="flex gap-2">
           {(["upcoming", "completed"] as const).map((t) => (
