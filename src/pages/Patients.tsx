@@ -38,7 +38,7 @@ const Patients = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
 
-  const { data: patients = [] } = useQuery({
+  const { data: patients = [], isLoading } = useQuery({
     queryKey: ["patients", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("patients").select("*").eq("user_id", user!.id).order("name");
