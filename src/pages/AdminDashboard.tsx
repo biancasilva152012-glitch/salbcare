@@ -128,7 +128,7 @@ const AdminDashboard = () => {
       .update({ payment_status: "suspended" })
       .eq("user_id", profile.user_id);
     if (error) {
-      toast.error(error.message);
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } else {
       toast.success(`Acesso de ${profile.name} suspenso.`);
       setProfiles((prev) =>

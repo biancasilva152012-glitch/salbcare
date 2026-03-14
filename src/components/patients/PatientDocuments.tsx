@@ -90,7 +90,7 @@ const PatientDocuments = ({ patientId }: PatientDocumentsProps) => {
       .from("patient-documents")
       .download(filePath);
     if (error) {
-      toast.error("Erro ao baixar documento");
+      toast.error("Não conseguimos baixar o arquivo. Tente de novo.");
       return;
     }
     const url = URL.createObjectURL(data);
