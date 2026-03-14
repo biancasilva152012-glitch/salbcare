@@ -237,6 +237,9 @@ const Patients = () => {
               </div>
             )}
 
+            {/* Medical Records History */}
+            <PatientMedicalRecords patientId={selected.id} patientName={selected.name} />
+
             {/* Documents Section */}
             <PatientDocuments patientId={selected.id} />
           </motion.div>
