@@ -336,6 +336,11 @@ const Agenda = () => {
                 <div className="space-y-2">
                   {apts.sort((a, b) => a.time.localeCompare(b.time)).map((apt) => {
                     const profName = getProfessionalName(apt.professional_id);
+                    const isTelehealth = apt.appointment_type === "telehealth";
+                    const aptDateTime = new Date(`${apt.date}T${apt.time}`);
+                    const minutesUntil = (aptDateTime.getTime() - Date.now()) / 60000;
+                    const isStartingSoon = isTelehealth && minutesUntil > 0 && minutesUntil <= 30;
+                    const isNow = isTelehealth && minutesUntil <= 0 && minutesUntil > -60;
                     return (
                       <div key={apt.id} className="glass-card p-3">
                         <div className="flex items-center justify-between">
@@ -344,7 +349,15 @@ const Agenda = () => {
                               {apt.patient_name.split(" ").map((n: string) => n[0]).join("")}
                             </div>
                             <div>
-                              <p className="text-sm font-medium">{apt.patient_name}</p>
+                              <div className="flex items-center gap-1.5">
+                                <p className="text-sm font-medium">{apt.patient_name}</p>
+                                {isTelehealth && <span title="Teleconsulta">🎥</span>}
+                                {isStartingSoon && (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400 animate-pulse">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Em breve
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Clock className="h-3 w-3" /> {apt.time.substring(0, 5)}
                                 {apt.appointment_type === "presencial" ? <MapPin className="h-3 w-3 ml-1" /> : <Video className="h-3 w-3 ml-1" />}
@@ -359,6 +372,11 @@ const Agenda = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
+                            {isNow && (
+                              <a href="/telehealth" className="rounded-full bg-green-600 px-3 py-1.5 text-xs font-bold text-white animate-pulse hover:bg-green-700 transition-colors">
+                                Entrar agora
+                              </a>
+                            )}
                             <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>

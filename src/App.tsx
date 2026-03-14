@@ -34,6 +34,7 @@ const Subscription = lazy(() => import("./pages/Subscription"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const PatientBooking = lazy(() => import("./pages/PatientBooking"));
+const PatientRoom = lazy(() => import("./pages/PatientRoom"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
@@ -84,6 +85,7 @@ const App = () => (
               <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/booking" element={<PatientBooking />} />
+              <Route path="/sala" element={<PatientRoom />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/maintenance" element={<Maintenance />} />
