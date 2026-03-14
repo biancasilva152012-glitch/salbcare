@@ -31,7 +31,7 @@ const PrescriptionModal = ({
   patientId,
   teleconsultationId,
   doctorName,
-  doctorType,
+  professionalType,
   doctorCrm,
   userId,
 }: PrescriptionModalProps) => {
