@@ -381,7 +381,7 @@ const Agenda = () => {
                 })}
               </div>
             </div>
-          )})}
+          })}}
           <ListPagination
             page={pagination.page}
             totalPages={pagination.totalPages}
