@@ -74,7 +74,7 @@ const Financial = () => {
       setOpen(false);
       toast.success("Transação adicionada!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const updateMutation = useMutation({
