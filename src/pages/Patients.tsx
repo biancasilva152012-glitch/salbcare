@@ -217,6 +217,18 @@ const Patients = () => {
               <div><span className="text-muted-foreground">Nascimento:</span> {selected.birth_date ? new Date(selected.birth_date + "T12:00:00").toLocaleDateString("pt-BR") : "—"}</div>
             </div>
             {selected.notes && <div className="text-sm"><span className="text-muted-foreground">Notas:</span> {selected.notes}</div>}
+            {(selected as any).initial_anamnesis && (
+              <div className="text-sm rounded-lg bg-accent p-3">
+                <span className="text-xs font-semibold text-muted-foreground uppercase">Anamnese Inicial</span>
+                <p className="mt-1">{(selected as any).initial_anamnesis}</p>
+              </div>
+            )}
+            {(selected as any).procedure_performed && (
+              <div className="text-sm rounded-lg bg-accent p-3">
+                <span className="text-xs font-semibold text-muted-foreground uppercase">Procedimento Realizado</span>
+                <p className="mt-1">{(selected as any).procedure_performed}</p>
+              </div>
+            )}
             {selected.medical_history && (
               <div className="text-sm rounded-lg bg-accent p-3">
                 <span className="text-xs font-semibold text-muted-foreground uppercase">Histórico Médico</span>
