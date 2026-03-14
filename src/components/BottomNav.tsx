@@ -11,7 +11,7 @@ const navItems = [
 
 const BottomNav = () => {
   const location = useLocation();
-  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy"];
+  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona"];
   if (hideOn.includes(location.pathname)) return null;
 
   return (
