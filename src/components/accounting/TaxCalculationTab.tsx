@@ -74,10 +74,10 @@ const TaxCalculationTab = () => {
   const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 
   const taxItems = [
-    { label: "Simples Nacional", rate: pct(taxes.simples.rate), monthly: taxes.simples.monthly, annual: taxes.simples.annual, color: "text-blue-400" },
-    { label: "ISS", rate: pct(taxes.iss.rate), monthly: taxes.iss.monthly, annual: taxes.iss.annual, color: "text-purple-400" },
-    { label: "INSS", rate: "11%", monthly: taxes.inss.monthly, annual: taxes.inss.annual, color: "text-orange-400" },
-    { label: "IR", rate: pct(taxes.ir.rate), monthly: taxes.ir.monthly, annual: taxes.ir.annual, color: "text-red-400" },
+    { label: "Simples Nacional", rate: pct(taxes.simples.rate), monthly: taxes.simples.monthly, annual: taxes.simples.annual, color: "text-blue-400", term: "Simples Nacional" },
+    { label: "ISS", rate: pct(taxes.iss.rate), monthly: taxes.iss.monthly, annual: taxes.iss.annual, color: "text-purple-400", term: "ISS" },
+    { label: "INSS", rate: "11%", monthly: taxes.inss.monthly, annual: taxes.inss.annual, color: "text-orange-400", term: "INSS" },
+    { label: "IR", rate: pct(taxes.ir.rate), monthly: taxes.ir.monthly, annual: taxes.ir.annual, color: "text-red-400", term: "IR" },
   ];
 
   return (
