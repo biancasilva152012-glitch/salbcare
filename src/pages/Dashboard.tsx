@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield } from "lucide-react";
+import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield, MessageCircle } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,15 +13,16 @@ interface QuickAction {
   to: string;
   color: string;
   requiredFeature?: Feature;
+  highlight?: boolean;
 }
 
 const quickActions: QuickAction[] = [
+  { icon: Calculator, label: "Contabilidade", to: "/accounting", color: "from-primary to-secondary", highlight: true },
+  { icon: DollarSign, label: "Financeiro", to: "/financial", color: "from-primary to-secondary" },
   { icon: Calendar, label: "Agenda", to: "/agenda", color: "from-primary to-secondary" },
   { icon: Users, label: "Pacientes", to: "/patients", color: "from-primary to-secondary" },
   { icon: Video, label: "Telehealth", to: "/telehealth", color: "from-primary to-secondary" },
-  { icon: DollarSign, label: "Financeiro", to: "/financial", color: "from-primary to-secondary" },
-  { icon: Calculator, label: "Contabilidade", to: "/accounting", requiredFeature: "accounting_marketplace", color: "from-primary to-secondary" },
-  { icon: Scale, label: "Jurídico", to: "/legal", requiredFeature: "legal_marketplace", color: "from-primary to-secondary" },
+  { icon: Scale, label: "Jurídico", to: "/legal", color: "from-primary to-secondary" },
   { icon: UserCog, label: "Equipe", to: "/professionals", requiredFeature: "multi_professionals", color: "from-primary to-secondary" },
 ];
 
@@ -104,16 +105,32 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
+        {/* CTA Assessoria contábil */}
+        <motion.div variants={item}>
+          <button
+            onClick={() => navigate("/accounting?tab=chat")}
+            className="glass-card flex w-full items-center gap-3 p-4 transition-all active:scale-[0.98] hover:border-primary/50 ring-1 ring-primary/20"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary shrink-0">
+              <MessageCircle className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div className="text-left flex-1">
+              <p className="text-sm font-semibold">Fale com seu Contador</p>
+              <p className="text-xs text-muted-foreground">NF, CNPJ, IR e dúvidas contábeis — resolvemos tudo pra você</p>
+            </div>
+          </button>
+        </motion.div>
+
         <motion.div variants={item}>
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Acesso rápido</h2>
           <div className="grid grid-cols-3 gap-3">
-            {quickActions.map(({ icon: Icon, label, to, requiredFeature }) => {
+            {quickActions.map(({ icon: Icon, label, to, requiredFeature, highlight }) => {
               const locked = requiredFeature && !hasAccess(requiredFeature);
               return (
                 <button
                   key={to}
                   onClick={() => navigate(locked ? "/subscription" : to)}
-                  className={`glass-card relative flex flex-col items-center gap-2 p-4 transition-all active:scale-95 ${locked ? "opacity-70 hover:border-primary/30" : "hover:border-primary/50"}`}
+                  className={`glass-card relative flex flex-col items-center gap-2 p-4 transition-all active:scale-95 ${locked ? "opacity-70 hover:border-primary/30" : "hover:border-primary/50"} ${highlight ? "ring-1 ring-primary/30" : ""}`}
                 >
                   <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${locked ? "bg-muted" : "gradient-primary"}`}>
                     {locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Icon className="h-5 w-5 text-primary-foreground" />}
