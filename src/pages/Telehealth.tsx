@@ -147,9 +147,13 @@ const Telehealth = () => {
     );
   }
 
-  const now = new Date().toISOString();
+  const now = new Date();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+  const nowIso = now.toISOString();
   const filtered = teleconsultations.filter((t: any) =>
-    tab === "upcoming" ? t.status === "scheduled" && t.date >= now : t.status === "completed"
+    tab === "upcoming"
+      ? t.status === "scheduled" && t.date >= oneHourAgo
+      : t.status === "completed"
   );
 
   return (
