@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
+import ShareBookingLink from "@/components/telehealth/ShareBookingLink";
 
 const Telehealth = () => {
   const { user } = useAuth();
