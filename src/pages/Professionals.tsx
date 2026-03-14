@@ -171,7 +171,7 @@ const ProfessionalsContent = () => {
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label>Especialidade</Label>
+        <Label>Área de atuação</Label>
         <Select value={form.specialty} onValueChange={(v) => setForm({ ...form, specialty: v })}>
           <SelectTrigger className="bg-accent border-border"><SelectValue placeholder="Selecione..." /></SelectTrigger>
           <SelectContent>
