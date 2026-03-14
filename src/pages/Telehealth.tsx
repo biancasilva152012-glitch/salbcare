@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText } from "lucide-react";
+import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
