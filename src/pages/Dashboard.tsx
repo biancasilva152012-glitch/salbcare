@@ -36,13 +36,14 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
   });
 
   const today = new Date().toISOString().split("T")[0];
