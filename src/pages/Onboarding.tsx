@@ -65,7 +65,7 @@ const Onboarding = () => {
         >
           <div className="glass-card p-3 text-center space-y-1.5">
             <Calculator className="h-5 w-5 text-primary mx-auto" />
-            <p className="text-[10px] font-medium leading-tight">Contador incluso no plano</p>
+            <p className="text-[10px] font-medium leading-tight">Acesso a contador parceiro</p>
           </div>
           <div className="glass-card p-3 text-center space-y-1.5">
             <FileText className="h-5 w-5 text-primary mx-auto" />
