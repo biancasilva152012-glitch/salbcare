@@ -292,7 +292,29 @@ const Agenda = () => {
         </Dialog>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-          {Object.keys(grouped).length === 0 && (
+          {Object.keys(grouped).length === 0 && !search && (
+            <EmptyState
+              icon={CalendarX}
+              title="Nenhuma consulta agendada"
+              description="Você ainda não tem consultas agendadas. Compartilhe seu link de agendamento com seus pacientes:"
+              extra={
+                <div className="flex items-center gap-2 bg-accent rounded-lg px-3 py-2 w-full max-w-xs">
+                  <Link className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-xs text-muted-foreground truncate flex-1">salbcare.lovable.app/booking/{user?.id?.slice(0, 8)}</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`https://salbcare.lovable.app/booking/${user?.id?.slice(0, 8)}`);
+                      toast.success("Link copiado!");
+                    }}
+                    className="text-primary hover:text-primary/80"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </button>
+                </div>
+              }
+            />
+          )}
+          {Object.keys(grouped).length === 0 && search && (
             <p className="text-sm text-muted-foreground text-center py-8">Nenhuma consulta encontrada</p>
           )}
           {Object.entries(grouped).sort().map(([date, apts]) => (

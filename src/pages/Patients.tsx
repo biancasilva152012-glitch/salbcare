@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
-import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon } from "lucide-react";
+import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
