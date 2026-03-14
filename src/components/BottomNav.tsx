@@ -2,11 +2,11 @@ import { NavLink, useLocation, Link } from "react-router-dom";
 import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
 
 const navItems = [
-  { to: "/dashboard", icon: Home, label: "Home" },
+  { to: "/dashboard", icon: Home, label: "Painel" },
   { to: "/agenda", icon: Calendar, label: "Agenda" },
   { to: "/patients", icon: Users, label: "Pacientes" },
   { to: "/financial", icon: DollarSign, label: "Financeiro" },
-  { to: "/profile", icon: User, label: "Perfil" },
+  { to: "/profile", icon: User, label: "Meu perfil" },
 ];
 
 const BottomNav = () => {

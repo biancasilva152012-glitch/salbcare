@@ -51,8 +51,8 @@ const Subscription = () => {
       const { data, error } = await supabase.functions.invoke("customer-portal");
       if (error) throw error;
       if (data?.url) window.open(data.url, "_blank");
-    } catch (e: any) {
-      toast.error(e.message || "Erro ao abrir portal");
+    } catch {
+      toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
     }
   };
 

@@ -45,7 +45,16 @@ const Register = () => {
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      const msg = error.message.toLowerCase();
+      if (msg.includes("already") || msg.includes("registered")) {
+        toast.error("Este e-mail já está cadastrado. Tente fazer login.");
+      } else if (msg.includes("network") || msg.includes("fetch")) {
+        toast.error("Sem conexão no momento. Verifique sua internet.");
+      } else if (msg.includes("password")) {
+        toast.error("A senha precisa ter pelo menos 6 caracteres.");
+      } else {
+        toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
+      }
     } else {
       toast.success("Conta criada com sucesso!");
       navigate("/onboarding");
