@@ -227,7 +227,7 @@ const ProfessionalsContent = () => {
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Buscar por nome ou especialidade..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
+        <Input placeholder="Buscar por nome ou área de atuação..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
       </div>
 
       {/* Edit Dialog */}
