@@ -328,6 +328,7 @@ const Agenda = () => {
           )}
           {paginatedGroupKeys.map((date) => {
             const apts = grouped[date];
+            return (
             <div key={date}>
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {new Date(date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
