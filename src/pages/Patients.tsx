@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
 
-const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "" };
+const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "", initial_anamnesis: "", procedure_performed: "" };
 
 const Patients = () => {
   const { user } = useAuth();
@@ -48,6 +48,7 @@ const Patients = () => {
       const { error } = await supabase.from("patients").insert({
         user_id: user!.id, name: form.name, phone: form.phone || null, email: form.email || null,
         birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
+        initial_anamnesis: form.initial_anamnesis || null, procedure_performed: form.procedure_performed || null,
       });
       if (error) throw error;
     },
@@ -65,6 +66,7 @@ const Patients = () => {
       const { error } = await supabase.from("patients").update({
         name: form.name, phone: form.phone || null, email: form.email || null,
         birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
+        initial_anamnesis: form.initial_anamnesis || null, procedure_performed: form.procedure_performed || null,
       }).eq("id", editId!);
       if (error) throw error;
     },
@@ -94,7 +96,7 @@ const Patients = () => {
 
   const openEdit = (p: Tables<"patients">) => {
     setEditId(p.id);
-    setForm({ name: p.name, phone: p.phone || "", email: (p as any).email || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "" });
+    setForm({ name: p.name, phone: p.phone || "", email: (p as any).email || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "", initial_anamnesis: (p as any).initial_anamnesis || "", procedure_performed: (p as any).procedure_performed || "" });
     setEditOpen(true);
   };
 
@@ -151,6 +153,8 @@ const Patients = () => {
           </PopoverContent>
         </Popover>
       </div>
+      <div className="space-y-1.5"><Label>Anamnese Inicial</Label><Textarea placeholder="Queixa principal, história da doença atual, antecedentes..." value={form.initial_anamnesis} onChange={(e) => setForm({ ...form, initial_anamnesis: e.target.value })} className="bg-accent border-border" rows={3} /></div>
+      <div className="space-y-1.5"><Label>Procedimento Realizado</Label><Textarea placeholder="Descrição do procedimento..." value={form.procedure_performed} onChange={(e) => setForm({ ...form, procedure_performed: e.target.value })} className="bg-accent border-border" rows={3} /></div>
       <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Histórico médico</Label><Textarea placeholder="Histórico..." value={form.medical_history} onChange={(e) => setForm({ ...form, medical_history: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
@@ -213,6 +217,18 @@ const Patients = () => {
               <div><span className="text-muted-foreground">Nascimento:</span> {selected.birth_date ? new Date(selected.birth_date + "T12:00:00").toLocaleDateString("pt-BR") : "—"}</div>
             </div>
             {selected.notes && <div className="text-sm"><span className="text-muted-foreground">Notas:</span> {selected.notes}</div>}
+            {(selected as any).initial_anamnesis && (
+              <div className="text-sm rounded-lg bg-accent p-3">
+                <span className="text-xs font-semibold text-muted-foreground uppercase">Anamnese Inicial</span>
+                <p className="mt-1">{(selected as any).initial_anamnesis}</p>
+              </div>
+            )}
+            {(selected as any).procedure_performed && (
+              <div className="text-sm rounded-lg bg-accent p-3">
+                <span className="text-xs font-semibold text-muted-foreground uppercase">Procedimento Realizado</span>
+                <p className="mt-1">{(selected as any).procedure_performed}</p>
+              </div>
+            )}
             {selected.medical_history && (
               <div className="text-sm rounded-lg bg-accent p-3">
                 <span className="text-xs font-semibold text-muted-foreground uppercase">Histórico Médico</span>

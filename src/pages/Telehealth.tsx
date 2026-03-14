@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText } from "lucide-react";
+import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
+import ShareBookingLink from "@/components/telehealth/ShareBookingLink";
 
 const Telehealth = () => {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ const Telehealth = () => {
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -112,7 +114,12 @@ const Telehealth = () => {
   return (
     <PageContainer>
       <div className="space-y-5">
-        <h1 className="text-2xl font-bold">Telehealth</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Telehealth</h1>
+          <Button size="sm" variant="outline" onClick={() => setShareOpen(true)} className="gap-1 text-xs">
+            <Link2 className="h-3.5 w-3.5" /> Compartilhar Link
+          </Button>
+        </div>
 
         <div className="flex gap-2">
           {(["upcoming", "completed"] as const).map((t) => (
@@ -202,6 +209,13 @@ const Telehealth = () => {
           userId={user?.id || ""}
         />
       )}
+
+      <ShareBookingLink
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        userId={user?.id || ""}
+        doctorName={profile?.name || ""}
+      />
     </PageContainer>
   );
 };

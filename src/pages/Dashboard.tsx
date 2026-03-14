@@ -79,7 +79,11 @@ const Dashboard = () => {
     <PageContainer>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
         <motion.div variants={item}>
-          <p className="text-sm text-muted-foreground">Bem-vindo(a) de volta</p>
+          <p className="text-sm text-muted-foreground">
+            {profile?.created_at && (new Date().getTime() - new Date(profile.created_at).getTime()) < 60000
+              ? "Bem-vindo(a) ao SalbCare! 🎉"
+              : "Bem-vindo(a) de volta"}
+          </p>
           <h1 className="text-2xl font-bold">{profile?.name || "Profissional"}</h1>
         </motion.div>
 
@@ -160,7 +164,7 @@ const Dashboard = () => {
                     <p className="text-xs text-muted-foreground">{apt.appointment_type === "presencial" ? "Presencial" : "Telehealth"}</p>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-primary">{apt.time}</span>
+                <span className="text-sm font-semibold text-primary">{apt.time.substring(0, 5)}</span>
               </div>
             ))}
           </div>

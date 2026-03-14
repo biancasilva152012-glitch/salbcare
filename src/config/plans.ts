@@ -1,7 +1,7 @@
 export const PLANS = {
   basic: {
     name: "Básico",
-    price: 39,
+    price: 49,
     price_id: "price_1TAIKjBUEEEAHx2hMtUIiKI9",
     product_id: "prod_U8ZTOS9bhmXXsd",
     features: [
@@ -14,7 +14,7 @@ export const PLANS = {
   professional: {
     name: "Profissional",
     subtitle: "Com Contador",
-    price: 79,
+    price: 99,
     price_id: "price_1TAILDBUEEEAHx2hUax01AKh",
     product_id: "prod_U8ZUsScx3u9Uyk",
     popular: true,
@@ -27,7 +27,7 @@ export const PLANS = {
   },
   clinic: {
     name: "Premium",
-    price: 149,
+    price: 189,
     price_id: "price_1TAILaBUEEEAHx2hpX5ekogA",
     product_id: "prod_U8ZU7fGeFAqwdu",
     features: [

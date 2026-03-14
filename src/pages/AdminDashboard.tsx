@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -36,12 +37,23 @@ interface CnpjRow {
   created_at: string;
 }
 
+interface ChatConvo {
+  user_id: string;
+  user_name: string;
+  last_message: string;
+  last_at: string;
+}
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [cnpjRequests, setCnpjRequests] = useState<CnpjRow[]>([]);
+  const [chatConvos, setChatConvos] = useState<ChatConvo[]>([]);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatReply, setChatReply] = useState("");
   const [loadingData, setLoadingData] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -64,12 +76,29 @@ const AdminDashboard = () => {
     if (!isAdmin) return;
     const loadData = async () => {
       setLoadingData(true);
-      const [profilesRes, cnpjRes] = await Promise.all([
+      const [profilesRes, cnpjRes, chatRes] = await Promise.all([
         supabase.from("profiles").select("*").order("created_at", { ascending: false }),
         supabase.from("cnpj_requests").select("*").order("created_at", { ascending: false }),
+        (supabase as any).from("chat_messages").select("*").order("created_at", { ascending: false }),
       ]);
       setProfiles((profilesRes.data as ProfileRow[]) || []);
       setCnpjRequests((cnpjRes.data as CnpjRow[]) || []);
+
+      // Group chat messages by user
+      const msgs = (chatRes.data || []) as any[];
+      const convosMap = new Map<string, ChatConvo>();
+      for (const m of msgs) {
+        if (!convosMap.has(m.user_id)) {
+          const prof = (profilesRes.data as ProfileRow[])?.find((p) => p.user_id === m.user_id);
+          convosMap.set(m.user_id, {
+            user_id: m.user_id,
+            user_name: prof?.name || "Usuário",
+            last_message: m.content,
+            last_at: m.created_at,
+          });
+        }
+      }
+      setChatConvos(Array.from(convosMap.values()));
       setLoadingData(false);
     };
     loadData();
@@ -200,12 +229,15 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="payments" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-accent">
+          <TabsList className="grid w-full grid-cols-5 bg-accent">
             <TabsTrigger value="payments" className="text-xs gap-1">
               <CreditCard className="h-3.5 w-3.5" /> PIX
             </TabsTrigger>
             <TabsTrigger value="cnpj" className="text-xs gap-1">
               <Building2 className="h-3.5 w-3.5" /> CNPJ
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="text-xs gap-1">
+              <MessageCircle className="h-3.5 w-3.5" /> Chat
             </TabsTrigger>
             <TabsTrigger value="trials" className="text-xs gap-1">
               <Clock className="h-3.5 w-3.5" /> Trials
@@ -340,6 +372,84 @@ const AdminDashboard = () => {
                   </motion.div>
                 );
               })
+            )}
+          </TabsContent>
+
+          {/* Chat Tab */}
+          <TabsContent value="chat" className="space-y-3">
+            {!selectedChat ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Conversas ({chatConvos.length})
+                </p>
+                {chatConvos.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">Nenhuma conversa ainda</p>
+                )}
+                {chatConvos.map((c) => (
+                  <button
+                    key={c.user_id}
+                    onClick={async () => {
+                      setSelectedChat(c.user_id);
+                      const { data } = await (supabase as any).from("chat_messages").select("*").eq("user_id", c.user_id).order("created_at", { ascending: true });
+                      setChatMessages(data || []);
+                    }}
+                    className="glass-card flex w-full items-center justify-between p-3 text-left hover:border-primary/50 transition-all"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">{c.user_name}</p>
+                      <p className="text-xs text-muted-foreground truncate max-w-[200px]">{c.last_message}</p>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground">{new Date(c.last_at).toLocaleDateString("pt-BR")}</span>
+                  </button>
+                ))}
+              </>
+            ) : (
+              <div className="space-y-3">
+                <button onClick={() => { setSelectedChat(null); setChatMessages([]); }} className="text-xs text-primary hover:underline flex items-center gap-1">
+                  <ArrowLeft className="h-3 w-3" /> Voltar
+                </button>
+                <div className="max-h-[50vh] overflow-y-auto space-y-2">
+                  {chatMessages.map((msg: any) => (
+                    <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}>
+                      <div className={`rounded-2xl px-3 py-2 text-sm max-w-[80%] ${msg.sender === "user" ? "bg-accent" : "bg-primary text-primary-foreground"}`}>
+                        {msg.content}
+                        <p className={`text-[10px] mt-0.5 ${msg.sender === "user" ? "text-muted-foreground" : "text-primary-foreground/60"}`}>
+                          {new Date(msg.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Responder..."
+                    value={chatReply}
+                    onChange={(e) => setChatReply(e.target.value)}
+                    onKeyDown={async (e) => {
+                      if (e.key === "Enter" && chatReply.trim()) {
+                        await (supabase as any).from("chat_messages").insert({ user_id: selectedChat, content: chatReply, sender: "contador" });
+                        setChatReply("");
+                        const { data } = await (supabase as any).from("chat_messages").select("*").eq("user_id", selectedChat).order("created_at", { ascending: true });
+                        setChatMessages(data || []);
+                      }
+                    }}
+                    className="bg-accent border-border"
+                  />
+                  <Button
+                    size="sm"
+                    className="gradient-primary"
+                    onClick={async () => {
+                      if (!chatReply.trim()) return;
+                      await (supabase as any).from("chat_messages").insert({ user_id: selectedChat, content: chatReply, sender: "contador" });
+                      setChatReply("");
+                      const { data } = await (supabase as any).from("chat_messages").select("*").eq("user_id", selectedChat).order("created_at", { ascending: true });
+                      setChatMessages(data || []);
+                    }}
+                  >
+                    Enviar
+                  </Button>
+                </div>
+              </div>
             )}
           </TabsContent>
 

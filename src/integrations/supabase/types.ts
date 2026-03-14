@@ -104,6 +104,30 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cnpj_requests: {
         Row: {
           city: string
@@ -392,10 +416,12 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          initial_anamnesis: string | null
           medical_history: string | null
           name: string
           notes: string | null
           phone: string | null
+          procedure_performed: string | null
           updated_at: string
           user_id: string
         }
@@ -404,10 +430,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          initial_anamnesis?: string | null
           medical_history?: string | null
           name: string
           notes?: string | null
           phone?: string | null
+          procedure_performed?: string | null
           updated_at?: string
           user_id: string
         }
@@ -416,10 +444,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          initial_anamnesis?: string | null
           medical_history?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
+          procedure_performed?: string | null
           updated_at?: string
           user_id?: string
         }
