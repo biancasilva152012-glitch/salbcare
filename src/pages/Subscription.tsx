@@ -73,8 +73,8 @@ const Subscription = () => {
             <p className="text-sm font-semibold">Contadores especializados em saúde</p>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Nos planos Profissional e Clínica, a SALBCARE conecta você a contadores parceiros com experiência no setor de saúde. 
-            Os <span className="text-foreground font-medium">honorários são cobrados diretamente pelo contador</span>, de acordo com os serviços realizados.
+            Nos planos Profissional e Clínica, conectamos você a contadores parceiros com experiência no setor de saúde. 
+            <span className="text-foreground font-medium">Sem precisar procurar por conta própria</span> — a gente facilita tudo pra você.
           </p>
         </div>
 
@@ -147,7 +147,7 @@ const Subscription = () => {
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-accent/50 border border-border">
                     <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                       O serviço de assessoria contábil é realizado por contadores parceiros independentes, habilitados com CRC ativo. A SALBCARE facilita a conexão entre você e o contador — os honorários são cobrados à parte, diretamente pelo profissional contábil.
+                       Assessoria contábil realizada por contadores parceiros independentes com CRC ativo. A SALBCARE conecta você ao profissional certo para facilitar sua vida.
                      </p>
                   </div>
                 )}
