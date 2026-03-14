@@ -151,6 +151,7 @@ const Telehealth = () => {
             patientName={callPatient}
             patientId={callPatientId}
             teleconsultationId={callTcId}
+            professionalType={profile?.professional_type || "medico"}
             onSaved={handleClinicalSaved}
           />
         </div>
