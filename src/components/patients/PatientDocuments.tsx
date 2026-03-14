@@ -77,8 +77,8 @@ const PatientDocuments = ({ patientId }: PatientDocumentsProps) => {
       queryClient.invalidateQueries({ queryKey: ["patient-documents", patientId] });
       setDescription("");
       toast.success("Documento enviado!");
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao enviar documento");
+    } catch {
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setUploading(false);
       e.target.value = "";
