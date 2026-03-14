@@ -11,7 +11,7 @@ const navItems = [
 
 const BottomNav = () => {
   const location = useLocation();
-  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy"];
+  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona"];
   if (hideOn.includes(location.pathname)) return null;
 
   return (
@@ -49,6 +49,9 @@ const BottomNav = () => {
           </Link>
           <Link to="/privacy" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
             Política de Privacidade
+          </Link>
+          <Link to="/como-funciona" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Como funciona
           </Link>
           <a href="mailto:contato@salbcare.com.br" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
             Fale conosco

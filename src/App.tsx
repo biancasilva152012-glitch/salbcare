@@ -37,6 +37,7 @@ const PatientBooking = lazy(() => import("./pages/PatientBooking"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,6 +87,7 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/maintenance" element={<Maintenance />} />
+              <Route path="/como-funciona" element={<HowItWorks />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
-import { Plus, Search, Pencil, Trash2, UserCheck, UserX, Stethoscope } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, UserCheck, UserX, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -171,7 +171,7 @@ const ProfessionalsContent = () => {
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label>Especialidade</Label>
+        <Label>Área de atuação</Label>
         <Select value={form.specialty} onValueChange={(v) => setForm({ ...form, specialty: v })}>
           <SelectTrigger className="bg-accent border-border"><SelectValue placeholder="Selecione..." /></SelectTrigger>
           <SelectContent>
@@ -183,8 +183,8 @@ const ProfessionalsContent = () => {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label>CRM / Registro</Label>
-          <Input placeholder="CRM/SP 123456" value={form.crm} onChange={(e) => setForm({ ...form, crm: e.target.value })} className="bg-accent border-border" />
+          <Label>Registro Profissional</Label>
+          <Input placeholder="Ex: CRM/SP 123456, CRO, CRP..." value={form.crm} onChange={(e) => setForm({ ...form, crm: e.target.value })} className="bg-accent border-border" />
         </div>
         <div className="space-y-1.5">
           <Label>Status</Label>
@@ -227,7 +227,7 @@ const ProfessionalsContent = () => {
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Buscar por nome ou especialidade..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
+        <Input placeholder="Buscar por nome ou área de atuação..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
       </div>
 
       {/* Edit Dialog */}
@@ -257,7 +257,7 @@ const ProfessionalsContent = () => {
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Stethoscope className="h-3 w-3" />
+                    <Briefcase className="h-3 w-3" />
                     <span>{p.specialty || "—"}</span>
                     {p.crm && <span>• {p.crm}</span>}
                   </div>
