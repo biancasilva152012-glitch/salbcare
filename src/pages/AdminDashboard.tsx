@@ -462,7 +462,7 @@ const AdminDashboard = () => {
               <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
             ) : trialUsers.length === 0 ? (
               <div className="glass-card p-6 text-center text-sm text-muted-foreground">
-                Nenhum usuário em trial
+                Nenhum usuário em teste
               </div>
             ) : (
               trialUsers.map((p) => {
