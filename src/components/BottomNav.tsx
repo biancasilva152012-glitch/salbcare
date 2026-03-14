@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, Link } from "react-router-dom";
 import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
 
 const navItems = [
@@ -11,7 +11,7 @@ const navItems = [
 
 const BottomNav = () => {
   const location = useLocation();
-  const hideOn = ["/", "/login", "/register", "/forgot-password"];
+  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms"];
   if (hideOn.includes(location.pathname)) return null;
 
   return (
@@ -31,6 +31,11 @@ const BottomNav = () => {
             <span className="font-medium">{label}</span>
           </NavLink>
         ))}
+      </div>
+      <div className="text-center pb-1">
+        <Link to="/terms" className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+          Termos de Uso
+        </Link>
       </div>
     </nav>
   );

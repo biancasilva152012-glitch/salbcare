@@ -99,6 +99,11 @@ const Register = () => {
             <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-accent border-border" required minLength={6} />
           </div>
 
+          <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+            Ao se cadastrar, você concorda com os{" "}
+            <Link to="/terms" className="text-primary hover:underline">Termos de Uso</Link>.
+          </p>
+
           <Button type="submit" className="w-full gradient-primary font-semibold mt-2" disabled={loading}>
             {loading ? "Cadastrando..." : "Cadastrar"}
           </Button>
