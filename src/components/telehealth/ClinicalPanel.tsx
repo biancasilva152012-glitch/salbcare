@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ClipboardList, Stethoscope, FileText, Award, Save,
-  Loader2, ChevronDown, ChevronUp, Thermometer
+  Loader2, ChevronDown, ChevronUp, Thermometer, ShieldCheck, ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,14 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getProfessionConfig } from "@/config/professions";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface VitalSigns {
   blood_pressure?: string;
