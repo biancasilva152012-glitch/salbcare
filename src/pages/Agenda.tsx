@@ -310,7 +310,7 @@ const Agenda = () => {
                           <div>
                             <p className="text-sm font-medium">{apt.patient_name}</p>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3" /> {apt.time}
+                              <Clock className="h-3 w-3" /> {apt.time.substring(0, 5)}
                               {apt.appointment_type === "presencial" ? <MapPin className="h-3 w-3 ml-1" /> : <Video className="h-3 w-3 ml-1" />}
                               {apt.appointment_type === "presencial" ? "Presencial" : "Telehealth"}
                             </div>

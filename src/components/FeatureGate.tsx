@@ -29,7 +29,7 @@ const FeatureGate = ({ feature, children }: FeatureGateProps) => {
         Faça upgrade para desbloquear.
       </p>
       <Button onClick={() => navigate("/subscription")} className="gradient-primary">
-        Ver Planos
+        Fazer Upgrade
       </Button>
     </div>
   );

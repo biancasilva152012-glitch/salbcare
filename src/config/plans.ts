@@ -27,7 +27,7 @@ export const PLANS = {
   },
   clinic: {
     name: "Premium",
-    price: 149,
+    price: 189,
     price_id: "price_1TAILaBUEEEAHx2hpX5ekogA",
     product_id: "prod_U8ZU7fGeFAqwdu",
     features: [

@@ -164,7 +164,7 @@ const Dashboard = () => {
                     <p className="text-xs text-muted-foreground">{apt.appointment_type === "presencial" ? "Presencial" : "Telehealth"}</p>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-primary">{apt.time}</span>
+                <span className="text-sm font-semibold text-primary">{apt.time.substring(0, 5)}</span>
               </div>
             ))}
           </div>
