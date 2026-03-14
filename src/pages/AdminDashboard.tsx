@@ -240,7 +240,7 @@ const AdminDashboard = () => {
               <MessageCircle className="h-3.5 w-3.5" /> Chat
             </TabsTrigger>
             <TabsTrigger value="trials" className="text-xs gap-1">
-              <Clock className="h-3.5 w-3.5" /> Trials
+              <Clock className="h-3.5 w-3.5" /> Teste
             </TabsTrigger>
             <TabsTrigger value="users" className="text-xs gap-1">
               <Users className="h-3.5 w-3.5" /> Todos
