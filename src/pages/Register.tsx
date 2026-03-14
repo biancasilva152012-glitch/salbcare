@@ -101,7 +101,9 @@ const Register = () => {
 
           <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
             Ao se cadastrar, você concorda com os{" "}
-            <Link to="/terms" className="text-primary hover:underline">Termos de Uso</Link>.
+            <Link to="/terms" className="text-primary hover:underline">Termos de Uso</Link>
+            {" "}e a{" "}
+            <Link to="/privacy" className="text-primary hover:underline">Política de Privacidade</Link>.
           </p>
 
           <Button type="submit" className="w-full gradient-primary font-semibold mt-2" disabled={loading}>

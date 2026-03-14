@@ -60,9 +60,11 @@ const App = () => (
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/booking" element={<PatientBooking />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />
+          <CookieConsent />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

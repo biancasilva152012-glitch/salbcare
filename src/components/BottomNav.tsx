@@ -11,7 +11,7 @@ const navItems = [
 
 const BottomNav = () => {
   const location = useLocation();
-  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms"];
+  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy"];
   if (hideOn.includes(location.pathname)) return null;
 
   return (
@@ -32,10 +32,28 @@ const BottomNav = () => {
           </NavLink>
         ))}
       </div>
-      <div className="text-center pb-1">
-        <Link to="/terms" className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-          Termos de Uso
-        </Link>
+
+      {/* Legal footer */}
+      <div className="text-center px-4 pb-2 space-y-1">
+        <p className="text-[9px] text-muted-foreground/40 leading-relaxed">
+          A SALBCARE é uma plataforma de gestão e não substitui orientação médica, jurídica ou contábil profissional.
+        </p>
+        <div className="flex items-center justify-center gap-2 text-[9px] text-muted-foreground/40">
+          <span>SALBCARE Tecnologia LTDA</span>
+          <span>•</span>
+          <a href="mailto:contato@salbcare.com.br" className="hover:text-muted-foreground transition-colors">contato@salbcare.com.br</a>
+        </div>
+        <div className="flex items-center justify-center gap-3 text-[10px]">
+          <Link to="/terms" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Termos de Uso
+          </Link>
+          <Link to="/privacy" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Política de Privacidade
+          </Link>
+          <a href="mailto:contato@salbcare.com.br" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Fale conosco
+          </a>
+        </div>
       </div>
     </nav>
   );
