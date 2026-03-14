@@ -58,9 +58,6 @@ const VideoRoom = ({ roomUrl, patientName, patientPhone, isDoctor, onEnd, childr
 
       const callObject = DailyIframe.createCallObject({
         url: roomUrl,
-        dailyConfig: {
-          experimentalChromeVideoMuteLightOff: true,
-        },
       });
 
       callObject.on("joined-meeting", () => {
