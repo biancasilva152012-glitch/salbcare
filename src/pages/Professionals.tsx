@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
-import { Plus, Search, Pencil, Trash2, UserCheck, UserX, Stethoscope } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, UserCheck, UserX, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
