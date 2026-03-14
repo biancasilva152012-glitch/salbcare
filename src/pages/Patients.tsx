@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
 import PatientDocuments from "@/components/patients/PatientDocuments";
+import PatientMedicalRecords from "@/components/patients/PatientMedicalRecords";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
