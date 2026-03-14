@@ -76,12 +76,29 @@ const AdminDashboard = () => {
     if (!isAdmin) return;
     const loadData = async () => {
       setLoadingData(true);
-      const [profilesRes, cnpjRes] = await Promise.all([
+      const [profilesRes, cnpjRes, chatRes] = await Promise.all([
         supabase.from("profiles").select("*").order("created_at", { ascending: false }),
         supabase.from("cnpj_requests").select("*").order("created_at", { ascending: false }),
+        (supabase as any).from("chat_messages").select("*").order("created_at", { ascending: false }),
       ]);
       setProfiles((profilesRes.data as ProfileRow[]) || []);
       setCnpjRequests((cnpjRes.data as CnpjRow[]) || []);
+
+      // Group chat messages by user
+      const msgs = (chatRes.data || []) as any[];
+      const convosMap = new Map<string, ChatConvo>();
+      for (const m of msgs) {
+        if (!convosMap.has(m.user_id)) {
+          const prof = (profilesRes.data as ProfileRow[])?.find((p) => p.user_id === m.user_id);
+          convosMap.set(m.user_id, {
+            user_id: m.user_id,
+            user_name: prof?.name || "Usuário",
+            last_message: m.content,
+            last_at: m.created_at,
+          });
+        }
+      }
+      setChatConvos(Array.from(convosMap.values()));
       setLoadingData(false);
     };
     loadData();
