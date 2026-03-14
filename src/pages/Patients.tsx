@@ -80,7 +80,7 @@ const Patients = () => {
       if (selected && selected.id === editId) setSelected(null);
       toast.success("Paciente atualizado!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const deleteMutation = useMutation({
