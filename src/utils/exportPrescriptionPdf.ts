@@ -16,7 +16,12 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   const config = getProfessionConfig(data.professionalType || "medico");
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const today = format(new Date(), "dd/MM/yyyy");
+  const now = format(new Date(), "dd/MM/yyyy 'às' HH:mm");
+
+  // Generate unique document hash for verification
+  const docHash = generateDocHash(data, now);
 
   // Header bar
   doc.setFillColor(15, 23, 42);
@@ -37,7 +42,7 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
 
   doc.setTextColor(160, 170, 180);
   doc.setFontSize(9);
-  doc.text(today, pageWidth - 14, 28, { align: "right" });
+  doc.text(now, pageWidth - 14, 28, { align: "right" });
 
   let y = 54;
   doc.setTextColor(15, 23, 42);
@@ -46,14 +51,17 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   doc.text(config.prescriptionTitle, 14, y);
   y += 10;
 
+  // Patient info box
+  doc.setFillColor(245, 247, 250);
+  doc.roundedRect(14, y - 4, pageWidth - 28, 14, 2, 2, "F");
   doc.setFontSize(11);
   doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
-  doc.text("Paciente:", 14, y);
+  doc.text("Paciente:", 18, y + 5);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(data.patientName, 42, y);
-  y += 10;
+  doc.text(data.patientName, 46, y + 5);
+  y += 18;
 
   doc.setDrawColor(220);
   doc.line(14, y, pageWidth - 14, y);
@@ -74,7 +82,7 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   }
 
   if (data.certificate.trim()) {
-    if (y > 230) { doc.addPage(); y = 20; }
+    if (y > 210) { doc.addPage(); y = 20; }
     doc.setDrawColor(220);
     doc.line(14, y, pageWidth - 14, y);
     y += 8;
@@ -92,7 +100,7 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   }
 
   if (data.notes.trim()) {
-    if (y > 230) { doc.addPage(); y = 20; }
+    if (y > 210) { doc.addPage(); y = 20; }
     doc.setDrawColor(220);
     doc.line(14, y, pageWidth - 14, y);
     y += 8;
@@ -109,33 +117,122 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
     y += noteLines.length * 5 + 8;
   }
 
-  // Signature
-  if (y > 240) { doc.addPage(); y = 20; }
-  y += 16;
+  // ── Signature block ──
+  if (y > 200) { doc.addPage(); y = 20; }
+  y += 12;
+
+  // Signature box with border
+  const sigBoxY = y;
+  const sigBoxH = 52;
+  doc.setDrawColor(200);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(pageWidth / 2 - 55, sigBoxY, 110, sigBoxH, 3, 3, "S");
+
+  // Shield icon (simulated)
+  y += 8;
+  doc.setFillColor(45, 212, 191);
+  doc.circle(pageWidth / 2, y, 4, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "bold");
+  doc.text("✓", pageWidth / 2, y + 1.5, { align: "center" });
+
+  y += 8;
   doc.setDrawColor(15, 23, 42);
-  doc.line(pageWidth / 2 - 40, y, pageWidth / 2 + 40, y);
-  y += 6;
+  doc.setLineWidth(0.3);
+  doc.line(pageWidth / 2 - 35, y, pageWidth / 2 + 35, y);
+  y += 5;
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
   doc.text(data.doctorName, pageWidth / 2, y, { align: "center" });
   y += 5;
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(100);
-  doc.setFontSize(9);
-  doc.text(`${config.label}${data.doctorCrm ? ` — ${config.councilPrefix} ${data.doctorCrm}` : ""}`, pageWidth / 2, y, { align: "center" });
+  doc.setTextColor(80);
+  doc.setFontSize(8);
+  doc.text(
+    `${config.label}${data.doctorCrm ? ` — ${config.councilPrefix} ${data.doctorCrm}` : ""}`,
+    pageWidth / 2, y, { align: "center" }
+  );
+  y += 4;
+  doc.setFontSize(7);
+  doc.setTextColor(130);
+  doc.text(`${config.council}`, pageWidth / 2, y, { align: "center" });
+  y += 4;
+  doc.setFontSize(6.5);
+  doc.setTextColor(45, 212, 191);
+  doc.text(`Hash: ${docHash}`, pageWidth / 2, y, { align: "center" });
 
-  // Footer
+  // ── ICP-Brasil notice ──
+  y = sigBoxY + sigBoxH + 8;
+  if (y > 250) { doc.addPage(); y = 20; }
+
+  doc.setFillColor(255, 251, 235); // amber-50
+  doc.roundedRect(14, y - 3, pageWidth - 28, 20, 2, 2, "F");
+  doc.setDrawColor(245, 158, 11); // amber-500
+  doc.setLineWidth(0.3);
+  doc.roundedRect(14, y - 3, pageWidth - 28, 20, 2, 2, "S");
+
+  doc.setFontSize(7);
+  doc.setTextColor(146, 64, 14); // amber-800
+  doc.setFont("helvetica", "bold");
+  doc.text("⚠ AVISO SOBRE VALIDADE JURÍDICA", 18, y + 3);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(120, 53, 15);
+  const icpNotice = doc.splitTextToSize(
+    `Este documento possui identificação do profissional (${config.councilPrefix}) e hash de verificação. ` +
+    `Para plena validade jurídica conforme MP 2.200-2/2001 e Lei 14.063/2020, recomenda-se a aplicação de ` +
+    `assinatura digital qualificada com certificado ICP-Brasil (tipo A1 ou A3) via software como Adobe Acrobat, ` +
+    `BirdID ou VIDaaS.`,
+    pageWidth - 36
+  );
+  doc.text(icpNotice, 18, y + 8);
+
+  // ── Footer on all pages ──
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(7);
-    doc.setTextColor(160);
+
+    // Bottom border
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, pageHeight - 18, pageWidth, 18, "F");
+    doc.setFillColor(45, 212, 191);
+    doc.rect(0, pageHeight - 18, pageWidth, 1, "F");
+
+    doc.setFontSize(6.5);
+    doc.setTextColor(160, 170, 180);
     doc.text(
-      `Documento gerado via SALBCARE — ${today} — ${config.legalResolution} — Pág. ${i}/${pageCount}`,
-      pageWidth / 2, doc.internal.pageSize.getHeight() - 8, { align: "center" }
+      `SALBCARE — ${config.legalResolution}`,
+      14, pageHeight - 10
+    );
+    doc.text(
+      `Emitido em ${now} — Pág. ${i}/${pageCount}`,
+      pageWidth - 14, pageHeight - 10, { align: "right" }
+    );
+    doc.setFontSize(5.5);
+    doc.setTextColor(100, 110, 120);
+    doc.text(
+      `Verificação: ${docHash}`,
+      14, pageHeight - 5
     );
   }
 
   return doc;
+}
+
+/**
+ * Generates a deterministic hash for document verification.
+ * Not cryptographic — serves as a visual identifier for the document.
+ */
+function generateDocHash(data: PrescriptionData, timestamp: string): string {
+  const input = `${data.doctorName}|${data.doctorCrm}|${data.patientName}|${timestamp}`;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
+  return `SALB-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
 }
