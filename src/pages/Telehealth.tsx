@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText, Link2, Plus, Download } from "lucide-react";
+import { Video, Clock, FileText, Link2, Plus, Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,36 +9,34 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
 import ShareBookingLink from "@/components/telehealth/ShareBookingLink";
 import CreateTeleconsultationModal from "@/components/telehealth/CreateTeleconsultationModal";
-import ClinicalPanel from "@/components/telehealth/ClinicalPanel";
+import PreCheckModal from "@/components/telehealth/PreCheckModal";
+import EndCallModal from "@/components/telehealth/EndCallModal";
 import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
-import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
 import { toast } from "sonner";
+
+const VideoRoom = lazy(() => import("@/components/telehealth/VideoRoom"));
 
 const Telehealth = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [inCall, setInCall] = useState(false);
-  const [callPatient, setCallPatient] = useState("");
-  const [callTcId, setCallTcId] = useState("");
-  const [callPatientId, setCallPatientId] = useState<string | null>(null);
-  const [callPatientPhone, setCallPatientPhone] = useState<string | null>(null);
-  const [muted, setMuted] = useState(false);
+  const [callTc, setCallTc] = useState<any>(null);
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [clinicalSaved, setClinicalSaved] = useState(false);
-  const [savedClinicalData, setSavedClinicalData] = useState<any>(null);
+  const [preCheckOpen, setPreCheckOpen] = useState(false);
+  const [pendingTc, setPendingTc] = useState<any>(null);
+  const [endCallOpen, setEndCallOpen] = useState(false);
+  const [callNotes, setCallNotes] = useState("");
+  const [callMode, setCallMode] = useState<"video" | "audio" | "chat">("video");
+  const [creatingRoom, setCreatingRoom] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("name, professional_type, phone, crm")
-        .eq("user_id", user!.id)
-        .single();
+      const { data } = await supabase.from("profiles").select("name, professional_type, phone, crm").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
@@ -62,45 +60,60 @@ const Telehealth = () => {
     enabled: !!user,
   });
 
-  const professionalTypeLabel = (type: string) => {
-    const map: Record<string, string> = {
-      medico: "Médico(a)", dentista: "Dentista", psicologo: "Psicólogo(a)",
-      fisioterapeuta: "Fisioterapeuta", nutricionista: "Nutricionista",
-    };
-    return map[type] || type;
-  };
-
   const getPatientInfo = (tc: any) => {
     const patient = patients.find((p) => p.id === tc.patient_id || p.name === tc.patient_name);
     return { id: patient?.id || tc.patient_id, phone: patient?.phone || null };
   };
 
-  const handleEndCall = async () => {
-    // Mark teleconsultation as completed
-    await supabase.from("teleconsultations").update({ status: "completed" }).eq("id", callTcId);
-    queryClient.invalidateQueries({ queryKey: ["teleconsultations"] });
-
-    setInCall(false);
-
-    // If clinical data was saved with prescription or certificate, open the PDF generation
-    if (savedClinicalData && (savedClinicalData.prescription || savedClinicalData.certificate)) {
-      const tc = teleconsultations.find((t) => t.id === callTcId);
-      if (tc) {
-        setPrescriptionTc({
-          ...tc,
-          ...getPatientInfo(tc),
-        });
-        setPrescriptionOpen(true);
-      }
-    }
-
-    setClinicalSaved(false);
-    setSavedClinicalData(null);
+  const handleStartClick = (tc: any) => {
+    setPendingTc(tc);
+    setPreCheckOpen(true);
   };
 
-  const handleClinicalSaved = (data: any) => {
-    setClinicalSaved(true);
-    setSavedClinicalData(data);
+  const handlePreCheckReady = async () => {
+    setPreCheckOpen(false);
+    if (!pendingTc) return;
+
+    setCreatingRoom(true);
+    try {
+      // Create room if not exists
+      if (!pendingTc.room_url) {
+        const { data, error } = await supabase.functions.invoke("daily-room", {
+          body: { action: "create-room", teleconsultation_id: pendingTc.id },
+        });
+        if (error) throw error;
+        pendingTc.room_url = data.room_url;
+        pendingTc.room_name = data.room_name;
+      }
+      setCallTc({ ...pendingTc, ...getPatientInfo(pendingTc) });
+      setInCall(true);
+    } catch (err) {
+      toast.error("Erro ao criar sala de vídeo. Tente novamente.");
+      console.error(err);
+    } finally {
+      setCreatingRoom(false);
+    }
+  };
+
+  const handleCallEnd = (notes: string, mode: "video" | "audio" | "chat") => {
+    setInCall(false);
+    setCallNotes(notes);
+    setCallMode(mode);
+    setEndCallOpen(true);
+    // Mark as completed
+    if (callTc) {
+      supabase.from("teleconsultations").update({ status: "completed" }).eq("id", callTc.id).then(() => {
+        queryClient.invalidateQueries({ queryKey: ["teleconsultations"] });
+      });
+    }
+  };
+
+  const handleSaveNow = () => {
+    setEndCallOpen(false);
+    if (callTc) {
+      setPrescriptionTc(callTc);
+      setPrescriptionOpen(true);
+    }
   };
 
   const handleDownloadRecord = (tc: any) => {
@@ -115,52 +128,27 @@ const Telehealth = () => {
     toast.success("Prontuário baixado!");
   };
 
-  // In-call view with clinical panel
-  if (inCall) {
-    const initials = callPatient.split(" ").map((n: string) => n[0]).join("").substring(0, 2);
+  // In-call view
+  if (inCall && callTc?.room_url) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-background">
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/95 backdrop-blur">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-              {initials}
-            </div>
-            <div>
-              <p className="text-sm font-semibold">{callPatient}</p>
-              <p className="text-[11px] text-muted-foreground">Teleconsulta em andamento</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setMuted(!muted)} className={`flex h-10 w-10 items-center justify-center rounded-full ${muted ? "bg-destructive text-destructive-foreground" : "bg-accent"}`}>
-              {muted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-            </button>
-            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
-              <Monitor className="h-4 w-4" />
-            </button>
-            <button onClick={handleEndCall} className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive text-destructive-foreground">
-              <PhoneOff className="h-4 w-4" />
-            </button>
-          </div>
+      <Suspense fallback={
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-
-        {/* Clinical panel scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <ClinicalPanel
-            userId={user?.id || ""}
-            patientName={callPatient}
-            patientId={callPatientId}
-            teleconsultationId={callTcId}
-            professionalType={profile?.professional_type || "medico"}
-            onSaved={handleClinicalSaved}
-          />
-        </div>
-      </div>
+      }>
+        <VideoRoom
+          roomUrl={callTc.room_url}
+          patientName={callTc.patient_name}
+          patientPhone={callTc.phone}
+          isDoctor={true}
+          onEnd={handleCallEnd}
+        />
+      </Suspense>
     );
   }
 
   const now = new Date().toISOString();
-  const filtered = teleconsultations.filter((t) =>
+  const filtered = teleconsultations.filter((t: any) =>
     tab === "upcoming" ? t.status === "scheduled" && t.date >= now : t.status === "completed"
   );
 
@@ -193,10 +181,22 @@ const Telehealth = () => {
           ))}
         </div>
 
+        {creatingRoom && (
+          <div className="flex items-center justify-center gap-2 py-6">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <span className="text-sm text-muted-foreground">Criando sala de vídeo...</span>
+          </div>
+        )}
+
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
           {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma teleconsulta encontrada</p>}
-          {filtered.map((tc) => {
+          {filtered.map((tc: any) => {
             const patientInfo = getPatientInfo(tc);
+            const tcDate = new Date(tc.date);
+            const minutesUntil = (tcDate.getTime() - Date.now()) / 60000;
+            const isStartingSoon = minutesUntil > 0 && minutesUntil <= 30;
+            const isNow = minutesUntil <= 0 && tc.status === "scheduled";
+
             return (
               <div key={tc.id} className="glass-card p-4 space-y-2">
                 <div className="flex items-center justify-between">
@@ -205,10 +205,17 @@ const Telehealth = () => {
                       {tc.patient_name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{tc.patient_name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">{tc.patient_name}</p>
+                        {isStartingSoon && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400 animate-pulse">
+                            <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Iniciar em breve
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        {new Date(tc.date).toLocaleDateString("pt-BR")} • {tc.duration ? `${tc.duration} min` : "—"}
+                        {tcDate.toLocaleDateString("pt-BR")} • {tc.duration ? `${tc.duration} min` : "—"}
                       </div>
                     </div>
                   </div>
@@ -217,17 +224,12 @@ const Telehealth = () => {
                 <div className="flex gap-2">
                   {tc.status === "scheduled" && (
                     <Button
-                      onClick={() => {
-                        setCallPatient(tc.patient_name);
-                        setCallTcId(tc.id);
-                        setCallPatientId(patientInfo.id);
-                        setCallPatientPhone(patientInfo.phone);
-                        setInCall(true);
-                      }}
+                      onClick={() => handleStartClick(tc)}
                       size="sm"
-                      className="flex-1 gradient-primary gap-1"
+                      className={`flex-1 gap-1 ${isNow ? "bg-green-600 hover:bg-green-700 text-white font-bold" : "gradient-primary"}`}
                     >
-                      <Video className="h-4 w-4" /> Iniciar Consulta
+                      <Video className="h-4 w-4" />
+                      {isNow ? "Entrar na consulta agora" : "Iniciar Consulta"}
                     </Button>
                   )}
                   {tc.status === "completed" && (
@@ -243,12 +245,7 @@ const Telehealth = () => {
                       >
                         <FileText className="h-4 w-4" /> Receita/Atestado
                       </Button>
-                      <Button
-                        onClick={() => handleDownloadRecord(tc)}
-                        size="sm"
-                        variant="outline"
-                        className="gap-1"
-                      >
+                      <Button onClick={() => handleDownloadRecord(tc)} size="sm" variant="outline" className="gap-1">
                         <Download className="h-4 w-4" />
                       </Button>
                     </>
@@ -259,6 +256,16 @@ const Telehealth = () => {
           })}
         </motion.div>
       </div>
+
+      <PreCheckModal open={preCheckOpen} onOpenChange={setPreCheckOpen} onReady={handlePreCheckReady} />
+
+      <EndCallModal
+        open={endCallOpen}
+        onOpenChange={setEndCallOpen}
+        mode={callMode}
+        onSaveNow={handleSaveNow}
+        onLater={() => setEndCallOpen(false)}
+      />
 
       {prescriptionTc && (
         <PrescriptionModal
@@ -275,12 +282,7 @@ const Telehealth = () => {
         />
       )}
 
-      <ShareBookingLink
-        open={shareOpen}
-        onOpenChange={setShareOpen}
-        userId={user?.id || ""}
-        doctorName={profile?.name || ""}
-      />
+      <ShareBookingLink open={shareOpen} onOpenChange={setShareOpen} userId={user?.id || ""} doctorName={profile?.name || ""} />
 
       <CreateTeleconsultationModal
         open={createOpen}
