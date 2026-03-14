@@ -73,8 +73,8 @@ const Subscription = () => {
             <p className="text-sm font-semibold">Contadores especializados em saúde</p>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Nos planos Profissional e Clínica, a SALBCARE conecta você a contadores parceiros com experiência no setor de saúde. 
-            Os <span className="text-foreground font-medium">honorários são cobrados diretamente pelo contador</span>, de acordo com os serviços realizados.
+            Nos planos Profissional e Clínica, conectamos você a contadores parceiros com experiência no setor de saúde. 
+            <span className="text-foreground font-medium">Sem precisar procurar por conta própria</span> — a gente facilita tudo pra você.
           </p>
         </div>
 
