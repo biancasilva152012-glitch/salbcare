@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText, Link2 } from "lucide-react";
+import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText, Link2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
 import ShareBookingLink from "@/components/telehealth/ShareBookingLink";
+import CreateTeleconsultationModal from "@/components/telehealth/CreateTeleconsultationModal";
 
 const Telehealth = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [inCall, setInCall] = useState(false);
   const [callPatient, setCallPatient] = useState("");
   const [callTcId, setCallTcId] = useState("");
@@ -21,6 +23,7 @@ const Telehealth = () => {
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -44,7 +47,6 @@ const Telehealth = () => {
     enabled: !!user,
   });
 
-  // Fetch patients for phone lookup
   const { data: patients = [] } = useQuery({
     queryKey: ["patients", user?.id],
     queryFn: async () => {
@@ -61,7 +63,6 @@ const Telehealth = () => {
 
   const handleEndCall = () => {
     setInCall(false);
-    // Open prescription modal after ending call
     const tc = teleconsultations.find((t) => t.id === callTcId);
     if (tc) {
       setPrescriptionTc({
@@ -116,9 +117,14 @@ const Telehealth = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Telehealth</h1>
-          <Button size="sm" variant="outline" onClick={() => setShareOpen(true)} className="gap-1 text-xs">
-            <Link2 className="h-3.5 w-3.5" /> Compartilhar Link
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => setShareOpen(true)} className="gap-1 text-xs">
+              <Link2 className="h-3.5 w-3.5" /> Link
+            </Button>
+            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1 text-xs gradient-primary">
+              <Plus className="h-3.5 w-3.5" /> Nova Consulta
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-2">
@@ -215,6 +221,14 @@ const Telehealth = () => {
         onOpenChange={setShareOpen}
         userId={user?.id || ""}
         doctorName={profile?.name || ""}
+      />
+
+      <CreateTeleconsultationModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        userId={user?.id || ""}
+        patients={patients}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["teleconsultations"] })}
       />
     </PageContainer>
   );

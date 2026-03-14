@@ -62,10 +62,10 @@ const AccountantChatTab = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-220px)]">
-      <div className="glass-card p-3 mb-3 flex items-center gap-2">
-        <Info className="h-4 w-4 text-primary shrink-0" />
+      <div className="glass-card p-3 mb-3 flex items-start gap-2">
+        <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
         <p className="text-xs text-muted-foreground">
-          Converse diretamente com seu contador sobre CNPJ, notas fiscais, impostos e dúvidas contábeis.
+          Precisa de ajuda com contabilidade? Nosso contador pode te ajudar com declaração de imposto de renda, emissão de notas fiscais, abertura de CNPJ, enquadramento tributário e muito mais. Todas as notas fiscais são emitidas exclusivamente pelo contador, garantindo total conformidade com a legislação vigente.
         </p>
       </div>
 
