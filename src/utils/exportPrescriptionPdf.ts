@@ -35,7 +35,7 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text(`Dr(a). ${data.doctorName}`, 14, 28);
-  doc.text(data.doctorType, 14, 34);
+  doc.text(`${data.doctorType}${data.doctorCrm ? ` — ${data.doctorCrm}` : ""}`, 14, 34);
 
   // Date on right
   doc.setTextColor(160, 170, 180);
