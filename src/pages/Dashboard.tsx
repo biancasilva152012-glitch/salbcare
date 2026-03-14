@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield, MessageCircle } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
+import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
