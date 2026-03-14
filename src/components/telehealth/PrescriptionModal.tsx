@@ -32,6 +32,7 @@ const PrescriptionModal = ({
   teleconsultationId,
   doctorName,
   doctorType,
+  doctorCrm,
   userId,
 }: PrescriptionModalProps) => {
   const [step, setStep] = useState<Step>("form");
