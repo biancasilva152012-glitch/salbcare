@@ -20,6 +20,7 @@ const Telehealth = () => {
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
