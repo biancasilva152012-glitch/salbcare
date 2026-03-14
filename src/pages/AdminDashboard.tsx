@@ -174,7 +174,7 @@ const AdminDashboard = () => {
       pending_approval: { label: "Aguardando", className: "bg-yellow-400/10 text-yellow-400 border-yellow-400/20" },
       suspended: { label: "Suspenso", className: "bg-destructive/10 text-destructive border-destructive/20" },
       none: { label: "Sem pagamento", className: "bg-muted text-muted-foreground border-border" },
-      trial: { label: "Trial", className: "bg-primary/10 text-primary border-primary/20" },
+      trial: { label: "Teste", className: "bg-primary/10 text-primary border-primary/20" },
     };
     const s = map[status] || map.none;
     return <Badge variant="outline" className={s.className}>{s.label}</Badge>;
