@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
-import { FileText, MessageCircle, Receipt, Loader2, Check } from "lucide-react";
+import { getProfessionConfig } from "@/config/professions";
+import { FileText, MessageCircle, Receipt, Loader2, Check, ShieldCheck, AlertTriangle } from "lucide-react";
 
 interface PrescriptionModalProps {
   open: boolean;
@@ -35,6 +36,7 @@ const PrescriptionModal = ({
   doctorCrm,
   userId,
 }: PrescriptionModalProps) => {
+  const config = getProfessionConfig(professionalType || "medico");
   const [step, setStep] = useState<Step>("form");
   const [prescription, setPrescription] = useState("");
   const [certificate, setCertificate] = useState("");
@@ -44,7 +46,7 @@ const PrescriptionModal = ({
 
   const handleGenerate = async () => {
     if (!prescription.trim() && !certificate.trim()) {
-      toast.error("Preencha ao menos a prescrição ou o atestado.");
+      toast.error(`Preencha ao menos ${config.canPrescribeMedication ? "a prescrição" : "as orientações"} ou o atestado.`);
       return;
     }
 
@@ -63,8 +65,7 @@ const PrescriptionModal = ({
       const blob = doc.output("blob");
       setPdfBlob(blob);
 
-      // Save to storage
-      const fileName = `receita-${patientName.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`;
+      const fileName = `${config.prescriptionTitle.toLowerCase().replace(/\s+/g, "-")}-${patientName.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`;
       const storagePath = `${userId}/${teleconsultationId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -73,7 +74,6 @@ const PrescriptionModal = ({
 
       if (uploadError) throw uploadError;
 
-      // Also save as patient document if patient exists
       if (patientId) {
         await supabase.from("patient_documents").insert({
           user_id: userId,
@@ -81,14 +81,12 @@ const PrescriptionModal = ({
           file_name: fileName,
           file_path: storagePath,
           file_type: "application/pdf",
-          description: `Receita digital — Teleconsulta ${new Date().toLocaleDateString("pt-BR")}`,
+          description: `${config.prescriptionTitle} — Teleconsulta ${new Date().toLocaleDateString("pt-BR")}`,
         });
       }
 
-      // Download for the doctor
       doc.save(fileName);
-
-      toast.success("Receita gerada com sucesso!");
+      toast.success(`${config.prescriptionTitle} gerada com sucesso!`);
       setStep("actions");
     } catch {
       toast.error("Não conseguimos salvar. Tente de novo em instantes.");
@@ -103,18 +101,17 @@ const PrescriptionModal = ({
       toast.error("Paciente não possui telefone cadastrado.");
       return;
     }
+    const docType = config.prescriptionTitle.toLowerCase();
     const message = encodeURIComponent(
-      `Olá ${patientName}, aqui está sua receita digital e orientações da nossa consulta realizada hoje no SalbCare. Desejamos uma boa recuperação! 💊`
+      `Olá ${patientName}, segue sua ${docType} e orientações da consulta realizada hoje no SalbCare. Qualquer dúvida, estou à disposição! 😊`
     );
     window.open(`https://wa.me/55${phone}?text=${message}`, "_blank");
   };
 
   const handleInvoice = () => {
     setStep("done");
-    // Navigate to invoices tab would be handled by parent
     toast.success("Redirecionando para emissão de Nota Fiscal...");
     onOpenChange(false);
-    // Use setTimeout to allow modal to close
     setTimeout(() => {
       window.location.href = "/accounting?tab=invoices";
     }, 300);
@@ -129,6 +126,10 @@ const PrescriptionModal = ({
     onOpenChange(false);
   };
 
+  const formTitle = config.canPrescribeMedication
+    ? `${config.prescriptionTitle} e ${config.certificateTitle}`
+    : `${config.prescriptionTitle} e ${config.certificateTitle}`;
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -136,57 +137,92 @@ const PrescriptionModal = ({
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
             {step === "form"
-              ? "Receita e Atestado Digital"
+              ? formTitle
               : step === "actions"
               ? "Documentos Gerados!"
               : "Tudo Pronto!"}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Gerar documentos digitais para o paciente
+          </DialogDescription>
         </DialogHeader>
 
         {step === "form" && (
           <div className="space-y-4">
-            <div className="glass-card p-3">
-              <p className="text-xs text-muted-foreground">Paciente</p>
-              <p className="font-semibold text-sm">{patientName}</p>
+            {/* Patient info */}
+            <div className="glass-card p-3 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">Paciente</p>
+                <p className="font-semibold text-sm">{patientName}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">{config.label}</p>
+                <p className="text-xs font-medium">
+                  {doctorCrm ? `${config.councilPrefix} ${doctorCrm}` : "Registro não informado"}
+                </p>
+              </div>
             </div>
 
+            {/* Prescription / Orientation */}
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider">
-                Prescrição Médica
+                {config.prescriptionTitle}
               </Label>
               <Textarea
-                placeholder="Ex: Amoxicilina 500mg — Tomar 1 comprimido de 8 em 8 horas por 7 dias..."
+                placeholder={config.prescriptionPlaceholder}
                 value={prescription}
                 onChange={(e) => setPrescription(e.target.value)}
-                rows={4}
-                className="bg-accent border-border"
+                rows={5}
+                className="bg-accent border-border text-sm"
               />
+              {!config.canPrescribeMedication && (
+                <p className="text-[10px] text-amber-500 flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3" />
+                  {config.label}s não prescrevem medicamentos. Use este campo para orientações terapêuticas.
+                </p>
+              )}
             </div>
 
+            {/* Certificate */}
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider">
-                Atestado Médico (opcional)
+                {config.certificateTitle} (opcional)
               </Label>
               <Textarea
-                placeholder="Ex: Atesto para os devidos fins que o(a) paciente necessita de 3 dias de repouso..."
+                placeholder={config.certificatePlaceholder}
                 value={certificate}
                 onChange={(e) => setCertificate(e.target.value)}
                 rows={3}
-                className="bg-accent border-border"
+                className="bg-accent border-border text-sm"
               />
             </div>
 
+            {/* Notes */}
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider">
                 Orientações ao Paciente (opcional)
               </Label>
               <Textarea
-                placeholder="Ex: Evitar exposição solar, manter repouso, retorno em 7 dias..."
+                placeholder="Cuidados, retorno, exames, recomendações..."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="bg-accent border-border"
+                className="bg-accent border-border text-sm"
               />
+            </div>
+
+            {/* Legal notice */}
+            <div className="glass-card p-3 space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                <p className="text-xs font-semibold">Validade Legal</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
+                {config.legalResolution}. Para plena validade jurídica, recomenda-se 
+                assinatura digital com certificado <strong>ICP-Brasil (A1 ou A3)</strong>.
+                O documento é gerado com identificação do profissional ({config.councilPrefix})
+                e data da consulta.
+              </p>
             </div>
 
             <Button
@@ -207,11 +243,11 @@ const PrescriptionModal = ({
         {step === "actions" && (
           <div className="space-y-4">
             <div className="glass-card p-4 text-center space-y-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success/10 mx-auto">
-                <Check className="h-6 w-6 text-success" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mx-auto">
+                <Check className="h-6 w-6 text-primary" />
               </div>
               <p className="font-semibold text-sm">
-                Receita digital de {patientName} gerada e salva!
+                {config.prescriptionTitle} de {patientName} gerada e salva!
               </p>
               <p className="text-xs text-muted-foreground">
                 O PDF foi baixado e uma cópia foi salva no histórico do paciente.
@@ -228,7 +264,7 @@ const PrescriptionModal = ({
 
             <div className="glass-card p-4 space-y-3">
               <p className="text-sm font-medium text-center">
-                📋 Deseja que nossa contabilidade emita a Nota Fiscal desta consulta para o paciente solicitar reembolso?
+                📋 Deseja que nossa contabilidade emita a Nota Fiscal desta consulta?
               </p>
               <Button
                 onClick={handleInvoice}
