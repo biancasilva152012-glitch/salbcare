@@ -110,7 +110,7 @@ const InvoicesTab = () => {
       setOpen(false);
       toast.success("Nota fiscal gerada!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const deleteMutation = useMutation({
