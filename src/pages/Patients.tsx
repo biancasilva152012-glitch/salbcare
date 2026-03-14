@@ -96,7 +96,7 @@ const Patients = () => {
 
   const openEdit = (p: Tables<"patients">) => {
     setEditId(p.id);
-    setForm({ name: p.name, phone: p.phone || "", email: (p as any).email || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "" });
+    setForm({ name: p.name, phone: p.phone || "", email: (p as any).email || "", birth_date: p.birth_date || "", notes: p.notes || "", medical_history: p.medical_history || "", initial_anamnesis: (p as any).initial_anamnesis || "", procedure_performed: (p as any).procedure_performed || "" });
     setEditOpen(true);
   };
 
