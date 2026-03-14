@@ -27,7 +27,7 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.professional_type) {
-      toast.error("Selecione o tipo profissional");
+      toast.error("Preencha este campo para continuar.");
       return;
     }
     setLoading(true);
