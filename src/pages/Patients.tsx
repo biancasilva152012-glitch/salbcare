@@ -153,6 +153,8 @@ const Patients = () => {
           </PopoverContent>
         </Popover>
       </div>
+      <div className="space-y-1.5"><Label>Anamnese Inicial</Label><Textarea placeholder="Queixa principal, história da doença atual, antecedentes..." value={form.initial_anamnesis} onChange={(e) => setForm({ ...form, initial_anamnesis: e.target.value })} className="bg-accent border-border" rows={3} /></div>
+      <div className="space-y-1.5"><Label>Procedimento Realizado</Label><Textarea placeholder="Descrição do procedimento..." value={form.procedure_performed} onChange={(e) => setForm({ ...form, procedure_performed: e.target.value })} className="bg-accent border-border" rows={3} /></div>
       <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Histórico médico</Label><Textarea placeholder="Histórico..." value={form.medical_history} onChange={(e) => setForm({ ...form, medical_history: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
