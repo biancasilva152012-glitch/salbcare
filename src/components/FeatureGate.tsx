@@ -10,7 +10,7 @@ interface FeatureGateProps {
 }
 
 const PRO_BENEFITS = [
-  "Contador especialista em saúde incluso",
+  "Acesso a contador especialista em saúde",
   "Emissão de NF-e 100% legal",
   "Declaração de Imposto de Renda",
 ];

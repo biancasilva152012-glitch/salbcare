@@ -4,7 +4,7 @@ import { HeartPulse, ArrowRight, Calculator, FileText, TrendingUp, Shield, Check
 import { Button } from "@/components/ui/button";
 
 const differentials = [
-  { icon: Calculator, label: "Contador especializado em saúde incluso" },
+  { icon: Calculator, label: "Conexão com contador especializado em saúde" },
   { icon: FileText, label: "Emissão de notas fiscais 100% legal" },
   { icon: TrendingUp, label: "Gestão financeira sem complicação" },
   { icon: Shield, label: "CNPJ, IR e tributos resolvidos pra você" },

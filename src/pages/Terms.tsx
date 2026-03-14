@@ -35,7 +35,7 @@ const Terms = () => {
                 A SALBCARE não é responsável por erros, omissões ou danos decorrentes dos serviços prestados pelos contadores parceiros. A responsabilidade técnica e legal é exclusivamente do profissional contábil que presta o serviço.
               </p>
               <p>
-                Os honorários dos contadores parceiros para serviços inclusos no plano contratado são cobertos pela assinatura. Serviços adicionais, fora do escopo do plano, devem ser contratados diretamente entre o usuário e o contador, com honorários combinados entre as partes.
+                Os honorários dos contadores parceiros são cobrados diretamente pelo profissional contábil, de acordo com os serviços realizados. A SALBCARE facilita a conexão entre o usuário e o contador, mas não é responsável pelos valores cobrados pelo contador.
               </p>
             </div>
           </section>
