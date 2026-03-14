@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { Calculator, TrendingUp, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
+import TechTermTooltip from "@/components/TechTermTooltip";
 
 const TaxCalculationTab = () => {
   const { user } = useAuth();
