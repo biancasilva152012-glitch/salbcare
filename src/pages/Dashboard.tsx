@@ -80,6 +80,10 @@ const Dashboard = () => {
     enabled: !!user,
   });
 
+  if (profileLoading) {
+    return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
+  }
+
   return (
     <PageContainer>
       <WelcomeOnboarding />
