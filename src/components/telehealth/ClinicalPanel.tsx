@@ -110,12 +110,7 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, pro
     setSaved(false);
   };
 
-  const handleSave = async () => {
-    if (!data.chief_complaint.trim()) {
-      toast.error(`Preencha ao menos: ${config.chiefComplaintLabel}.`);
-      return;
-    }
-
+  const doSave = async () => {
     setSaving(true);
     try {
       const { error } = await (supabase as any).from("medical_records").insert({
@@ -158,6 +153,26 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, pro
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSave = async () => {
+    if (!data.chief_complaint.trim()) {
+      toast.error(`Preencha ao menos: ${config.chiefComplaintLabel}.`);
+      return;
+    }
+
+    if (isFirstSave) {
+      setShowCertAlert(true);
+      return;
+    }
+
+    await doSave();
+  };
+
+  const handleCertAlertContinue = async () => {
+    setShowCertAlert(false);
+    setIsFirstSave(false);
+    await doSave();
   };
 
   const showVitals = ["medico", "dentista", "nutricionista", "fisioterapeuta"].includes(professionalType);
