@@ -50,7 +50,7 @@ const Agenda = () => {
     enabled: !!user && canUseTeam,
   });
 
-  const { data: appointments = [] } = useQuery({
+  const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["appointments", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("appointments").select("*").eq("user_id", user!.id).neq("status", "cancelled").order("date").order("time");
