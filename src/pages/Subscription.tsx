@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, Crown, Zap, Building2, Loader2, ExternalLink } from "lucide-react";
+import { Check, Crown, Zap, Building2, Loader2, ExternalLink, ShieldCheck, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -59,9 +59,30 @@ const Subscription = () => {
   return (
     <PageContainer>
       <div className="space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Planos SalbCare</h1>
-          <p className="text-sm text-muted-foreground mt-1">Escolha o plano ideal para sua prática</p>
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-bold">Planos SALBCARE</h1>
+          <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+            O menor preço do mercado com assessoria contábil especializada em saúde inclusa. Nenhum concorrente oferece isso.
+          </p>
+        </div>
+
+        {/* Value proposition banner */}
+        <div className="glass-card p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <TrendingDown className="h-5 w-5 text-primary shrink-0" />
+            <p className="text-sm font-semibold">Por que a SALBCARE custa menos?</p>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Outros softwares cobram R$ 150–300/mês e você ainda precisa pagar um contador por fora (R$ 200–500/mês). 
+            Na SALBCARE, o <span className="text-foreground font-medium">contador especialista em saúde já está incluso</span> no plano Profissional por apenas R$ 99/mês. 
+            Economia real de até R$ 400/mês.
+          </p>
+          <div className="flex items-center gap-2 pt-1">
+            <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
+            <p className="text-[11px] text-muted-foreground">
+              Todas as obrigações fiscais e contábeis são tratadas por profissional habilitado, 100% dentro da lei.
+            </p>
+          </div>
         </div>
 
         {subscription.subscribed && (
@@ -88,7 +109,7 @@ const Subscription = () => {
             return (
               <div
                 key={key}
-                className={`glass-card p-5 space-y-4 relative ${isCurrentPlan ? "ring-2 ring-primary" : ""} ${isPopular ? "ring-2 ring-secondary" : ""}`}
+                className={`glass-card p-5 space-y-4 relative ${isCurrentPlan ? "ring-2 ring-primary" : ""} ${isPopular && !isCurrentPlan ? "ring-2 ring-secondary" : ""}`}
               >
                 {isCurrentPlan && (
                   <span className="absolute -top-2.5 left-4 text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
@@ -97,7 +118,7 @@ const Subscription = () => {
                 )}
                 {isPopular && !isCurrentPlan && (
                   <span className="absolute -top-2.5 left-4 text-[10px] font-bold uppercase tracking-wider bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
-                    Popular
+                    Mais Escolhido
                   </span>
                 )}
 
@@ -108,7 +129,10 @@ const Subscription = () => {
                     </div>
                     <div>
                       <h3 className="font-bold">{plan.name}</h3>
-                      <div>
+                      {"subtitle" in plan && (
+                        <p className="text-[11px] text-muted-foreground max-w-[200px]">{plan.subtitle as string}</p>
+                      )}
+                      <div className="mt-0.5">
                         <span className="text-2xl font-bold text-primary">R$ {plan.price}</span>
                         <span className="text-xs text-muted-foreground">/mês</span>
                       </div>
@@ -155,6 +179,10 @@ const Subscription = () => {
             );
           })}
         </motion.div>
+
+        <p className="text-center text-[11px] text-muted-foreground pb-4">
+          Todos os planos incluem 7 dias grátis. Cancele quando quiser, sem multa.
+        </p>
       </div>
     </PageContainer>
   );
