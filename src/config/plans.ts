@@ -22,7 +22,7 @@ export const PLANS = {
     popular: true,
     features: [
       "Tudo do Essencial +",
-      "Contador especialista em saúde incluso",
+      "Acesso a contador especialista em saúde",
       "Emissão de NF-e 100% legal pelo contador",
       "Abertura e gestão de CNPJ",
       "Declaração de Imposto de Renda",

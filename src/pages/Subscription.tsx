@@ -146,9 +146,9 @@ const Subscription = () => {
                 {(key === "professional" || key === "clinic") && (
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-accent/50 border border-border">
                     <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      O serviço de assessoria contábil é realizado por contadores parceiros independentes, habilitados com CRC ativo. A SALBCARE facilita a conexão entre você e o contador — o atendimento e a responsabilidade técnica são do profissional contábil. Os honorários do contador estão inclusos no plano contratado.
-                    </p>
+                     <p className="text-[11px] text-muted-foreground leading-relaxed">
+                       O serviço de assessoria contábil é realizado por contadores parceiros independentes, habilitados com CRC ativo. A SALBCARE facilita a conexão entre você e o contador — os honorários são cobrados à parte, diretamente pelo profissional contábil.
+                     </p>
                   </div>
                 )}
 
