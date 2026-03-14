@@ -50,6 +50,9 @@ const BottomNav = () => {
           <Link to="/privacy" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
             Política de Privacidade
           </Link>
+          <Link to="/como-funciona" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Como funciona
+          </Link>
           <a href="mailto:contato@salbcare.com.br" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
             Fale conosco
           </a>
