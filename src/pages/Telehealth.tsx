@@ -209,6 +209,13 @@ const Telehealth = () => {
           userId={user?.id || ""}
         />
       )}
+
+      <ShareBookingLink
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        userId={user?.id || ""}
+        doctorName={profile?.name || ""}
+      />
     </PageContainer>
   );
 };
