@@ -14,7 +14,7 @@ export const PLANS = {
   professional: {
     name: "Profissional",
     subtitle: "Com Contador",
-    price: 79,
+    price: 99,
     price_id: "price_1TAILDBUEEEAHx2hUax01AKh",
     product_id: "prod_U8ZUsScx3u9Uyk",
     popular: true,
