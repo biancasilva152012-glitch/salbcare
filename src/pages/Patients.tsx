@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
 
-const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "" };
+const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "", initial_anamnesis: "", procedure_performed: "" };
 
 const Patients = () => {
   const { user } = useAuth();
