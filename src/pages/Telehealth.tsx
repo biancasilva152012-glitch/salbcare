@@ -106,7 +106,7 @@ const Telehealth = () => {
   const handleDownloadRecord = (tc: any) => {
     const doc = generateMedicalRecordPdf({
       doctorName: profile?.name || "",
-      doctorType: professionalTypeLabel(profile?.professional_type || "medico"),
+      professionalType: profile?.professional_type || "medico",
       doctorCrm: profile?.crm || "",
       patientName: tc.patient_name,
       consultationDate: tc.date,
