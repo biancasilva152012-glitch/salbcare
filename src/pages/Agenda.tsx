@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
+import PageSkeleton from "@/components/PageSkeleton";
+import ListPagination from "@/components/ListPagination";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -22,6 +24,7 @@ import { useFeatureGate } from "@/hooks/useFeatureGate";
 import PatientSearchInput from "@/components/agenda/PatientSearchInput";
 import EmptyState from "@/components/EmptyState";
 import { CalendarX, Copy, Link } from "lucide-react";
+import { usePagination } from "@/hooks/usePagination";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 
