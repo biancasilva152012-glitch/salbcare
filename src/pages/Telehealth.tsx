@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText, Link2, Plus } from "lucide-react";
+import { Video, PhoneOff, Mic, MicOff, Monitor, Clock, FileText, Link2, Plus, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
 import ShareBookingLink from "@/components/telehealth/ShareBookingLink";
 import CreateTeleconsultationModal from "@/components/telehealth/CreateTeleconsultationModal";
+import ClinicalPanel from "@/components/telehealth/ClinicalPanel";
+import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
+import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
+import { toast } from "sonner";
 
 const Telehealth = () => {
   const { user } = useAuth();
@@ -24,6 +28,8 @@ const Telehealth = () => {
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [clinicalSaved, setClinicalSaved] = useState(false);
+  const [savedClinicalData, setSavedClinicalData] = useState<any>(null);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -56,52 +62,97 @@ const Telehealth = () => {
     enabled: !!user,
   });
 
+  const professionalTypeLabel = (type: string) => {
+    const map: Record<string, string> = {
+      medico: "Médico(a)", dentista: "Dentista", psicologo: "Psicólogo(a)",
+      fisioterapeuta: "Fisioterapeuta", nutricionista: "Nutricionista",
+    };
+    return map[type] || type;
+  };
+
   const getPatientInfo = (tc: any) => {
     const patient = patients.find((p) => p.id === tc.patient_id || p.name === tc.patient_name);
     return { id: patient?.id || tc.patient_id, phone: patient?.phone || null };
   };
 
-  const handleEndCall = () => {
+  const handleEndCall = async () => {
+    // Mark teleconsultation as completed
+    await supabase.from("teleconsultations").update({ status: "completed" }).eq("id", callTcId);
+    queryClient.invalidateQueries({ queryKey: ["teleconsultations"] });
+
     setInCall(false);
-    const tc = teleconsultations.find((t) => t.id === callTcId);
-    if (tc) {
-      setPrescriptionTc({
-        ...tc,
-        ...getPatientInfo(tc),
-      });
-      setPrescriptionOpen(true);
+
+    // If clinical data was saved with prescription or certificate, open the PDF generation
+    if (savedClinicalData && (savedClinicalData.prescription || savedClinicalData.certificate)) {
+      const tc = teleconsultations.find((t) => t.id === callTcId);
+      if (tc) {
+        setPrescriptionTc({
+          ...tc,
+          ...getPatientInfo(tc),
+        });
+        setPrescriptionOpen(true);
+      }
     }
+
+    setClinicalSaved(false);
+    setSavedClinicalData(null);
   };
 
-  const professionalTypeLabel = (type: string) => {
-    const map: Record<string, string> = {
-      medico: "Médico(a)",
-      dentista: "Dentista",
-      psicologo: "Psicólogo(a)",
-      fisioterapeuta: "Fisioterapeuta",
-      nutricionista: "Nutricionista",
-    };
-    return map[type] || type;
+  const handleClinicalSaved = (data: any) => {
+    setClinicalSaved(true);
+    setSavedClinicalData(data);
   };
 
+  const handleDownloadRecord = (tc: any) => {
+    const doc = generateMedicalRecordPdf({
+      doctorName: profile?.name || "",
+      doctorType: professionalTypeLabel(profile?.professional_type || "medico"),
+      doctorCrm: profile?.crm || "",
+      patientName: tc.patient_name,
+      consultationDate: tc.date,
+    });
+    doc.save(`prontuario-${tc.patient_name.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`);
+    toast.success("Prontuário baixado!");
+  };
+
+  // In-call view with clinical panel
   if (inCall) {
-    const initials = callPatient.split(" ").map(n => n[0]).join("");
+    const initials = callPatient.split(" ").map((n: string) => n[0]).join("").substring(0, 2);
     return (
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
-        <div className="flex-1 flex items-center justify-center relative">
-          <div className="flex h-32 w-32 items-center justify-center rounded-full bg-accent text-4xl font-bold text-primary">{initials}</div>
-          <p className="absolute bottom-8 text-sm text-muted-foreground">{callPatient} • Teleconsulta em andamento</p>
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/95 backdrop-blur">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+              {initials}
+            </div>
+            <div>
+              <p className="text-sm font-semibold">{callPatient}</p>
+              <p className="text-[11px] text-muted-foreground">Teleconsulta em andamento</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setMuted(!muted)} className={`flex h-10 w-10 items-center justify-center rounded-full ${muted ? "bg-destructive text-destructive-foreground" : "bg-accent"}`}>
+              {muted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </button>
+            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+              <Monitor className="h-4 w-4" />
+            </button>
+            <button onClick={handleEndCall} className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive text-destructive-foreground">
+              <PhoneOff className="h-4 w-4" />
+            </button>
+          </div>
         </div>
-        <div className="flex items-center justify-center gap-4 pb-10 pt-4">
-          <button onClick={() => setMuted(!muted)} className={`flex h-14 w-14 items-center justify-center rounded-full ${muted ? "bg-destructive" : "bg-accent"}`}>
-            {muted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
-          </button>
-          <button className="flex h-14 w-14 items-center justify-center rounded-full bg-accent">
-            <Monitor className="h-6 w-6" />
-          </button>
-          <button onClick={handleEndCall} className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive">
-            <PhoneOff className="h-6 w-6" />
-          </button>
+
+        {/* Clinical panel scrollable */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <ClinicalPanel
+            userId={user?.id || ""}
+            patientName={callPatient}
+            patientId={callPatientId}
+            teleconsultationId={callTcId}
+            onSaved={handleClinicalSaved}
+          />
         </div>
       </div>
     );
@@ -150,7 +201,7 @@ const Telehealth = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
-                      {tc.patient_name.split(" ").map((n: string) => n[0]).join("")}
+                      {tc.patient_name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                     </div>
                     <div>
                       <p className="text-sm font-medium">{tc.patient_name}</p>
@@ -179,20 +230,27 @@ const Telehealth = () => {
                     </Button>
                   )}
                   {tc.status === "completed" && (
-                    <Button
-                      onClick={() => {
-                        setPrescriptionTc({
-                          ...tc,
-                          ...patientInfo,
-                        });
-                        setPrescriptionOpen(true);
-                      }}
-                      size="sm"
-                      variant="outline"
-                      className="flex-1 gap-1"
-                    >
-                      <FileText className="h-4 w-4" /> Gerar Receita e Atestado
-                    </Button>
+                    <>
+                      <Button
+                        onClick={() => {
+                          setPrescriptionTc({ ...tc, ...patientInfo });
+                          setPrescriptionOpen(true);
+                        }}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 gap-1"
+                      >
+                        <FileText className="h-4 w-4" /> Receita/Atestado
+                      </Button>
+                      <Button
+                        onClick={() => handleDownloadRecord(tc)}
+                        size="sm"
+                        variant="outline"
+                        className="gap-1"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>

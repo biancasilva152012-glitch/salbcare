@@ -340,6 +340,99 @@ export type Database = {
           },
         ]
       }
+      medical_records: {
+        Row: {
+          allergies: string | null
+          certificate: string | null
+          chief_complaint: string | null
+          consultation_date: string
+          created_at: string
+          current_medications: string | null
+          diagnosis: string | null
+          family_history: string | null
+          follow_up_notes: string | null
+          history_present_illness: string | null
+          icd_code: string | null
+          id: string
+          past_medical_history: string | null
+          patient_id: string | null
+          patient_name: string
+          physical_exam: string | null
+          prescription: string | null
+          social_history: string | null
+          teleconsultation_id: string | null
+          treatment_plan: string | null
+          updated_at: string
+          user_id: string
+          vital_signs: Json | null
+        }
+        Insert: {
+          allergies?: string | null
+          certificate?: string | null
+          chief_complaint?: string | null
+          consultation_date?: string
+          created_at?: string
+          current_medications?: string | null
+          diagnosis?: string | null
+          family_history?: string | null
+          follow_up_notes?: string | null
+          history_present_illness?: string | null
+          icd_code?: string | null
+          id?: string
+          past_medical_history?: string | null
+          patient_id?: string | null
+          patient_name: string
+          physical_exam?: string | null
+          prescription?: string | null
+          social_history?: string | null
+          teleconsultation_id?: string | null
+          treatment_plan?: string | null
+          updated_at?: string
+          user_id: string
+          vital_signs?: Json | null
+        }
+        Update: {
+          allergies?: string | null
+          certificate?: string | null
+          chief_complaint?: string | null
+          consultation_date?: string
+          created_at?: string
+          current_medications?: string | null
+          diagnosis?: string | null
+          family_history?: string | null
+          follow_up_notes?: string | null
+          history_present_illness?: string | null
+          icd_code?: string | null
+          id?: string
+          past_medical_history?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          physical_exam?: string | null
+          prescription?: string | null
+          social_history?: string | null
+          teleconsultation_id?: string | null
+          treatment_plan?: string | null
+          updated_at?: string
+          user_id?: string
+          vital_signs?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_records_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medical_records_teleconsultation_id_fkey"
+            columns: ["teleconsultation_id"]
+            isOneToOne: false
+            referencedRelation: "teleconsultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_hires: {
         Row: {
           created_at: string
