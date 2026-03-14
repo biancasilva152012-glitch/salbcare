@@ -36,12 +36,23 @@ interface CnpjRow {
   created_at: string;
 }
 
+interface ChatConvo {
+  user_id: string;
+  user_name: string;
+  last_message: string;
+  last_at: string;
+}
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [cnpjRequests, setCnpjRequests] = useState<CnpjRow[]>([]);
+  const [chatConvos, setChatConvos] = useState<ChatConvo[]>([]);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatReply, setChatReply] = useState("");
   const [loadingData, setLoadingData] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
