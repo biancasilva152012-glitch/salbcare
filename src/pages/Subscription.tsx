@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, Crown, Zap, Building2, Loader2, ExternalLink, ShieldCheck, TrendingDown } from "lucide-react";
+import { Check, Crown, Zap, Building2, Loader2, ExternalLink, ShieldCheck, TrendingDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";

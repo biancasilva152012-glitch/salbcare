@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Send, Bot, User, Info } from "lucide-react";
+import { Send, Bot, User, Info, ShieldCheck, ExternalLink, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Message {
   id: string;
@@ -14,11 +17,28 @@ interface Message {
   created_at: string;
 }
 
+const WELCOME_MODAL_KEY = "salbcare_chat_welcome_seen";
+
 const AccountantChatTab = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [message, setMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  // Show welcome modal only once
+  useEffect(() => {
+    if (user && !localStorage.getItem(`${WELCOME_MODAL_KEY}_${user.id}`)) {
+      setShowWelcome(true);
+    }
+  }, [user]);
+
+  const handleDismissWelcome = () => {
+    if (user) {
+      localStorage.setItem(`${WELCOME_MODAL_KEY}_${user.id}`, "true");
+    }
+    setShowWelcome(false);
+  };
 
   const { data: messages = [] } = useQuery({
     queryKey: ["chat-messages", user?.id],
@@ -32,6 +52,27 @@ const AccountantChatTab = () => {
     },
     enabled: !!user,
     refetchInterval: 5000,
+  });
+
+  // Fetch the partner accountant info
+  const { data: partnerInfo } = useQuery({
+    queryKey: ["partner-accountant", user?.id],
+    queryFn: async () => {
+      const { data: hire } = await supabase
+        .from("partner_hires")
+        .select("partner_id")
+        .eq("user_id", user!.id)
+        .limit(1)
+        .maybeSingle();
+      if (!hire) return null;
+      const { data: partner } = await supabase
+        .from("accounting_partners")
+        .select("*")
+        .eq("id", hire.partner_id)
+        .single();
+      return partner;
+    },
+    enabled: !!user,
   });
 
   useEffect(() => {
@@ -60,12 +101,14 @@ const AccountantChatTab = () => {
     sendMutation.mutate();
   };
 
+  const accountantName = partnerInfo?.company_name || "seu contador parceiro";
+
   return (
     <div className="flex flex-col h-[calc(100vh-220px)]">
       <div className="glass-card p-3 mb-3 flex items-start gap-2">
         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
         <p className="text-xs text-muted-foreground">
-          Precisa de ajuda com contabilidade? Nosso contador especialista em saúde pode te ajudar com declaração de imposto de renda, dúvidas contábeis, emissão de notas fiscais, enquadramento tributário e muito mais. Todas as notas fiscais são emitidas exclusivamente pelo contador, garantindo total conformidade com a legislação vigente.
+          Precisa de ajuda com contabilidade? Seu contador parceiro pode te ajudar com declaração de imposto de renda, dúvidas contábeis, enquadramento tributário e muito mais. As notas fiscais são emitidas exclusivamente pelo contador, garantindo conformidade legal.
         </p>
       </div>
 
@@ -76,7 +119,7 @@ const AccountantChatTab = () => {
               <Bot className="h-6 w-6 text-primary" />
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Inicie uma conversa com seu contador. Ele responderá o mais breve possível.
+              Inicie uma conversa com seu contador parceiro. Ele responderá o mais breve possível.
             </p>
           </div>
         )}
@@ -115,6 +158,79 @@ const AccountantChatTab = () => {
           <Send className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Fixed footer disclaimer */}
+      <div className="pt-2 pb-1">
+        <p className="text-[10px] text-muted-foreground/60 text-center leading-relaxed">
+          A assessoria contábil é prestada por contador parceiro independente com CRC ativo. A SALBCARE é a plataforma de conexão — não é um escritório de contabilidade.
+        </p>
+      </div>
+
+      {/* Welcome modal - shown only once */}
+      <Dialog open={showWelcome} onOpenChange={(open) => { if (!open) handleDismissWelcome(); }}>
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              Como funciona sua assessoria contábil
+            </DialogTitle>
+            <DialogDescription asChild>
+              <div className="text-sm leading-relaxed pt-2 space-y-3">
+                <p>
+                  Você será atendido por <span className="font-medium text-foreground">{accountantName}</span>, contador parceiro da SALBCARE com CRC ativo.
+                </p>
+
+                <div>
+                  <p className="font-medium text-foreground mb-1">O que ele pode te ajudar:</p>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-success mt-0.5">✓</span>
+                      Tirar dúvidas sobre Carnê-Leão, MEI, Simples Nacional e IRPF
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-success mt-0.5">✓</span>
+                      Orientar sobre abertura ou migração de empresa
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-success mt-0.5">✓</span>
+                      Revisar sua situação tributária e sugerir o melhor regime
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-success mt-0.5">✓</span>
+                      Emitir relatórios e pareceres dentro do seu plano
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <p className="font-medium text-foreground mb-1">O que está fora do escopo deste plano:</p>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-destructive mt-0.5">✕</span>
+                      Execução de serviços contábeis completos (escrituração, balanço, folha)
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-destructive mt-0.5">✕</span>
+                      Representação junto à Receita Federal
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-destructive mt-0.5">✕</span>
+                      Serviços que exijam procuração ou contrato direto com o contador
+                    </li>
+                  </ul>
+                </div>
+
+                <p className="text-xs text-muted-foreground border-t border-border pt-2">
+                  Para serviços além do escopo, seu contador parceiro pode te atender diretamente mediante contrato e honorários à parte.
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <Button onClick={handleDismissWelcome} className="w-full gradient-primary mt-2">
+            Entendi, iniciar atendimento
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
