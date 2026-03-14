@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ClipboardList, Stethoscope, FileText, Award, Save, 
-  Loader2, ChevronDown, ChevronUp, Heart, Thermometer 
+import {
+  ClipboardList, Stethoscope, FileText, Award, Save,
+  Loader2, ChevronDown, ChevronUp, Thermometer
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { getProfessionConfig } from "@/config/professions";
 
 interface VitalSigns {
   blood_pressure?: string;
@@ -44,6 +45,7 @@ interface ClinicalPanelProps {
   patientName: string;
   patientId: string | null;
   teleconsultationId: string;
+  professionalType: string;
   onSaved: (data: ClinicalData) => void;
 }
 
@@ -67,7 +69,8 @@ const initialData: ClinicalData = {
   follow_up_notes: "",
 };
 
-const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onSaved }: ClinicalPanelProps) => {
+const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, professionalType, onSaved }: ClinicalPanelProps) => {
+  const config = getProfessionConfig(professionalType);
   const [data, setData] = useState<ClinicalData>(initialData);
   const [saving, setSaving] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<Section>>(new Set(["anamnesis"]));
@@ -96,7 +99,7 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
 
   const handleSave = async () => {
     if (!data.chief_complaint.trim()) {
-      toast.error("Preencha ao menos a queixa principal.");
+      toast.error(`Preencha ao menos: ${config.chiefComplaintLabel}.`);
       return;
     }
 
@@ -126,7 +129,6 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
 
       if (error) throw error;
 
-      // Update patient record with anamnesis if patient exists
       if (patientId && data.chief_complaint) {
         await supabase.from("patients").update({
           initial_anamnesis: data.chief_complaint,
@@ -145,19 +147,21 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
     }
   };
 
-  const sections: { key: Section; icon: typeof ClipboardList; title: string; color: string }[] = [
-    { key: "anamnesis", icon: ClipboardList, title: "Anamnese", color: "text-primary" },
-    { key: "exam", icon: Stethoscope, title: "Exame Físico & Sinais Vitais", color: "text-primary" },
-    { key: "diagnosis", icon: Heart, title: "Diagnóstico & Conduta", color: "text-primary" },
-    { key: "prescription", icon: FileText, title: "Prescrição Médica", color: "text-primary" },
-    { key: "certificate", icon: Award, title: "Atestado Médico", color: "text-primary" },
+  const showVitals = ["medico", "dentista", "nutricionista", "fisioterapeuta"].includes(professionalType);
+
+  const sections: { key: Section; icon: typeof ClipboardList; title: string }[] = [
+    { key: "anamnesis", icon: ClipboardList, title: professionalType === "psicologo" ? "Histórico do Paciente" : "Anamnese" },
+    { key: "exam", icon: Stethoscope, title: config.examLabel },
+    { key: "diagnosis", icon: Stethoscope, title: config.diagnosisLabel },
+    { key: "prescription", icon: FileText, title: config.prescriptionTitle },
+    { key: "certificate", icon: Award, title: config.certificateTitle },
   ];
 
   return (
     <div className="space-y-3 pb-4">
       <div className="glass-card p-3 flex items-center justify-between">
         <div>
-          <p className="text-xs text-muted-foreground">Prontuário Eletrônico</p>
+          <p className="text-xs text-muted-foreground">{config.recordTitle}</p>
           <p className="text-sm font-semibold">{patientName}</p>
         </div>
         <Button
@@ -167,7 +171,7 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
           className={`gap-1 ${saved ? "bg-success hover:bg-success" : "gradient-primary"}`}
         >
           {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          {saving ? "Salvando..." : saved ? "Salvo ✓" : "Salvar Prontuário"}
+          {saving ? "Salvando..." : saved ? "Salvo ✓" : "Salvar"}
         </Button>
       </div>
 
@@ -198,42 +202,68 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
                   <div className="px-3 pb-3 space-y-3">
                     {key === "anamnesis" && (
                       <>
-                        <Field label="Queixa Principal *" placeholder="Motivo da consulta..." value={data.chief_complaint} onChange={(v) => updateField("chief_complaint", v)} />
-                        <Field label="História da Doença Atual (HDA)" placeholder="Início, evolução, sintomas associados..." value={data.history_present_illness} onChange={(v) => updateField("history_present_illness", v)} rows={3} />
-                        <Field label="Antecedentes Pessoais" placeholder="Doenças prévias, cirurgias, internações..." value={data.past_medical_history} onChange={(v) => updateField("past_medical_history", v)} />
-                        <Field label="Antecedentes Familiares" placeholder="Doenças na família..." value={data.family_history} onChange={(v) => updateField("family_history", v)} />
-                        <Field label="Hábitos de Vida" placeholder="Tabagismo, etilismo, atividade física, alimentação..." value={data.social_history} onChange={(v) => updateField("social_history", v)} />
-                        <Field label="Alergias" placeholder="Medicamentos, alimentos..." value={data.allergies} onChange={(v) => updateField("allergies", v)} rows={1} />
-                        <Field label="Medicações em Uso" placeholder="Nome, dose, frequência..." value={data.current_medications} onChange={(v) => updateField("current_medications", v)} />
+                        <Field label={`${config.chiefComplaintLabel} *`} placeholder={config.chiefComplaintPlaceholder} value={data.chief_complaint} onChange={(v) => updateField("chief_complaint", v)} />
+                        <Field label={config.historyLabel} placeholder={config.historyPlaceholder} value={data.history_present_illness} onChange={(v) => updateField("history_present_illness", v)} rows={3} />
+                        {config.anamnesisFields.includes("past_medical_history") && (
+                          <Field label="Antecedentes Pessoais" placeholder="Doenças prévias, cirurgias, internações..." value={data.past_medical_history} onChange={(v) => updateField("past_medical_history", v)} />
+                        )}
+                        {config.anamnesisFields.includes("family_history") && (
+                          <Field label="Antecedentes Familiares" placeholder="Doenças na família..." value={data.family_history} onChange={(v) => updateField("family_history", v)} />
+                        )}
+                        {config.anamnesisFields.includes("social_history") && (
+                          <Field label={professionalType === "nutricionista" ? "Hábitos Alimentares e Estilo de Vida" : "Hábitos de Vida"} placeholder={professionalType === "nutricionista" ? "Rotina alimentar, atividade física, consumo de água..." : "Tabagismo, etilismo, atividade física..."} value={data.social_history} onChange={(v) => updateField("social_history", v)} />
+                        )}
+                        {config.anamnesisFields.includes("allergies") && (
+                          <Field label="Alergias" placeholder="Medicamentos, alimentos, materiais..." value={data.allergies} onChange={(v) => updateField("allergies", v)} rows={1} />
+                        )}
+                        {config.anamnesisFields.includes("current_medications") && (
+                          <Field label="Medicações / Suplementos em Uso" placeholder="Nome, dose, frequência..." value={data.current_medications} onChange={(v) => updateField("current_medications", v)} />
+                        )}
                       </>
                     )}
 
                     {key === "exam" && (
                       <>
-                        <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                          <Thermometer className="h-3 w-3" /> Sinais Vitais
-                        </p>
-                        <div className="grid grid-cols-2 gap-2">
-                          <VitalField label="PA (mmHg)" placeholder="120/80" value={data.vital_signs.blood_pressure || ""} onChange={(v) => updateVital("blood_pressure", v)} />
-                          <VitalField label="FC (bpm)" placeholder="72" value={data.vital_signs.heart_rate || ""} onChange={(v) => updateVital("heart_rate", v)} />
-                          <VitalField label="Temp (°C)" placeholder="36.5" value={data.vital_signs.temperature || ""} onChange={(v) => updateVital("temperature", v)} />
-                          <VitalField label="FR (irpm)" placeholder="16" value={data.vital_signs.respiratory_rate || ""} onChange={(v) => updateVital("respiratory_rate", v)} />
-                          <VitalField label="SpO2 (%)" placeholder="98" value={data.vital_signs.oxygen_saturation || ""} onChange={(v) => updateVital("oxygen_saturation", v)} />
-                          <VitalField label="Peso (kg)" placeholder="70" value={data.vital_signs.weight || ""} onChange={(v) => updateVital("weight", v)} />
-                        </div>
-                        <Field label="Exame Físico" placeholder="Ectoscopia, ausculta, palpação..." value={data.physical_exam} onChange={(v) => updateField("physical_exam", v)} rows={4} />
+                        {showVitals && (
+                          <>
+                            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                              <Thermometer className="h-3 w-3" /> Sinais Vitais
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                              <VitalField label="PA (mmHg)" placeholder="120/80" value={data.vital_signs.blood_pressure || ""} onChange={(v) => updateVital("blood_pressure", v)} />
+                              <VitalField label="FC (bpm)" placeholder="72" value={data.vital_signs.heart_rate || ""} onChange={(v) => updateVital("heart_rate", v)} />
+                              <VitalField label="Temp (°C)" placeholder="36.5" value={data.vital_signs.temperature || ""} onChange={(v) => updateVital("temperature", v)} />
+                              {professionalType === "nutricionista" ? (
+                                <>
+                                  <VitalField label="Peso (kg)" placeholder="70" value={data.vital_signs.weight || ""} onChange={(v) => updateVital("weight", v)} />
+                                  <VitalField label="Altura (m)" placeholder="1.75" value={data.vital_signs.height || ""} onChange={(v) => updateVital("height", v)} />
+                                  <VitalField label="SpO2 (%)" placeholder="98" value={data.vital_signs.oxygen_saturation || ""} onChange={(v) => updateVital("oxygen_saturation", v)} />
+                                </>
+                              ) : (
+                                <>
+                                  <VitalField label="FR (irpm)" placeholder="16" value={data.vital_signs.respiratory_rate || ""} onChange={(v) => updateVital("respiratory_rate", v)} />
+                                  <VitalField label="SpO2 (%)" placeholder="98" value={data.vital_signs.oxygen_saturation || ""} onChange={(v) => updateVital("oxygen_saturation", v)} />
+                                  <VitalField label="Peso (kg)" placeholder="70" value={data.vital_signs.weight || ""} onChange={(v) => updateVital("weight", v)} />
+                                </>
+                              )}
+                            </div>
+                          </>
+                        )}
+                        <Field label={config.examLabel} placeholder={config.examPlaceholder} value={data.physical_exam} onChange={(v) => updateField("physical_exam", v)} rows={4} />
                       </>
                     )}
 
                     {key === "diagnosis" && (
                       <>
-                        <Field label="Hipótese Diagnóstica" placeholder="Diagnóstico principal e diferenciais..." value={data.diagnosis} onChange={(v) => updateField("diagnosis", v)} />
-                        <div className="space-y-1">
-                          <Label className="text-[11px] text-muted-foreground">CID-10 (opcional)</Label>
-                          <Input placeholder="Ex: J06.9" value={data.icd_code} onChange={(e) => updateField("icd_code", e.target.value)} className="bg-accent border-border h-8 text-sm" />
-                        </div>
-                        <Field label="Plano Terapêutico / Conduta" placeholder="Exames solicitados, orientações, encaminhamentos..." value={data.treatment_plan} onChange={(v) => updateField("treatment_plan", v)} rows={3} />
-                        <Field label="Retorno / Acompanhamento" placeholder="Retorno em 7 dias, acompanhamento semanal..." value={data.follow_up_notes} onChange={(v) => updateField("follow_up_notes", v)} rows={1} />
+                        <Field label={config.diagnosisLabel} placeholder={config.diagnosisPlaceholder} value={data.diagnosis} onChange={(v) => updateField("diagnosis", v)} />
+                        {config.usesIcd && (
+                          <div className="space-y-1">
+                            <Label className="text-[11px] text-muted-foreground">CID-10 (opcional)</Label>
+                            <Input placeholder="Ex: J06.9" value={data.icd_code} onChange={(e) => updateField("icd_code", e.target.value)} className="bg-accent border-border h-8 text-sm" />
+                          </div>
+                        )}
+                        <Field label={config.treatmentLabel} placeholder={config.treatmentPlaceholder} value={data.treatment_plan} onChange={(v) => updateField("treatment_plan", v)} rows={3} />
+                        <Field label="Retorno / Acompanhamento" placeholder="Retorno em 7 dias, frequência semanal..." value={data.follow_up_notes} onChange={(v) => updateField("follow_up_notes", v)} rows={1} />
                       </>
                     )}
 
@@ -241,10 +271,12 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
                       <>
                         <div className="glass-card p-2.5 bg-primary/5">
                           <p className="text-[11px] text-muted-foreground">
-                            ⚕️ A receita digital será gerada como PDF timbrado com seus dados profissionais (nome, registro, tipo). Documento com validade legal conforme Resolução CFM nº 2.299/2021.
+                            ⚕️ {config.canPrescribeMedication
+                              ? `A ${config.prescriptionTitle.toLowerCase()} será gerada como PDF timbrado com seus dados profissionais. ${config.legalResolution}.`
+                              : `As orientações serão geradas como PDF timbrado. ${config.legalResolution}.`}
                           </p>
                         </div>
-                        <Field label="Prescrição" placeholder="1) Amoxicilina 500mg — 1 comp. de 8/8h por 7 dias&#10;2) Ibuprofeno 400mg — 1 comp. de 12/12h se dor" value={data.prescription} onChange={(v) => updateField("prescription", v)} rows={5} />
+                        <Field label={config.prescriptionTitle} placeholder={config.prescriptionPlaceholder} value={data.prescription} onChange={(v) => updateField("prescription", v)} rows={5} />
                       </>
                     )}
 
@@ -252,10 +284,10 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
                       <>
                         <div className="glass-card p-2.5 bg-primary/5">
                           <p className="text-[11px] text-muted-foreground">
-                            📋 O atestado será gerado como PDF timbrado. Conforme legislação, o CID só deve ser informado com autorização expressa do paciente (Lei nº 13.709/2018 — LGPD).
+                            📋 O {config.certificateTitle.toLowerCase()} será gerado como PDF timbrado. Conforme a LGPD (Lei nº 13.709/2018), informações sensíveis de saúde só devem ser incluídas com autorização do paciente.
                           </p>
                         </div>
-                        <Field label="Atestado" placeholder="Atesto para os devidos fins que o(a) paciente necessita de afastamento de suas atividades por ___ dias, a partir de ___/___/___." value={data.certificate} onChange={(v) => updateField("certificate", v)} rows={4} />
+                        <Field label={config.certificateTitle} placeholder={config.certificatePlaceholder} value={data.certificate} onChange={(v) => updateField("certificate", v)} rows={4} />
                       </>
                     )}
                   </div>
@@ -269,7 +301,6 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, onS
   );
 };
 
-// Reusable field components
 const Field = ({ label, placeholder, value, onChange, rows = 2 }: { label: string; placeholder: string; value: string; onChange: (v: string) => void; rows?: number }) => (
   <div className="space-y-1">
     <Label className="text-[11px] text-muted-foreground">{label}</Label>
