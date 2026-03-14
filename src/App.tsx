@@ -55,6 +55,7 @@ const App = () => (
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/booking" element={<PatientBooking />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />
