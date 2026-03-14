@@ -52,7 +52,7 @@ const PrescriptionModal = ({
     try {
       const doc = generatePrescriptionPdf({
         doctorName,
-        doctorType,
+        professionalType,
         doctorCrm,
         patientName,
         prescription,
