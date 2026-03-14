@@ -25,6 +25,7 @@ import Profile from "./pages/Profile";
 import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
+import PatientBooking from "./pages/PatientBooking";
 
 const queryClient = new QueryClient();
 
