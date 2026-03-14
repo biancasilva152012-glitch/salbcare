@@ -65,7 +65,7 @@ const AccountantChatTab = () => {
       <div className="glass-card p-3 mb-3 flex items-start gap-2">
         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
         <p className="text-xs text-muted-foreground">
-          Precisa de ajuda com contabilidade? Nosso contador pode te ajudar com declaração de imposto de renda, emissão de notas fiscais, abertura de CNPJ, enquadramento tributário e muito mais. Todas as notas fiscais são emitidas exclusivamente pelo contador, garantindo total conformidade com a legislação vigente.
+          Precisa de ajuda com contabilidade? Nosso contador especialista em saúde pode te ajudar com declaração de imposto de renda, dúvidas contábeis, emissão de notas fiscais, enquadramento tributário e muito mais. Todas as notas fiscais são emitidas exclusivamente pelo contador, garantindo total conformidade com a legislação vigente.
         </p>
       </div>
 
