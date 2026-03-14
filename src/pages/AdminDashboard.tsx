@@ -375,6 +375,84 @@ const AdminDashboard = () => {
             )}
           </TabsContent>
 
+          {/* Chat Tab */}
+          <TabsContent value="chat" className="space-y-3">
+            {!selectedChat ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Conversas ({chatConvos.length})
+                </p>
+                {chatConvos.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">Nenhuma conversa ainda</p>
+                )}
+                {chatConvos.map((c) => (
+                  <button
+                    key={c.user_id}
+                    onClick={async () => {
+                      setSelectedChat(c.user_id);
+                      const { data } = await (supabase as any).from("chat_messages").select("*").eq("user_id", c.user_id).order("created_at", { ascending: true });
+                      setChatMessages(data || []);
+                    }}
+                    className="glass-card flex w-full items-center justify-between p-3 text-left hover:border-primary/50 transition-all"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">{c.user_name}</p>
+                      <p className="text-xs text-muted-foreground truncate max-w-[200px]">{c.last_message}</p>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground">{new Date(c.last_at).toLocaleDateString("pt-BR")}</span>
+                  </button>
+                ))}
+              </>
+            ) : (
+              <div className="space-y-3">
+                <button onClick={() => { setSelectedChat(null); setChatMessages([]); }} className="text-xs text-primary hover:underline flex items-center gap-1">
+                  <ArrowLeft className="h-3 w-3" /> Voltar
+                </button>
+                <div className="max-h-[50vh] overflow-y-auto space-y-2">
+                  {chatMessages.map((msg: any) => (
+                    <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}>
+                      <div className={`rounded-2xl px-3 py-2 text-sm max-w-[80%] ${msg.sender === "user" ? "bg-accent" : "bg-primary text-primary-foreground"}`}>
+                        {msg.content}
+                        <p className={`text-[10px] mt-0.5 ${msg.sender === "user" ? "text-muted-foreground" : "text-primary-foreground/60"}`}>
+                          {new Date(msg.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Responder..."
+                    value={chatReply}
+                    onChange={(e) => setChatReply(e.target.value)}
+                    onKeyDown={async (e) => {
+                      if (e.key === "Enter" && chatReply.trim()) {
+                        await (supabase as any).from("chat_messages").insert({ user_id: selectedChat, content: chatReply, sender: "contador" });
+                        setChatReply("");
+                        const { data } = await (supabase as any).from("chat_messages").select("*").eq("user_id", selectedChat).order("created_at", { ascending: true });
+                        setChatMessages(data || []);
+                      }
+                    }}
+                    className="bg-accent border-border"
+                  />
+                  <Button
+                    size="sm"
+                    className="gradient-primary"
+                    onClick={async () => {
+                      if (!chatReply.trim()) return;
+                      await (supabase as any).from("chat_messages").insert({ user_id: selectedChat, content: chatReply, sender: "contador" });
+                      setChatReply("");
+                      const { data } = await (supabase as any).from("chat_messages").select("*").eq("user_id", selectedChat).order("created_at", { ascending: true });
+                      setChatMessages(data || []);
+                    }}
+                  >
+                    Enviar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
           {/* Trials Tab */}
           <TabsContent value="trials" className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
