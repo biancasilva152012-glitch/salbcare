@@ -200,12 +200,15 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="payments" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-accent">
+          <TabsList className="grid w-full grid-cols-5 bg-accent">
             <TabsTrigger value="payments" className="text-xs gap-1">
               <CreditCard className="h-3.5 w-3.5" /> PIX
             </TabsTrigger>
             <TabsTrigger value="cnpj" className="text-xs gap-1">
               <Building2 className="h-3.5 w-3.5" /> CNPJ
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="text-xs gap-1">
+              <MessageCircle className="h-3.5 w-3.5" /> Chat
             </TabsTrigger>
             <TabsTrigger value="trials" className="text-xs gap-1">
               <Clock className="h-3.5 w-3.5" /> Trials
