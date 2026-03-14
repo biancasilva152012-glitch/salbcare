@@ -258,10 +258,13 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, pro
                       <>
                         <Field label={config.diagnosisLabel} placeholder={config.diagnosisPlaceholder} value={data.diagnosis} onChange={(v) => updateField("diagnosis", v)} />
                         {config.usesIcd && (
-                          <div className="space-y-1">
-                            <Label className="text-[11px] text-muted-foreground">CID-10 (opcional)</Label>
-                            <Input placeholder="Ex: J06.9" value={data.icd_code} onChange={(e) => updateField("icd_code", e.target.value)} className="bg-accent border-border h-8 text-sm" />
-                          </div>
+                          <Cid10Autocomplete
+                            value={data.icd_code}
+                            onChange={(code) => updateField("icd_code", code)}
+                            onDiagnosisSelect={(desc) => {
+                              if (!data.diagnosis.trim()) updateField("diagnosis", desc);
+                            }}
+                          />
                         )}
                         <Field label={config.treatmentLabel} placeholder={config.treatmentPlaceholder} value={data.treatment_plan} onChange={(v) => updateField("treatment_plan", v)} rows={3} />
                         <Field label="Retorno / Acompanhamento" placeholder="Retorno em 7 dias, frequência semanal..." value={data.follow_up_notes} onChange={(v) => updateField("follow_up_notes", v)} rows={1} />
