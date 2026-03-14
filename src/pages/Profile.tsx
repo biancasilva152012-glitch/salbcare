@@ -84,7 +84,7 @@ const Profile = () => {
       URL.revokeObjectURL(url);
       toast.success("Dados exportados com sucesso!");
     } catch {
-      toast.error("Erro ao exportar dados.");
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setDownloading(false);
     }
