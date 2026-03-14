@@ -95,7 +95,7 @@ const Subscription = () => {
               </p>
             )}
             <Button onClick={handleManage} variant="outline" size="sm" className="gap-1">
-              <ExternalLink className="h-3.5 w-3.5" /> Gerenciar Assinatura
+              <ExternalLink className="h-3.5 w-3.5" /> Gerenciar meu plano
             </Button>
           </div>
         )}

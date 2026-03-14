@@ -204,7 +204,7 @@ const Profile = () => {
         <button onClick={() => navigate("/subscription")} className="glass-card flex w-full items-center justify-between p-3 text-left">
           <div className="flex items-center gap-3">
             <CreditCard className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">Planos e Assinatura</span>
+            <span className="text-sm font-medium">Meu plano</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
