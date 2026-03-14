@@ -647,6 +647,8 @@ export type Database = {
           notes: string | null
           patient_id: string | null
           patient_name: string
+          room_name: string | null
+          room_url: string | null
           status: string
           updated_at: string
           user_id: string
@@ -659,6 +661,8 @@ export type Database = {
           notes?: string | null
           patient_id?: string | null
           patient_name: string
+          room_name?: string | null
+          room_url?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -671,6 +675,8 @@ export type Database = {
           notes?: string | null
           patient_id?: string | null
           patient_name?: string
+          room_name?: string | null
+          room_url?: string | null
           status?: string
           updated_at?: string
           user_id?: string
