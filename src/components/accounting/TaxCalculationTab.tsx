@@ -105,7 +105,7 @@ const TaxCalculationTab = () => {
           <div key={tax.label} className="glass-card p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className={`text-sm font-semibold ${tax.color}`}>{tax.label}</span>
+                <span className={`text-sm font-semibold ${tax.color}`}><TechTermTooltip term={tax.term}>{tax.label}</TechTermTooltip></span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{tax.rate}</span>
               </div>
             </div>

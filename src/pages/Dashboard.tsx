@@ -79,6 +79,7 @@ const Dashboard = () => {
 
   return (
     <PageContainer>
+      <WelcomeOnboarding />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
         <motion.div variants={item}>
           <p className="text-sm text-muted-foreground">
