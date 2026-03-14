@@ -73,8 +73,8 @@ const CreateTeleconsultationModal = ({
       setTime("");
       setDuration("30");
       setNotes("");
-    } catch (e: any) {
-      toast.error(e.message || "Erro ao agendar teleconsulta.");
+    } catch {
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setSaving(false);
     }
