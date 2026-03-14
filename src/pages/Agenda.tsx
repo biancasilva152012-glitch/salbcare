@@ -76,7 +76,7 @@ const Agenda = () => {
       setOpen(false);
       toast.success("Consulta agendada!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const updateMutation = useMutation({
@@ -99,7 +99,7 @@ const Agenda = () => {
       setEditId(null);
       toast.success("Consulta atualizada!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const deleteMutation = useMutation({
@@ -111,7 +111,7 @@ const Agenda = () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       toast.success("Consulta excluída!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const openEdit = (apt: typeof appointments[0]) => {

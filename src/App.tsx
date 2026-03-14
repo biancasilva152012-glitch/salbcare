@@ -28,6 +28,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import PatientBooking from "./pages/PatientBooking";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Maintenance from "./pages/Maintenance";
 import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/booking" element={<PatientBooking />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/maintenance" element={<Maintenance />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />

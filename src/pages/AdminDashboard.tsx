@@ -111,7 +111,7 @@ const AdminDashboard = () => {
       .update({ payment_status: "active" })
       .eq("user_id", profile.user_id);
     if (error) {
-      toast.error(error.message);
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } else {
       toast.success(`Assinatura de ${profile.name} aprovada!`);
       setProfiles((prev) =>
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
       .update({ payment_status: "suspended" })
       .eq("user_id", profile.user_id);
     if (error) {
-      toast.error(error.message);
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } else {
       toast.success(`Acesso de ${profile.name} suspenso.`);
       setProfiles((prev) =>
@@ -174,7 +174,7 @@ const AdminDashboard = () => {
       pending_approval: { label: "Aguardando", className: "bg-yellow-400/10 text-yellow-400 border-yellow-400/20" },
       suspended: { label: "Suspenso", className: "bg-destructive/10 text-destructive border-destructive/20" },
       none: { label: "Sem pagamento", className: "bg-muted text-muted-foreground border-border" },
-      trial: { label: "Trial", className: "bg-primary/10 text-primary border-primary/20" },
+      trial: { label: "Teste", className: "bg-primary/10 text-primary border-primary/20" },
     };
     const s = map[status] || map.none;
     return <Badge variant="outline" className={s.className}>{s.label}</Badge>;
@@ -220,7 +220,7 @@ const AdminDashboard = () => {
           </div>
           <div className="glass-card p-3 text-center">
             <p className="text-2xl font-bold text-primary">{trialUsers.length}</p>
-            <p className="text-[10px] text-muted-foreground">Em Trial</p>
+            <p className="text-[10px] text-muted-foreground">Em Teste</p>
           </div>
           <div className="glass-card p-3 text-center">
             <p className="text-2xl font-bold text-primary">{profiles.length}</p>
@@ -240,7 +240,7 @@ const AdminDashboard = () => {
               <MessageCircle className="h-3.5 w-3.5" /> Chat
             </TabsTrigger>
             <TabsTrigger value="trials" className="text-xs gap-1">
-              <Clock className="h-3.5 w-3.5" /> Trials
+              <Clock className="h-3.5 w-3.5" /> Teste
             </TabsTrigger>
             <TabsTrigger value="users" className="text-xs gap-1">
               <Users className="h-3.5 w-3.5" /> Todos
@@ -462,7 +462,7 @@ const AdminDashboard = () => {
               <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
             ) : trialUsers.length === 0 ? (
               <div className="glass-card p-6 text-center text-sm text-muted-foreground">
-                Nenhum usuário em trial
+                Nenhum usuário em teste
               </div>
             ) : (
               trialUsers.map((p) => {

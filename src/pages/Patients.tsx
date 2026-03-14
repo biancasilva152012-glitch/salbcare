@@ -60,7 +60,7 @@ const Patients = () => {
       setOpen(false);
       toast.success("Paciente cadastrado!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const updateMutation = useMutation({
@@ -80,7 +80,7 @@ const Patients = () => {
       if (selected && selected.id === editId) setSelected(null);
       toast.success("Paciente atualizado!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const deleteMutation = useMutation({
@@ -93,7 +93,7 @@ const Patients = () => {
       setSelected(null);
       toast.success("Paciente excluído!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const openEdit = (p: Tables<"patients">) => {

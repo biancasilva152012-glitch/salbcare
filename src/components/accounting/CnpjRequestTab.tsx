@@ -61,7 +61,7 @@ const CnpjRequestTab = () => {
       setForm({ name: "", cpf: "", whatsapp: "", specialty: "" });
       setSubmitted(true);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const isValid = form.name.trim() && form.cpf.trim() && form.whatsapp.trim() && form.specialty;

@@ -21,7 +21,7 @@ const ForgotPassword = () => {
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
     } else {
       setSent(true);
     }

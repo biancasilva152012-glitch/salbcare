@@ -110,7 +110,7 @@ const InvoicesTab = () => {
       setOpen(false);
       toast.success("Nota fiscal gerada!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const deleteMutation = useMutation({
@@ -122,7 +122,7 @@ const InvoicesTab = () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       toast.success("Nota fiscal excluída!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const handleExportAbrasf = (inv: any) => {

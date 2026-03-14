@@ -148,8 +148,8 @@ const ClinicalPanel = ({ userId, patientName, patientId, teleconsultationId, pro
       setSaved(true);
       toast.success("Prontuário salvo com sucesso!");
       onSaved(data);
-    } catch (e: any) {
-      toast.error(e.message || "Erro ao salvar prontuário");
+    } catch {
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setSaving(false);
     }

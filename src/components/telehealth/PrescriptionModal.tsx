@@ -90,8 +90,8 @@ const PrescriptionModal = ({
 
       toast.success("Receita gerada com sucesso!");
       setStep("actions");
-    } catch (e: any) {
-      toast.error(e.message || "Erro ao gerar receita");
+    } catch {
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setSaving(false);
     }

@@ -41,7 +41,7 @@ const PatientDocuments = ({ patientId }: PatientDocumentsProps) => {
       queryClient.invalidateQueries({ queryKey: ["patient-documents", patientId] });
       toast.success("Documento excluído!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,8 +77,8 @@ const PatientDocuments = ({ patientId }: PatientDocumentsProps) => {
       queryClient.invalidateQueries({ queryKey: ["patient-documents", patientId] });
       setDescription("");
       toast.success("Documento enviado!");
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao enviar documento");
+    } catch {
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -90,7 +90,7 @@ const PatientDocuments = ({ patientId }: PatientDocumentsProps) => {
       .from("patient-documents")
       .download(filePath);
     if (error) {
-      toast.error("Erro ao baixar documento");
+      toast.error("Não conseguimos baixar o arquivo. Tente de novo.");
       return;
     }
     const url = URL.createObjectURL(data);

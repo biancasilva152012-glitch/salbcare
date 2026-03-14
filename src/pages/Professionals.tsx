@@ -84,7 +84,7 @@ const ProfessionalsContent = () => {
       setOpen(false);
       toast.success("Profissional cadastrado!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const updateMutation = useMutation({
@@ -106,7 +106,7 @@ const ProfessionalsContent = () => {
       setEditId(null);
       toast.success("Profissional atualizado!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const deleteMutation = useMutation({
@@ -118,7 +118,7 @@ const ProfessionalsContent = () => {
       queryClient.invalidateQueries({ queryKey: ["professionals"] });
       toast.success("Profissional removido!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const toggleStatus = useMutation({
@@ -131,7 +131,7 @@ const ProfessionalsContent = () => {
       queryClient.invalidateQueries({ queryKey: ["professionals"] });
       toast.success("Status atualizado!");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const openEdit = (p: typeof professionals[0]) => {

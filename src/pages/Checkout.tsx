@@ -47,8 +47,8 @@ const Checkout = () => {
       if (updateError) throw updateError;
 
       navigate("/payment-success?method=manual");
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch {
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
       setUploading(false);
     }

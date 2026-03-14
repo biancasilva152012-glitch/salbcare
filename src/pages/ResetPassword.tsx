@@ -44,7 +44,7 @@ const ResetPassword = () => {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } else {
       toast.success("Senha redefinida com sucesso!");
       navigate("/dashboard");

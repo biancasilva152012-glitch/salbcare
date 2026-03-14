@@ -21,7 +21,14 @@ const Login = () => {
     const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      const msg = error.message.toLowerCase();
+      if (msg.includes("invalid") || msg.includes("credentials") || msg.includes("password")) {
+        toast.error("E-mail ou senha incorretos. Esqueceu sua senha?");
+      } else if (msg.includes("network") || msg.includes("fetch")) {
+        toast.error("Sem conexão no momento. Verifique sua internet.");
+      } else {
+        toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
+      }
     } else if (authData.user) {
       // Check if user needs onboarding
       const { data: profile } = await supabase

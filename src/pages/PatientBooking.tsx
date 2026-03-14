@@ -57,8 +57,8 @@ const PatientBooking = () => {
       if (error) throw error;
       setSubmitted(true);
       toast.success("Consulta solicitada com sucesso!");
-    } catch (e: any) {
-      toast.error(e.message || "Erro ao solicitar consulta");
+    } catch {
+      toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
     } finally {
       setLoading(false);
     }

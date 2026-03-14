@@ -34,8 +34,8 @@ const Onboarding = () => {
       if (error) throw error;
       toast.success("Plano ativado com 7 dias grátis!");
       navigate("/dashboard");
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch {
+      toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
     } finally {
       setSelecting(null);
     }
