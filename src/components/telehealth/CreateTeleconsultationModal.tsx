@@ -127,7 +127,8 @@ const CreateTeleconsultationModal = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="bg-accent border-border"
+                min={new Date().toISOString().split("T")[0]}
+                className="bg-accent border-border text-foreground [color-scheme:dark]"
               />
             </div>
             <div className="space-y-1.5">
@@ -136,7 +137,7 @@ const CreateTeleconsultationModal = ({
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="bg-accent border-border"
+                className="bg-accent border-border text-foreground [color-scheme:dark]"
               />
             </div>
           </div>
