@@ -55,7 +55,7 @@ const Financial = () => {
   const [filterMonth, setFilterMonth] = useState(new Date());
   const [filterCategory, setFilterCategory] = useState<string>("all");
 
-  const { data: transactions = [] } = useQuery({
+  const { data: transactions = [], isLoading } = useQuery({
     queryKey: ["financial", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("financial_transactions").select("*").eq("user_id", user!.id).order("date", { ascending: false });
