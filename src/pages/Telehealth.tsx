@@ -198,7 +198,7 @@ const Telehealth = () => {
           teleconsultationId={prescriptionTc.id}
           doctorName={profile?.name || ""}
           doctorType={professionalTypeLabel(profile?.professional_type || "medico")}
-          doctorCrm=""
+          doctorCrm={profile?.crm || ""}
           userId={user?.id || ""}
         />
       )}
