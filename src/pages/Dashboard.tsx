@@ -115,7 +115,7 @@ const Dashboard = () => {
               <MessageCircle className="h-5 w-5 text-primary-foreground" />
             </div>
             <div className="text-left flex-1">
-              <p className="text-sm font-semibold">Fale com seu Contador</p>
+              <p className="text-sm font-semibold">Fale com um Contador</p>
               <p className="text-xs text-muted-foreground">NF, CNPJ, IR e dúvidas contábeis — resolvemos tudo pra você</p>
             </div>
           </button>
