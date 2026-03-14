@@ -139,7 +139,7 @@ export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100);
   doc.setFontSize(9);
-  doc.text(data.doctorType, pageWidth / 2, y, { align: "center" });
+  doc.text(`${data.doctorType}${data.doctorCrm ? ` — ${data.doctorCrm}` : ""}`, pageWidth / 2, y, { align: "center" });
 
   // Footer
   const pageCount = doc.getNumberOfPages();
