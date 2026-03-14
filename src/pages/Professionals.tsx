@@ -158,7 +158,7 @@ const ProfessionalsContent = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
         <Label>Nome completo</Label>
-        <Input placeholder="Dr. João Silva" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" />
+        <Input placeholder="Nome do profissional" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
