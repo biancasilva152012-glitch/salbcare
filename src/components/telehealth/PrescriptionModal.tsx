@@ -16,7 +16,7 @@ interface PrescriptionModalProps {
   patientId: string | null;
   teleconsultationId: string;
   doctorName: string;
-  doctorType: string;
+  professionalType: string;
   doctorCrm: string;
   userId: string;
 }
