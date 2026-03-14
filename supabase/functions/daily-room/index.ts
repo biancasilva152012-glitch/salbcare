@@ -30,16 +30,8 @@ Deno.serve(async (req) => {
 
     if (action === "create-room") {
       // Auth check
-      if (!authHeader?.startsWith("Bearer ")) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(
-        authHeader.replace("Bearer ", "")
-      );
-      if (claimsError || !claimsData?.claims) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
