@@ -183,8 +183,8 @@ const ProfessionalsContent = () => {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label>CRM / Registro</Label>
-          <Input placeholder="CRM/SP 123456" value={form.crm} onChange={(e) => setForm({ ...form, crm: e.target.value })} className="bg-accent border-border" />
+          <Label>Registro Profissional</Label>
+          <Input placeholder="Ex: CRM/SP 123456, CRO, CRP..." value={form.crm} onChange={(e) => setForm({ ...form, crm: e.target.value })} className="bg-accent border-border" />
         </div>
         <div className="space-y-1.5">
           <Label>Status</Label>
