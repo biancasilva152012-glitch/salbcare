@@ -16,7 +16,7 @@ interface PrescriptionModalProps {
   patientId: string | null;
   teleconsultationId: string;
   doctorName: string;
-  doctorType: string;
+  professionalType: string;
   doctorCrm: string;
   userId: string;
 }
@@ -31,7 +31,7 @@ const PrescriptionModal = ({
   patientId,
   teleconsultationId,
   doctorName,
-  doctorType,
+  professionalType,
   doctorCrm,
   userId,
 }: PrescriptionModalProps) => {
@@ -52,7 +52,7 @@ const PrescriptionModal = ({
     try {
       const doc = generatePrescriptionPdf({
         doctorName,
-        doctorType,
+        professionalType,
         doctorCrm,
         patientName,
         prescription,

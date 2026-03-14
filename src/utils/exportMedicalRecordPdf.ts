@@ -1,9 +1,10 @@
 import jsPDF from "jspdf";
 import { format } from "date-fns";
+import { getProfessionConfig } from "@/config/professions";
 
 interface MedicalRecordData {
   doctorName: string;
-  doctorType: string;
+  professionalType: string;
   doctorCrm: string;
   patientName: string;
   consultationDate?: string;
@@ -25,16 +26,12 @@ interface MedicalRecordData {
 }
 
 const vitalLabels: Record<string, string> = {
-  blood_pressure: "PA",
-  heart_rate: "FC",
-  temperature: "Temp",
-  respiratory_rate: "FR",
-  oxygen_saturation: "SpO2",
-  weight: "Peso",
-  height: "Altura",
+  blood_pressure: "PA", heart_rate: "FC", temperature: "Temp",
+  respiratory_rate: "FR", oxygen_saturation: "SpO2", weight: "Peso", height: "Altura",
 };
 
 export function generateMedicalRecordPdf(data: MedicalRecordData): jsPDF {
+  const config = getProfessionConfig(data.professionalType);
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const today = format(new Date(), "dd/MM/yyyy");
@@ -56,24 +53,22 @@ export function generateMedicalRecordPdf(data: MedicalRecordData): jsPDF {
   doc.setTextColor(200, 210, 220);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Dr(a). ${data.doctorName}`, 14, 28);
-  doc.text(`${data.doctorType}${data.doctorCrm ? ` — ${data.doctorCrm}` : ""}`, 14, 34);
+  doc.text(`${data.doctorName}`, 14, 28);
+  doc.text(`${config.label}${data.doctorCrm ? ` — ${config.councilPrefix} ${data.doctorCrm}` : ""}`, 14, 34);
 
   doc.setTextColor(160, 170, 180);
   doc.setFontSize(9);
   doc.text(consultDate, pageWidth - 14, 28, { align: "right" });
-  doc.text("PRONTUÁRIO ELETRÔNICO", pageWidth - 14, 34, { align: "right" });
+  doc.text(config.recordTitle.toUpperCase(), pageWidth - 14, 34, { align: "right" });
 
   let y = 54;
 
-  // Title
   doc.setTextColor(15, 23, 42);
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("Prontuário Médico", 14, y);
+  doc.text(config.recordTitle, 14, y);
   y += 8;
 
-  // Patient
   doc.setFontSize(11);
   doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
@@ -86,17 +81,14 @@ export function generateMedicalRecordPdf(data: MedicalRecordData): jsPDF {
   const addSection = (title: string, content: string | undefined) => {
     if (!content?.trim()) return;
     if (y > 255) { doc.addPage(); y = 20; }
-
     doc.setDrawColor(220);
     doc.line(14, y, pageWidth - 14, y);
     y += 6;
-
     doc.setFontSize(11);
     doc.setTextColor(45, 212, 191);
     doc.setFont("helvetica", "bold");
     doc.text(title, 14, y);
     y += 6;
-
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
@@ -109,19 +101,17 @@ export function generateMedicalRecordPdf(data: MedicalRecordData): jsPDF {
     y += 4;
   };
 
-  // Vital signs inline
+  // Vital signs
   if (data.vitalSigns && Object.values(data.vitalSigns).some((v) => v?.trim())) {
     if (y > 255) { doc.addPage(); y = 20; }
     doc.setDrawColor(220);
     doc.line(14, y, pageWidth - 14, y);
     y += 6;
-
     doc.setFontSize(11);
     doc.setTextColor(45, 212, 191);
     doc.setFont("helvetica", "bold");
     doc.text("Sinais Vitais", 14, y);
     y += 6;
-
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
@@ -133,18 +123,18 @@ export function generateMedicalRecordPdf(data: MedicalRecordData): jsPDF {
     y += 8;
   }
 
-  addSection("Queixa Principal", data.chiefComplaint);
-  addSection("História da Doença Atual", data.historyPresentIllness);
+  addSection(config.chiefComplaintLabel, data.chiefComplaint);
+  addSection(config.historyLabel, data.historyPresentIllness);
   addSection("Antecedentes Pessoais", data.pastMedicalHistory);
   addSection("Antecedentes Familiares", data.familyHistory);
   addSection("Hábitos de Vida", data.socialHistory);
   addSection("Alergias", data.allergies);
   addSection("Medicações em Uso", data.currentMedications);
-  addSection("Exame Físico", data.physicalExam);
-  addSection(`Diagnóstico${data.icdCode ? ` (CID: ${data.icdCode})` : ""}`, data.diagnosis);
-  addSection("Plano Terapêutico", data.treatmentPlan);
-  addSection("Prescrição Médica", data.prescription);
-  addSection("Atestado Médico", data.certificate);
+  addSection(config.examLabel, data.physicalExam);
+  addSection(`${config.diagnosisLabel}${data.icdCode ? ` (CID: ${data.icdCode})` : ""}`, data.diagnosis);
+  addSection(config.treatmentLabel, data.treatmentPlan);
+  addSection(config.prescriptionTitle, data.prescription);
+  addSection(config.certificateTitle, data.certificate);
   addSection("Retorno / Acompanhamento", data.followUpNotes);
 
   // Signature
@@ -156,12 +146,12 @@ export function generateMedicalRecordPdf(data: MedicalRecordData): jsPDF {
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(`Dr(a). ${data.doctorName}`, pageWidth / 2, y, { align: "center" });
+  doc.text(data.doctorName, pageWidth / 2, y, { align: "center" });
   y += 5;
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100);
   doc.setFontSize(9);
-  doc.text(`${data.doctorType}${data.doctorCrm ? ` — ${data.doctorCrm}` : ""}`, pageWidth / 2, y, { align: "center" });
+  doc.text(`${config.label}${data.doctorCrm ? ` — ${config.councilPrefix} ${data.doctorCrm}` : ""}`, pageWidth / 2, y, { align: "center" });
 
   // Legal footer
   const pageCount = doc.getNumberOfPages();
@@ -171,10 +161,8 @@ export function generateMedicalRecordPdf(data: MedicalRecordData): jsPDF {
     doc.setFontSize(7);
     doc.setTextColor(160);
     doc.text(
-      `Prontuário eletrônico gerado via SALBCARE — ${today} — Documento com validade legal conforme Resolução CFM nº 2.299/2021 — Pág. ${i}/${pageCount}`,
-      pageWidth / 2,
-      ph - 8,
-      { align: "center" }
+      `${config.recordTitle} gerado via SALBCARE — ${today} — ${config.legalResolution} — Pág. ${i}/${pageCount}`,
+      pageWidth / 2, ph - 8, { align: "center" }
     );
   }
 
