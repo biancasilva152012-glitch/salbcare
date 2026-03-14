@@ -384,7 +384,7 @@ const Financial = () => {
           {filteredTransactions.length === 0 && transactions.length > 0 && (
             <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação neste mês</p>
           )}
-          {filteredTransactions.map((t) => (
+          {txPagination.paginatedItems.map((t) => (
             <div key={t.id} className="glass-card flex items-center justify-between p-3">
               <div className="flex items-center gap-3">
                 <div className={`flex h-9 w-9 items-center justify-center rounded-full ${t.type === "income" ? "bg-success/10" : "bg-destructive/10"}`}>
@@ -421,6 +421,15 @@ const Financial = () => {
               </div>
             </div>
           ))}
+          <ListPagination
+            page={txPagination.page}
+            totalPages={txPagination.totalPages}
+            totalItems={txPagination.totalItems}
+            hasNext={txPagination.hasNext}
+            hasPrev={txPagination.hasPrev}
+            onNext={txPagination.nextPage}
+            onPrev={txPagination.prevPage}
+          />
         </motion.div>
       </div>
     </PageContainer>
