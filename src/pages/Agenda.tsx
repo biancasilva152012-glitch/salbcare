@@ -20,6 +20,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import PatientSearchInput from "@/components/agenda/PatientSearchInput";
+import EmptyState from "@/components/EmptyState";
+import { CalendarX, Copy, Link } from "lucide-react";
+import { toast } from "sonner";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 
