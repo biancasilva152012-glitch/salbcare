@@ -119,6 +119,7 @@ const Patients = () => {
   };
 
   const filtered = patients.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
+  const pagination = usePagination(filtered);
 
   const renderPatientForm = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
