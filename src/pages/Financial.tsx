@@ -118,6 +118,7 @@ const Financial = () => {
   const filterKey = format(filterMonth, "yyyy-MM");
   const filteredByMonth = transactions.filter((t) => t.date.substring(0, 7) === filterKey);
   const filteredTransactions = filterCategory === "all" ? filteredByMonth : filteredByMonth.filter((t) => t.category === filterCategory);
+  const txPagination = usePagination(filteredTransactions);
 
   const totalIncome = filteredTransactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
   const totalExpense = filteredTransactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
