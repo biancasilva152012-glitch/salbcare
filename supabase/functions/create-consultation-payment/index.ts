@@ -74,7 +74,6 @@ serve(async (req) => {
       ],
       mode: "payment",
       payment_intent_data: {
-        application_fee_amount: platformFee,
         transfer_data: {
           destination: doctorProfile.stripe_account_id,
         },

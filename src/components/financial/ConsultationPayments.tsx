@@ -177,7 +177,7 @@ const ConsultationPayments = () => {
       </AlertDialog>
 
       <p className="text-[10px] text-center text-muted-foreground">
-        Pagamentos processados pela Stripe. Transferências em até 2 dias úteis após a consulta. A SALBCARE retém 10% como taxa de intermediação.
+        O pagamento vai direto para o profissional via Pix. Você recebe 100% do valor.
       </p>
     </div>
   );

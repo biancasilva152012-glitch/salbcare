@@ -279,7 +279,7 @@ const Profile = () => {
             </button>
           )}
           <p className="text-[10px] text-muted-foreground px-1">
-            A SALBCARE retém 10% como taxa da plataforma. O restante é transferido diretamente para sua conta.
+            Você recebe 100% do valor de cada consulta. O pagamento vai direto para sua conta.
           </p>
         </div>
 
