@@ -121,41 +121,22 @@ const PatientBooking = () => {
   const doctorPixKey = (doctor as any)?.pix_key || "";
   const doctorCardLink = (doctor as any)?.card_link || "";
 
+  const copyPixKey = () => {
+    navigator.clipboard.writeText(doctorPixKey);
+    toast.success("Chave Pix copiada!");
+  };
+
   const handleSubmit = async () => {
     if (!doctorId) return;
     setLoading(true);
     try {
-      // If there's a price, redirect to Stripe Checkout
-      if (price > 0) {
-        const finalAmount = paymentMethod === "pix" ? pixPrice : price;
-        const { data, error } = await supabase.functions.invoke("create-consultation-payment", {
-          body: {
-            doctor_id: doctorId,
-            patient_name: form.name,
-            patient_email: form.email,
-            patient_phone: form.phone,
-            date: selectedDate,
-            time: selectedTime,
-            payment_method: paymentMethod,
-            amount: finalAmount,
-            notes: `Tel: ${form.phone} | Nasc: ${form.birthDate} | Motivo: ${form.reason || "—"} | Retorno: ${form.isReturning ? "Sim" : "Não"}`,
-          },
-        });
-        if (error) throw error;
-        if (data?.url) {
-          window.location.href = data.url;
-          return;
-        }
-      }
-
-      // Free consultation — just create appointment
       const { error } = await supabase.from("appointments").insert({
         user_id: doctorId,
         patient_name: form.name,
         date: selectedDate,
         time: selectedTime,
         appointment_type: "telehealth",
-        notes: `[Agendamento online] Tel: ${form.phone} | Email: ${form.email} | Nasc: ${form.birthDate} | Motivo: ${form.reason || "—"} | Retorno: ${form.isReturning ? "Sim" : "Não"} | Pagamento: ${paymentMethod}`,
+        notes: `[Agendamento online] Tel: ${form.phone} | Email: ${form.email} | Nasc: ${form.birthDate} | Motivo: ${form.reason || "—"} | Retorno: ${form.isReturning ? "Sim" : "Não"} | Valor: R$ ${price.toFixed(2)}`,
         status: "scheduled",
       });
       if (error) throw error;
