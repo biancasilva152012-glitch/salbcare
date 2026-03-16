@@ -225,6 +225,19 @@ const Financial = () => {
           </div>
         </div>
 
+        <Tabs defaultValue="consultas" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="consultas">💰 Consultas</TabsTrigger>
+            <TabsTrigger value="geral">📊 Geral</TabsTrigger>
+            {hasAccess("advanced_financial_dashboard") && <TabsTrigger value="avancado"><Crown className="h-3 w-3 mr-1" /> Avançado</TabsTrigger>}
+          </TabsList>
+
+          <TabsContent value="consultas" className="mt-4">
+            <ConsultationPaymentsTab />
+          </TabsContent>
+
+          <TabsContent value="geral" className="mt-4 space-y-5">
+
         {/* Month Filter */}
         <div className="flex items-center justify-between glass-card p-2.5">
           <button onClick={() => setFilterMonth(subMonths(filterMonth, 1))} className="p-1 rounded-md hover:bg-accent"><ChevronLeft className="h-4 w-4 text-muted-foreground" /></button>

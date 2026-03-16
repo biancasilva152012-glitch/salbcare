@@ -14,3 +14,9 @@ verify_jwt = true
 
 [functions.create-consultation-payment]
 verify_jwt = false
+
+[functions.refund-consultation]
+verify_jwt = true
+
+[functions.record-consultation-payment]
+verify_jwt = false
