@@ -26,6 +26,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
+import { downloadCsvTemplate, PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 
 const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "", initial_anamnesis: "", procedure_performed: "" };
 
