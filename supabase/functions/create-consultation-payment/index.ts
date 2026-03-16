@@ -51,7 +51,6 @@ serve(async (req) => {
     });
 
     const amountInCents = Math.round(amount * 100);
-    const platformFee = Math.round(amountInCents * 0.10); // 10% platform fee
 
     const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
 
