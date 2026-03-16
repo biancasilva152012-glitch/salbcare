@@ -9,6 +9,7 @@ import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
+import ConsultationSettings from "@/components/profile/ConsultationSettings";
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader,
   AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
@@ -208,6 +209,9 @@ const Profile = () => {
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
+
+        {/* Consultation Settings */}
+        <ConsultationSettings />
 
         {/* LGPD - Privacy & Data Section */}
         <div className="space-y-2">
