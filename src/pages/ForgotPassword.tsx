@@ -52,7 +52,7 @@ const ForgotPassword = () => {
           </form>
         ) : (
           <div className="glass-card p-4 text-center text-sm text-muted-foreground">
-            Um email foi enviado para <span className="text-foreground font-medium">{email}</span> com instruções para redefinir sua senha.
+            Um e-mail foi enviado para <span className="text-foreground font-medium">{email}</span> com instruções para redefinir sua senha.
           </div>
         )}
 
