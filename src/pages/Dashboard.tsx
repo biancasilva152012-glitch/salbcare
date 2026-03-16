@@ -94,7 +94,7 @@ const Dashboard = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={handleRefresh}>
       <WelcomeOnboarding />
       <InstallBanner />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
