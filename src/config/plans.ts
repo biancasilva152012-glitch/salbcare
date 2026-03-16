@@ -29,7 +29,6 @@ export const PLANS = {
       "Enquadramento tributário otimizado",
       "Relatórios financeiros em PDF",
       "Marketplace jurídico",
-      "7 dias grátis para testar",
     ],
   },
   clinic: {
