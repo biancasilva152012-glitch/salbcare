@@ -40,7 +40,7 @@ const Subscription = () => {
         body: { priceId: plan.price_id },
       });
       if (error) throw error;
-      if (data?.url) window.location.href = data.url;
+      if (data?.url) window.open(data.url, "_blank");
     } catch {
       toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
     } finally {
