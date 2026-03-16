@@ -444,7 +444,15 @@ const Financial = () => {
             onNext={txPagination.nextPage}
             onPrev={txPagination.prevPage}
           />
-        </motion.div>
+         </motion.div>
+          </TabsContent>
+
+          {hasAccess("advanced_financial_dashboard") && (
+            <TabsContent value="avancado" className="mt-4">
+              <AdvancedFinancialDashboard />
+            </TabsContent>
+          )}
+        </Tabs>
       </div>
     </PageContainer>
   );
