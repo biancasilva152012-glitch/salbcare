@@ -326,7 +326,7 @@ const PatientBooking = () => {
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-4">
               <h2 className="text-sm font-semibold flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-primary" /> Confirmação e pagamento
+                <QrCode className="h-4 w-4 text-primary" /> Confirmação e pagamento
               </h2>
 
               {/* Summary */}
@@ -355,40 +355,45 @@ const PatientBooking = () => {
                 )}
               </div>
 
-              {/* Payment method */}
-              {price > 0 && (
+              {/* PIX Payment Info */}
+              {price > 0 && doctorPixKey && (
                 <div className="space-y-2">
-                  <Label className="text-xs">Forma de pagamento</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => setPaymentMethod("pix")}
-                      className={cn(
-                        "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-all",
-                        paymentMethod === "pix"
-                          ? "border-green-500 bg-green-500/10 ring-1 ring-green-500"
-                          : "border-border bg-accent hover:bg-accent/80"
-                      )}
-                    >
-                      <QrCode className="h-5 w-5" />
-                      <span className="text-xs font-medium">Pix</span>
-                      <span className="text-[10px] text-green-600 dark:text-green-400 font-semibold">5% desconto</span>
-                      <span className="text-xs font-bold">R$ {pixPrice.toFixed(2)}</span>
-                    </button>
-                    <button
-                      onClick={() => setPaymentMethod("card")}
-                      className={cn(
-                        "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-all",
-                        paymentMethod === "card"
-                          ? "border-primary bg-primary/10 ring-1 ring-primary"
-                          : "border-border bg-accent hover:bg-accent/80"
-                      )}
-                    >
-                      <CreditCard className="h-5 w-5" />
-                      <span className="text-xs font-medium">Cartão</span>
-                      {canInstall && <span className="text-[10px] text-muted-foreground">até 3x sem juros</span>}
-                      <span className="text-xs font-bold">R$ {price.toFixed(2)}</span>
-                    </button>
+                  <p className="text-xs font-medium">Pague via Pix diretamente ao profissional:</p>
+                  <div className="rounded-lg border border-border bg-accent/50 p-3 flex items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] text-muted-foreground">Chave Pix</p>
+                      <p className="text-sm font-mono font-medium truncate">{doctorPixKey}</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={copyPixKey} className="shrink-0 gap-1 text-xs">
+                      <Copy className="h-3 w-3" /> Copiar
+                    </Button>
                   </div>
+                  <p className="text-[10px] text-muted-foreground">
+                    Transfira <strong>R$ {price.toFixed(2)}</strong> para a chave acima. O pagamento vai 100% para o profissional.
+                  </p>
+                </div>
+              )}
+
+              {/* Card Payment Link */}
+              {price > 0 && doctorCardLink && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium">Ou pague via cartão:</p>
+                  <a
+                    href={doctorCardLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 rounded-lg border border-border bg-accent p-3 text-sm font-medium hover:bg-accent/80 transition-colors"
+                  >
+                    <ExternalLink className="h-4 w-4" /> Pagar com cartão
+                  </a>
+                </div>
+              )}
+
+              {price > 0 && !doctorPixKey && !doctorCardLink && (
+                <div className="rounded-lg border border-border bg-accent/50 p-3">
+                  <p className="text-xs text-muted-foreground">
+                    O profissional ainda não cadastrou dados de pagamento. Entre em contato diretamente para combinar o pagamento.
+                  </p>
                 </div>
               )}
 
@@ -400,7 +405,7 @@ const PatientBooking = () => {
               )}
 
               <p className="text-[10px] text-muted-foreground leading-relaxed">
-                O pagamento vai direto para o profissional via Pix. 100% do valor é do profissional.
+                O pagamento vai direto para o profissional. 100% do valor é do profissional.
               </p>
             </motion.div>
           )}
