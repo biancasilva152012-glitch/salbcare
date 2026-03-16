@@ -9,6 +9,7 @@ import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
+import ConsultationSettings from "@/components/profile/ConsultationSettings";
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader,
   AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
