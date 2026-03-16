@@ -63,7 +63,7 @@ const Install = () => {
 
         {isInstalled ? (
           <div className="glass-card p-6 space-y-3">
-            <CheckCircle className="h-12 w-12 text-emerald-400 mx-auto" />
+            <CheckCircle className="h-12 w-12 text-success mx-auto" />
             <p className="font-semibold text-lg">App já instalado!</p>
             <p className="text-sm text-muted-foreground">
               O SALBCARE já está na tela inicial do seu dispositivo.
