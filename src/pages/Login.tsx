@@ -12,7 +12,7 @@ import { toast } from "sonner";
 const bullets = [
   { icon: Zap, text: "Agenda, prontuário e teleconsulta" },
   { icon: Shield, text: "Assessoria contábil integrada" },
-  { icon: CheckCircle2, text: "Menor preço do mercado" },
+  { icon: CheckCircle2, text: "Você fica com 100% das consultas" },
   { icon: CheckCircle2, text: "7 dias grátis — sem cartão" },
 ];
 
