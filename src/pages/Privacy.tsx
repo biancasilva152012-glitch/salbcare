@@ -5,7 +5,7 @@ const Privacy = () => {
     <PageContainer>
       <div className="space-y-6 pb-8">
         <h1 className="text-2xl font-bold">Política de Privacidade</h1>
-        <p className="text-xs text-muted-foreground">Última atualização: 14 de março de 2026</p>
+        <p className="text-xs text-muted-foreground">Última atualização: 16 de março de 2026</p>
 
         <div className="space-y-5 text-sm text-muted-foreground leading-relaxed">
           <section className="space-y-2">
@@ -33,8 +33,20 @@ const Privacy = () => {
               <li>Enviar comunicações sobre sua conta e assinatura</li>
               <li>Melhorar a experiência de uso da plataforma</li>
             </ul>
-            <p className="font-medium text-foreground">
-              Nunca vendemos, alugamos ou compartilhamos seus dados com terceiros para fins publicitários.
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-semibold text-foreground">Compartilhamento de dados</h2>
+            <p>
+              A SALBCARE poderá compartilhar dados <strong>agregados e anonimizados</strong> com parceiros comerciais (B2B) para fins de análise de mercado, relatórios setoriais e melhoria de serviços. Esses dados:
+            </p>
+            <ul className="list-disc pl-4 space-y-1">
+              <li>Não permitem a identificação individual de profissionais ou pacientes</li>
+              <li>São processados de forma estatística (ex: volume de consultas por região, especialidades mais ativas)</li>
+              <li>Nunca incluem dados sensíveis de saúde, informações pessoais ou dados financeiros individualizados</li>
+            </ul>
+            <p>
+              Dados pessoais identificáveis <strong>nunca</strong> são compartilhados com terceiros sem seu consentimento expresso, exceto quando exigido por lei ou ordem judicial.
             </p>
           </section>
 
