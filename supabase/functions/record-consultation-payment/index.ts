@@ -51,11 +51,6 @@ serve(async (req) => {
     }
 
     const amountTotal = (session.amount_total || 0) / 100;
-    const paymentIntent = session.payment_intent as any;
-    const applicationFee = paymentIntent?.application_fee_amount
-      ? paymentIntent.application_fee_amount / 100
-      : Math.round(amountTotal * 0.10 * 100) / 100;
-    const netAmount = amountTotal - applicationFee;
 
     const paymentMethodType = session.payment_method_types?.[0] || "card";
 
