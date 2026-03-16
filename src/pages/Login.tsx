@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, HeartPulse } from "lucide-react";
+import { Eye, EyeOff, HeartPulse, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+const bullets = [
+  "Agenda, prontuário e teleconsulta",
+  "Assessoria contábil integrada",
+  "Menor preço do mercado",
+  "7 dias grátis — sem cartão",
+];
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,13 +37,12 @@ const Login = () => {
         toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
       }
     } else if (authData.user) {
-      // Check if user needs onboarding
       const { data: profile } = await supabase
         .from("profiles")
         .select("trial_start_date, payment_status")
         .eq("user_id", authData.user.id)
         .single();
-      
+
       const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
       navigate(needsOnboarding ? "/onboarding" : "/dashboard");
     }
@@ -48,16 +54,31 @@ const Login = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-sm space-y-8"
+        className="w-full max-w-sm space-y-6"
       >
+        {/* Branding */}
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary">
-            <HeartPulse className="h-7 w-7 text-primary-foreground" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/20">
+            <HeartPulse className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">SALBCARE</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Entre na sua conta profissional</p>
+          <h1 className="text-2xl font-extrabold tracking-tight">SALBCARE</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Você cuida dos pacientes.{" "}
+            <span className="text-primary font-semibold">A gente cuida do seu negócio.</span>
+          </p>
         </div>
 
+        {/* Value props */}
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          {bullets.map((text) => (
+            <div key={text} className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+              <span className="text-[11px] text-muted-foreground">{text}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Login form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -104,12 +125,14 @@ const Login = () => {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Não tem conta?{" "}
-          <Link to="/register" className="text-primary hover:underline font-medium">
-            Cadastre-se
-          </Link>
-        </p>
+        <div className="text-center space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Não tem conta?{" "}
+            <Link to="/register" className="text-primary hover:underline font-medium">
+              Comece grátis por 7 dias
+            </Link>
+          </p>
+        </div>
       </motion.div>
     </div>
   );
