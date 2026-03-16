@@ -126,6 +126,30 @@ const PatientBooking = () => {
     if (!doctorId) return;
     setLoading(true);
     try {
+      // If there's a price, redirect to Stripe Checkout
+      if (price > 0) {
+        const finalAmount = paymentMethod === "pix" ? pixPrice : price;
+        const { data, error } = await supabase.functions.invoke("create-consultation-payment", {
+          body: {
+            doctor_id: doctorId,
+            patient_name: form.name,
+            patient_email: form.email,
+            patient_phone: form.phone,
+            date: selectedDate,
+            time: selectedTime,
+            payment_method: paymentMethod,
+            amount: finalAmount,
+            notes: `Tel: ${form.phone} | Nasc: ${form.birthDate} | Motivo: ${form.reason || "—"} | Retorno: ${form.isReturning ? "Sim" : "Não"}`,
+          },
+        });
+        if (error) throw error;
+        if (data?.url) {
+          window.location.href = data.url;
+          return;
+        }
+      }
+
+      // Free consultation — just create appointment
       const { error } = await supabase.from("appointments").insert({
         user_id: doctorId,
         patient_name: form.name,
