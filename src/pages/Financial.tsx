@@ -25,6 +25,7 @@ import { ptBR } from "date-fns/locale";
 import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
 import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
+import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
