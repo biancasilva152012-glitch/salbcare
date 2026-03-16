@@ -4,19 +4,22 @@ project_id = "fevrdqmqmbahmeaymplq"
 verify_jwt = false
 
 [functions.validate-pix-receipt]
-verify_jwt = true
+verify_jwt = false
 
 [functions.connect-onboarding]
-verify_jwt = true
+verify_jwt = false
 
 [functions.check-connect-status]
-verify_jwt = true
+verify_jwt = false
 
 [functions.create-consultation-payment]
 verify_jwt = false
 
-[functions.refund-consultation]
-verify_jwt = true
-
 [functions.record-consultation-payment]
+verify_jwt = false
+
+[functions.refund-consultation]
+verify_jwt = false
+
+[functions.stripe-connect-webhook]
 verify_jwt = false
