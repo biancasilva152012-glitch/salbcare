@@ -96,7 +96,7 @@ const Onboarding = () => {
         </motion.div>
 
         {/* Plans */}
-        <div className="space-y-4">
+        <div className="space-y-4 snap-y snap-mandatory">
           {(Object.entries(PLANS) as [PlanKey, typeof PLANS[PlanKey]][]).map(([key, plan], i) => {
             const Icon = planIcons[key];
             const isPopular = "popular" in plan && plan.popular;
