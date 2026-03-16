@@ -823,9 +823,11 @@ export type Database = {
         Returns: {
           available_hours: Json
           avatar_url: string
+          card_link: string
           consultation_price: number
           crm: string
           name: string
+          pix_key: string
           professional_type: string
           slot_duration: number
           user_id: string
