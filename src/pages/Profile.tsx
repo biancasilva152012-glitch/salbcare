@@ -58,30 +58,28 @@ const Profile = () => {
     navigate("/login");
   };
 
-  // Check connect status when returning from Stripe
+  // Sync local state with profile data
   useEffect(() => {
-    const connectParam = searchParams.get("connect");
-    if (connectParam === "complete" && user) {
-      supabase.functions.invoke("check-connect-status").then(({ data }) => {
-        if (data?.complete) {
-          toast.success("Dados bancários configurados com sucesso! Seu perfil já aparece nas buscas.");
-        }
-      });
+    if (profile) {
+      setPixKey((profile as any).pix_key || "");
+      setCardLink((profile as any).card_link || "");
     }
-  }, [searchParams, user]);
+  }, [profile]);
 
-  const handleConnectOnboarding = async () => {
-    setConnectLoading(true);
+  const handleSavePaymentData = async () => {
+    if (!user) return;
+    setSavingPayment(true);
     try {
-      const { data, error } = await supabase.functions.invoke("connect-onboarding", {
-        body: { return_url: window.location.origin },
-      });
+      const { error } = await supabase
+        .from("profiles")
+        .update({ pix_key: pixKey.trim() || null, card_link: cardLink.trim() || null } as any)
+        .eq("user_id", user.id);
       if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
+      toast.success("Dados de pagamento atualizados!");
     } catch {
-      toast.error("Erro ao iniciar cadastro bancário.");
+      toast.error("Erro ao salvar dados de pagamento.");
     } finally {
-      setConnectLoading(false);
+      setSavingPayment(false);
     }
   };
 
