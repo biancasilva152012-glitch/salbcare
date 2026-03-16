@@ -56,6 +56,33 @@ const Profile = () => {
     navigate("/login");
   };
 
+  // Check connect status when returning from Stripe
+  useEffect(() => {
+    const connectParam = searchParams.get("connect");
+    if (connectParam === "complete" && user) {
+      supabase.functions.invoke("check-connect-status").then(({ data }) => {
+        if (data?.complete) {
+          toast.success("Dados bancários configurados com sucesso! Seu perfil já aparece nas buscas.");
+        }
+      });
+    }
+  }, [searchParams, user]);
+
+  const handleConnectOnboarding = async () => {
+    setConnectLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("connect-onboarding", {
+        body: { return_url: window.location.origin },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch {
+      toast.error("Erro ao iniciar cadastro bancário.");
+    } finally {
+      setConnectLoading(false);
+    }
+  };
+
   const handleDownloadData = async () => {
     if (!user) return;
     setDownloading(true);
