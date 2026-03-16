@@ -25,10 +25,12 @@ const Subscription = () => {
     if (searchParams.get("success") === "true") {
       toast.success("Assinatura realizada com sucesso!");
       refreshSubscription();
+      navigate("/sucesso", { replace: true });
     } else if (searchParams.get("canceled") === "true") {
       toast.info("Assinatura cancelada.");
+      navigate("/cancelado", { replace: true });
     }
-  }, [searchParams, refreshSubscription]);
+  }, [searchParams, refreshSubscription, navigate]);
 
   const handleCheckout = async (planKey: PlanKey) => {
     setLoadingPlan(planKey);
