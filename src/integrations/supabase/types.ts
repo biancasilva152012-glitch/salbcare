@@ -592,46 +592,58 @@ export type Database = {
       }
       profiles: {
         Row: {
+          available_hours: Json | null
           avatar_url: string | null
+          consultation_price: number | null
           created_at: string
           crm: string | null
           email: string
           id: string
           name: string
+          office_address: string | null
           payment_status: string
           phone: string | null
           plan: string
           professional_type: string
+          slot_duration: number | null
           trial_start_date: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          available_hours?: Json | null
           avatar_url?: string | null
+          consultation_price?: number | null
           created_at?: string
           crm?: string | null
           email: string
           id?: string
           name: string
+          office_address?: string | null
           payment_status?: string
           phone?: string | null
           plan?: string
           professional_type?: string
+          slot_duration?: number | null
           trial_start_date?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          available_hours?: Json | null
           avatar_url?: string | null
+          consultation_price?: number | null
           created_at?: string
           crm?: string | null
           email?: string
           id?: string
           name?: string
+          office_address?: string | null
           payment_status?: string
           phone?: string | null
           plan?: string
           professional_type?: string
+          slot_duration?: number | null
           trial_start_date?: string | null
           updated_at?: string
           user_id?: string
