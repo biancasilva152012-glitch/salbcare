@@ -135,7 +135,7 @@ const Install = () => {
               "Sem ocupar espaço na memória",
             ].map((item) => (
               <div key={item} className="flex items-center gap-2 text-sm">
-                <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
+                <CheckCircle className="h-4 w-4 text-success shrink-0" />
                 <span>{item}</span>
               </div>
             ))}
