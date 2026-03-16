@@ -91,19 +91,10 @@ const ConsultationPayments = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="glass-card p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Bruto</p>
-          <p className="text-sm font-bold text-foreground">R$ {totalGross.toFixed(2)}</p>
-        </div>
-        <div className="glass-card p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Taxa 10%</p>
-          <p className="text-sm font-bold text-destructive">-R$ {totalFee.toFixed(2)}</p>
-        </div>
-        <div className="glass-card p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Líquido</p>
-          <p className="text-sm font-bold text-success">R$ {totalNet.toFixed(2)}</p>
-        </div>
+      <div className="glass-card p-3 text-center">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total recebido</p>
+        <p className="text-sm font-bold text-success">R$ {totalGross.toFixed(2)}</p>
+        <p className="text-[10px] text-muted-foreground mt-1">Você recebe 100% do valor de cada consulta.</p>
       </div>
 
       {/* Payment List */}
