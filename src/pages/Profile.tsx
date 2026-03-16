@@ -222,6 +222,15 @@ const Profile = () => {
 
         {getStatusBadge()}
 
+        {profile?.suspended_until && new Date(profile.suspended_until) > new Date() && (
+          <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
+            <AlertCircle className="h-4 w-4" />
+            <span className="font-medium">
+              Perfil suspenso das buscas até {new Date(profile.suspended_until).toLocaleDateString("pt-BR")} devido a cancelamentos excessivos.
+            </span>
+          </div>
+        )}
+
         <div className="space-y-2">
           <div className="glass-card p-3 text-sm">
             <span className="text-muted-foreground">Email:</span> {profile?.email || user?.email}

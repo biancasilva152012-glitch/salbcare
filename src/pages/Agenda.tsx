@@ -166,12 +166,21 @@ const Agenda = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("appointments").delete().eq("id", id);
+      // Cancel instead of delete to track cancellations
+      const { error } = await supabase.from("appointments").update({ status: "cancelled" }).eq("id", id);
       if (error) throw error;
+      // Check if suspension should be applied (3+ cancellations/month)
+      await supabase.rpc("check_and_apply_suspension", { _user_id: user!.id });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
-      toast.success("Consulta excluída!");
+      // Check if user got suspended
+      const { data: profile } = await supabase.from("profiles").select("suspended_until").eq("user_id", user!.id).single();
+      if (profile?.suspended_until && new Date(profile.suspended_until) > new Date()) {
+        toast.warning("Atenção: seu perfil foi suspenso das buscas por 7 dias devido a 3 cancelamentos no mês.");
+      } else {
+        toast.success("Consulta cancelada!");
+      }
     },
     onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
