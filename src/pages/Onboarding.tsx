@@ -21,6 +21,13 @@ const Onboarding = () => {
 
   const handleSelectPlan = async (planKey: PlanKey) => {
     if (!user) return;
+
+    // Only basic gets a free trial
+    if (planKey !== "basic") {
+      navigate(`/checkout?plan=${planKey}`);
+      return;
+    }
+
     setSelecting(planKey);
     try {
       const { error } = await supabase
@@ -32,7 +39,7 @@ const Onboarding = () => {
         })
         .eq("user_id", user.id);
       if (error) throw error;
-      toast.success("Plano ativado com 7 dias grátis!");
+      toast.success("Plano Essencial ativado com 7 dias grátis!");
       navigate("/dashboard");
     } catch {
       toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
