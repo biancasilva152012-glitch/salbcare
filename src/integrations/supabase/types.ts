@@ -670,6 +670,7 @@ export type Database = {
           slot_duration: number | null
           stripe_account_id: string | null
           stripe_onboarding_complete: boolean
+          suspended_until: string | null
           trial_start_date: string | null
           updated_at: string
           user_id: string
@@ -694,6 +695,7 @@ export type Database = {
           slot_duration?: number | null
           stripe_account_id?: string | null
           stripe_onboarding_complete?: boolean
+          suspended_until?: string | null
           trial_start_date?: string | null
           updated_at?: string
           user_id: string
@@ -718,6 +720,7 @@ export type Database = {
           slot_duration?: number | null
           stripe_account_id?: string | null
           stripe_onboarding_complete?: boolean
+          suspended_until?: string | null
           trial_start_date?: string | null
           updated_at?: string
           user_id?: string
@@ -804,6 +807,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_and_apply_suspension: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       check_email_user_type: { Args: { check_email: string }; Returns: string }
       get_public_professionals: {
         Args: { specialty_filter?: string }
