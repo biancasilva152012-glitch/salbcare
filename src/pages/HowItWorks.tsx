@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { HeartPulse, X, Shield, MessageCircle, Lock, HelpCircle } from "lucide-react";
+import { X, Shield, MessageCircle, Lock, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 
