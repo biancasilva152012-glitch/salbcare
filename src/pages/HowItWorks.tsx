@@ -58,8 +58,8 @@ const HowItWorks = () => (
           <h2 className="text-lg font-bold">Como funciona o contador parceiro</h2>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Nos planos Profissional e Clínica, conectamos você a um contador com CRC ativo, 
-          especializado em profissionais de saúde. Ele te orienta sobre impostos, regime 
+          Você será atendido por um contador parceiro da SALBCARE com CRC ativo, 
+          especializado em profissionais de saúde. Ele orienta você sobre impostos, regime 
           tributário e planejamento financeiro via chat.
         </p>
         <p className="text-sm text-muted-foreground leading-relaxed">
