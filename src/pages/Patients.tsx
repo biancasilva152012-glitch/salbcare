@@ -182,7 +182,7 @@ const Patients = () => {
             <DialogTrigger asChild>
               <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+            <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
               {renderPatientForm(false)}
             </DialogContent>
@@ -256,7 +256,7 @@ const Patients = () => {
 
         {/* Edit Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
-          <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogContent className="bg-card border-border">
             <DialogHeader><DialogTitle>Editar Paciente</DialogTitle></DialogHeader>
             {renderPatientForm(true)}
           </DialogContent>
