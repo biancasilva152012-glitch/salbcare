@@ -239,6 +239,41 @@ const Profile = () => {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
 
+        {/* Payment / Connect Section */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 px-1">
+            <Banknote className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold">Dados de pagamento</h2>
+          </div>
+          {profile?.stripe_onboarding_complete ? (
+            <div className="glass-card p-3 flex items-center gap-3">
+              <CheckCircle className="h-5 w-5 text-success shrink-0" />
+              <div>
+                <p className="text-sm font-medium">Conta bancária configurada</p>
+                <p className="text-[10px] text-muted-foreground">Pagamentos das consultas serão transferidos automaticamente em até 2 dias úteis.</p>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={handleConnectOnboarding}
+              disabled={connectLoading}
+              className="glass-card flex w-full items-center justify-between p-3 text-left ring-1 ring-yellow-500/30"
+            >
+              <div className="flex items-center gap-3">
+                {connectLoading ? <Loader2 className="h-5 w-5 text-primary animate-spin" /> : <ExternalLink className="h-5 w-5 text-yellow-500" />}
+                <div>
+                  <span className="text-sm font-medium">Cadastrar dados bancários</span>
+                  <p className="text-[10px] text-muted-foreground">Necessário para receber pagamentos das consultas</p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          )}
+          <p className="text-[10px] text-muted-foreground px-1">
+            A SALBCARE retém 10% como taxa da plataforma. O restante é transferido diretamente para sua conta.
+          </p>
+        </div>
+
         {/* Consultation Settings */}
         <ConsultationSettings />
 
