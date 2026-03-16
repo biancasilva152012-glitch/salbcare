@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { HeartPulse, X, Shield, MessageCircle, Lock, HelpCircle } from "lucide-react";
+import { X, Shield, MessageCircle, Lock, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 
@@ -19,8 +19,8 @@ const HowItWorks = () => (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-8 pb-8">
       {/* Header */}
       <motion.div variants={item} className="text-center space-y-2">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary">
-          <HeartPulse className="h-8 w-8 text-primary-foreground" />
+        <div className="mx-auto mb-4 h-16 w-16 rounded-2xl overflow-hidden shadow-lg">
+          <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
         </div>
         <h1 className="text-2xl font-bold">Como funciona a SALBCARE</h1>
         <p className="text-sm text-muted-foreground">Tudo que você precisa saber em 2 minutos</p>

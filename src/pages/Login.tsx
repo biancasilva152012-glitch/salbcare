@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, HeartPulse, CheckCircle2, Shield, Zap } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -98,16 +98,12 @@ const Login = () => {
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
           <motion.div
-            className="mx-auto mb-5 flex h-[72px] w-[72px] items-center justify-center rounded-2xl shadow-lg relative"
-            style={{
-              background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
-              boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)",
-            }}
+            className="mx-auto mb-5 h-[72px] w-[72px] rounded-2xl shadow-lg relative overflow-hidden"
+            style={{ boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)" }}
             whileHover={{ scale: 1.05, rotate: 3 }}
             whileTap={{ scale: 0.95 }}
           >
-            <HeartPulse className="h-9 w-9 text-primary-foreground" />
-            {/* Pulse ring */}
+            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
             <motion.div
               className="absolute inset-0 rounded-2xl"
               style={{ border: "2px solid hsl(var(--primary) / 0.4)" }}

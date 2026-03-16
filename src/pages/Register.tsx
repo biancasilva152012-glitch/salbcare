@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
-import { HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -111,15 +110,12 @@ const Register = () => {
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
           <motion.div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl relative"
-            style={{
-              background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
-              boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)",
-            }}
+            className="mx-auto mb-4 h-16 w-16 rounded-2xl relative overflow-hidden"
+            style={{ boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)" }}
             whileHover={{ scale: 1.05, rotate: -3 }}
             whileTap={{ scale: 0.95 }}
           >
-            <HeartPulse className="h-8 w-8 text-primary-foreground" />
+            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
             <motion.div
               className="absolute inset-0 rounded-2xl"
               style={{ border: "2px solid hsl(var(--primary) / 0.4)" }}
