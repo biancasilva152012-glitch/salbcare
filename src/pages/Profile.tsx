@@ -32,6 +32,7 @@ const professionalTypeLabels: Record<string, string> = {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, signOut, subscription } = useAuth();
   const [deleteStep, setDeleteStep] = useState(0);
   const [deleting, setDeleting] = useState(false);
@@ -39,6 +40,7 @@ const Profile = () => {
   const [correctText, setCorrectText] = useState("");
   const [sendingCorrection, setSendingCorrection] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [connectLoading, setConnectLoading] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
