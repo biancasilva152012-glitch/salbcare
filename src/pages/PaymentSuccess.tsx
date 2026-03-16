@@ -27,7 +27,7 @@ const PaymentSuccess = () => {
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground leading-relaxed">
               Recebemos seu comprovante! Seu acesso está com status{" "}
-              <span className="text-warning font-semibold">Aguardando Aprovação</span>.
+              <span className="text-yellow-400 font-semibold">Aguardando Aprovação</span>.
               Validaremos em até 24h.
             </p>
             <div className="glass-card p-4 text-left">
