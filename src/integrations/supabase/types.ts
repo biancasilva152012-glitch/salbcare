@@ -729,6 +729,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_professionals: {
+        Args: { specialty_filter?: string }
+        Returns: {
+          available_hours: Json
+          avatar_url: string
+          consultation_price: number
+          crm: string
+          name: string
+          professional_type: string
+          slot_duration: number
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
