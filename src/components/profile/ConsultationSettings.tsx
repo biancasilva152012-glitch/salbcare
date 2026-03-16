@@ -152,19 +152,8 @@ const ConsultationSettings = () => {
         </div>
       </div>
 
-      {/* Office Address */}
-      <div className="space-y-1.5">
-        <Label className="flex items-center gap-1 text-xs">
-          <MapPin className="h-3 w-3" /> Endereço do consultório
-        </Label>
-        <Textarea
-          placeholder="Rua, número, bairro, cidade — usado nos lembretes de consultas presenciais"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className="bg-accent border-border text-sm resize-none"
-          rows={2}
-        />
-      </div>
+
+
 
       {/* Available Hours */}
       <div className="space-y-2">
