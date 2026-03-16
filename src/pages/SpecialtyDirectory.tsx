@@ -155,6 +155,14 @@ const SpecialtyDirectory = () => {
           </p>
         </motion.div>
 
+        {/* Trust badges */}
+        <div className="flex flex-wrap justify-center gap-3 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">✅ Sem cadastro</span>
+          <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">🔒 Consulta segura</span>
+          <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">📱 Pelo navegador</span>
+          <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">⚡ Agende em 2 min</span>
+        </div>
+
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

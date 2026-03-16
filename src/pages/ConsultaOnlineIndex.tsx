@@ -62,6 +62,25 @@ const ConsultaOnlineIndex = () => {
           </p>
         </motion.div>
 
+        {/* Value proposition */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2 max-w-md mx-auto"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🚀</span>
+            <p className="text-sm font-semibold text-foreground">A SALBCARE conecta você ao profissional ideal</p>
+          </div>
+          <ul className="space-y-1 text-[11px] text-muted-foreground pl-7">
+            <li>✅ Encontre especialistas disponíveis hoje</li>
+            <li>✅ Agende online em menos de 2 minutos</li>
+            <li>✅ Atendimento 100% pela plataforma, seguro e prático</li>
+            <li>✅ Sem downloads, sem cadastro — acesse pelo navegador</li>
+          </ul>
+        </motion.div>
+
         {/* Search */}
         <div className="relative max-w-sm mx-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
