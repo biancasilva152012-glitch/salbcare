@@ -182,7 +182,7 @@ const Patients = () => {
             <DialogTrigger asChild>
               <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-border">
+            <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
               {renderPatientForm(false)}
             </DialogContent>
