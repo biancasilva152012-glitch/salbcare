@@ -50,8 +50,8 @@ const Install = () => {
         </button>
 
         {/* Icon */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl gradient-primary shadow-lg">
-          <Smartphone className="h-10 w-10 text-primary-foreground" />
+        <div className="mx-auto h-20 w-20 rounded-2xl shadow-lg overflow-hidden">
+          <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
         </div>
 
         <div>
