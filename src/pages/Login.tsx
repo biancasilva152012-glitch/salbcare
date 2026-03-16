@@ -104,18 +104,11 @@ const Login = () => {
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
           <motion.div
-            className="mx-auto mb-5 h-[72px] w-[72px] rounded-2xl shadow-lg relative overflow-hidden"
-            style={{ boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)" }}
+            className="mx-auto mb-5 h-[72px] w-[72px] relative"
             whileHover={{ scale: 1.05, rotate: 3 }}
             whileTap={{ scale: 0.95 }}
           >
-            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
-            <motion.div
-              className="absolute inset-0 rounded-2xl"
-              style={{ border: "2px solid hsl(var(--primary) / 0.4)" }}
-              animate={{ scale: [1, 1.3, 1.3], opacity: [0.6, 0, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
-            />
+            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
           </motion.div>
 
           <motion.h1
