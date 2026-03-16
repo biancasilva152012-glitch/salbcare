@@ -48,7 +48,7 @@ const PaymentSuccess = () => {
               iniciar a gestão do seu CNPJ e das suas Notas Fiscais.
             </p>
             <p className="text-lg font-semibold text-primary">
-              Seja bem-vindo ao Health Hub.
+              Bem-vindo(a) à SALBCARE!
             </p>
           </div>
         )}
