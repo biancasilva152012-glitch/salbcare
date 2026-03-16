@@ -33,7 +33,7 @@ const CookieConsent = () => {
             <div className="flex items-start gap-2">
               <Cookie className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Usamos cookies para melhorar sua experiência e garantir o funcionamento da plataforma. Nenhum dado é vendido a terceiros.
+                Usamos cookies para melhorar sua experiência e garantir o funcionamento da plataforma. Seus dados são tratados conforme nossa Política de Privacidade.
               </p>
             </div>
             <div className="flex gap-2">
