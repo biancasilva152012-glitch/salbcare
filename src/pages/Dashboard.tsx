@@ -1,7 +1,8 @@
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield, MessageCircle } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
@@ -37,6 +38,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
+  const queryClient = useQueryClient();
+
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["today-appointments", user?.id] });
+    await queryClient.invalidateQueries({ queryKey: ["monthly-balance", user?.id] });
+  }, [queryClient, user?.id]);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
@@ -87,7 +94,7 @@ const Dashboard = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={handleRefresh}>
       <WelcomeOnboarding />
       <InstallBanner />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
