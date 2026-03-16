@@ -47,6 +47,7 @@ const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
 const SpecialtyDirectory = lazyWithRetry(() => import("./pages/SpecialtyDirectory"), "SpecialtyDirectory");
 const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 const PatientDashboard = lazyWithRetry(() => import("./pages/PatientDashboard"), "PatientDashboard");
+const BookingSuccess = lazyWithRetry(() => import("./pages/BookingSuccess"), "BookingSuccess");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +95,7 @@ const App = () => (
               <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/booking" element={<PatientBooking />} />
+              <Route path="/booking-success" element={<BookingSuccess />} />
               <Route path="/sala" element={<PatientRoom />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
