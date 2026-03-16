@@ -248,38 +248,46 @@ const Profile = () => {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
 
-        {/* Payment / Connect Section */}
-        <div className="space-y-2">
+        {/* Payment Data Section */}
+        <div className="space-y-3">
           <div className="flex items-center gap-2 px-1">
             <Banknote className="h-4 w-4 text-primary" />
             <h2 className="text-sm font-semibold">Dados de pagamento</h2>
           </div>
-          {profile?.stripe_onboarding_complete ? (
-            <div className="glass-card p-3 flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-success shrink-0" />
-              <div>
-                <p className="text-sm font-medium">Conta bancária configurada</p>
-                <p className="text-[10px] text-muted-foreground">Pagamentos das consultas serão transferidos automaticamente em até 2 dias úteis.</p>
-              </div>
+          <div className="glass-card p-3 space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="pix-key" className="text-xs font-medium">Chave Pix</Label>
+              <input
+                id="pix-key"
+                type="text"
+                value={pixKey}
+                onChange={(e) => setPixKey(e.target.value)}
+                placeholder="CPF, e-mail, telefone ou chave aleatória"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
             </div>
-          ) : (
-            <button
-              onClick={handleConnectOnboarding}
-              disabled={connectLoading}
-              className="glass-card flex w-full items-center justify-between p-3 text-left ring-1 ring-yellow-500/30"
+            <div className="space-y-1.5">
+              <Label htmlFor="card-link" className="text-xs font-medium">Link de pagamento por cartão <span className="text-muted-foreground">(opcional)</span></Label>
+              <input
+                id="card-link"
+                type="url"
+                value={cardLink}
+                onChange={(e) => setCardLink(e.target.value)}
+                placeholder="https://..."
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <Button
+              onClick={handleSavePaymentData}
+              disabled={savingPayment}
+              size="sm"
+              className="w-full gradient-primary font-semibold"
             >
-              <div className="flex items-center gap-3">
-                {connectLoading ? <Loader2 className="h-5 w-5 text-primary animate-spin" /> : <ExternalLink className="h-5 w-5 text-yellow-500" />}
-                <div>
-                  <span className="text-sm font-medium">Cadastrar dados bancários</span>
-                  <p className="text-[10px] text-muted-foreground">Necessário para receber pagamentos das consultas</p>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
-          )}
+              {savingPayment ? <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Salvando...</> : "Salvar dados de pagamento"}
+            </Button>
+          </div>
           <p className="text-[10px] text-muted-foreground px-1">
-            Você recebe 100% do valor de cada consulta. O pagamento vai direto para sua conta.
+            O paciente pagará diretamente para você via Pix. Você recebe 100% do valor.
           </p>
         </div>
 
