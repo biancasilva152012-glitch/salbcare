@@ -62,10 +62,8 @@ const Login = () => {
             <HeartPulse className="h-8 w-8 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight">SALBCARE</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Você cuida dos pacientes.{" "}
-            <span className="text-primary font-semibold">A gente cuida do seu negócio.</span>
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Você cuida dos pacientes.</p>
+          <p className="text-sm text-primary font-semibold">A gente cuida do seu negócio.</p>
         </div>
 
         {/* Value props */}
