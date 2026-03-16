@@ -167,6 +167,66 @@ export type Database = {
         }
         Relationships: []
       }
+      consultation_payments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          created_at: string
+          doctor_id: string
+          gross_amount: number
+          id: string
+          net_amount: number
+          notes: string | null
+          patient_email: string | null
+          patient_name: string
+          patient_phone: string | null
+          payment_method: string
+          platform_fee: number
+          status: string
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          created_at?: string
+          doctor_id: string
+          gross_amount: number
+          id?: string
+          net_amount: number
+          notes?: string | null
+          patient_email?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          payment_method?: string
+          platform_fee: number
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          created_at?: string
+          doctor_id?: string
+          gross_amount?: number
+          id?: string
+          net_amount?: number
+          notes?: string | null
+          patient_email?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          payment_method?: string
+          platform_fee?: number
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       financial_transactions: {
         Row: {
           amount: number
