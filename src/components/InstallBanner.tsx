@@ -74,8 +74,8 @@ const InstallBanner = () => {
           exit={{ opacity: 0, y: -12 }}
           className="glass-card p-4 flex items-center gap-3 ring-1 ring-primary/20"
         >
-          <div className="h-10 w-10 rounded-xl shrink-0 overflow-hidden">
-            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
+          <div className="h-10 w-10 shrink-0">
+            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold">Instale o app no celular</p>

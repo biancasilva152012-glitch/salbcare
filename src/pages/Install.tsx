@@ -50,8 +50,8 @@ const Install = () => {
         </button>
 
         {/* Icon */}
-        <div className="mx-auto h-20 w-20 rounded-2xl shadow-lg overflow-hidden">
-          <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
+        <div className="mx-auto h-20 w-20">
+          <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
         </div>
 
         <div>

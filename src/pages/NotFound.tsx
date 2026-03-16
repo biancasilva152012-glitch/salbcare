@@ -10,8 +10,8 @@ const NotFound = () => (
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-sm space-y-6 text-center"
     >
-      <div className="mx-auto mb-4 h-14 w-14 rounded-2xl overflow-hidden shadow-lg">
-        <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
+      <div className="mx-auto mb-4 h-14 w-14">
+        <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
       </div>
       <h1 className="text-3xl font-bold">Página não encontrada</h1>
       <p className="text-sm text-muted-foreground">

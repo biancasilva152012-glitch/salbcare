@@ -171,11 +171,10 @@ const Register = () => {
         {/* Branding */}
         <motion.div className="text-center" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
           <motion.div
-            className="mx-auto mb-4 h-16 w-16 rounded-2xl relative overflow-hidden"
-            style={{ boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)" }}
+            className="mx-auto mb-4 h-16 w-16 relative"
             whileHover={{ scale: 1.05 }}
           >
-            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
+            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
           </motion.div>
         </motion.div>
 
