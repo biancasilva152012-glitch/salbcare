@@ -73,8 +73,6 @@ const ConsultationPayments = () => {
 
   const paidPayments = payments.filter((p: any) => p.status !== "refunded");
   const totalGross = paidPayments.reduce((s: number, p: any) => s + Number(p.gross_amount), 0);
-  const totalFee = paidPayments.reduce((s: number, p: any) => s + Number(p.platform_fee), 0);
-  const totalNet = paidPayments.reduce((s: number, p: any) => s + Number(p.net_amount), 0);
 
   return (
     <div className="space-y-4">
