@@ -10,6 +10,7 @@ export const PLANS = {
       "Cadastro ilimitado de pacientes",
       "Teleconsulta integrada",
       "Controle financeiro básico",
+      "✅ Você fica com 100% do valor das consultas",
     ],
     hasTrial: true,
   },
