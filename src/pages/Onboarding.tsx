@@ -96,7 +96,7 @@ const Onboarding = () => {
         </motion.div>
 
         {/* Plans */}
-        <div className="space-y-4">
+        <div className="space-y-4 snap-y snap-mandatory">
           {(Object.entries(PLANS) as [PlanKey, typeof PLANS[PlanKey]][]).map(([key, plan], i) => {
             const Icon = planIcons[key];
             const isPopular = "popular" in plan && plan.popular;
@@ -106,7 +106,7 @@ const Onboarding = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + i * 0.1 }}
-                className={`glass-card p-5 relative overflow-hidden ${
+                className={`glass-card p-5 relative overflow-hidden snap-start ${
                   isPopular ? "ring-2 ring-primary" : ""
                 }`}
               >

@@ -95,7 +95,7 @@ const Subscription = () => {
           </div>
         )}
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 snap-y snap-mandatory">
           {(Object.entries(PLANS) as [PlanKey, typeof PLANS[PlanKey]][]).map(([key, plan]) => {
             const Icon = planIcons[key];
             const isCurrentPlan = subscription.subscribed && subscription.plan === key;
@@ -104,7 +104,7 @@ const Subscription = () => {
             return (
               <div
                 key={key}
-                className={`glass-card p-5 space-y-4 relative ${isCurrentPlan ? "ring-2 ring-primary" : ""} ${isPopular && !isCurrentPlan ? "ring-2 ring-secondary" : ""}`}
+                className={`glass-card p-5 space-y-4 relative snap-start ${isCurrentPlan ? "ring-2 ring-primary" : ""} ${isPopular && !isCurrentPlan ? "ring-2 ring-secondary" : ""}`}
               >
                 {isCurrentPlan && (
                   <span className="absolute -top-2.5 left-4 text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full">

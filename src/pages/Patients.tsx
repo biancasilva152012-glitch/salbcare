@@ -174,7 +174,7 @@ const Patients = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={() => queryClient.invalidateQueries({ queryKey: ["patients"] })}>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Pacientes</h1>
