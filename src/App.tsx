@@ -11,7 +11,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import PageContainer from "@/components/PageContainer";
 
 // Eager: splash, login, register (entry points)
-import Splash from "./pages/Splash";
+// Splash removed — Login is now the landing page
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -66,7 +66,7 @@ const App = () => (
         <AuthProvider>
           <Suspense fallback={<LazyFallback />}>
             <Routes>
-              <Route path="/" element={<Splash />} />
+              <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
