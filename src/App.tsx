@@ -63,6 +63,7 @@ const LazyFallback = () => (
 );
 
 const App = () => (
+  <GlobalErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Sonner />
