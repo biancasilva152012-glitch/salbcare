@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield, MessageCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
-import { useAuth } from "@/contexts/AuthContext";
 import InstallBanner from "@/components/InstallBanner";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
+import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 
 interface QuickAction {
   icon: typeof Calendar;
@@ -74,8 +75,8 @@ const Dashboard = () => {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
       const { data } = await supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).gte("date", startOfMonth.toISOString().split("T")[0]);
-      const income = (data || []).filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
-      const expense = (data || []).filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+      const income = (data || []).filter((transaction) => transaction.type === "income").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
+      const expense = (data || []).filter((transaction) => transaction.type === "expense").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
       return income - expense;
     },
     enabled: !!user,
@@ -100,14 +101,14 @@ const Dashboard = () => {
         </motion.div>
 
         <motion.div variants={item} className="grid grid-cols-2 gap-3">
-          <div className="glass-card p-4 space-y-1">
+          <div className="glass-card space-y-1 p-4">
             <div className="flex items-center gap-2 text-primary">
               <Clock className="h-4 w-4" />
               <span className="text-xs font-medium text-muted-foreground">Consultas hoje</span>
             </div>
             <p className="text-2xl font-bold">{todayAppointments.length}</p>
           </div>
-          <div className="glass-card p-4 space-y-1">
+          <div className="glass-card space-y-1 p-4">
             <div className="flex items-center gap-2 text-success">
               <TrendingUp className="h-4 w-4" />
               <span className="text-xs font-medium text-muted-foreground">Saldo mensal</span>
@@ -116,16 +117,15 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* CTA Assessoria contábil */}
         <motion.div variants={item}>
           <button
             onClick={() => navigate("/accounting?tab=chat")}
-            className="glass-card flex w-full items-center gap-3 p-4 transition-all active:scale-[0.98] hover:border-primary/50 ring-1 ring-primary/20"
+            className="glass-card ring-1 ring-primary/20 flex w-full items-center gap-3 p-4 transition-all active:scale-[0.98] hover:border-primary/50"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary shrink-0">
+            <div className="gradient-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
               <MessageCircle className="h-5 w-5 text-primary-foreground" />
             </div>
-            <div className="text-left flex-1">
+            <div className="flex-1 text-left">
               <p className="text-sm font-semibold">Fale com um Contador</p>
               <p className="text-xs text-muted-foreground">NF, CNPJ, IR e dúvidas contábeis — resolvemos tudo para você</p>
             </div>
@@ -133,14 +133,15 @@ const Dashboard = () => {
         </motion.div>
 
         <motion.div variants={item}>
-          <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Acesso rápido</h2>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Acesso rápido</h2>
           <div className="grid grid-cols-3 gap-3">
             {quickActions.map(({ icon: Icon, label, to, requiredFeature, highlight }) => {
               const locked = requiredFeature && !hasAccess(requiredFeature);
+
               return (
                 <button
                   key={to}
-                  onClick={() => navigate(locked ? "/subscription" : to)}
+                  onClick={() => (locked ? openVersionedSubscriptionRoute() : navigate(to))}
                   className={`glass-card relative flex flex-col items-center gap-2 p-4 transition-all active:scale-95 ${locked ? "opacity-70 hover:border-primary/30" : "hover:border-primary/50"} ${highlight ? "ring-1 ring-primary/30" : ""}`}
                 >
                   <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${locked ? "bg-muted" : "gradient-primary"}`}>
@@ -148,7 +149,7 @@ const Dashboard = () => {
                   </div>
                   <span className="text-xs font-medium">{label}</span>
                   {locked && (
-                    <span className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">
+                    <span className="absolute -right-1.5 -top-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">
                       PRO
                     </span>
                   )}
@@ -176,23 +177,23 @@ const Dashboard = () => {
         )}
 
         <motion.div variants={item}>
-          <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Consultas de hoje</h2>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Consultas de hoje</h2>
           <div className="space-y-2">
             {todayAppointments.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">Nenhuma consulta agendada para hoje</p>
+              <p className="py-4 text-center text-sm text-muted-foreground">Nenhuma consulta agendada para hoje</p>
             )}
-            {todayAppointments.map((apt) => (
-              <div key={apt.id} className="glass-card flex items-center justify-between p-3">
+            {todayAppointments.map((appointment) => (
+              <div key={appointment.id} className="glass-card flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
-                    {apt.patient_name.split(" ").map((n: string) => n[0]).join("")}
+                  <div className="bg-accent text-primary flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
+                    {appointment.patient_name.split(" ").map((name: string) => name[0]).join("")}
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{apt.patient_name}</p>
-                    <p className="text-xs text-muted-foreground">{apt.appointment_type === "presencial" ? "Presencial" : "Teleconsulta"}</p>
+                    <p className="text-sm font-medium">{appointment.patient_name}</p>
+                    <p className="text-xs text-muted-foreground">{appointment.appointment_type === "presencial" ? "Presencial" : "Teleconsulta"}</p>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-primary">{apt.time.substring(0, 5)}</span>
+                <span className="text-sm font-semibold text-primary">{appointment.time.substring(0, 5)}</span>
               </div>
             ))}
           </div>
