@@ -160,7 +160,7 @@ const ConsultationPayments = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar reembolso</AlertDialogTitle>
             <AlertDialogDescription>
-              O valor integral será devolvido ao paciente. A taxa da plataforma também será estornada. Esta ação não pode ser desfeita.
+              O valor integral será devolvido ao paciente. Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
