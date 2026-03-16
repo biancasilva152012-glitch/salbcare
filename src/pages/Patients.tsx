@@ -250,8 +250,17 @@ const Patients = () => {
               className="gap-1"
               onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
             >
-              <FileSpreadsheet className="h-3.5 w-3.5" /> Modelo
+              <FileDown className="h-3.5 w-3.5" /> Modelo
             </Button>
+            <label>
+              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing} asChild>
+                <span>
+                  {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                  {importing ? "Importando..." : "Importar"}
+                </span>
+              </Button>
+              <input type="file" accept=".csv,.txt,.xls,.xlsx" onChange={handleCsvImport} className="hidden" />
+            </label>
             <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
