@@ -39,6 +39,70 @@ const Patients = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
+
+  const parseDateBR = (dateStr: string): string | null => {
+    if (!dateStr) return null;
+    // Try dd/mm/yyyy
+    const parts = dateStr.trim().split("/");
+    if (parts.length === 3) {
+      const [d, m, y] = parts;
+      const parsed = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+      if (!isNaN(Date.parse(parsed))) return parsed;
+    }
+    // Try yyyy-mm-dd
+    if (!isNaN(Date.parse(dateStr.trim()))) return dateStr.trim();
+    return null;
+  };
+
+  const handleCsvImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    e.target.value = "";
+    setImporting(true);
+
+    try {
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      if (lines.length < 2) {
+        toast.error("Planilha vazia ou sem dados.");
+        return;
+      }
+
+      // Detect separator
+      const sep = lines[0].includes(";") ? ";" : ",";
+      const rows = lines.slice(1).map((line) => line.split(sep).map((c) => c.trim().replace(/^"|"$/g, "")));
+
+      const toInsert = rows
+        .filter((cols) => cols[0])
+        .map((cols) => ({
+          user_id: user.id,
+          name: cols[0] || "",
+          phone: cols[1] || null,
+          email: cols[2] || null,
+          birth_date: parseDateBR(cols[3] || "") || null,
+          initial_anamnesis: cols[4] || null,
+          procedure_performed: cols[5] || null,
+          notes: cols[6] || null,
+          medical_history: cols[7] || null,
+        }));
+
+      if (toInsert.length === 0) {
+        toast.error("Nenhum paciente encontrado na planilha.");
+        return;
+      }
+
+      const { error } = await supabase.from("patients").insert(toInsert);
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      toast.success(`${toInsert.length} paciente(s) importado(s) com sucesso!`);
+    } catch {
+      toast.error("Erro ao importar. Verifique o formato da planilha.");
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const { data: patients = [], isLoading } = useQuery({
     queryKey: ["patients", user?.id],
