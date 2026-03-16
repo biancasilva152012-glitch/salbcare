@@ -38,6 +38,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
+  const queryClient = useQueryClient();
+
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["today-appointments", user?.id] });
+    await queryClient.invalidateQueries({ queryKey: ["monthly-balance", user?.id] });
+  }, [queryClient, user?.id]);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
