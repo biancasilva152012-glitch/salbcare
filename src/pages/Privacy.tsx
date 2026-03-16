@@ -5,7 +5,7 @@ const Privacy = () => {
     <PageContainer>
       <div className="space-y-6 pb-8">
         <h1 className="text-2xl font-bold">Política de Privacidade</h1>
-        <p className="text-xs text-muted-foreground">Última atualização: 14 de março de 2026</p>
+        <p className="text-xs text-muted-foreground">Última atualização: 16 de março de 2026</p>
 
         <div className="space-y-5 text-sm text-muted-foreground leading-relaxed">
           <section className="space-y-2">
