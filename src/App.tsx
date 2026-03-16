@@ -44,6 +44,7 @@ const TestPrescriptionPdf = lazyWithRetry(() => import("./pages/TestPrescription
 const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
 const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
 const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
+const SpecialtyDirectory = lazyWithRetry(() => import("./pages/SpecialtyDirectory"), "SpecialtyDirectory");
 
 const queryClient = new QueryClient({
   defaultOptions: {
