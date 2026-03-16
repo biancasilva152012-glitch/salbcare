@@ -145,7 +145,7 @@ const Onboarding = () => {
                   className={`w-full font-semibold ${isPopular ? "gradient-primary" : ""}`}
                   variant={isPopular ? "default" : "outline"}
                 >
-                  {selecting === key ? "Ativando..." : "Começar grátis agora"}
+                  {selecting === key ? "Ativando..." : key === "basic" ? "Começar grátis agora" : "Assinar agora"}
                 </Button>
               </motion.div>
             );
