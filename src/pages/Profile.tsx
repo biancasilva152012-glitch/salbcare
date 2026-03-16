@@ -210,6 +210,9 @@ const Profile = () => {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
 
+        {/* Consultation Settings */}
+        <ConsultationSettings />
+
         {/* LGPD - Privacy & Data Section */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 px-1">
