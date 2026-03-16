@@ -50,7 +50,6 @@ const ConsultationSettings = () => {
     if (profile) {
       setPrice(profile.consultation_price?.toString() || "");
       setDuration(profile.slot_duration?.toString() || "30");
-      setAddress(profile.office_address || "");
       if (profile.available_hours && typeof profile.available_hours === "object") {
         setHours({ ...DEFAULT_HOURS, ...(profile.available_hours as AvailableHours) });
       }
