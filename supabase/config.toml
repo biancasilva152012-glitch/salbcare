@@ -12,14 +12,5 @@ verify_jwt = false
 [functions.check-connect-status]
 verify_jwt = false
 
-[functions.create-consultation-payment]
-verify_jwt = false
-
-[functions.record-consultation-payment]
-verify_jwt = false
-
-[functions.refund-consultation]
-verify_jwt = false
-
 [functions.stripe-connect-webhook]
 verify_jwt = false
