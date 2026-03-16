@@ -27,13 +27,12 @@
 </head>
   <body>
     <script>
-      // Force cleanup of old service workers and caches on every page load
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          registrations.forEach(function(registration) { registration.unregister(); });
-        });
-        caches.keys().then(function(names) {
-          names.forEach(function(name) { caches.delete(name); });
+          for (var i = 0; i < registrations.length; i++) {
+            registrations[i].update();
+            console.log('Service Worker atualizado com sucesso.');
+          }
         });
       }
     </script>
