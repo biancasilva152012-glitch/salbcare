@@ -595,6 +595,8 @@ export type Database = {
           available_hours: Json | null
           avatar_url: string | null
           consultation_price: number | null
+          council_number: string | null
+          council_state: string | null
           created_at: string
           crm: string | null
           email: string
@@ -609,11 +611,14 @@ export type Database = {
           trial_start_date: string | null
           updated_at: string
           user_id: string
+          user_type: string
         }
         Insert: {
           available_hours?: Json | null
           avatar_url?: string | null
           consultation_price?: number | null
+          council_number?: string | null
+          council_state?: string | null
           created_at?: string
           crm?: string | null
           email: string
@@ -628,11 +633,14 @@ export type Database = {
           trial_start_date?: string | null
           updated_at?: string
           user_id: string
+          user_type?: string
         }
         Update: {
           available_hours?: Json | null
           avatar_url?: string | null
           consultation_price?: number | null
+          council_number?: string | null
+          council_state?: string | null
           created_at?: string
           crm?: string | null
           email?: string
@@ -647,6 +655,7 @@ export type Database = {
           trial_start_date?: string | null
           updated_at?: string
           user_id?: string
+          user_type?: string
         }
         Relationships: []
       }
@@ -729,6 +738,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_email_user_type: { Args: { check_email: string }; Returns: string }
       get_public_professionals: {
         Args: { specialty_filter?: string }
         Returns: {
