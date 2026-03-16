@@ -10,8 +10,8 @@ export const PLANS = {
       "Cadastro ilimitado de pacientes",
       "Teleconsulta integrada",
       "Controle financeiro básico",
-      "7 dias grátis para testar",
     ],
+    hasTrial: true,
   },
   professional: {
     name: "Profissional",
@@ -29,7 +29,6 @@ export const PLANS = {
       "Enquadramento tributário otimizado",
       "Relatórios financeiros em PDF",
       "Marketplace jurídico",
-      "7 dias grátis para testar",
     ],
   },
   clinic: {
@@ -43,7 +42,6 @@ export const PLANS = {
       "Gestão de múltiplos profissionais",
       "Painel financeiro avançado",
       "Suporte prioritário e dedicado",
-      "7 dias grátis para testar",
     ],
   },
 } as const;

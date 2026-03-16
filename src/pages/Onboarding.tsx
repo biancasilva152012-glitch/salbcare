@@ -84,7 +84,7 @@ const Onboarding = () => {
           className="text-center mb-5"
         >
           <p className="text-xs text-muted-foreground">
-            Todos os planos incluem <span className="text-primary font-semibold">7 dias grátis</span> • Cancele quando quiser
+            Plano Essencial com <span className="text-primary font-semibold">7 dias grátis</span> • Cancele quando quiser
           </p>
         </motion.div>
 
@@ -122,7 +122,7 @@ const Onboarding = () => {
                         <span className="text-xs text-primary ml-1.5 font-normal">({(plan as any).subtitle})</span>
                       )}
                     </h3>
-                    <p className="text-xs text-muted-foreground">7 dias grátis para testar</p>
+                    <p className="text-xs text-muted-foreground">{key === "basic" ? "7 dias grátis para testar" : "Acesso imediato"}</p>
                   </div>
                   <div className="ml-auto text-right">
                     <span className="text-xl font-bold">R$ {plan.price}</span>
@@ -145,7 +145,7 @@ const Onboarding = () => {
                   className={`w-full font-semibold ${isPopular ? "gradient-primary" : ""}`}
                   variant={isPopular ? "default" : "outline"}
                 >
-                  {selecting === key ? "Ativando..." : "Começar grátis agora"}
+                  {selecting === key ? "Ativando..." : key === "basic" ? "Começar grátis agora" : "Assinar agora"}
                 </Button>
               </motion.div>
             );

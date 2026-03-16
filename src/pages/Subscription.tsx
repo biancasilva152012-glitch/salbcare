@@ -184,7 +184,7 @@ const Subscription = () => {
         </motion.div>
 
         <p className="text-center text-[11px] text-muted-foreground pb-4">
-          Todos os planos incluem 7 dias grátis. Cancele quando quiser, sem multa.
+          O plano Essencial inclui 7 dias grátis. Cancele quando quiser, sem multa.
         </p>
       </div>
     </PageContainer>
