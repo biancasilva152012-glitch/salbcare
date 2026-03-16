@@ -118,9 +118,8 @@ const PatientBooking = () => {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const cityFromTz = tz.split("/").pop()?.replace(/_/g, " ") || tz;
 
-  const pixDiscount = price > 0 ? price * 0.05 : 0;
-  const pixPrice = price - pixDiscount;
-  const canInstall = price > 150;
+  const doctorPixKey = (doctor as any)?.pix_key || "";
+  const doctorCardLink = (doctor as any)?.card_link || "";
 
   const handleSubmit = async () => {
     if (!doctorId) return;
