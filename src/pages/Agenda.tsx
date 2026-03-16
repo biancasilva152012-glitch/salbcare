@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2 } from "lucide-react";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import PatientSearchInput from "@/components/agenda/PatientSearchInput";
 import EmptyState from "@/components/EmptyState";
-import { CalendarX, Copy, Link, FileSpreadsheet } from "lucide-react";
+import { CalendarX, Copy, Link } from "lucide-react";
 import { usePagination } from "@/hooks/usePagination";
 import { downloadCsvTemplate, AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 
@@ -39,6 +39,64 @@ const Agenda = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
+  const [importing, setImporting] = useState(false);
+
+  const parseDateBR = (dateStr: string): string | null => {
+    if (!dateStr) return null;
+    const parts = dateStr.trim().split("/");
+    if (parts.length === 3) {
+      const [d, m, y] = parts;
+      const parsed = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+      if (!isNaN(Date.parse(parsed))) return parsed;
+    }
+    if (!isNaN(Date.parse(dateStr.trim()))) return dateStr.trim();
+    return null;
+  };
+
+  const handleCsvImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    e.target.value = "";
+    setImporting(true);
+
+    try {
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      if (lines.length < 2) {
+        toast.error("Planilha vazia ou sem dados.");
+        return;
+      }
+
+      const sep = lines[0].includes(";") ? ";" : ",";
+      const rows = lines.slice(1).map((line) => line.split(sep).map((c) => c.trim().replace(/^"|"$/g, "")));
+
+      const toInsert = rows
+        .filter((cols) => cols[0] && cols[1] && cols[2])
+        .map((cols) => ({
+          user_id: user.id,
+          patient_name: cols[0],
+          date: parseDateBR(cols[1]) || cols[1],
+          time: cols[2].length === 5 ? cols[2] : cols[2] + ":00",
+          appointment_type: (cols[3] || "presencial").toLowerCase().includes("tele") ? "telehealth" : "presencial",
+          notes: cols[4] || null,
+        }));
+
+      if (toInsert.length === 0) {
+        toast.error("Nenhuma consulta válida encontrada na planilha.");
+        return;
+      }
+
+      const { error } = await supabase.from("appointments").insert(toInsert);
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success(`${toInsert.length} consulta(s) importada(s) com sucesso!`);
+    } catch {
+      toast.error("Erro ao importar. Verifique o formato da planilha.");
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const canUseTeam = hasAccess("multi_professionals");
 
@@ -257,8 +315,17 @@ const Agenda = () => {
               className="gap-1"
               onClick={() => downloadCsvTemplate("modelo-agenda.csv", AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE)}
             >
-              <FileSpreadsheet className="h-3.5 w-3.5" /> Modelo
+              <FileDown className="h-3.5 w-3.5" /> Modelo
             </Button>
+            <label>
+              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing} asChild>
+                <span>
+                  {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                  {importing ? "..." : "Importar"}
+                </span>
+              </Button>
+              <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" />
+            </label>
             <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Nova</Button>
