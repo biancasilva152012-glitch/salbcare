@@ -17,7 +17,7 @@ const PRO_BENEFITS = [
 
 const CLINIC_BENEFITS = [
   "Gestão de múltiplos profissionais",
-  "Dashboard financeiro avançado",
+  "Painel financeiro avançado",
   "Suporte prioritário e dedicado",
 ];
 
