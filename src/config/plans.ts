@@ -41,7 +41,7 @@ export const PLANS = {
     features: [
       "Tudo do Profissional +",
       "Gestão de múltiplos profissionais",
-      "Dashboard financeiro avançado",
+      "Painel financeiro avançado",
       "Suporte prioritário e dedicado",
       "7 dias grátis para testar",
     ],

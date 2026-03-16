@@ -54,7 +54,7 @@ const PaymentSuccess = () => {
         )}
 
         <Button onClick={() => navigate("/dashboard")} className="w-full gradient-primary font-semibold py-5">
-          Ir para o Dashboard
+          Ir para o Painel
         </Button>
       </motion.div>
     </div>

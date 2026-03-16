@@ -74,7 +74,7 @@ const Subscription = () => {
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Nos planos Profissional e Clínica, conectamos você a contadores parceiros com experiência no setor de saúde. 
-            <span className="text-foreground font-medium">Sem precisar procurar por conta própria</span> — a gente facilita tudo pra você.
+            <span className="text-foreground font-medium">Sem precisar procurar por conta própria</span> — a gente facilita tudo para você.
           </p>
         </div>
 
