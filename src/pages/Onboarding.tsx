@@ -116,6 +116,12 @@ const Onboarding = () => {
                   </div>
                 )}
 
+                {key === "basic" && (
+                  <div className="absolute top-0 left-0 bg-success text-success-foreground text-[10px] font-bold px-3 py-1 rounded-br-lg">
+                    7 DIAS GRÁTIS
+                  </div>
+                )}
+
                 <div className="flex items-center gap-3 mb-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-full ${
                     isPopular ? "bg-primary/20" : "bg-accent"
@@ -129,7 +135,7 @@ const Onboarding = () => {
                         <span className="text-xs text-primary ml-1.5 font-normal">({(plan as any).subtitle})</span>
                       )}
                     </h3>
-                    <p className="text-xs text-muted-foreground">{key === "basic" ? "7 dias grátis para testar" : "Acesso imediato"}</p>
+                    <p className="text-xs text-muted-foreground">{key === "basic" ? "Teste grátis por 7 dias" : "Acesso imediato"}</p>
                   </div>
                   <div className="ml-auto text-right">
                     <span className="text-xl font-bold">R$ {plan.price}</span>
