@@ -3,8 +3,8 @@ export const PLANS = {
     name: "Essencial",
     subtitle: "Comece a organizar sua prática",
     price: 49,
-    price_id: "price_1TAIKjBUEEEAHx2hMtUIiKI9",
-    product_id: "prod_U8ZTOS9bhmXXsd",
+    price_id: "price_1TBcE4BUEEEAHx2hfOYZN30W",
+    product_id: "prod_U9w63fgoL24Mi4",
     features: [
       "Agenda inteligente de consultas",
       "Cadastro ilimitado de pacientes",
@@ -17,8 +17,8 @@ export const PLANS = {
     name: "Profissional",
     subtitle: "Com acesso a contadores especializados em saúde",
     price: 99,
-    price_id: "price_1TAILDBUEEEAHx2hUax01AKh",
-    product_id: "prod_U8ZUsScx3u9Uyk",
+    price_id: "price_1TBcg4BUEEEAHx2hiJNr2qhu",
+    product_id: "prod_U9wZ94gRJJq1HU",
     popular: true,
     features: [
       "Tudo do Essencial +",
@@ -35,8 +35,8 @@ export const PLANS = {
     name: "Clínica",
     subtitle: "Para quem gerencia equipe e quer o máximo",
     price: 189,
-    price_id: "price_1TAILaBUEEEAHx2hpX5ekogA",
-    product_id: "prod_U8ZU7fGeFAqwdu",
+    price_id: "price_1TBcgQBUEEEAHx2hwimX7ktu",
+    product_id: "prod_U9wZAYvh6Gb6ct",
     features: [
       "Tudo do Profissional +",
       "Gestão de múltiplos profissionais",
