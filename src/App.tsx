@@ -9,6 +9,7 @@ import BottomNav from "@/components/BottomNav";
 import CookieConsent from "./components/CookieConsent";
 import PageSkeleton from "@/components/PageSkeleton";
 import PageContainer from "@/components/PageContainer";
+import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
 // Eager: login, register (entry points)
