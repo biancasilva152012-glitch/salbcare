@@ -30,6 +30,7 @@ export const PLANS = {
       "Enquadramento tributário otimizado",
       "Relatórios financeiros em PDF",
       "Marketplace jurídico",
+      "✅ Você fica com 100% do valor das consultas",
     ],
   },
   clinic: {
