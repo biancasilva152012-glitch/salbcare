@@ -77,6 +77,7 @@ const ConsultaOnlineIndex = () => {
             <li>✅ Encontre especialistas disponíveis hoje</li>
             <li>✅ Agende online em menos de 2 minutos</li>
             <li>✅ Atendimento 100% pela plataforma, seguro e prático</li>
+            <li>✅ O profissional recebe 100% do valor da consulta</li>
             <li>✅ Sem downloads, sem cadastro — acesse pelo navegador</li>
           </ul>
         </motion.div>
