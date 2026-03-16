@@ -90,51 +90,63 @@ const Dashboard = () => {
     <PageContainer>
       <WelcomeOnboarding />
       <InstallBanner />
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-        <motion.div variants={item}>
-          <p className="text-sm text-muted-foreground">
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
+        {/* Greeting — tighter on mobile */}
+        <motion.div variants={item} className="space-y-0.5">
+          <p className="text-xs text-muted-foreground">
             {profile?.created_at && (new Date().getTime() - new Date(profile.created_at).getTime()) < 60000
               ? "Bem-vindo(a) ao SalbCare! 🎉"
               : "Bem-vindo(a) de volta"}
           </p>
-          <h1 className="text-2xl font-bold">{profile?.name || "Profissional"}</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
         </motion.div>
 
-        <motion.div variants={item} className="grid grid-cols-2 gap-3">
-          <div className="glass-card space-y-1 p-4">
-            <div className="flex items-center gap-2 text-primary">
-              <Clock className="h-4 w-4" />
-              <span className="text-xs font-medium text-muted-foreground">Consultas hoje</span>
+        {/* Stats row — compact cards */}
+        <motion.div variants={item} className="grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="glass-card flex items-center gap-3 p-3 sm:p-4">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <Clock className="h-4 w-4 text-primary" />
             </div>
-            <p className="text-2xl font-bold">{todayAppointments.length}</p>
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Hoje</p>
+              <p className="text-lg font-bold leading-tight sm:text-2xl">{todayAppointments.length}</p>
+            </div>
           </div>
-          <div className="glass-card space-y-1 p-4">
-            <div className="flex items-center gap-2 text-success">
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-xs font-medium text-muted-foreground">Saldo mensal</span>
+          <div className="glass-card flex items-center gap-3 p-3 sm:p-4">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-success/10">
+              <TrendingUp className="h-4 w-4 text-success" />
             </div>
-            <p className="text-2xl font-bold">R$ {(monthlyBalance ?? 0).toLocaleString("pt-BR")}</p>
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Saldo</p>
+              <p className="truncate text-lg font-bold leading-tight sm:text-2xl">
+                R$&nbsp;{(monthlyBalance ?? 0).toLocaleString("pt-BR")}
+              </p>
+            </div>
           </div>
         </motion.div>
 
+        {/* CTA Contador — more compact */}
         <motion.div variants={item}>
           <button
             onClick={() => navigate("/accounting?tab=chat")}
-            className="glass-card ring-1 ring-primary/20 flex w-full items-center gap-3 p-4 transition-all active:scale-[0.98] hover:border-primary/50"
+            className="glass-card ring-1 ring-primary/20 flex w-full items-center gap-3 p-3 sm:p-4 transition-all active:scale-[0.98] hover:border-primary/50"
           >
-            <div className="gradient-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-              <MessageCircle className="h-5 w-5 text-primary-foreground" />
+            <div className="gradient-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10">
+              <MessageCircle className="h-4 w-4 text-primary-foreground sm:h-5 sm:w-5" />
             </div>
-            <div className="flex-1 text-left">
+            <div className="flex-1 min-w-0 text-left">
               <p className="text-sm font-semibold">Fale com um Contador</p>
-              <p className="text-xs text-muted-foreground">NF, CNPJ, IR e dúvidas contábeis — resolvemos tudo para você</p>
+              <p className="truncate text-[11px] text-muted-foreground">NF, CNPJ, IR e dúvidas contábeis</p>
             </div>
           </button>
         </motion.div>
 
+        {/* Quick actions — responsive 4-col on wider, 3-col default */}
         <motion.div variants={item}>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Acesso rápido</h2>
-          <div className="grid grid-cols-3 gap-3">
+          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:mb-3 sm:text-sm">
+            Acesso rápido
+          </h2>
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-4 sm:gap-3">
             {quickActions.map(({ icon: Icon, label, to, requiredFeature, highlight }) => {
               const locked = requiredFeature && !hasAccess(requiredFeature);
 
@@ -142,14 +154,24 @@ const Dashboard = () => {
                 <button
                   key={to}
                   onClick={() => (locked ? openVersionedSubscriptionRoute() : navigate(to))}
-                  className={`glass-card relative flex flex-col items-center gap-2 p-4 transition-all active:scale-95 ${locked ? "opacity-70 hover:border-primary/30" : "hover:border-primary/50"} ${highlight ? "ring-1 ring-primary/30" : ""}`}
+                  className={`glass-card relative flex flex-col items-center gap-1.5 p-3 sm:gap-2 sm:p-4 transition-all active:scale-95 ${
+                    locked ? "opacity-70 hover:border-primary/30" : "hover:border-primary/50"
+                  } ${highlight ? "ring-1 ring-primary/30" : ""}`}
                 >
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${locked ? "bg-muted" : "gradient-primary"}`}>
-                    {locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Icon className="h-5 w-5 text-primary-foreground" />}
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl ${
+                      locked ? "bg-muted" : "gradient-primary"
+                    }`}
+                  >
+                    {locked ? (
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Icon className="h-4 w-4 text-primary-foreground sm:h-5 sm:w-5" />
+                    )}
                   </div>
-                  <span className="text-xs font-medium">{label}</span>
+                  <span className="text-[10px] font-medium leading-tight sm:text-xs">{label}</span>
                   {locked && (
-                    <span className="absolute -right-1.5 -top-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">
+                    <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 py-0.5 text-[8px] font-bold text-primary-foreground sm:text-[9px]">
                       PRO
                     </span>
                   )}
@@ -159,41 +181,49 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
+        {/* Admin panel */}
         {isAdmin && (
           <motion.div variants={item}>
             <button
               onClick={() => navigate("/admin")}
-              className="glass-card flex w-full items-center gap-3 p-4 transition-all active:scale-[0.98] hover:border-primary/50"
+              className="glass-card flex w-full items-center gap-3 p-3 sm:p-4 transition-all active:scale-[0.98] hover:border-primary/50"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
-                <Shield className="h-5 w-5 text-destructive" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-destructive/10 sm:h-10 sm:w-10">
+                <Shield className="h-4 w-4 text-destructive sm:h-5 sm:w-5" />
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold">Painel Admin</p>
-                <p className="text-xs text-muted-foreground">Gerenciar assinaturas e usuários</p>
+                <p className="text-[11px] text-muted-foreground">Gerenciar assinaturas e usuários</p>
               </div>
             </button>
           </motion.div>
         )}
 
+        {/* Today's appointments */}
         <motion.div variants={item}>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Consultas de hoje</h2>
+          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:mb-3 sm:text-sm">
+            Consultas de hoje
+          </h2>
           <div className="space-y-2">
             {todayAppointments.length === 0 && (
-              <p className="py-4 text-center text-sm text-muted-foreground">Nenhuma consulta agendada para hoje</p>
+              <p className="py-3 text-center text-xs text-muted-foreground sm:py-4 sm:text-sm">
+                Nenhuma consulta agendada para hoje
+              </p>
             )}
             {todayAppointments.map((appointment) => (
               <div key={appointment.id} className="glass-card flex items-center justify-between p-3">
-                <div className="flex items-center gap-3">
-                  <div className="bg-accent text-primary flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
-                    {appointment.patient_name.split(" ").map((name: string) => name[0]).join("")}
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="bg-accent text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold sm:h-10 sm:w-10 sm:text-sm">
+                    {appointment.patient_name.split(" ").map((name: string) => name[0]).join("").slice(0, 2)}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">{appointment.patient_name}</p>
-                    <p className="text-xs text-muted-foreground">{appointment.appointment_type === "presencial" ? "Presencial" : "Teleconsulta"}</p>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{appointment.patient_name}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {appointment.appointment_type === "presencial" ? "Presencial" : "Teleconsulta"}
+                    </p>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-primary">{appointment.time.substring(0, 5)}</span>
+                <span className="ml-2 shrink-0 text-sm font-semibold text-primary">{appointment.time.substring(0, 5)}</span>
               </div>
             ))}
           </div>
