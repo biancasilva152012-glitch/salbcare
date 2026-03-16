@@ -2,7 +2,7 @@ export const PLANS = {
   basic: {
     name: "Essencial",
     subtitle: "Comece a organizar sua prática",
-    price: 49,
+    price: 39,
     price_id: "price_1TAIKjBUEEEAHx2hMtUIiKI9",
     product_id: "prod_U8ZTOS9bhmXXsd",
     features: [
