@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2 } from "lucide-react";
-import { PLANS } from "@/config/plans";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { PLANS } from "@/config/plans";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader,
   AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
@@ -113,7 +114,6 @@ const Profile = () => {
     if (!user) return;
     setDeleting(true);
     try {
-      // Delete user data from all tables
       await Promise.all([
         (supabase as any).from("medical_records").delete().eq("user_id", user.id),
         supabase.from("patient_documents").delete().eq("user_id", user.id),
@@ -144,7 +144,7 @@ const Profile = () => {
 
     if (paymentStatus === "active" || subscribed) {
       return (
-        <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg bg-success/10 text-success">
+        <div className="bg-success/10 text-success flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
           <CheckCircle className="h-4 w-4" />
           <span className="font-medium">Assinatura Ativa</span>
         </div>
@@ -153,7 +153,7 @@ const Profile = () => {
 
     if (trialDaysRemaining > 0) {
       return (
-        <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg bg-primary/10 text-primary">
+        <div className="bg-primary/10 text-primary flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
           <Clock className="h-4 w-4" />
           <span className="font-medium">Teste Grátis: {trialDaysRemaining} {trialDaysRemaining === 1 ? "dia restante" : "dias restantes"}</span>
         </div>
@@ -162,7 +162,7 @@ const Profile = () => {
 
     if (paymentStatus === "pending_approval") {
       return (
-        <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg bg-yellow-400/10 text-yellow-400">
+        <div className="flex items-center gap-2 rounded-lg bg-yellow-400/10 px-3 py-2 text-xs text-yellow-400">
           <Clock className="h-4 w-4" />
           <span className="font-medium">Aguardando Aprovação do Pagamento</span>
         </div>
@@ -170,7 +170,7 @@ const Profile = () => {
     }
 
     return (
-      <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg bg-destructive/10 text-destructive">
+      <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
         <AlertCircle className="h-4 w-4" />
         <span className="font-medium">Assinatura Expirada</span>
       </div>
@@ -181,12 +181,12 @@ const Profile = () => {
     <PageContainer>
       <div className="space-y-6">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full gradient-primary">
+          <div className="gradient-primary mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full">
             <User className="h-9 w-9 text-primary-foreground" />
           </div>
           <h1 className="text-xl font-bold">{profile?.name || "Profissional"}</h1>
           <p className="text-sm text-muted-foreground">
-            {professionalTypeLabels[profile?.professional_type || ""] || profile?.professional_type} • Plano {Object.values(PLANS).find(p => p.name.toLowerCase() === profile?.plan || p.name === profile?.plan)?.name || "Básico"}
+            {professionalTypeLabels[profile?.professional_type || ""] || profile?.professional_type} • Plano {Object.values(PLANS).find((plan) => plan.name.toLowerCase() === profile?.plan || plan.name === profile?.plan)?.name || "Básico"}
           </p>
         </div>
 
@@ -201,7 +201,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <button onClick={() => navigate("/subscription")} className="glass-card flex w-full items-center justify-between p-3 text-left">
+        <button onClick={openVersionedSubscriptionRoute} className="glass-card flex w-full items-center justify-between p-3 text-left">
           <div className="flex items-center gap-3">
             <CreditCard className="h-5 w-5 text-primary" />
             <span className="text-sm font-medium">Meu plano</span>
