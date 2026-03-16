@@ -132,16 +132,9 @@ const ConsultationPayments = () => {
                 </div>
 
                 <div className="flex items-center justify-between text-xs border-t border-border pt-2">
-                  <div className="flex gap-3">
-                    <span className="text-muted-foreground">
-                      Bruto: <span className="text-foreground font-medium">R$ {Number(p.gross_amount).toFixed(2)}</span>
-                    </span>
-                    <span className="text-destructive">
-                      -R$ {Number(p.platform_fee).toFixed(2)}
-                    </span>
-                  </div>
+                  <span className="text-muted-foreground">Valor:</span>
                   <span className="font-semibold text-success">
-                    R$ {Number(p.net_amount).toFixed(2)}
+                    R$ {Number(p.gross_amount).toFixed(2)}
                   </span>
                 </div>
 
