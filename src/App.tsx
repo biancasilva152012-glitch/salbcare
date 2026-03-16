@@ -93,6 +93,7 @@ const App = () => (
               <Route path="/maintenance" element={<Maintenance />} />
               <Route path="/como-funciona" element={<HowItWorks />} />
               <Route path="/test-pdf" element={<TestPrescriptionPdf />} />
+              <Route path="/install" element={<Install />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
