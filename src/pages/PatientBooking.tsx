@@ -418,6 +418,11 @@ const PatientBooking = () => {
                   ⚖️ {legalNotice}
                 </p>
               )}
+
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
+                O pagamento é processado pela Stripe com segurança. O valor é transferido diretamente
+                ao profissional após a realização da consulta. A SALBCARE retém 10% como taxa de intermediação.
+              </p>
             </motion.div>
           )}
 
