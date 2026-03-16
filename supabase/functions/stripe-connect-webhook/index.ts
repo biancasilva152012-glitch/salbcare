@@ -90,8 +90,6 @@ serve(async (req) => {
         }
 
         const amountTotal = (pi.amount || 0) / 100;
-        const appFee = (pi.application_fee_amount || 0) / 100;
-        const netAmount = amountTotal - appFee;
 
         await supabaseService.from("consultation_payments").insert({
           doctor_id: doctorId,
