@@ -448,9 +448,17 @@ const Agenda = () => {
                               {apt.patient_name.split(" ").map((n: string) => n[0]).join("")}
                             </div>
                             <div>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 flex-wrap">
                                 <p className="text-sm font-medium">{apt.patient_name}</p>
-                                {isTelehealth && <span title="Teleconsulta">🎥</span>}
+                                {isTelehealth ? (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/15 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:text-blue-400">
+                                    🎥 Online
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400">
+                                    🏥 Presencial
+                                  </span>
+                                )}
                                 {isStartingSoon && (
                                   <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400 animate-pulse">
                                     <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Em breve
