@@ -36,14 +36,14 @@ const ForgotPassword = () => {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Recuperar Senha</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {sent ? "Verifique seu email para redefinir a senha." : "Insira seu email para receber o link de recuperação."}
+            {sent ? "Verifique seu e-mail para redefinir a senha." : "Insira seu e-mail para receber o link de recuperação."}
           </p>
         </div>
 
         {!sent ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-accent border-border" required />
             </div>
             <Button type="submit" className="w-full gradient-primary font-semibold" disabled={loading}>
@@ -52,7 +52,7 @@ const ForgotPassword = () => {
           </form>
         ) : (
           <div className="glass-card p-4 text-center text-sm text-muted-foreground">
-            Um email foi enviado para <span className="text-foreground font-medium">{email}</span> com instruções para redefinir sua senha.
+            Um e-mail foi enviado para <span className="text-foreground font-medium">{email}</span> com instruções para redefinir sua senha.
           </div>
         )}
 

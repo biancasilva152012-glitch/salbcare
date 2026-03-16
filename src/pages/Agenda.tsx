@@ -215,7 +215,7 @@ const Agenda = () => {
           <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="presencial">Presencial</SelectItem>
-            <SelectItem value="telehealth">Telehealth</SelectItem>
+            <SelectItem value="telehealth">Teleconsulta</SelectItem>
           </SelectContent>
         </Select>
       </div>

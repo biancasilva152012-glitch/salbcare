@@ -83,7 +83,7 @@ const Register = () => {
             <Input id="name" placeholder="Dr. João Silva" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent border-border" required />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">E-mail</Label>
             <Input id="email" type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-accent border-border" required />
           </div>
           <div className="space-y-1.5">
