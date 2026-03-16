@@ -122,7 +122,7 @@ const Onboarding = () => {
                         <span className="text-xs text-primary ml-1.5 font-normal">({(plan as any).subtitle})</span>
                       )}
                     </h3>
-                    <p className="text-xs text-muted-foreground">7 dias grátis para testar</p>
+                    <p className="text-xs text-muted-foreground">{key === "basic" ? "7 dias grátis para testar" : "Acesso imediato"}</p>
                   </div>
                   <div className="ml-auto text-right">
                     <span className="text-xl font-bold">R$ {plan.price}</span>
