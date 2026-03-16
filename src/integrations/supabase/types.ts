@@ -608,6 +608,8 @@ export type Database = {
           plan: string
           professional_type: string
           slot_duration: number | null
+          stripe_account_id: string | null
+          stripe_onboarding_complete: boolean
           trial_start_date: string | null
           updated_at: string
           user_id: string
@@ -630,6 +632,8 @@ export type Database = {
           plan?: string
           professional_type?: string
           slot_duration?: number | null
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean
           trial_start_date?: string | null
           updated_at?: string
           user_id: string
@@ -652,6 +656,8 @@ export type Database = {
           plan?: string
           professional_type?: string
           slot_duration?: number | null
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean
           trial_start_date?: string | null
           updated_at?: string
           user_id?: string

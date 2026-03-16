@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
+import ConnectOnboardingBanner from "@/components/ConnectOnboardingBanner";
 
 interface QuickAction {
   icon: typeof Calendar;
@@ -97,6 +98,10 @@ const Dashboard = () => {
     <PageContainer onRefresh={handleRefresh}>
       <WelcomeOnboarding />
       <InstallBanner />
+      <ConnectOnboardingBanner
+        stripeOnboardingComplete={profile?.stripe_onboarding_complete}
+        stripeAccountId={profile?.stripe_account_id}
+      />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
         {/* Greeting — tighter on mobile */}
         <motion.div variants={item} className="space-y-0.5">

@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.validate-pix-receipt]
 verify_jwt = true
+
+[functions.connect-onboarding]
+verify_jwt = true
+
+[functions.check-connect-status]
+verify_jwt = true
+
+[functions.create-consultation-payment]
+verify_jwt = false

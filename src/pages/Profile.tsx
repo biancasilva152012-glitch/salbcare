@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2 } from "lucide-react";
+import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, ExternalLink, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ const professionalTypeLabels: Record<string, string> = {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, signOut, subscription } = useAuth();
   const [deleteStep, setDeleteStep] = useState(0);
   const [deleting, setDeleting] = useState(false);
@@ -39,6 +40,7 @@ const Profile = () => {
   const [correctText, setCorrectText] = useState("");
   const [sendingCorrection, setSendingCorrection] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [connectLoading, setConnectLoading] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -52,6 +54,33 @@ const Profile = () => {
   const handleLogout = async () => {
     await signOut();
     navigate("/login");
+  };
+
+  // Check connect status when returning from Stripe
+  useEffect(() => {
+    const connectParam = searchParams.get("connect");
+    if (connectParam === "complete" && user) {
+      supabase.functions.invoke("check-connect-status").then(({ data }) => {
+        if (data?.complete) {
+          toast.success("Dados bancários configurados com sucesso! Seu perfil já aparece nas buscas.");
+        }
+      });
+    }
+  }, [searchParams, user]);
+
+  const handleConnectOnboarding = async () => {
+    setConnectLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("connect-onboarding", {
+        body: { return_url: window.location.origin },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch {
+      toast.error("Erro ao iniciar cadastro bancário.");
+    } finally {
+      setConnectLoading(false);
+    }
   };
 
   const handleDownloadData = async () => {
@@ -209,6 +238,41 @@ const Profile = () => {
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
+
+        {/* Payment / Connect Section */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 px-1">
+            <Banknote className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold">Dados de pagamento</h2>
+          </div>
+          {profile?.stripe_onboarding_complete ? (
+            <div className="glass-card p-3 flex items-center gap-3">
+              <CheckCircle className="h-5 w-5 text-success shrink-0" />
+              <div>
+                <p className="text-sm font-medium">Conta bancária configurada</p>
+                <p className="text-[10px] text-muted-foreground">Pagamentos das consultas serão transferidos automaticamente em até 2 dias úteis.</p>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={handleConnectOnboarding}
+              disabled={connectLoading}
+              className="glass-card flex w-full items-center justify-between p-3 text-left ring-1 ring-yellow-500/30"
+            >
+              <div className="flex items-center gap-3">
+                {connectLoading ? <Loader2 className="h-5 w-5 text-primary animate-spin" /> : <ExternalLink className="h-5 w-5 text-yellow-500" />}
+                <div>
+                  <span className="text-sm font-medium">Cadastrar dados bancários</span>
+                  <p className="text-[10px] text-muted-foreground">Necessário para receber pagamentos das consultas</p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          )}
+          <p className="text-[10px] text-muted-foreground px-1">
+            A SALBCARE retém 10% como taxa da plataforma. O restante é transferido diretamente para sua conta.
+          </p>
+        </div>
 
         {/* Consultation Settings */}
         <ConsultationSettings />
