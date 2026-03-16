@@ -5,6 +5,7 @@ import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import { useAuth } from "@/contexts/AuthContext";
+import InstallBanner from "@/components/InstallBanner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
