@@ -172,10 +172,10 @@ const Checkout = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="glass-card p-5 ring-2 ring-yellow-500/40 space-y-3"
+              className="glass-card p-5 ring-2 ring-warning/40 space-y-3"
             >
               <div className="flex items-center gap-3">
-                <AlertTriangle className="h-8 w-8 text-yellow-500 shrink-0" />
+                <AlertTriangle className="h-8 w-8 text-warning shrink-0" />
                 <div>
                   <p className="font-semibold text-sm">Revisão manual necessária</p>
                   <p className="text-xs text-muted-foreground">{validation.message}</p>
