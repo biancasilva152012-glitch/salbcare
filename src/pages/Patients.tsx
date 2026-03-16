@@ -268,9 +268,19 @@ const Patients = () => {
             <EmptyState
               icon={Users}
               title="Nenhum paciente cadastrado"
-              description="Nenhum paciente cadastrado ainda. Você pode cadastrar manualmente ou aguardar o primeiro agendamento online."
+              description="Nenhum paciente cadastrado ainda. Você pode cadastrar manualmente ou baixar a planilha modelo para importação."
               actionLabel="Cadastrar paciente"
               onAction={() => { setForm(emptyForm); setOpen(true); }}
+              extra={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 mt-2"
+                  onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5" /> Baixar planilha modelo
+                </Button>
+              }
             />
           )}
           {filtered.length === 0 && search && (
