@@ -40,7 +40,9 @@ const Profile = () => {
   const [correctText, setCorrectText] = useState("");
   const [sendingCorrection, setSendingCorrection] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [connectLoading, setConnectLoading] = useState(false);
+  const [pixKey, setPixKey] = useState("");
+  const [cardLink, setCardLink] = useState("");
+  const [savingPayment, setSavingPayment] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
