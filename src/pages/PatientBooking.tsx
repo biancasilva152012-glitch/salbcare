@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarIcon, Clock, Video, User, Send, ArrowLeft, ArrowRight, Check, CreditCard, QrCode, CalendarPlus } from "lucide-react";
+import { CalendarIcon, Clock, Video, User, Send, ArrowLeft, ArrowRight, Check, QrCode, CalendarPlus, Copy, ExternalLink } from "lucide-react";
 import { format, parse, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
