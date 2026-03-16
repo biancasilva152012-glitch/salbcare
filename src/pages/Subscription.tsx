@@ -80,6 +80,61 @@ const Subscription = () => {
           </p>
         </div>
 
+        {/* Trial banner */}
+        {!subscription.subscribed && subscription.trialDaysRemaining > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card ring-1 ring-primary/30 p-4 space-y-2"
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <Clock className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Período de teste gratuito</p>
+                <p className="text-xs text-muted-foreground">
+                  Você ainda tem{" "}
+                  <span className="font-bold text-primary">
+                    {subscription.trialDaysRemaining} {subscription.trialDaysRemaining === 1 ? "dia" : "dias"}
+                  </span>{" "}
+                  restantes
+                </p>
+              </div>
+            </div>
+            <div className="w-full bg-accent rounded-full h-1.5 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.max(5, (subscription.trialDaysRemaining / 7) * 100)}%` }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="h-full rounded-full gradient-primary"
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Assine antes do fim do teste para não perder acesso às funcionalidades.
+            </p>
+          </motion.div>
+        )}
+
+        {/* Trial expired banner */}
+        {!subscription.subscribed && subscription.trialDaysRemaining === 0 && subscription.paymentStatus !== "active" && subscription.paymentStatus !== "pending_approval" && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card ring-1 ring-destructive/30 p-4 flex items-center gap-3"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+              <Clock className="h-4 w-4 text-destructive" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-destructive">Teste encerrado</p>
+              <p className="text-xs text-muted-foreground">
+                Escolha um plano abaixo para continuar usando a plataforma.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {subscription.subscribed && (
           <div className="glass-card p-4 text-center space-y-2">
             <p className="text-sm text-muted-foreground">Seu plano atual</p>
