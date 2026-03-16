@@ -10,8 +10,8 @@ export const PLANS = {
       "Cadastro ilimitado de pacientes",
       "Teleconsulta integrada",
       "Controle financeiro básico",
-      "7 dias grátis para testar",
     ],
+    hasTrial: true,
   },
   professional: {
     name: "Profissional",
