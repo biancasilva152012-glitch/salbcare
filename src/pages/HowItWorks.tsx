@@ -15,7 +15,7 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
 const HowItWorks = () => (
-  <PageContainer>
+  <PageContainer backTo={true}>
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-8 pb-8">
       {/* Header */}
       <motion.div variants={item} className="text-center space-y-2">

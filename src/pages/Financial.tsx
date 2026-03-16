@@ -204,7 +204,7 @@ const Financial = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer backTo="/dashboard">
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Financeiro</h1>

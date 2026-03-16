@@ -7,7 +7,7 @@ import FeatureGate from "@/components/FeatureGate";
 
 const Legal = () => {
   return (
-    <PageContainer>
+    <PageContainer backTo="/dashboard">
       <div className="space-y-5">
         <h1 className="text-2xl font-bold">Suporte Jurídico</h1>
 

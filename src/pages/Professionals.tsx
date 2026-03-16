@@ -309,7 +309,7 @@ const ProfessionalsContent = () => {
 
 const Professionals = () => {
   return (
-    <PageContainer>
+    <PageContainer backTo="/dashboard">
       <FeatureGate feature="multi_professionals">
         <ProfessionalsContent />
       </FeatureGate>

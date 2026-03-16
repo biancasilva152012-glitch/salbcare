@@ -208,7 +208,7 @@ const Profile = () => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer backTo="/dashboard">
       <div className="space-y-6">
         <div className="text-center">
           <div className="gradient-primary mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full">
