@@ -90,8 +90,6 @@ serve(async (req) => {
         }
 
         const amountTotal = (pi.amount || 0) / 100;
-        const appFee = (pi.application_fee_amount || 0) / 100;
-        const netAmount = amountTotal - appFee;
 
         await supabaseService.from("consultation_payments").insert({
           doctor_id: doctorId,
@@ -101,8 +99,8 @@ serve(async (req) => {
           appointment_date: meta.date,
           appointment_time: meta.time,
           gross_amount: amountTotal,
-          platform_fee: appFee,
-          net_amount: netAmount,
+          platform_fee: 0,
+          net_amount: amountTotal,
           payment_method: pi.payment_method_types?.[0] || "card",
           stripe_payment_intent_id: pi.id,
           status: "paid",

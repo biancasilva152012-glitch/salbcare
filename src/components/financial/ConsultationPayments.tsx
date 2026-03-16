@@ -73,8 +73,6 @@ const ConsultationPayments = () => {
 
   const paidPayments = payments.filter((p: any) => p.status !== "refunded");
   const totalGross = paidPayments.reduce((s: number, p: any) => s + Number(p.gross_amount), 0);
-  const totalFee = paidPayments.reduce((s: number, p: any) => s + Number(p.platform_fee), 0);
-  const totalNet = paidPayments.reduce((s: number, p: any) => s + Number(p.net_amount), 0);
 
   return (
     <div className="space-y-4">
@@ -93,19 +91,10 @@ const ConsultationPayments = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="glass-card p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Bruto</p>
-          <p className="text-sm font-bold text-foreground">R$ {totalGross.toFixed(2)}</p>
-        </div>
-        <div className="glass-card p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Taxa 10%</p>
-          <p className="text-sm font-bold text-destructive">-R$ {totalFee.toFixed(2)}</p>
-        </div>
-        <div className="glass-card p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Líquido</p>
-          <p className="text-sm font-bold text-success">R$ {totalNet.toFixed(2)}</p>
-        </div>
+      <div className="glass-card p-3 text-center">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total recebido</p>
+        <p className="text-sm font-bold text-success">R$ {totalGross.toFixed(2)}</p>
+        <p className="text-[10px] text-muted-foreground mt-1">Você recebe 100% do valor de cada consulta.</p>
       </div>
 
       {/* Payment List */}
@@ -143,16 +132,9 @@ const ConsultationPayments = () => {
                 </div>
 
                 <div className="flex items-center justify-between text-xs border-t border-border pt-2">
-                  <div className="flex gap-3">
-                    <span className="text-muted-foreground">
-                      Bruto: <span className="text-foreground font-medium">R$ {Number(p.gross_amount).toFixed(2)}</span>
-                    </span>
-                    <span className="text-destructive">
-                      -R$ {Number(p.platform_fee).toFixed(2)}
-                    </span>
-                  </div>
+                  <span className="text-muted-foreground">Valor:</span>
                   <span className="font-semibold text-success">
-                    R$ {Number(p.net_amount).toFixed(2)}
+                    R$ {Number(p.gross_amount).toFixed(2)}
                   </span>
                 </div>
 
@@ -178,7 +160,7 @@ const ConsultationPayments = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar reembolso</AlertDialogTitle>
             <AlertDialogDescription>
-              O valor integral será devolvido ao paciente. A taxa da plataforma também será estornada. Esta ação não pode ser desfeita.
+              O valor integral será devolvido ao paciente. Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -195,7 +177,7 @@ const ConsultationPayments = () => {
       </AlertDialog>
 
       <p className="text-[10px] text-center text-muted-foreground">
-        Pagamentos processados pela Stripe. Transferências em até 2 dias úteis após a consulta. A SALBCARE retém 10% como taxa de intermediação.
+        O pagamento vai direto para o profissional via Pix. Você recebe 100% do valor.
       </p>
     </div>
   );

@@ -10,6 +10,7 @@ export const PLANS = {
       "Cadastro ilimitado de pacientes",
       "Teleconsulta integrada",
       "Controle financeiro básico",
+      "✅ Você fica com 100% do valor das consultas",
     ],
     hasTrial: true,
   },
@@ -29,6 +30,7 @@ export const PLANS = {
       "Enquadramento tributário otimizado",
       "Relatórios financeiros em PDF",
       "Marketplace jurídico",
+      "✅ Você fica com 100% do valor das consultas",
     ],
   },
   clinic: {
@@ -42,6 +44,7 @@ export const PLANS = {
       "Gestão de múltiplos profissionais",
       "Painel financeiro avançado",
       "Suporte prioritário e dedicado",
+      "✅ Você fica com 100% do valor das consultas",
     ],
   },
 } as const;

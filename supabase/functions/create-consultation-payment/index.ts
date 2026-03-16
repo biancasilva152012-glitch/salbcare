@@ -51,7 +51,6 @@ serve(async (req) => {
     });
 
     const amountInCents = Math.round(amount * 100);
-    const platformFee = Math.round(amountInCents * 0.10); // 10% platform fee
 
     const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
 
@@ -75,7 +74,6 @@ serve(async (req) => {
       ],
       mode: "payment",
       payment_intent_data: {
-        application_fee_amount: platformFee,
         transfer_data: {
           destination: doctorProfile.stripe_account_id,
         },

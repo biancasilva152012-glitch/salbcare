@@ -57,7 +57,7 @@ const ConnectOnboardingBanner = ({ stripeOnboardingComplete, stripeAccountId }: 
         )}
       </Button>
       <p className="text-[10px] text-muted-foreground text-center">
-        Os pagamentos são transferidos automaticamente em até 2 dias úteis. A SALBCARE retém 10% como taxa da plataforma.
+        Os pagamentos vão direto para sua conta. Você recebe 100% do valor de cada consulta.
       </p>
     </div>
   );

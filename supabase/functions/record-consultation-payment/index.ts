@@ -51,11 +51,6 @@ serve(async (req) => {
     }
 
     const amountTotal = (session.amount_total || 0) / 100;
-    const paymentIntent = session.payment_intent as any;
-    const applicationFee = paymentIntent?.application_fee_amount
-      ? paymentIntent.application_fee_amount / 100
-      : Math.round(amountTotal * 0.10 * 100) / 100;
-    const netAmount = amountTotal - applicationFee;
 
     const paymentMethodType = session.payment_method_types?.[0] || "card";
 
@@ -86,10 +81,10 @@ serve(async (req) => {
       appointment_date: date,
       appointment_time: time,
       gross_amount: amountTotal,
-      platform_fee: applicationFee,
-      net_amount: netAmount,
+      platform_fee: 0,
+      net_amount: amountTotal,
       payment_method: paymentMethodType,
-      stripe_payment_intent_id: typeof paymentIntent === "object" ? paymentIntent.id : paymentIntent,
+      stripe_payment_intent_id: typeof session.payment_intent === "object" ? (session.payment_intent as any).id : session.payment_intent,
       stripe_checkout_session_id: session_id,
       status: "paid",
       notes,
