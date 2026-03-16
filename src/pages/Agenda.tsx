@@ -269,14 +269,35 @@ const Agenda = () => {
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label>Tipo</Label>
-        <Select value={form.appointment_type} onValueChange={(v) => setForm({ ...form, appointment_type: v })}>
-          <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="presencial">Presencial</SelectItem>
-            <SelectItem value="telehealth">Teleconsulta</SelectItem>
-          </SelectContent>
-        </Select>
+        <Label>Tipo de atendimento</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, appointment_type: "telehealth" })}
+            className={cn(
+              "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-all",
+              form.appointment_type === "telehealth"
+                ? "border-blue-500 bg-blue-500/10 ring-1 ring-blue-500"
+                : "border-border bg-accent hover:bg-accent/80"
+            )}
+          >
+            <span className="flex items-center gap-1.5 text-sm font-medium">🎥 Online</span>
+            <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece pela plataforma SALBCARE. Link gerado automaticamente.</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, appointment_type: "presencial" })}
+            className={cn(
+              "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-all",
+              form.appointment_type === "presencial"
+                ? "border-green-500 bg-green-500/10 ring-1 ring-green-500"
+                : "border-border bg-accent hover:bg-accent/80"
+            )}
+          >
+            <span className="flex items-center gap-1.5 text-sm font-medium">🏥 Presencial</span>
+            <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece no consultório. Nenhum link é gerado.</span>
+          </button>
+        </div>
       </div>
       {canUseTeam && professionals.length > 0 && (
         <div className="space-y-1.5">
