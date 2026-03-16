@@ -6,7 +6,7 @@ interface PageContainerProps {
 }
 
 const PageContainer = ({ children, className = "" }: PageContainerProps) => (
-  <div className={`min-h-screen bottom-nav-safe px-4 pt-6 pb-4 ${className}`}>
+  <div className={`min-h-screen bottom-nav-safe px-4 pt-6 pb-24 overflow-y-auto ${className}`}>
     <div className="mx-auto max-w-lg">{children}</div>
   </div>
 );
