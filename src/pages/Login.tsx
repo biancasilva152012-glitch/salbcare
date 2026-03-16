@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, HeartPulse, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, HeartPulse, CheckCircle2, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,10 +9,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const bullets = [
-  "Agenda, prontuário e teleconsulta",
-  "Assessoria contábil integrada",
-  "Menor preço do mercado",
-  "7 dias grátis — sem cartão",
+  { icon: Zap, text: "Agenda, prontuário e teleconsulta" },
+  { icon: Shield, text: "Assessoria contábil integrada" },
+  { icon: CheckCircle2, text: "Menor preço do mercado" },
+  { icon: CheckCircle2, text: "7 dias grátis — sem cartão" },
+];
+
+const floatingOrbs = [
+  { size: 180, x: "-10%", y: "10%", delay: 0 },
+  { size: 120, x: "80%", y: "5%", delay: 1.5 },
+  { size: 90, x: "70%", y: "75%", delay: 3 },
 ];
 
 const Login = () => {
@@ -49,88 +55,190 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6">
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-6 overflow-hidden">
+      {/* Animated background orbs */}
+      {floatingOrbs.map((orb, i) => (
+        <motion.div
+          key={i}
+          className="pointer-events-none absolute rounded-full opacity-[0.07]"
+          style={{
+            width: orb.size,
+            height: orb.size,
+            left: orb.x,
+            top: orb.y,
+            background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
+            filter: "blur(40px)",
+          }}
+          animate={{
+            y: [0, -30, 0, 20, 0],
+            x: [0, 15, -10, 5, 0],
+            scale: [1, 1.15, 0.95, 1.05, 1],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            delay: orb.delay,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-sm space-y-6"
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 w-full max-w-sm space-y-7"
       >
         {/* Branding */}
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/20">
-            <HeartPulse className="h-8 w-8 text-primary-foreground" />
-          </div>
-          <h1 className="text-2xl font-extrabold tracking-tight">SALBCARE</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Você cuida dos pacientes.</p>
-          <p className="text-sm text-primary font-semibold">A gente cuida do seu negócio.</p>
-        </div>
+        <motion.div
+          className="text-center"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <motion.div
+            className="mx-auto mb-5 flex h-[72px] w-[72px] items-center justify-center rounded-2xl shadow-lg relative"
+            style={{
+              background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
+              boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)",
+            }}
+            whileHover={{ scale: 1.05, rotate: 3 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <HeartPulse className="h-9 w-9 text-primary-foreground" />
+            {/* Pulse ring */}
+            <motion.div
+              className="absolute inset-0 rounded-2xl"
+              style={{ border: "2px solid hsl(var(--primary) / 0.4)" }}
+              animate={{ scale: [1, 1.3, 1.3], opacity: [0.6, 0, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
+            />
+          </motion.div>
+
+          <motion.h1
+            className="text-[1.75rem] font-extrabold tracking-tight"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            SALBCARE
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <p className="mt-1.5 text-sm text-muted-foreground">Você cuida dos pacientes.</p>
+            <p className="text-sm font-semibold gradient-text">A gente cuida do seu negócio.</p>
+          </motion.div>
+        </motion.div>
 
         {/* Value props */}
-        <div className="flex flex-col items-center gap-1.5">
-          {bullets.map((text) => (
-            <div key={text} className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-              <span className="text-xs text-muted-foreground">{text}</span>
-            </div>
+        <motion.div
+          className="flex flex-col items-center gap-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {bullets.map((item, i) => (
+            <motion.div
+              key={item.text}
+              className="flex items-center gap-2"
+              initial={{ opacity: 0, x: -15 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.55 + i * 0.1, duration: 0.4 }}
+            >
+              <item.icon className="h-3.5 w-3.5 text-primary shrink-0" />
+              <span className="text-xs text-muted-foreground">{item.text}</span>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Login form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-accent border-border"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <div className="relative">
+        {/* Login form card */}
+        <motion.div
+          className="glass-card p-5 space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="bg-accent border-border pr-10"
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-background/50 border-border/60 backdrop-blur-sm focus:border-primary/50 transition-colors"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
             </div>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-background/50 border-border/60 backdrop-blur-sm pr-10 focus:border-primary/50 transition-colors"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
-          <div className="text-right">
-            <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-              Esqueceu a senha?
-            </Link>
-          </div>
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                Esqueceu a senha?
+              </Link>
+            </div>
 
-          <Button type="submit" className="w-full gradient-primary font-semibold" disabled={loading}>
-            {loading ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <Button
+                type="submit"
+                className="w-full font-semibold h-11 text-sm relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
+                }}
+                disabled={loading}
+              >
+                {loading ? (
+                  <motion.span
+                    animate={{ opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1.2, repeat: Infinity }}
+                  >
+                    Entrando...
+                  </motion.span>
+                ) : (
+                  "Entrar"
+                )}
+              </Button>
+            </motion.div>
+          </form>
+        </motion.div>
 
-        <div className="text-center space-y-2">
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
           <p className="text-sm text-muted-foreground">
             Não tem conta?{" "}
             <Link to="/register" className="text-primary hover:underline font-medium">
               Comece grátis por 7 dias
             </Link>
           </p>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
