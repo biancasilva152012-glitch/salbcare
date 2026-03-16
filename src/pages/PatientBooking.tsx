@@ -65,7 +65,7 @@ const PatientBooking = () => {
   const [step, setStep] = useState(0);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
+  const [loading, setLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
