@@ -41,6 +41,8 @@ const Maintenance = lazy(() => import("./pages/Maintenance"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const TestPrescriptionPdf = lazy(() => import("./pages/TestPrescriptionPdf"));
 const Install = lazy(() => import("./pages/Install"));
+const Sucesso = lazy(() => import("./pages/Sucesso"));
+const Cancelado = lazy(() => import("./pages/Cancelado"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +96,8 @@ const App = () => (
               <Route path="/como-funciona" element={<HowItWorks />} />
               <Route path="/test-pdf" element={<TestPrescriptionPdf />} />
               <Route path="/install" element={<Install />} />
+              <Route path="/sucesso" element={<ProtectedRoute><Sucesso /></ProtectedRoute>} />
+              <Route path="/cancelado" element={<Cancelado />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
