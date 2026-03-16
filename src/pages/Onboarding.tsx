@@ -84,7 +84,7 @@ const Onboarding = () => {
           className="text-center mb-5"
         >
           <p className="text-xs text-muted-foreground">
-            Todos os planos incluem <span className="text-primary font-semibold">7 dias grátis</span> • Cancele quando quiser
+            Plano Essencial com <span className="text-primary font-semibold">7 dias grátis</span> • Cancele quando quiser
           </p>
         </motion.div>
 
