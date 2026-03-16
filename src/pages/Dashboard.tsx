@@ -98,6 +98,10 @@ const Dashboard = () => {
     <PageContainer onRefresh={handleRefresh}>
       <WelcomeOnboarding />
       <InstallBanner />
+      <ConnectOnboardingBanner
+        stripeOnboardingComplete={profile?.stripe_onboarding_complete}
+        stripeAccountId={profile?.stripe_account_id}
+      />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
         {/* Greeting — tighter on mobile */}
         <motion.div variants={item} className="space-y-0.5">
