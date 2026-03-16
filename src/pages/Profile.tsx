@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
