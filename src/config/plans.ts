@@ -42,7 +42,6 @@ export const PLANS = {
       "Gestão de múltiplos profissionais",
       "Painel financeiro avançado",
       "Suporte prioritário e dedicado",
-      "7 dias grátis para testar",
     ],
   },
 } as const;
