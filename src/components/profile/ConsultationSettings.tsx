@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Clock, MapPin, DollarSign, Save, Plus, Trash2, Loader2 } from "lucide-react";
+import { Clock, DollarSign, Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,7 +30,6 @@ const ConsultationSettings = () => {
 
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("30");
-  const [address, setAddress] = useState("");
   const [hours, setHours] = useState<AvailableHours>(DEFAULT_HOURS);
 
   const { data: profile, isLoading } = useQuery({
@@ -51,7 +49,6 @@ const ConsultationSettings = () => {
     if (profile) {
       setPrice(profile.consultation_price?.toString() || "");
       setDuration(profile.slot_duration?.toString() || "30");
-      setAddress(profile.office_address || "");
       if (profile.available_hours && typeof profile.available_hours === "object") {
         setHours({ ...DEFAULT_HOURS, ...(profile.available_hours as AvailableHours) });
       }
@@ -65,7 +62,7 @@ const ConsultationSettings = () => {
         .update({
           consultation_price: price ? parseFloat(price) : null,
           slot_duration: parseInt(duration),
-          office_address: address || null,
+          office_address: null,
           available_hours: hours as any,
         })
         .eq("user_id", user!.id);
@@ -154,19 +151,8 @@ const ConsultationSettings = () => {
         </div>
       </div>
 
-      {/* Office Address */}
-      <div className="space-y-1.5">
-        <Label className="flex items-center gap-1 text-xs">
-          <MapPin className="h-3 w-3" /> Endereço do consultório
-        </Label>
-        <Textarea
-          placeholder="Rua, número, bairro, cidade — usado nos lembretes de consultas presenciais"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className="bg-accent border-border text-sm resize-none"
-          rows={2}
-        />
-      </div>
+
+
 
       {/* Available Hours */}
       <div className="space-y-2">
