@@ -45,6 +45,7 @@ const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
 const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
 const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
 const SpecialtyDirectory = lazyWithRetry(() => import("./pages/SpecialtyDirectory"), "SpecialtyDirectory");
+const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 
 const queryClient = new QueryClient({
   defaultOptions: {
