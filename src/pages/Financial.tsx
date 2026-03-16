@@ -449,7 +449,7 @@ const Financial = () => {
 
           {hasAccess("advanced_financial_dashboard") && (
             <TabsContent value="avancado" className="mt-4">
-              <AdvancedFinancialDashboard />
+              <AdvancedFinancialDashboard transactions={transactions} />
             </TabsContent>
           )}
         </Tabs>
