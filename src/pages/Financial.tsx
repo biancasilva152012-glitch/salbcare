@@ -25,6 +25,7 @@ import { ptBR } from "date-fns/locale";
 import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
 import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
+import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
@@ -224,6 +225,19 @@ const Financial = () => {
           </Dialog>
           </div>
         </div>
+
+        <Tabs defaultValue="consultas" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="consultas">💰 Consultas</TabsTrigger>
+            <TabsTrigger value="geral">📊 Geral</TabsTrigger>
+            {hasAccess("advanced_financial_dashboard") && <TabsTrigger value="avancado"><Crown className="h-3 w-3 mr-1" /> Avançado</TabsTrigger>}
+          </TabsList>
+
+          <TabsContent value="consultas" className="mt-4">
+            <ConsultationPaymentsTab />
+          </TabsContent>
+
+          <TabsContent value="geral" className="mt-4 space-y-5">
 
         {/* Month Filter */}
         <div className="flex items-center justify-between glass-card p-2.5">
@@ -430,7 +444,15 @@ const Financial = () => {
             onNext={txPagination.nextPage}
             onPrev={txPagination.prevPage}
           />
-        </motion.div>
+         </motion.div>
+          </TabsContent>
+
+          {hasAccess("advanced_financial_dashboard") && (
+            <TabsContent value="avancado" className="mt-4">
+              <AdvancedFinancialDashboard transactions={transactions} />
+            </TabsContent>
+          )}
+        </Tabs>
       </div>
     </PageContainer>
   );
