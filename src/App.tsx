@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,40 +9,40 @@ import BottomNav from "@/components/BottomNav";
 import CookieConsent from "./components/CookieConsent";
 import PageSkeleton from "@/components/PageSkeleton";
 import PageContainer from "@/components/PageContainer";
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
-// Eager: splash, login, register (entry points)
-// Splash removed — Login is now the landing page
+// Eager: login, register (entry points)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Lazy: all other pages
-const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const Onboarding = lazy(() => import("./pages/Onboarding"));
-const Checkout = lazy(() => import("./pages/Checkout"));
-const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Agenda = lazy(() => import("./pages/Agenda"));
-const Patients = lazy(() => import("./pages/Patients"));
-const Telehealth = lazy(() => import("./pages/Telehealth"));
-const Professionals = lazy(() => import("./pages/Professionals"));
-const Financial = lazy(() => import("./pages/Financial"));
-const Accounting = lazy(() => import("./pages/Accounting"));
-const Legal = lazy(() => import("./pages/Legal"));
-const Profile = lazy(() => import("./pages/Profile"));
-const Subscription = lazy(() => import("./pages/Subscription"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const PatientBooking = lazy(() => import("./pages/PatientBooking"));
-const PatientRoom = lazy(() => import("./pages/PatientRoom"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Maintenance = lazy(() => import("./pages/Maintenance"));
-const HowItWorks = lazy(() => import("./pages/HowItWorks"));
-const TestPrescriptionPdf = lazy(() => import("./pages/TestPrescriptionPdf"));
-const Install = lazy(() => import("./pages/Install"));
-const Sucesso = lazy(() => import("./pages/Sucesso"));
-const Cancelado = lazy(() => import("./pages/Cancelado"));
+// Lazy with auto-retry on stale chunks after deploy
+const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"), "ForgotPassword");
+const ResetPassword = lazyWithRetry(() => import("./pages/ResetPassword"), "ResetPassword");
+const Onboarding = lazyWithRetry(() => import("./pages/Onboarding"), "Onboarding");
+const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
+const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"), "PaymentSuccess");
+const Dashboard = lazyWithRetry(() => import("./pages/Dashboard"), "Dashboard");
+const Agenda = lazyWithRetry(() => import("./pages/Agenda"), "Agenda");
+const Patients = lazyWithRetry(() => import("./pages/Patients"), "Patients");
+const Telehealth = lazyWithRetry(() => import("./pages/Telehealth"), "Telehealth");
+const Professionals = lazyWithRetry(() => import("./pages/Professionals"), "Professionals");
+const Financial = lazyWithRetry(() => import("./pages/Financial"), "Financial");
+const Accounting = lazyWithRetry(() => import("./pages/Accounting"), "Accounting");
+const Legal = lazyWithRetry(() => import("./pages/Legal"), "Legal");
+const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
+const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
+const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
+const AdminDashboard = lazyWithRetry(() => import("./pages/AdminDashboard"), "AdminDashboard");
+const PatientBooking = lazyWithRetry(() => import("./pages/PatientBooking"), "PatientBooking");
+const PatientRoom = lazyWithRetry(() => import("./pages/PatientRoom"), "PatientRoom");
+const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
+const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
+const Maintenance = lazyWithRetry(() => import("./pages/Maintenance"), "Maintenance");
+const HowItWorks = lazyWithRetry(() => import("./pages/HowItWorks"), "HowItWorks");
+const TestPrescriptionPdf = lazyWithRetry(() => import("./pages/TestPrescriptionPdf"), "TestPrescriptionPdf");
+const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
+const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
+const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
 
 const queryClient = new QueryClient({
   defaultOptions: {
