@@ -31,8 +31,8 @@ const ForgotPassword = () => {
     <div className="flex min-h-screen flex-col items-center justify-center px-6">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary">
-            <HeartPulse className="h-7 w-7 text-primary-foreground" />
+          <div className="mx-auto mb-4 h-14 w-14 rounded-2xl overflow-hidden shadow-lg">
+            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Recuperar Senha</h1>
           <p className="mt-1 text-sm text-muted-foreground">
