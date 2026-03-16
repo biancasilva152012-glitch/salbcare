@@ -31,7 +31,6 @@ const ConsultationSettings = () => {
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("30");
   const [hours, setHours] = useState<AvailableHours>(DEFAULT_HOURS);
-  const [hours, setHours] = useState<AvailableHours>(DEFAULT_HOURS);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile-settings", user?.id],
