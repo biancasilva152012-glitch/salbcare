@@ -16,7 +16,7 @@ export const PLANS = {
   professional: {
     name: "Profissional",
     subtitle: "Com acesso a contadores especializados em saúde",
-    price: 99,
+    price: 79,
     price_id: "price_1TAILDBUEEEAHx2hUax01AKh",
     product_id: "prod_U8ZUsScx3u9Uyk",
     popular: true,
