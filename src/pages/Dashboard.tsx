@@ -23,7 +23,7 @@ const quickActions: QuickAction[] = [
   { icon: DollarSign, label: "Financeiro", to: "/financial", color: "from-primary to-secondary" },
   { icon: Calendar, label: "Agenda", to: "/agenda", color: "from-primary to-secondary" },
   { icon: Users, label: "Pacientes", to: "/patients", color: "from-primary to-secondary" },
-  { icon: Video, label: "Telehealth", to: "/telehealth", color: "from-primary to-secondary" },
+  { icon: Video, label: "Teleconsulta", to: "/telehealth", color: "from-primary to-secondary" },
   { icon: Scale, label: "Jurídico", to: "/legal", color: "from-primary to-secondary" },
   { icon: UserCog, label: "Equipe", to: "/professionals", requiredFeature: "multi_professionals", color: "from-primary to-secondary" },
 ];
