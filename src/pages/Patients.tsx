@@ -256,7 +256,7 @@ const Patients = () => {
 
         {/* Edit Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
-          <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogContent className="bg-card border-border">
             <DialogHeader><DialogTitle>Editar Paciente</DialogTitle></DialogHeader>
             {renderPatientForm(true)}
           </DialogContent>
