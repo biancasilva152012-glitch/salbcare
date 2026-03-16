@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
-import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users } from "lucide-react";
+import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
 import PageSkeleton from "@/components/PageSkeleton";
 import ListPagination from "@/components/ListPagination";
@@ -26,6 +26,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
+import { downloadCsvTemplate, PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 
 const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "", initial_anamnesis: "", procedure_performed: "" };
 
@@ -178,15 +179,25 @@ const Patients = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Pacientes</h1>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
-            </DialogTrigger>
-            <DialogContent className="bg-card border-border">
-              <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
-              {renderPatientForm(false)}
-            </DialogContent>
-          </Dialog>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1"
+              onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
+            >
+              <FileSpreadsheet className="h-3.5 w-3.5" /> Modelo
+            </Button>
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
+              </DialogTrigger>
+              <DialogContent className="bg-card border-border">
+                <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
+                {renderPatientForm(false)}
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         <div className="relative">
@@ -267,9 +278,19 @@ const Patients = () => {
             <EmptyState
               icon={Users}
               title="Nenhum paciente cadastrado"
-              description="Nenhum paciente cadastrado ainda. Você pode cadastrar manualmente ou aguardar o primeiro agendamento online."
+              description="Nenhum paciente cadastrado ainda. Você pode cadastrar manualmente ou baixar a planilha modelo para importação."
               actionLabel="Cadastrar paciente"
               onAction={() => { setForm(emptyForm); setOpen(true); }}
+              extra={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 mt-2"
+                  onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5" /> Baixar planilha modelo
+                </Button>
+              }
             />
           )}
           {filtered.length === 0 && search && (
