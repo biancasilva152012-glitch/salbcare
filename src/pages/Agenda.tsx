@@ -23,7 +23,7 @@ import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import PatientSearchInput from "@/components/agenda/PatientSearchInput";
 import EmptyState from "@/components/EmptyState";
-import { CalendarX, Copy, Link, FileSpreadsheet } from "lucide-react";
+import { CalendarX, Copy, Link } from "lucide-react";
 import { usePagination } from "@/hooks/usePagination";
 import { downloadCsvTemplate, AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 
