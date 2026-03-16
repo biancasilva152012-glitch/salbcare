@@ -63,7 +63,7 @@ const ConsultationSettings = () => {
         .update({
           consultation_price: price ? parseFloat(price) : null,
           slot_duration: parseInt(duration),
-          office_address: address || null,
+          office_address: null,
           available_hours: hours as any,
         })
         .eq("user_id", user!.id);
