@@ -46,12 +46,18 @@ const Login = () => {
     } else if (authData.user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("trial_start_date, payment_status")
+        .select("trial_start_date, payment_status, user_type")
         .eq("user_id", authData.user.id)
         .single();
 
-      const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
-      navigate(needsOnboarding ? "/onboarding" : "/dashboard");
+      const userType = (profile as any)?.user_type || "professional";
+
+      if (userType === "patient") {
+        navigate("/patient-dashboard");
+      } else {
+        const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
+        navigate(needsOnboarding ? "/onboarding" : "/dashboard");
+      }
     }
   };
 

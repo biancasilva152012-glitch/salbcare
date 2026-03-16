@@ -105,6 +105,7 @@ const App = () => (
               <Route path="/cancelado" element={<Cancelado />} />
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
               <Route path="/consulta-online/:specialty" element={<SpecialtyDirectory />} />
+              <Route path="/patient-dashboard" element={<ProtectedRoute><PatientDashboard /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
