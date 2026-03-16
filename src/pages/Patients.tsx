@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { motion } from "framer-motion";
-import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet } from "lucide-react";
+import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet, Upload, Loader2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
 import PageSkeleton from "@/components/PageSkeleton";
 import ListPagination from "@/components/ListPagination";
@@ -39,6 +39,70 @@ const Patients = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
+
+  const parseDateBR = (dateStr: string): string | null => {
+    if (!dateStr) return null;
+    // Try dd/mm/yyyy
+    const parts = dateStr.trim().split("/");
+    if (parts.length === 3) {
+      const [d, m, y] = parts;
+      const parsed = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+      if (!isNaN(Date.parse(parsed))) return parsed;
+    }
+    // Try yyyy-mm-dd
+    if (!isNaN(Date.parse(dateStr.trim()))) return dateStr.trim();
+    return null;
+  };
+
+  const handleCsvImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    e.target.value = "";
+    setImporting(true);
+
+    try {
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      if (lines.length < 2) {
+        toast.error("Planilha vazia ou sem dados.");
+        return;
+      }
+
+      // Detect separator
+      const sep = lines[0].includes(";") ? ";" : ",";
+      const rows = lines.slice(1).map((line) => line.split(sep).map((c) => c.trim().replace(/^"|"$/g, "")));
+
+      const toInsert = rows
+        .filter((cols) => cols[0])
+        .map((cols) => ({
+          user_id: user.id,
+          name: cols[0] || "",
+          phone: cols[1] || null,
+          email: cols[2] || null,
+          birth_date: parseDateBR(cols[3] || "") || null,
+          initial_anamnesis: cols[4] || null,
+          procedure_performed: cols[5] || null,
+          notes: cols[6] || null,
+          medical_history: cols[7] || null,
+        }));
+
+      if (toInsert.length === 0) {
+        toast.error("Nenhum paciente encontrado na planilha.");
+        return;
+      }
+
+      const { error } = await supabase.from("patients").insert(toInsert);
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      toast.success(`${toInsert.length} paciente(s) importado(s) com sucesso!`);
+    } catch {
+      toast.error("Erro ao importar. Verifique o formato da planilha.");
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const { data: patients = [], isLoading } = useQuery({
     queryKey: ["patients", user?.id],
@@ -186,8 +250,17 @@ const Patients = () => {
               className="gap-1"
               onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
             >
-              <FileSpreadsheet className="h-3.5 w-3.5" /> Modelo
+              <FileDown className="h-3.5 w-3.5" /> Modelo
             </Button>
+            <label>
+              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing} asChild>
+                <span>
+                  {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                  {importing ? "Importando..." : "Importar"}
+                </span>
+              </Button>
+              <input type="file" accept=".csv,.txt,.xls,.xlsx" onChange={handleCsvImport} className="hidden" />
+            </label>
             <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
@@ -278,18 +351,26 @@ const Patients = () => {
             <EmptyState
               icon={Users}
               title="Nenhum paciente cadastrado"
-              description="Nenhum paciente cadastrado ainda. Você pode cadastrar manualmente ou baixar a planilha modelo para importação."
+              description="Cadastre manualmente, ou importe uma planilha CSV com seus pacientes."
               actionLabel="Cadastrar paciente"
               onAction={() => { setForm(emptyForm); setOpen(true); }}
               extra={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 mt-2"
-                  onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
-                >
-                  <FileSpreadsheet className="h-3.5 w-3.5" /> Baixar planilha modelo
-                </Button>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
+                  >
+                    <FileDown className="h-3.5 w-3.5" /> Baixar modelo
+                  </Button>
+                  <label>
+                    <Button variant="outline" size="sm" className="gap-1.5 cursor-pointer" asChild>
+                      <span><Upload className="h-3.5 w-3.5" /> Importar CSV</span>
+                    </Button>
+                    <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" />
+                  </label>
+                </div>
               }
             />
           )}
