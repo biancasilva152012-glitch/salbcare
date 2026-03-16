@@ -2,7 +2,7 @@ import PageContainer from "@/components/PageContainer";
 
 const Terms = () => {
   return (
-    <PageContainer>
+    <PageContainer backTo={true}>
       <div className="space-y-6 pb-8">
         <h1 className="text-2xl font-bold">Termos de Uso</h1>
         <p className="text-xs text-muted-foreground">Última atualização: 14 de março de 2026</p>

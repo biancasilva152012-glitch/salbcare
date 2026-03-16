@@ -15,7 +15,7 @@ const Accounting = () => {
   const defaultTab = searchParams.get("tab") || "dashboard";
 
   return (
-    <PageContainer>
+    <PageContainer backTo="/dashboard">
       <div className="space-y-5">
         <h1 className="text-2xl font-bold">Contabilidade</h1>
 

@@ -1,14 +1,18 @@
 import { ReactNode, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
+import BackButton from "@/components/BackButton";
 
 interface PageContainerProps {
   children: ReactNode;
   className?: string;
   onRefresh?: () => Promise<void> | void;
+  /** Show a themed back arrow at the top. Pass string to set a fixed destination. */
+  backTo?: string | boolean;
+  backLabel?: string;
 }
 
-const PageContainer = ({ children, className = "", onRefresh }: PageContainerProps) => {
+const PageContainer = ({ children, className = "", onRefresh, backTo, backLabel }: PageContainerProps) => {
   const { scrollRef, pullDistance, isRefreshing } = usePullToRefresh({
     onRefresh,
   });
@@ -26,7 +30,7 @@ const PageContainer = ({ children, className = "", onRefresh }: PageContainerPro
     <div className={`flex flex-col h-[100dvh] overflow-hidden ${className}`}>
       <main
         ref={setRef}
-        className="flex-1 overflow-y-auto overscroll-contain px-4 pt-6 bottom-nav-safe"
+        className="flex-1 overflow-y-auto overscroll-contain px-4 pt-5 bottom-nav-safe"
         style={{ WebkitOverflowScrolling: "touch" as any }}
       >
         {/* Pull-to-refresh indicator */}
@@ -50,7 +54,15 @@ const PageContainer = ({ children, className = "", onRefresh }: PageContainerPro
             </div>
           </div>
         )}
-        <div className="mx-auto max-w-lg pb-2">{children}</div>
+        <div className="mx-auto max-w-lg pb-2">
+          {backTo && (
+            <BackButton
+              to={typeof backTo === "string" ? backTo : undefined}
+              label={backLabel}
+            />
+          )}
+          {children}
+        </div>
       </main>
     </div>
   );

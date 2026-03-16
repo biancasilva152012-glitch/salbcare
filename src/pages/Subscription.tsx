@@ -59,7 +59,7 @@ const Subscription = () => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer backTo="/profile">
       <div className="space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">Planos SALBCARE</h1>

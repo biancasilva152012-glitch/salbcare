@@ -16,7 +16,7 @@ const BottomNav = () => {
   if (location.pathname.startsWith("/booking") || location.pathname.startsWith("/consulta-online") || location.pathname.startsWith("/sala")) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-xl">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-card/95 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-lg items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
