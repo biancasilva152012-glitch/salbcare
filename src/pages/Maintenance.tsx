@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { HeartPulse, Wrench } from "lucide-react";
+import { Wrench } from "lucide-react";
 
 const Maintenance = () => (
   <div className="flex min-h-screen flex-col items-center justify-center px-6">
