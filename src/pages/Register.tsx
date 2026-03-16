@@ -1,22 +1,29 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { maskPhone } from "@/utils/masks";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
+import { ArrowLeft, Stethoscope, UserRound } from "lucide-react";
 
 const professionalTypes = [
-  { value: "medico", label: "Médico(a)" },
-  { value: "dentista", label: "Dentista" },
-  { value: "psicologo", label: "Psicólogo(a)" },
-  { value: "fisioterapeuta", label: "Fisioterapeuta" },
-  { value: "nutricionista", label: "Nutricionista" },
-  { value: "outro", label: "Outro" },
+  { value: "medico", label: "Médico(a)", prefix: "CRM" },
+  { value: "dentista", label: "Dentista", prefix: "CRO" },
+  { value: "psicologo", label: "Psicólogo(a)", prefix: "CRP" },
+  { value: "nutricionista", label: "Nutricionista", prefix: "CRN" },
+  { value: "fisioterapeuta", label: "Fisioterapeuta", prefix: "CREFITO" },
+  { value: "outro", label: "Outro", prefix: "Conselho" },
+];
+
+const brStates = [
+  "AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT",
+  "PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO",
 ];
 
 const floatingOrbs = [
@@ -25,74 +32,133 @@ const floatingOrbs = [
   { size: 80, x: "65%", y: "80%", delay: 3.5 },
 ];
 
+type UserType = "" | "professional" | "patient";
+
 const Register = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", phone: "", professional_type: "" });
+  const [userType, setUserType] = useState<UserType>("");
+  const [step, setStep] = useState(0); // 0=role, 1=data, 2=professional-details, 3=accept
   const [loading, setLoading] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.professional_type) {
-      toast.error("Preencha este campo para continuar.");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    professional_type: "",
+    council_number: "",
+    council_state: "",
+  });
+
+  const totalSteps = userType === "professional" ? 4 : 3; // role + data + (prof details) + accept
+
+  const councilPrefix = professionalTypes.find(p => p.value === form.professional_type)?.prefix || "Conselho";
+
+  const handleSubmit = async () => {
+    if (!acceptTerms) {
+      toast.error("Aceite os termos para continuar.");
       return;
     }
     setLoading(true);
+
+    // Check if email already exists
+    const { data: existingType } = await supabase.rpc("check_email_user_type", { check_email: form.email });
+    if (existingType) {
+      const typeLabel = existingType === "professional" ? "profissional" : "paciente";
+      toast.error(`Este e-mail já está cadastrado como ${typeLabel}. Use outro e-mail ou faça login.`);
+      setLoading(false);
+      return;
+    }
+
+    const metadata: Record<string, string> = {
+      name: form.name,
+      phone: form.phone,
+      user_type: userType,
+    };
+
+    if (userType === "professional") {
+      metadata.professional_type = form.professional_type;
+      metadata.council_number = form.council_number;
+      metadata.council_state = form.council_state;
+    } else {
+      metadata.professional_type = "paciente";
+    }
+
     const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
-        data: {
-          name: form.name,
-          phone: form.phone,
-          professional_type: form.professional_type,
-        },
+        data: metadata,
         emailRedirectTo: window.location.origin,
       },
     });
     setLoading(false);
+
     if (error) {
       const msg = error.message.toLowerCase();
       if (msg.includes("already") || msg.includes("registered")) {
         toast.error("Este e-mail já está cadastrado. Tente fazer login.");
-      } else if (msg.includes("network") || msg.includes("fetch")) {
-        toast.error("Sem conexão no momento. Verifique sua internet.");
       } else if (msg.includes("password")) {
         toast.error("A senha precisa ter pelo menos 6 caracteres.");
       } else {
-        toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
+        toast.error("Ocorreu um erro. Tente novamente.");
       }
     } else {
       toast.success("Conta criada com sucesso!");
-      navigate("/onboarding");
+      if (userType === "professional") {
+        navigate("/onboarding");
+      } else {
+        navigate("/patient-dashboard");
+      }
+    }
+  };
+
+  const canGoNext = () => {
+    if (step === 0) return !!userType;
+    if (step === 1) {
+      if (userType === "patient") return !!form.name && !!form.email && !!form.phone && !!form.password;
+      return !!form.name && !!form.email && !!form.phone && !!form.password;
+    }
+    if (step === 2 && userType === "professional") {
+      return !!form.professional_type && !!form.council_number && !!form.council_state;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (!canGoNext()) return;
+    const lastStep = totalSteps - 1;
+    if (step === lastStep) {
+      handleSubmit();
+      return;
+    }
+    setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    if (step === 0) return;
+    if (step === 1) {
+      setUserType("");
+      setStep(0);
+    } else {
+      setStep(step - 1);
     }
   };
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-10 overflow-hidden">
-      {/* Animated background orbs */}
       {floatingOrbs.map((orb, i) => (
         <motion.div
           key={i}
           className="pointer-events-none absolute rounded-full opacity-[0.07]"
           style={{
-            width: orb.size,
-            height: orb.size,
-            left: orb.x,
-            top: orb.y,
+            width: orb.size, height: orb.size, left: orb.x, top: orb.y,
             background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
             filter: "blur(40px)",
           }}
-          animate={{
-            y: [0, -25, 0, 15, 0],
-            x: [0, 10, -8, 5, 0],
-            scale: [1, 1.12, 0.95, 1.05, 1],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            delay: orb.delay,
-            ease: "easeInOut",
-          }}
+          animate={{ y: [0, -25, 0, 15, 0], x: [0, 10, -8, 5, 0], scale: [1, 1.12, 0.95, 1.05, 1] }}
+          transition={{ duration: 12, repeat: Infinity, delay: orb.delay, ease: "easeInOut" }}
         />
       ))}
 
@@ -103,151 +169,235 @@ const Register = () => {
         className="relative z-10 w-full max-w-sm space-y-6"
       >
         {/* Branding */}
-        <motion.div
-          className="text-center"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        >
+        <motion.div className="text-center" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
           <motion.div
             className="mx-auto mb-4 h-16 w-16 rounded-2xl relative overflow-hidden"
             style={{ boxShadow: "0 8px 32px hsl(var(--primary) / 0.3)" }}
-            whileHover={{ scale: 1.05, rotate: -3 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.05 }}
           >
             <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-cover" />
-            <motion.div
-              className="absolute inset-0 rounded-2xl"
-              style={{ border: "2px solid hsl(var(--primary) / 0.4)" }}
-              animate={{ scale: [1, 1.3, 1.3], opacity: [0.6, 0, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
-            />
           </motion.div>
-          <motion.h1
-            className="text-2xl font-bold tracking-tight"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            Criar Conta
-          </motion.h1>
-          <motion.p
-            className="mt-1 text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.35 }}
-          >
-            Comece a gerenciar seu consultório
-          </motion.p>
         </motion.div>
 
-        {/* Form card */}
-        <motion.div
-          className="glass-card p-5 space-y-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Nome completo</Label>
-              <Input id="name" placeholder="Dr. João Silva" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-background/50 border-border/60 backdrop-blur-sm focus:border-primary/50 transition-colors" required />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-background/50 border-border/60 backdrop-blur-sm focus:border-primary/50 transition-colors" required />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="phone">Telefone</Label>
-              <Input id="phone" placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })} className="bg-background/50 border-border/60 backdrop-blur-sm focus:border-primary/50 transition-colors" />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Tipo profissional</Label>
-              <Select onValueChange={(v) => setForm({ ...form, professional_type: v })}>
-                <SelectTrigger className="bg-background/50 border-border/60 backdrop-blur-sm focus:border-primary/50 transition-colors">
-                  <SelectValue placeholder="Selecione..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {professionalTypes.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60 backdrop-blur-sm focus:border-primary/50 transition-colors" required minLength={6} />
-            </div>
+        <AnimatePresence mode="wait">
+          {/* STEP 0: Role Selection */}
+          {step === 0 && (
+            <motion.div key="step0" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
+              <div className="text-center space-y-1">
+                <h1 className="text-2xl font-bold tracking-tight">Bem-vindo à SALBCARE</h1>
+                <p className="text-sm text-muted-foreground">Você é:</p>
+              </div>
 
-            <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
-              Ao se cadastrar, você concorda com os{" "}
-              <Link to="/terms" className="text-primary hover:underline">Termos de Uso</Link>
-              {" "}e a{" "}
-              <Link to="/privacy" className="text-primary hover:underline">Política de Privacidade</Link>.
-            </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setUserType("professional")}
+                  className={`glass-card p-4 text-left space-y-2 transition-all rounded-xl ${
+                    userType === "professional"
+                      ? "ring-2 ring-primary border-primary/50 bg-primary/5"
+                      : "hover:ring-1 hover:ring-primary/30"
+                  }`}
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    <Stethoscope className="h-5 w-5 text-primary" />
+                  </div>
+                  <p className="text-sm font-semibold">Profissional de Saúde</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    Quero gerenciar meu consultório e atender pacientes
+                  </p>
+                </button>
 
-            <motion.div whileTap={{ scale: 0.98 }}>
+                <button
+                  onClick={() => setUserType("patient")}
+                  className={`glass-card p-4 text-left space-y-2 transition-all rounded-xl ${
+                    userType === "patient"
+                      ? "ring-2 ring-primary border-primary/50 bg-primary/5"
+                      : "hover:ring-1 hover:ring-primary/30"
+                  }`}
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary/10">
+                    <UserRound className="h-5 w-5 text-secondary" />
+                  </div>
+                  <p className="text-sm font-semibold">Paciente</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    Quero agendar uma consulta online
+                  </p>
+                </button>
+              </div>
+
+              {userType && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                  <Button onClick={() => setStep(1)} className="w-full h-11 font-semibold" style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))" }}>
+                    Continuar
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* Divider + Google */}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-border/60" />
+                <span className="text-xs text-muted-foreground">ou</span>
+                <div className="flex-1 h-px bg-border/60" />
+              </div>
               <Button
-                type="submit"
-                className="w-full font-semibold h-11 text-sm relative overflow-hidden mt-1"
-                style={{
-                  background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
+                type="button"
+                variant="outline"
+                className="w-full h-11 text-sm font-medium gap-2 border-border/60 bg-background/50 backdrop-blur-sm hover:bg-accent/80"
+                onClick={async () => {
+                  const { error } = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+                  if (error) toast.error("Erro ao cadastrar com Google.");
                 }}
-                disabled={loading}
               >
-                {loading ? (
-                  <motion.span
-                    animate={{ opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 1.2, repeat: Infinity }}
-                  >
-                    Cadastrando...
-                  </motion.span>
-                ) : (
-                  "Cadastrar"
-                )}
+                <svg className="h-4 w-4" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                </svg>
+                Cadastrar com Google
               </Button>
             </motion.div>
-          </form>
+          )}
 
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-1">
-            <div className="flex-1 h-px bg-border/60" />
-            <span className="text-xs text-muted-foreground">ou</span>
-            <div className="flex-1 h-px bg-border/60" />
-          </div>
+          {/* STEP 1: Personal Data */}
+          {step === 1 && (
+            <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+              <div className="text-center space-y-1">
+                <h2 className="text-lg font-bold">
+                  {userType === "professional" ? "Dados pessoais" : "Seus dados"}
+                </h2>
+                <p className="text-xs text-muted-foreground">Etapa 1 de {totalSteps - 1}</p>
+              </div>
 
-          {/* Google Sign Up */}
-          <motion.div whileTap={{ scale: 0.98 }}>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11 text-sm font-medium gap-2 border-border/60 bg-background/50 backdrop-blur-sm hover:bg-accent/80"
-              onClick={async () => {
-                const { error } = await lovable.auth.signInWithOAuth("google", {
-                  redirect_uri: window.location.origin,
-                });
-                if (error) {
-                  toast.error("Erro ao cadastrar com Google. Tente novamente.");
-                }
-              }}
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-              </svg>
-              Cadastrar com Google
+              <div className="glass-card p-5 space-y-3">
+                <div className="space-y-1.5">
+                  <Label>Nome completo *</Label>
+                  <Input placeholder="Seu nome completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-background/50 border-border/60" required />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>E-mail *</Label>
+                  <Input type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-background/50 border-border/60" required />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>WhatsApp *</Label>
+                  <Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })} className="bg-background/50 border-border/60" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Senha *</Label>
+                  <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" required minLength={6} />
+                  <p className="text-[10px] text-muted-foreground">Mínimo 6 caracteres</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 2: Professional Details (only for professionals) */}
+          {step === 2 && userType === "professional" && (
+            <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+              <div className="text-center space-y-1">
+                <h2 className="text-lg font-bold">Dados profissionais</h2>
+                <p className="text-xs text-muted-foreground">Etapa 2 de {totalSteps - 1}</p>
+              </div>
+
+              <div className="glass-card p-5 space-y-3">
+                <div className="space-y-1.5">
+                  <Label>Especialidade *</Label>
+                  <Select onValueChange={(v) => setForm({ ...form, professional_type: v })} value={form.professional_type}>
+                    <SelectTrigger className="bg-background/50 border-border/60">
+                      <SelectValue placeholder="Selecione sua especialidade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {professionalTypes.map((t) => (
+                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Número do {councilPrefix} *</Label>
+                  <Input placeholder={`Ex: ${councilPrefix}/12345`} value={form.council_number} onChange={(e) => setForm({ ...form, council_number: e.target.value })} className="bg-background/50 border-border/60" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Estado de registro *</Label>
+                  <Select onValueChange={(v) => setForm({ ...form, council_state: v })} value={form.council_state}>
+                    <SelectTrigger className="bg-background/50 border-border/60">
+                      <SelectValue placeholder="Selecione o estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {brStates.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* LAST STEP: Terms acceptance */}
+          {((step === 2 && userType === "patient") || (step === 3 && userType === "professional")) && (
+            <motion.div key="accept" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+              <div className="text-center space-y-1">
+                <h2 className="text-lg font-bold">Quase lá!</h2>
+                <p className="text-xs text-muted-foreground">Última etapa</p>
+              </div>
+
+              <div className="glass-card p-5 space-y-4">
+                <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1">
+                  <p className="text-xs font-medium">Resumo da conta</p>
+                  <p className="text-[11px] text-muted-foreground">{form.name} • {form.email}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {userType === "professional"
+                      ? `${professionalTypes.find(p => p.value === form.professional_type)?.label || "Profissional"} • ${form.council_number} (${form.council_state})`
+                      : "Conta de paciente"
+                    }
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <Checkbox
+                    id="terms"
+                    checked={acceptTerms}
+                    onCheckedChange={(v) => setAcceptTerms(!!v)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="terms" className="text-[11px] text-muted-foreground leading-relaxed cursor-pointer">
+                    Li e concordo com os{" "}
+                    <Link to="/terms" className="text-primary hover:underline" target="_blank">Termos de Uso</Link>
+                    {" "}e a{" "}
+                    <Link to="/privacy" className="text-primary hover:underline" target="_blank">Política de Privacidade</Link>.
+                  </label>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Navigation buttons */}
+        {step > 0 && (
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={handleBack} className="gap-1.5">
+              <ArrowLeft className="h-4 w-4" /> Voltar
             </Button>
-          </motion.div>
-        </motion.div>
+            <Button
+              onClick={handleNext}
+              className="flex-1 h-11 font-semibold"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))" }}
+              disabled={!canGoNext() || loading || (step === totalSteps - 1 && !acceptTerms)}
+            >
+              {loading ? (
+                <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>
+                  Criando conta...
+                </motion.span>
+              ) : step === totalSteps - 1 ? (
+                "Criar minha conta"
+              ) : (
+                "Próximo"
+              )}
+            </Button>
+          </div>
+        )}
 
-        <motion.p
-          className="text-center text-sm text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
+        <motion.p className="text-center text-sm text-muted-foreground" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
           Já tem conta?{" "}
           <Link to="/login" className="text-primary hover:underline font-medium">Entrar</Link>
         </motion.p>
