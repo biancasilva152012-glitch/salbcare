@@ -99,8 +99,8 @@ const Dashboard = () => {
       <WelcomeOnboarding />
       <InstallBanner />
       <ConnectOnboardingBanner
-        stripeOnboardingComplete={profile?.stripe_onboarding_complete}
-        stripeAccountId={profile?.stripe_account_id}
+        pixKey={(profile as any)?.pix_key}
+        cardLink={(profile as any)?.card_link}
       />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
         {/* Greeting — tighter on mobile */}
