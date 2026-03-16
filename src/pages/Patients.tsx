@@ -351,18 +351,26 @@ const Patients = () => {
             <EmptyState
               icon={Users}
               title="Nenhum paciente cadastrado"
-              description="Nenhum paciente cadastrado ainda. Você pode cadastrar manualmente ou baixar a planilha modelo para importação."
+              description="Cadastre manualmente, ou importe uma planilha CSV com seus pacientes."
               actionLabel="Cadastrar paciente"
               onAction={() => { setForm(emptyForm); setOpen(true); }}
               extra={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 mt-2"
-                  onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
-                >
-                  <FileSpreadsheet className="h-3.5 w-3.5" /> Baixar planilha modelo
-                </Button>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
+                  >
+                    <FileDown className="h-3.5 w-3.5" /> Baixar modelo
+                  </Button>
+                  <label>
+                    <Button variant="outline" size="sm" className="gap-1.5 cursor-pointer" asChild>
+                      <span><Upload className="h-3.5 w-3.5" /> Importar CSV</span>
+                    </Button>
+                    <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" />
+                  </label>
+                </div>
               }
             />
           )}
