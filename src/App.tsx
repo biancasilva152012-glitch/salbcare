@@ -47,6 +47,7 @@ const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
 const SpecialtyDirectory = lazyWithRetry(() => import("./pages/SpecialtyDirectory"), "SpecialtyDirectory");
 const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 const PatientDashboard = lazyWithRetry(() => import("./pages/PatientDashboard"), "PatientDashboard");
+const BookingSuccess = lazyWithRetry(() => import("./pages/BookingSuccess"), "BookingSuccess");
 
 const queryClient = new QueryClient({
   defaultOptions: {
