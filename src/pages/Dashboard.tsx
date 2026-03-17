@@ -84,12 +84,13 @@ const Dashboard = () => {
     queryFn: async () => {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
-      const { data } = await supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).gte("date", startOfMonth.toISOString().split("T")[0]);
+      const { data } = await supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).gte("date", startOfMonth.toISOString().split("T")[0]).limit(500);
       const income = (data || []).filter((transaction) => transaction.type === "income").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
       const expense = (data || []).filter((transaction) => transaction.type === "expense").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
       return income - expense;
     },
     enabled: !!user,
+    staleTime: 2 * 60 * 1000,
   });
 
   // Realtime: listen for new appointments (patient bookings)
