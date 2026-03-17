@@ -61,8 +61,25 @@ const STEPS = ["Horário", "Seus dados", "Confirmação", "Sucesso"];
 
 const PatientBooking = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const doctorId = searchParams.get("doctor");
   const doctorName = searchParams.get("name") || "Profissional";
+
+  // Block professionals from booking — redirect to dashboard
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.user_type === "professional") {
+          navigate("/dashboard", { replace: true });
+        }
+      });
+  }, [user, navigate]);
 
   const [step, setStep] = useState(0);
   const [selectedDate, setSelectedDate] = useState("");
