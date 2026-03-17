@@ -92,6 +92,39 @@ const Dashboard = () => {
     enabled: !!user,
   });
 
+  // Realtime: listen for new appointments (patient bookings)
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel('new-appointments')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'appointments',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const appt = payload.new as any;
+          toast.info(
+            `🩺 Novo agendamento!\n${appt.patient_name} — ${appt.date} às ${appt.time}`,
+            {
+              duration: 8000,
+              action: {
+                label: "Ver agenda",
+                onClick: () => navigate("/agenda"),
+              },
+            }
+          );
+          queryClient.invalidateQueries({ queryKey: ["today-appointments"] });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id, navigate, queryClient]);
+
   if (profileLoading) {
     return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
   }
