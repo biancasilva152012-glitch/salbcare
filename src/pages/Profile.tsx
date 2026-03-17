@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
+import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
@@ -45,10 +46,10 @@ const Profile = () => {
   const [cardLink, setCardLink] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
@@ -214,6 +215,10 @@ const Profile = () => {
       </div>
     );
   };
+
+  if (profileLoading) {
+    return <PageContainer backTo="/dashboard"><PageSkeleton variant="list" /></PageContainer>;
+  }
 
   return (
     <PageContainer backTo="/dashboard">

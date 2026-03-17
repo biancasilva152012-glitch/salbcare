@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import PageSkeleton from "@/components/PageSkeleton";
 import { Video, Clock, FileText, Plus, Download, ExternalLink, Lock, Sparkles, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
@@ -32,7 +33,7 @@ const Telehealth = () => {
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("profiles").select("name, professional_type, phone, crm, meet_link").eq("user_id", user!.id).single();
@@ -90,6 +91,11 @@ const Telehealth = () => {
     queryClient.invalidateQueries({ queryKey: ["teleconsultations"] });
     toast.success("Consulta marcada como concluída!");
   };
+
+  // Loading state
+  if (profileLoading) {
+    return <PageContainer backTo="/dashboard"><PageSkeleton variant="list" /></PageContainer>;
+  }
 
   // Paywall for Essential plan
   const isEssential = subscription.plan === "basic";

@@ -67,20 +67,23 @@ const PatientDashboard = () => {
   });
 
   const { data: myAppointments = [] } = useQuery({
-    queryKey: ["patient-appointments", user?.id],
+    queryKey: ["patient-appointments", user?.id, profile?.email],
     queryFn: async () => {
-      // Appointments where the patient's email matches
+      const email = profile?.email || user?.email;
+      if (!email) return [];
+      // Search by patient_name or notes containing the patient's email
       const { data } = await supabase
         .from("appointments")
-        .select("*")
+        .select("id, patient_name, date, time, appointment_type, notes, status")
         .eq("status", "scheduled")
         .order("date", { ascending: true })
-        .order("time", { ascending: true });
+        .order("time", { ascending: true })
+        .limit(50);
       return (data || []).filter((a: any) =>
-        a.notes?.includes(profile?.email || user?.email || "___NOMATCH___")
+        a.notes?.includes(email)
       );
     },
-    enabled: !!user,
+    enabled: !!user && !!(profile?.email || user?.email),
   });
 
   const filteredProfessionals = professionals.filter((p: any) =>
