@@ -17,7 +17,23 @@ const SPECIALTIES = [
 
 const ConsultaOnlineIndex = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
+
+  // Block professionals — this page is patient-only
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.user_type === "professional") {
+          navigate("/dashboard", { replace: true });
+        }
+      });
+  }, [user, navigate]);
 
   useEffect(() => {
     document.title = "Consulta Online — Agende com profissionais de saúde | SALBCARE";
