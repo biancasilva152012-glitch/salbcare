@@ -13,6 +13,8 @@ interface SubscriptionState {
   needsOnboarding: boolean;
 }
 
+export type UserType = "professional" | "patient" | null;
+
 interface AuthContextType {
   session: Session | null;
   user: User | null;
