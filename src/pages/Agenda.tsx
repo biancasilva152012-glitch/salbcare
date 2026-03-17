@@ -137,6 +137,7 @@ const Agenda = () => {
       setForm(emptyForm);
       setOpen(false);
       toast.success("Consulta agendada!");
+      toast("Você acaba de economizar R$ 0 em comissões comparado a outras plataformas. Continue crescendo com a SALBCARE! 🚀", { duration: 5000 });
     },
     onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
