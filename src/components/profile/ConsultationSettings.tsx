@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, DollarSign, Save, Plus, Trash2, Loader2, Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle } from "lucide-react";
+import { Clock, DollarSign, Save, Plus, Trash2, Loader2, Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle, Timer, Hourglass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,6 +84,8 @@ const ConsultationSettings = () => {
 
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("30");
+  const [intervalMin, setIntervalMin] = useState("10");
+  const [minAdvance, setMinAdvance] = useState("3");
   const [hours, setHours] = useState<AvailableHours>(DEFAULT_HOURS);
   const [meetLink, setMeetLink] = useState("");
   const [meetSaved, setMeetSaved] = useState(false);
@@ -93,7 +95,7 @@ const ConsultationSettings = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("consultation_price, slot_duration, office_address, available_hours, meet_link")
+        .select("consultation_price, slot_duration, office_address, available_hours, meet_link, interval_minutes, min_advance_hours")
         .eq("user_id", user!.id)
         .single();
       return data;
@@ -107,6 +109,8 @@ const ConsultationSettings = () => {
       setDuration(profile.slot_duration?.toString() || "30");
       setMeetLink(profile.meet_link || "");
       setMeetSaved(!!profile.meet_link);
+      setIntervalMin(((profile as any).interval_minutes ?? 10).toString());
+      setMinAdvance(((profile as any).min_advance_hours ?? 3).toString());
       if (profile.available_hours && typeof profile.available_hours === "object") {
         setHours({ ...DEFAULT_HOURS, ...(profile.available_hours as AvailableHours) });
       }
@@ -123,7 +127,9 @@ const ConsultationSettings = () => {
           office_address: null,
           available_hours: hours as any,
           meet_link: meetLink.trim() || null,
-        })
+          interval_minutes: parseInt(intervalMin),
+          min_advance_hours: parseInt(minAdvance),
+        } as any)
         .eq("user_id", user!.id);
       if (error) throw error;
     },
@@ -131,7 +137,7 @@ const ConsultationSettings = () => {
       queryClient.invalidateQueries({ queryKey: ["profile-settings"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       setMeetSaved(!!meetLink.trim());
-      toast.success("Configurações salvas!");
+      toast.success("Disponibilidade salva! Seus horários já estão visíveis para os pacientes.");
     },
     onError: () => toast.error("Erro ao salvar. Tente novamente."),
   });
@@ -242,6 +248,7 @@ const ConsultationSettings = () => {
             </Label>
             <Input
               type="number"
+              inputMode="numeric"
               placeholder="150,00"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -259,16 +266,52 @@ const ConsultationSettings = () => {
               <SelectContent>
                 <SelectItem value="30">30 minutos</SelectItem>
                 <SelectItem value="45">45 minutos</SelectItem>
+                <SelectItem value="50">50 minutos</SelectItem>
                 <SelectItem value="60">60 minutos</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="flex items-center gap-1 text-xs">
+              <Timer className="h-3 w-3" /> Intervalo entre consultas
+            </Label>
+            <Select value={intervalMin} onValueChange={setIntervalMin}>
+              <SelectTrigger className="bg-accent border-border">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Sem intervalo</SelectItem>
+                <SelectItem value="10">10 minutos</SelectItem>
+                <SelectItem value="15">15 minutos</SelectItem>
+                <SelectItem value="20">20 minutos</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="flex items-center gap-1 text-xs">
+              <Hourglass className="h-3 w-3" /> Antecedência mínima
+            </Label>
+            <Select value={minAdvance} onValueChange={setMinAdvance}>
+              <SelectTrigger className="bg-accent border-border">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 hora</SelectItem>
+                <SelectItem value="3">3 horas</SelectItem>
+                <SelectItem value="24">24 horas</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
       </div>
 
-      {/* Available Hours */}
+      {/* Minha Disponibilidade */}
       <div className="space-y-2">
-        <Label className="text-xs font-medium">Horários disponíveis para agendamento</Label>
+        <Label className="text-xs font-medium">Minha Disponibilidade</Label>
+        <p className="text-[10px] text-muted-foreground">Marque os dias e horários que você atende. Os pacientes verão esses horários em tempo real.</p>
         <div className="space-y-2">
           {DAY_KEYS.map((day) => {
             const slots = hours[day] || [];
@@ -324,7 +367,7 @@ const ConsultationSettings = () => {
         className="w-full gradient-primary font-semibold gap-2"
       >
         {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-        {saveMutation.isPending ? "Salvando..." : "Salvar configurações"}
+        {saveMutation.isPending ? "Salvando..." : "Salvar disponibilidade"}
       </Button>
     </div>
   );

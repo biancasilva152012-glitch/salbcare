@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { maskPhone } from "@/utils/masks";
 import { SPECIALTY_LEGAL_NOTICES } from "@/config/specialtyLegalNotices";
@@ -25,13 +25,14 @@ type TimeSlot = { start: string; end: string };
 type AvailableHours = Record<string, TimeSlot[]>;
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
 
-function generateSlots(availableHours: AvailableHours, dateStr: string, durationMin: number): string[] {
+function generateSlots(availableHours: AvailableHours, dateStr: string, durationMin: number, intervalMin: number = 10, minAdvanceHours: number = 3): string[] {
   const date = parse(dateStr, "yyyy-MM-dd", new Date());
   const dayKey = DAY_MAP[date.getDay()];
   const ranges = availableHours[dayKey] || [];
   const slots: string[] = [];
   const now = new Date();
-  const isToday = format(now, "yyyy-MM-dd") === dateStr;
+  const minTime = new Date(now.getTime() + minAdvanceHours * 60 * 60 * 1000);
+  const step = durationMin + intervalMin;
 
   for (const range of ranges) {
     const [startH, startM] = range.start.split(":").map(Number);
@@ -41,11 +42,13 @@ function generateSlots(availableHours: AvailableHours, dateStr: string, duration
     while (cursor + durationMin <= end) {
       const h = Math.floor(cursor / 60);
       const m = cursor % 60;
-      const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-      if (!isToday || h > now.getHours() || (h === now.getHours() && m > now.getMinutes())) {
+      const slotDate = new Date(date);
+      slotDate.setHours(h, m, 0, 0);
+      if (slotDate > minTime) {
+        const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
         slots.push(timeStr);
       }
-      cursor += durationMin;
+      cursor += step;
     }
   }
   return slots;
@@ -63,6 +66,7 @@ const PatientBooking = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const doctorId = searchParams.get("doctor");
   const doctorName = searchParams.get("name") || "Profissional";
 
@@ -118,8 +122,22 @@ const PatientBooking = () => {
     enabled: !!doctorId && !!selectedDate,
   });
 
+  // Realtime: instantly remove booked slots for all patients
+  useEffect(() => {
+    if (!doctorId) return;
+    const channel = supabase
+      .channel("booking-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "appointments", filter: `user_id=eq.${doctorId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["booked-slots", doctorId] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [doctorId, queryClient]);
+
   const availableHours: AvailableHours = (doctor?.available_hours as AvailableHours) || {};
   const slotDuration = doctor?.slot_duration || 30;
+  const intervalMinutes = (doctor as any)?.interval_minutes ?? 10;
+  const minAdvanceHours = (doctor as any)?.min_advance_hours ?? 3;
   const price = doctor?.consultation_price ? Number(doctor.consultation_price) : 0;
   const profType = doctor?.professional_type || "medico";
   const legalNotice = SPECIALTY_LEGAL_NOTICES[profType];
@@ -127,8 +145,8 @@ const PatientBooking = () => {
 
   const allSlots = useMemo(() => {
     if (!selectedDate) return [];
-    return generateSlots(availableHours, selectedDate, slotDuration);
-  }, [availableHours, selectedDate, slotDuration]);
+    return generateSlots(availableHours, selectedDate, slotDuration, intervalMinutes, minAdvanceHours);
+  }, [availableHours, selectedDate, slotDuration, intervalMinutes, minAdvanceHours]);
 
   const bookedTimes = new Set(existingAppointments.map((a: any) => a.time?.substring(0, 5)));
   const freeSlots = allSlots.filter((s) => !bookedTimes.has(s));
