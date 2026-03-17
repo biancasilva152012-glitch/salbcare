@@ -292,7 +292,7 @@ const Agenda = () => {
             )}
           >
             <span className="flex items-center gap-1.5 text-sm font-medium">🎥 Online</span>
-            <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece pela plataforma SALBCARE. Link gerado automaticamente.</span>
+            <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece via Google Meet. Link do seu perfil.</span>
           </button>
           <button
             type="button"
