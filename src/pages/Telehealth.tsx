@@ -44,7 +44,7 @@ const Telehealth = () => {
   const { data: teleconsultations = [] } = useQuery({
     queryKey: ["teleconsultations", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("teleconsultations").select("*").eq("user_id", user!.id).order("date", { ascending: false });
+      const { data } = await supabase.from("teleconsultations").select("id, patient_name, patient_id, date, duration, notes, status").eq("user_id", user!.id).order("date", { ascending: false }).limit(200);
       return data || [];
     },
     enabled: !!user,

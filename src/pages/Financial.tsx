@@ -61,7 +61,7 @@ const Financial = () => {
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ["financial", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("financial_transactions").select("*").eq("user_id", user!.id).order("date", { ascending: false });
+      const { data } = await supabase.from("financial_transactions").select("id, description, amount, type, date, category").eq("user_id", user!.id).order("date", { ascending: false }).limit(500);
       return data || [];
     },
     enabled: !!user,

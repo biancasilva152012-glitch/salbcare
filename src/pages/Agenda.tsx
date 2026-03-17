@@ -103,7 +103,7 @@ const Agenda = () => {
   const { data: professionals = [] } = useQuery({
     queryKey: ["professionals", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("professionals").select("*").eq("user_id", user!.id).eq("status", "active").order("name");
+      const { data } = await supabase.from("professionals").select("id, name, specialty").eq("user_id", user!.id).eq("status", "active").order("name");
       return data || [];
     },
     enabled: !!user && canUseTeam,
