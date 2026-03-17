@@ -33,7 +33,7 @@ const Telehealth = () => {
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("profiles").select("name, professional_type, phone, crm, meet_link").eq("user_id", user!.id).single();
