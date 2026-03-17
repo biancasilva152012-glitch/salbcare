@@ -122,7 +122,18 @@ const PatientBooking = () => {
     enabled: !!doctorId && !!selectedDate,
   });
 
-  const availableHours: AvailableHours = (doctor?.available_hours as AvailableHours) || {};
+  // Realtime: instantly remove booked slots for all patients
+  useEffect(() => {
+    if (!doctorId) return;
+    const channel = supabase
+      .channel("booking-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "appointments", filter: `user_id=eq.${doctorId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["booked-slots", doctorId] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [doctorId, queryClient]);
+
   const slotDuration = doctor?.slot_duration || 30;
   const intervalMinutes = (doctor as any)?.interval_minutes ?? 10;
   const minAdvanceHours = (doctor as any)?.min_advance_hours ?? 3;
