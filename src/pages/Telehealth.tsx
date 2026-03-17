@@ -1,6 +1,6 @@
-import { useState, lazy, Suspense } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Video, Clock, FileText, Link2, Plus, Download, Loader2 } from "lucide-react";
+import { Video, Clock, FileText, Link2, Plus, Download, ExternalLink, Lock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,34 +9,26 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
 import ShareBookingLink from "@/components/telehealth/ShareBookingLink";
 import CreateTeleconsultationModal from "@/components/telehealth/CreateTeleconsultationModal";
-import PreCheckModal from "@/components/telehealth/PreCheckModal";
-import EndCallModal from "@/components/telehealth/EndCallModal";
 import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
 import { toast } from "sonner";
-
-const VideoRoom = lazy(() => import("@/components/telehealth/VideoRoom"));
+import { useFeatureGate } from "@/hooks/useFeatureGate";
+import { PLANS } from "@/config/plans";
+import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 
 const Telehealth = () => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
+  const { hasAccess } = useFeatureGate();
   const queryClient = useQueryClient();
-  const [inCall, setInCall] = useState(false);
-  const [callTc, setCallTc] = useState<any>(null);
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [preCheckOpen, setPreCheckOpen] = useState(false);
-  const [pendingTc, setPendingTc] = useState<any>(null);
-  const [endCallOpen, setEndCallOpen] = useState(false);
-  const [callNotes, setCallNotes] = useState("");
-  const [callMode, setCallMode] = useState<"video" | "audio" | "chat">("video");
-  const [creatingRoom, setCreatingRoom] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("name, professional_type, phone, crm").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, professional_type, phone, crm, meet_link").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
@@ -65,55 +57,13 @@ const Telehealth = () => {
     return { id: patient?.id || tc.patient_id, phone: patient?.phone || null };
   };
 
-  const handleStartClick = (tc: any) => {
-    setPendingTc(tc);
-    setPreCheckOpen(true);
-  };
-
-  const handlePreCheckReady = async () => {
-    setPreCheckOpen(false);
-    if (!pendingTc) return;
-
-    setCreatingRoom(true);
-    try {
-      // Create room if not exists
-      if (!pendingTc.room_url) {
-        const { data, error } = await supabase.functions.invoke("daily-room", {
-          body: { action: "create-room", teleconsultation_id: pendingTc.id },
-        });
-        if (error) throw error;
-        pendingTc.room_url = data.room_url;
-        pendingTc.room_name = data.room_name;
-      }
-      setCallTc({ ...pendingTc, ...getPatientInfo(pendingTc) });
-      setInCall(true);
-    } catch (err) {
-      toast.error("Erro ao criar sala de vídeo. Tente novamente.");
-      console.error(err);
-    } finally {
-      setCreatingRoom(false);
+  const handleJoinMeet = (tc: any) => {
+    const link = tc.room_url || (profile as any)?.meet_link;
+    if (!link) {
+      toast.error("Por favor, insira o link do Google Meet para esta consulta.");
+      return;
     }
-  };
-
-  const handleCallEnd = (notes: string, mode: "video" | "audio" | "chat") => {
-    setInCall(false);
-    setCallNotes(notes);
-    setCallMode(mode);
-    setEndCallOpen(true);
-    // Mark as completed
-    if (callTc) {
-      supabase.from("teleconsultations").update({ status: "completed" }).eq("id", callTc.id).then(() => {
-        queryClient.invalidateQueries({ queryKey: ["teleconsultations"] });
-      });
-    }
-  };
-
-  const handleSaveNow = () => {
-    setEndCallOpen(false);
-    if (callTc) {
-      setPrescriptionTc(callTc);
-      setPrescriptionOpen(true);
-    }
+    window.open(link, "_blank");
   };
 
   const handleDownloadRecord = (tc: any) => {
@@ -128,28 +78,50 @@ const Telehealth = () => {
     toast.success("Prontuário baixado!");
   };
 
-  // In-call view
-  if (inCall && callTc?.room_url) {
+  const handleComplete = async (tc: any) => {
+    await supabase.from("teleconsultations").update({ status: "completed" }).eq("id", tc.id);
+    queryClient.invalidateQueries({ queryKey: ["teleconsultations"] });
+    toast.success("Consulta marcada como concluída!");
+  };
+
+  // Paywall for Essential plan
+  const isEssential = subscription.plan === "basic";
+  if (isEssential) {
     return (
-      <Suspense fallback={
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <PageContainer backTo="/dashboard">
+        <div className="flex flex-col items-center justify-center space-y-5 px-6 py-16 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent">
+            <Lock className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <div className="max-w-xs space-y-2">
+            <h2 className="text-lg font-bold">Teleconsulta Premium</h2>
+            <p className="text-sm text-muted-foreground">
+              Esta funcionalidade economiza horas do seu mês. Faça o upgrade para o Pro para liberar.
+            </p>
+          </div>
+          <div className="glass-card p-4 max-w-xs w-full space-y-2">
+            <p className="text-xs font-semibold text-primary flex items-center gap-1"><Sparkles className="h-3.5 w-3.5" /> O que você ganha:</p>
+            <ul className="text-xs text-muted-foreground space-y-1 text-left">
+              <li>✅ Teleconsulta integrada com Google Meet</li>
+              <li>✅ Prontuário eletrônico completo</li>
+              <li>✅ Acesso a contador especialista</li>
+              <li>✅ Emissão de NF-e 100% legal</li>
+            </ul>
+          </div>
+          <Button onClick={openVersionedSubscriptionRoute} className="w-full max-w-xs gradient-primary font-semibold gap-2">
+            <Sparkles className="h-4 w-4" />
+            Upgrade Pro — R$ {PLANS.professional.price}/mês
+          </Button>
+          <Button onClick={() => window.history.back()} variant="ghost" className="text-muted-foreground">
+            Agora não
+          </Button>
         </div>
-      }>
-        <VideoRoom
-          roomUrl={callTc.room_url}
-          patientName={callTc.patient_name}
-          patientPhone={callTc.phone}
-          isDoctor={true}
-          onEnd={handleCallEnd}
-        />
-      </Suspense>
+      </PageContainer>
     );
   }
 
   const now = new Date();
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
-  const nowIso = now.toISOString();
   const filtered = teleconsultations.filter((t: any) =>
     tab === "upcoming"
       ? t.status === "scheduled" && t.date >= oneHourAgo
@@ -171,6 +143,14 @@ const Telehealth = () => {
           </div>
         </div>
 
+        {!(profile as any)?.meet_link && (
+          <div className="glass-card p-3 border-yellow-500/30 bg-yellow-500/5">
+            <p className="text-xs text-yellow-700 dark:text-yellow-300">
+              ⚠️ Configure seu link padrão do Google Meet no <a href="/profile" className="underline font-medium">Perfil</a> para agilizar suas consultas.
+            </p>
+          </div>
+        )}
+
         <div className="flex gap-2">
           {(["upcoming", "completed"] as const).map((t) => (
             <button
@@ -185,13 +165,6 @@ const Telehealth = () => {
           ))}
         </div>
 
-        {creatingRoom && (
-          <div className="flex items-center justify-center gap-2 py-6">
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            <span className="text-sm text-muted-foreground">Criando sala de vídeo...</span>
-          </div>
-        )}
-
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
           {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhuma teleconsulta encontrada</p>}
           {filtered.map((tc: any) => {
@@ -200,6 +173,7 @@ const Telehealth = () => {
             const minutesUntil = (tcDate.getTime() - Date.now()) / 60000;
             const isStartingSoon = minutesUntil > 0 && minutesUntil <= 30;
             const isNow = minutesUntil <= 0 && tc.status === "scheduled";
+            const meetLink = tc.room_url || (profile as any)?.meet_link;
 
             return (
               <div key={tc.id} className="glass-card p-4 space-y-2">
@@ -225,16 +199,26 @@ const Telehealth = () => {
                   </div>
                 </div>
                 {tc.notes && <p className="text-xs text-muted-foreground">{tc.notes}</p>}
+                {meetLink && (
+                  <p className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
+                    <Link2 className="h-3 w-3 shrink-0" /> {meetLink}
+                  </p>
+                )}
                 <div className="flex gap-2">
                   {tc.status === "scheduled" && (
-                    <Button
-                      onClick={() => handleStartClick(tc)}
-                      size="sm"
-                      className={`flex-1 gap-1 ${isNow ? "bg-green-600 hover:bg-green-700 text-white font-bold" : "gradient-primary"}`}
-                    >
-                      <Video className="h-4 w-4" />
-                      {isNow ? "Entrar na consulta agora" : "Iniciar Consulta"}
-                    </Button>
+                    <>
+                      <Button
+                        onClick={() => handleJoinMeet(tc)}
+                        size="sm"
+                        className={`flex-1 gap-1 ${isNow ? "bg-green-600 hover:bg-green-700 text-white font-bold" : "gradient-primary"}`}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        {isNow ? "Entrar na consulta agora" : "Abrir Google Meet"}
+                      </Button>
+                      <Button onClick={() => handleComplete(tc)} size="sm" variant="outline" className="text-xs">
+                        Concluir
+                      </Button>
+                    </>
                   )}
                   {tc.status === "completed" && (
                     <>
@@ -261,16 +245,6 @@ const Telehealth = () => {
         </motion.div>
       </div>
 
-      <PreCheckModal open={preCheckOpen} onOpenChange={setPreCheckOpen} onReady={handlePreCheckReady} />
-
-      <EndCallModal
-        open={endCallOpen}
-        onOpenChange={setEndCallOpen}
-        mode={callMode}
-        onSaveNow={handleSaveNow}
-        onLater={() => setEndCallOpen(false)}
-      />
-
       {prescriptionTc && (
         <PrescriptionModal
           open={prescriptionOpen}
@@ -293,6 +267,7 @@ const Telehealth = () => {
         onOpenChange={setCreateOpen}
         userId={user?.id || ""}
         patients={patients}
+        defaultMeetLink={(profile as any)?.meet_link || ""}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["teleconsultations"] })}
       />
     </PageContainer>

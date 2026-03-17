@@ -1,10 +1,8 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Camera, Mic, Clock, Loader2, WifiOff, RefreshCw } from "lucide-react";
-
-const VideoRoom = lazy(() => import("@/components/telehealth/VideoRoom"));
+import { Clock, Loader2, WifiOff, RefreshCw, ExternalLink, Video } from "lucide-react";
 
 const PatientRoom = () => {
   const [searchParams] = useSearchParams();
@@ -12,8 +10,6 @@ const PatientRoom = () => {
   const [roomInfo, setRoomInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [permissionsGranted, setPermissionsGranted] = useState(false);
-  const [inCall, setInCall] = useState(false);
   const [countdown, setCountdown] = useState("");
 
   useEffect(() => {
@@ -23,13 +19,14 @@ const PatientRoom = () => {
 
   const fetchRoom = async () => {
     try {
-      const { data, error: fnErr } = await supabase.functions.invoke("daily-room", {
-        body: { action: "get-room", teleconsultation_id: tcId },
+      // Use the edge function to get room info (public access)
+      const { data, error: fnErr } = await supabase.functions.invoke("get-teleconsultation", {
+        body: { teleconsultation_id: tcId },
       });
       if (fnErr) throw fnErr;
       setRoomInfo(data);
     } catch {
-      setError("Não foi possível carregar a sala");
+      setError("Não foi possível carregar os dados da consulta.");
     } finally {
       setLoading(false);
     }
@@ -48,12 +45,11 @@ const PatientRoom = () => {
     return () => clearInterval(interval);
   }, [roomInfo?.date]);
 
-  const requestPermissions = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      stream.getTracks().forEach((t) => t.stop());
-      setPermissionsGranted(true);
-    } catch { /* user denied */ }
+  const handleJoin = () => {
+    if (!roomInfo?.room_url) {
+      return;
+    }
+    window.open(roomInfo.room_url, "_blank");
   };
 
   if (loading) {
@@ -61,7 +57,7 @@ const PatientRoom = () => {
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Carregando sala...</p>
+          <p className="text-sm text-muted-foreground">Carregando consulta...</p>
         </div>
       </div>
     );
@@ -78,23 +74,6 @@ const PatientRoom = () => {
           </Button>
         </div>
       </div>
-    );
-  }
-
-  if (inCall && roomInfo?.room_url) {
-    return (
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center bg-background">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      }>
-        <VideoRoom
-          roomUrl={roomInfo.room_url}
-          patientName={roomInfo.patient_name}
-          isDoctor={false}
-          onEnd={() => setInCall(false)}
-        />
-      </Suspense>
     );
   }
 
@@ -115,8 +94,8 @@ const PatientRoom = () => {
         {isBeforeTime ? (
           <>
             <div className="space-y-2">
-              <p className="text-lg font-semibold">Você está na sala de espera</p>
-              <p className="text-sm text-muted-foreground">{prefix} {roomInfo?.doctor_name} entrará em instantes.</p>
+              <p className="text-lg font-semibold">Sua consulta está agendada</p>
+              <p className="text-sm text-muted-foreground">{prefix} {roomInfo?.doctor_name} estará disponível em breve.</p>
             </div>
             <div className="glass-card p-4 space-y-2">
               <Clock className="h-6 w-6 mx-auto text-primary" />
@@ -131,37 +110,19 @@ const PatientRoom = () => {
           </div>
         )}
 
-        {!permissionsGranted ? (
-          <div className="space-y-4">
-            <div className="glass-card p-4 space-y-3">
-              <p className="text-sm font-medium">Precisamos de acesso à câmera e microfone</p>
-              <p className="text-xs text-muted-foreground">Clique no botão abaixo e depois em "Permitir" na janela que abrir.</p>
-              <div className="flex items-center justify-center gap-6 py-2">
-                <div className="flex flex-col items-center gap-1">
-                  <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center"><Camera className="h-5 w-5 text-primary" /></div>
-                  <span className="text-[10px] text-muted-foreground">Câmera</span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center"><Mic className="h-5 w-5 text-primary" /></div>
-                  <span className="text-[10px] text-muted-foreground">Microfone</span>
-                </div>
-              </div>
-            </div>
-            <Button onClick={requestPermissions} className="w-full gradient-primary font-semibold">Liberar câmera e microfone</Button>
-          </div>
+        {roomInfo?.room_url ? (
+          <Button onClick={handleJoin} className="w-full gradient-primary font-semibold text-base py-6 gap-2">
+            <ExternalLink className="h-5 w-5" />
+            Entrar na consulta
+          </Button>
         ) : (
-          <div className="space-y-3">
-            <div className="flex items-center justify-center gap-4 text-xs text-green-600">
-              <span className="flex items-center gap-1"><Camera className="h-3.5 w-3.5" /> Câmera ✓</span>
-              <span className="flex items-center gap-1"><Mic className="h-3.5 w-3.5" /> Microfone ✓</span>
-            </div>
-            <Button onClick={() => setInCall(true)} disabled={!roomInfo?.room_url} className="w-full gradient-primary font-semibold text-base py-6">
-              Entrar na consulta
-            </Button>
+          <div className="glass-card p-4 space-y-2">
+            <Video className="h-6 w-6 mx-auto text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">O link da consulta ainda não foi disponibilizado pelo profissional.</p>
           </div>
         )}
 
-        <p className="text-[10px] text-muted-foreground">Não é necessário instalar nada. A consulta acontece diretamente no navegador.</p>
+        <p className="text-[10px] text-muted-foreground">A consulta acontecerá via Google Meet. Nenhuma instalação necessária.</p>
       </div>
     </div>
   );
