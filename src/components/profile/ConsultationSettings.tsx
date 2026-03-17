@@ -66,6 +66,7 @@ const ConsultationSettings = () => {
           slot_duration: parseInt(duration),
           office_address: null,
           available_hours: hours as any,
+          meet_link: meetLink.trim() || null,
         })
         .eq("user_id", user!.id);
       if (error) throw error;
