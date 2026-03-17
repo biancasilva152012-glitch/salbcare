@@ -431,19 +431,22 @@ const PatientBooking = () => {
           {/* STEP 3: Success */}
           {step === 3 && (
             <motion.div key="step3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card p-6 text-center space-y-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10 mx-auto">
-                <Check className="h-8 w-8 text-green-500" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 mx-auto">
+                <Check className="h-8 w-8 text-success" />
               </div>
-              <h2 className="text-lg font-bold">Consulta agendada com sucesso! ✅</h2>
-              <p className="text-sm text-muted-foreground">
-                Você receberá a confirmação por WhatsApp e e-mail com o link de acesso à videochamada.
-              </p>
+              <h2 className="text-lg font-bold">✅ Consulta confirmada!</h2>
 
               <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1.5 text-left">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Profissional</span>
                   <span className="font-medium">{doctorName}</span>
                 </div>
+                {profConfig && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Especialidade</span>
+                    <span className="font-medium">{profConfig.label}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Data</span>
                   <span className="font-medium">{selectedDate ? format(parse(selectedDate, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : ""}</span>
@@ -452,12 +455,57 @@ const PatientBooking = () => {
                   <span className="text-muted-foreground">Horário</span>
                   <span className="font-medium">{selectedTime}</span>
                 </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Duração</span>
+                  <span className="font-medium">{slotDuration} min</span>
+                </div>
               </div>
 
-              <div className="space-y-2 text-xs text-muted-foreground">
-                <p>📱 Clique no link <strong>5 minutos antes</strong> do horário</p>
-                <p>❌ Precisa cancelar? Faça com até <strong>2h de antecedência</strong></p>
-              </div>
+              <p className="text-sm text-muted-foreground">
+                Acesse sua consulta pelo link abaixo no horário marcado:
+              </p>
+
+              {doctor && (doctor as any).pix_key && (
+                <a
+                  href={`https://meet.google.com`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                  onClick={(e) => {
+                    // We need the doctor's meet_link — use room_url from sala page
+                    e.preventDefault();
+                    window.open(`${window.location.origin}/sala?id=latest`, "_blank");
+                  }}
+                >
+                  <Button className="w-full gradient-primary font-semibold text-base py-5 gap-2">
+                    <ExternalLink className="h-5 w-5" />
+                    Entrar no Google Meet
+                  </Button>
+                </a>
+              )}
+
+              <p className="text-xs text-muted-foreground">
+                Salve este link — ele também foi enviado para o seu WhatsApp.
+              </p>
+
+              {/* WhatsApp confirmation link */}
+              {form.phone && (
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 text-xs"
+                  onClick={() => {
+                    const phone = form.phone.replace(/\D/g, "");
+                    const dateStr = selectedDate ? format(parse(selectedDate, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : "";
+                    const msg = encodeURIComponent(
+                      `✅ Consulta confirmada com ${doctorName}!\n\n📅 ${dateStr} às ${selectedTime}\n⏱ ${slotDuration} minutos\n\nSalve este link. Entraremos em contato com lembretes antes da consulta.`
+                    );
+                    window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+                  }}
+                >
+                  <Video className="h-4 w-4" />
+                  Receber confirmação no WhatsApp
+                </Button>
+              )}
 
               <a
                 href={googleCalUrl}

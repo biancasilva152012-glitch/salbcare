@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Link2 } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 
 interface CreateTeleconsultationModalProps {
   open: boolean;
@@ -15,6 +15,7 @@ interface CreateTeleconsultationModalProps {
   userId: string;
   patients: { id: string; name: string; phone: string | null }[];
   defaultMeetLink?: string;
+  doctorPhone?: string;
   onSuccess: () => void;
 }
 
@@ -24,25 +25,28 @@ const CreateTeleconsultationModal = ({
   userId,
   patients,
   defaultMeetLink = "",
+  doctorPhone = "",
   onSuccess,
 }: CreateTeleconsultationModalProps) => {
   const [patientName, setPatientName] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [patientPhone, setPatientPhone] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState("30");
   const [notes, setNotes] = useState("");
-  const [meetLink, setMeetLink] = useState(defaultMeetLink);
   const [saving, setSaving] = useState(false);
 
   const handlePatientSelect = (value: string) => {
     if (value === "new") {
       setSelectedPatientId(null);
       setPatientName("");
+      setPatientPhone("");
     } else {
       const patient = patients.find((p) => p.id === value);
       setSelectedPatientId(value);
       setPatientName(patient?.name || "");
+      setPatientPhone(patient?.phone || "");
     }
   };
 
@@ -63,21 +67,30 @@ const CreateTeleconsultationModal = ({
         duration: parseInt(duration),
         notes: notes.trim() || null,
         status: "scheduled",
-        room_url: meetLink.trim() || null,
+        room_url: defaultMeetLink.trim() || null,
       });
       if (error) throw error;
 
+      // Send wa.me link to patient if phone available
+      if (patientPhone && defaultMeetLink) {
+        const phone = patientPhone.replace(/\D/g, "");
+        const dateObj = new Date(`${date}T${time}`);
+        const msg = encodeURIComponent(
+          `✅ Consulta confirmada!\n\n📅 ${dateObj.toLocaleDateString("pt-BR")} às ${dateObj.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}\n⏱ ${duration} minutos\n\n🔗 Acesse sua consulta aqui:\n${defaultMeetLink}\n\nSalve este link. Entraremos em contato com lembretes antes da consulta.`
+        );
+        window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+      }
+
       toast.success("Teleconsulta agendada com sucesso!");
-      toast("Você acaba de economizar R$ 0 em comissões comparado a outras plataformas. Continue crescendo com a SALBCARE! 🚀", { duration: 5000 });
       onSuccess();
       onOpenChange(false);
       setPatientName("");
       setSelectedPatientId(null);
+      setPatientPhone("");
       setDate("");
       setTime("");
       setDuration("30");
       setNotes("");
-      setMeetLink(defaultMeetLink);
     } catch {
       toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
@@ -125,21 +138,6 @@ const CreateTeleconsultationModal = ({
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs flex items-center gap-1">
-              <Link2 className="h-3 w-3" /> Link do Google Meet
-            </Label>
-            <Input
-              value={meetLink}
-              onChange={(e) => setMeetLink(e.target.value)}
-              placeholder="https://meet.google.com/xxx-xxxx-xxx"
-              className="bg-accent border-border"
-            />
-            <p className="text-[10px] text-muted-foreground">
-              Cole o link da sua sala do Google Meet. Se vazio, será usado o link padrão do perfil.
-            </p>
-          </div>
-
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs">Data</Label>
@@ -163,22 +161,22 @@ const CreateTeleconsultationModal = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs">Duração (minutos)</Label>
+            <Label className="text-xs">Duração</Label>
             <Select value={duration} onValueChange={setDuration}>
               <SelectTrigger className="bg-accent border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="15">15 min</SelectItem>
-                <SelectItem value="30">30 min</SelectItem>
-                <SelectItem value="45">45 min</SelectItem>
-                <SelectItem value="60">60 min</SelectItem>
+                <SelectItem value="30">30 minutos</SelectItem>
+                <SelectItem value="45">45 minutos</SelectItem>
+                <SelectItem value="50">50 minutos</SelectItem>
+                <SelectItem value="60">60 minutos</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs">Observações (opcional)</Label>
+            <Label className="text-xs">Observações internas (opcional)</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -191,9 +189,10 @@ const CreateTeleconsultationModal = ({
           <Button
             onClick={handleSubmit}
             disabled={saving}
-            className="w-full gradient-primary font-semibold"
+            className="w-full gradient-primary font-semibold gap-2"
           >
-            {saving ? "Agendando..." : "Agendar Teleconsulta"}
+            <Send className="h-4 w-4" />
+            {saving ? "Agendando..." : "Agendar e enviar link para o paciente"}
           </Button>
         </div>
       </DialogContent>
