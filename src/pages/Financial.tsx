@@ -228,6 +228,9 @@ const Financial = () => {
           </div>
         </div>
 
+        {/* Tax Simulator Widget - always visible */}
+        <TaxSimulatorWidget />
+
         {/* Savings Estimate Card for Pro+ */}
         {(hasAccess("accounting_marketplace")) && (
           <SavingsEstimateCard monthlyIncome={totalIncome} />
