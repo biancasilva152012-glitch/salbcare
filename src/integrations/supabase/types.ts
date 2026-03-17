@@ -662,7 +662,9 @@ export type Database = {
           crm: string | null
           email: string
           id: string
+          interval_minutes: number
           meet_link: string | null
+          min_advance_hours: number
           name: string
           office_address: string | null
           payment_status: string
@@ -690,7 +692,9 @@ export type Database = {
           crm?: string | null
           email: string
           id?: string
+          interval_minutes?: number
           meet_link?: string | null
+          min_advance_hours?: number
           name: string
           office_address?: string | null
           payment_status?: string
@@ -718,7 +722,9 @@ export type Database = {
           crm?: string | null
           email?: string
           id?: string
+          interval_minutes?: number
           meet_link?: string | null
+          min_advance_hours?: number
           name?: string
           office_address?: string | null
           payment_status?: string
