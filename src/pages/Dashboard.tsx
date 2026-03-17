@@ -51,7 +51,7 @@ const Dashboard = () => {
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, created_at, pix_key, card_link, payment_status, plan, user_type, professional_type, suspended_until, trial_start_date").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
