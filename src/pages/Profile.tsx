@@ -67,6 +67,13 @@ const Profile = () => {
     }
   }, [profile]);
 
+  // Auto-scroll to consultation settings when ?tab=consultation
+  useEffect(() => {
+    if (searchParams.get("tab") === "consultation" && consultationRef.current) {
+      setTimeout(() => consultationRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+    }
+  }, [searchParams, profile]);
+
   const handleSavePaymentData = async () => {
     if (!user) return;
     setSavingPayment(true);
