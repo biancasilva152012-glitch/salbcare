@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import PageSkeleton from "@/components/PageSkeleton";
 import { Video, Clock, FileText, Plus, Download, ExternalLink, Lock, Sparkles, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
