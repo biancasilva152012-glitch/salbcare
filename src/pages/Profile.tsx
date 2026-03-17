@@ -215,6 +215,10 @@ const Profile = () => {
     );
   };
 
+  if (profileLoading) {
+    return <PageContainer backTo="/dashboard"><PageSkeleton variant="list" /></PageContainer>;
+  }
+
   return (
     <PageContainer backTo="/dashboard">
       <div className="space-y-6">
