@@ -8,6 +8,9 @@ export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(new Date().toISOString()),
   },
+  esbuild: {
+    drop: mode === "production" ? ["console", "debugger"] : [],
+  },
   server: {
     host: "::",
     port: 8080,

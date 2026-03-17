@@ -51,7 +51,7 @@ const Dashboard = () => {
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, created_at, pix_key, card_link, payment_status, plan, user_type, professional_type, suspended_until, trial_start_date").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
@@ -63,7 +63,7 @@ const Dashboard = () => {
   const { data: todayAppointments = [] } = useQuery({
     queryKey: ["today-appointments", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("appointments").select("*").eq("user_id", user!.id).eq("date", today).eq("status", "scheduled").order("time");
+      const { data } = await supabase.from("appointments").select("id, patient_name, time, appointment_type").eq("user_id", user!.id).eq("date", today).eq("status", "scheduled").order("time").limit(50);
       return data || [];
     },
     enabled: !!user,
@@ -84,12 +84,13 @@ const Dashboard = () => {
     queryFn: async () => {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
-      const { data } = await supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).gte("date", startOfMonth.toISOString().split("T")[0]);
+      const { data } = await supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).gte("date", startOfMonth.toISOString().split("T")[0]).limit(500);
       const income = (data || []).filter((transaction) => transaction.type === "income").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
       const expense = (data || []).filter((transaction) => transaction.type === "expense").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
       return income - expense;
     },
     enabled: !!user,
+    staleTime: 2 * 60 * 1000,
   });
 
   // Realtime: listen for new appointments (patient bookings)

@@ -107,7 +107,7 @@ const Patients = () => {
   const { data: patients = [], isLoading } = useQuery({
     queryKey: ["patients", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("patients").select("*").eq("user_id", user!.id).order("name");
+      const { data } = await supabase.from("patients").select("id, name, phone, email, birth_date, notes, medical_history, initial_anamnesis, procedure_performed, created_at, updated_at, user_id").eq("user_id", user!.id).order("name").limit(500);
       return data || [];
     },
     enabled: !!user,
