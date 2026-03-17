@@ -25,13 +25,14 @@ type TimeSlot = { start: string; end: string };
 type AvailableHours = Record<string, TimeSlot[]>;
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
 
-function generateSlots(availableHours: AvailableHours, dateStr: string, durationMin: number): string[] {
+function generateSlots(availableHours: AvailableHours, dateStr: string, durationMin: number, intervalMin: number = 10, minAdvanceHours: number = 3): string[] {
   const date = parse(dateStr, "yyyy-MM-dd", new Date());
   const dayKey = DAY_MAP[date.getDay()];
   const ranges = availableHours[dayKey] || [];
   const slots: string[] = [];
   const now = new Date();
-  const isToday = format(now, "yyyy-MM-dd") === dateStr;
+  const minTime = new Date(now.getTime() + minAdvanceHours * 60 * 60 * 1000);
+  const step = durationMin + intervalMin;
 
   for (const range of ranges) {
     const [startH, startM] = range.start.split(":").map(Number);
@@ -41,11 +42,13 @@ function generateSlots(availableHours: AvailableHours, dateStr: string, duration
     while (cursor + durationMin <= end) {
       const h = Math.floor(cursor / 60);
       const m = cursor % 60;
-      const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-      if (!isToday || h > now.getHours() || (h === now.getHours() && m > now.getMinutes())) {
+      const slotDate = new Date(date);
+      slotDate.setHours(h, m, 0, 0);
+      if (slotDate > minTime) {
+        const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
         slots.push(timeStr);
       }
-      cursor += durationMin;
+      cursor += step;
     }
   }
   return slots;
