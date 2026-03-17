@@ -60,57 +60,83 @@ const Register = () => {
       toast.error("Aceite os termos para continuar.");
       return;
     }
-    setLoading(true);
-
-    // Check if email already exists
-    const { data: existingType } = await supabase.rpc("check_email_user_type", { check_email: form.email });
-    if (existingType) {
-      const typeLabel = existingType === "professional" ? "profissional" : "paciente";
-      toast.error(`Este e-mail já está cadastrado como ${typeLabel}. Use outro e-mail ou faça login.`);
-      setLoading(false);
+    if (!form.name || !form.email || !form.phone || !form.password) {
+      toast.error("Preencha todos os campos para continuar.");
       return;
     }
+    setLoading(true);
 
-    const metadata: Record<string, string> = {
-      name: form.name,
-      phone: form.phone,
-      user_type: userType,
-    };
-
-    if (userType === "professional") {
-      metadata.professional_type = form.professional_type;
-      metadata.council_number = form.council_number;
-      metadata.council_state = form.council_state;
-    } else {
-      metadata.professional_type = "paciente";
-    }
-
-    const { error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: metadata,
-        emailRedirectTo: window.location.origin,
-      },
-    });
-    setLoading(false);
-
-    if (error) {
-      const msg = error.message.toLowerCase();
-      if (msg.includes("already") || msg.includes("registered")) {
-        toast.error("Este e-mail já está cadastrado. Tente fazer login.");
-      } else if (msg.includes("password")) {
-        toast.error("A senha precisa ter pelo menos 6 caracteres.");
-      } else {
-        toast.error("Ocorreu um erro. Tente novamente.");
+    try {
+      // Check if email already exists
+      const { data: existingType, error: rpcError } = await supabase.rpc("check_email_user_type", { check_email: form.email });
+      if (rpcError) {
+        console.error("RPC error:", rpcError);
       }
-    } else {
+      if (existingType) {
+        const typeLabel = existingType === "professional" ? "profissional" : "paciente";
+        toast.error(`Este e-mail já possui uma conta como ${typeLabel}. Tente entrar ou recupere sua senha.`);
+        setLoading(false);
+        return;
+      }
+
+      const metadata: Record<string, string> = {
+        name: form.name,
+        phone: form.phone,
+        user_type: userType,
+      };
+
+      if (userType === "professional") {
+        metadata.professional_type = form.professional_type;
+        metadata.council_number = form.council_number;
+        metadata.council_state = form.council_state;
+      } else {
+        metadata.professional_type = "paciente";
+      }
+
+      const { data: signUpData, error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: metadata,
+          emailRedirectTo: window.location.origin,
+        },
+      });
+      setLoading(false);
+
+      if (error) {
+        const msg = error.message.toLowerCase();
+        if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+          toast.error("Este e-mail já possui uma conta. Tente entrar ou recupere sua senha.");
+        } else if (msg.includes("password") || msg.includes("senha")) {
+          toast.error("A senha precisa ter pelo menos 6 caracteres.");
+        } else if (msg.includes("email") && msg.includes("invalid")) {
+          toast.error("E-mail inválido. Verifique e tente novamente.");
+        } else if (msg.includes("rate") || msg.includes("limit")) {
+          toast.error("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
+        } else {
+          console.error("Signup error:", error);
+          toast.error("Não conseguimos criar sua conta agora. Tente novamente em instantes.");
+        }
+        return;
+      }
+
+      // Check if email confirmation is needed (user created but no session)
+      if (signUpData?.user && !signUpData.session) {
+        toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.", { duration: 6000 });
+        navigate("/login");
+        return;
+      }
+
       toast.success("Conta criada com sucesso!");
       if (userType === "professional") {
         navigate("/onboarding");
       } else {
         navigate("/patient-dashboard");
       }
+    } catch (err) {
+      console.error("Unexpected signup error:", err);
+      setLoading(false);
+      toast.error("Não conseguimos criar sua conta agora. Tente novamente em instantes.");
     }
   };
 
