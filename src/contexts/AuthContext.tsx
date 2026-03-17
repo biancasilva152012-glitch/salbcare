@@ -19,6 +19,7 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  userType: UserType;
   signOut: () => Promise<void>;
   subscription: SubscriptionState;
   refreshSubscription: () => Promise<void>;
