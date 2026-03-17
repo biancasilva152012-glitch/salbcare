@@ -20,6 +20,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   userType: UserType;
+  userTypeLoading: boolean;
   signOut: () => Promise<void>;
   subscription: SubscriptionState;
   refreshSubscription: () => Promise<void>;
@@ -39,6 +40,8 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   loading: true,
+  userType: null,
+  userTypeLoading: true,
   signOut: async () => {},
   subscription: defaultSub,
   refreshSubscription: async () => {},
@@ -49,12 +52,29 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userType, setUserType] = useState<UserType>(null);
+  const [userTypeLoading, setUserTypeLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionState>(defaultSub);
   const subCheckInFlight = useRef(false);
   const lastCheckTime = useRef(0);
 
+  const fetchUserType = useCallback(async (userId: string) => {
+    setUserTypeLoading(true);
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("user_type")
+        .eq("user_id", userId)
+        .single();
+      setUserType((data?.user_type as UserType) || null);
+    } catch {
+      setUserType(null);
+    } finally {
+      setUserTypeLoading(false);
+    }
+  }, []);
+
   const checkSubscription = useCallback(async () => {
-    // Debounce: skip if already in-flight or called within last 5s
     const now = Date.now();
     if (subCheckInFlight.current || now - lastCheckTime.current < 5000) return;
     subCheckInFlight.current = true;
@@ -69,7 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       let paymentStatus = "none";
       let needsOnboarding = false;
 
-      // Fetch profile data for trial/plan info
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
@@ -115,10 +134,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
-      if (session && initialCheckDone) {
-        // Only call from listener after initial check is done (avoids duplicate)
-        checkSubscription();
-      } else if (!session) {
+      if (session?.user) {
+        fetchUserType(session.user.id);
+        if (initialCheckDone) checkSubscription();
+      } else {
+        setUserType(null);
+        setUserTypeLoading(false);
         setSubscription({ ...defaultSub, loading: false });
       }
     });
@@ -127,16 +148,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setLoading(false);
       initialCheckDone = true;
-      if (session) checkSubscription();
-      else setSubscription((s) => ({ ...s, loading: false }));
+      if (session?.user) {
+        fetchUserType(session.user.id);
+        checkSubscription();
+      } else {
+        setUserTypeLoading(false);
+        setSubscription((s) => ({ ...s, loading: false }));
+      }
     });
 
     return () => sub.unsubscribe();
-  }, [checkSubscription]);
+  }, [checkSubscription, fetchUserType]);
 
   useEffect(() => {
     if (!session) return;
-    const interval = setInterval(checkSubscription, 120_000); // 2min instead of 1min
+    const interval = setInterval(checkSubscription, 120_000);
     return () => clearInterval(interval);
   }, [session, checkSubscription]);
 
@@ -149,6 +175,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       session,
       user: session?.user ?? null,
       loading,
+      userType,
+      userTypeLoading,
       signOut,
       subscription,
       refreshSubscription: checkSubscription,
