@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle } from "lucide-react";
+import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import PageSkeleton from "@/components/PageSkeleton";
+import { getProfessionalTitle, getCouncilPrefix } from "@/config/professions";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 const SPECIALTIES = [
+  { key: null, emoji: "✨", label: "Todos" },
   { key: "medico", emoji: "🩺", label: "Médico" },
   { key: "psicologo", emoji: "🧠", label: "Psicólogo" },
   { key: "nutricionista", emoji: "🥗", label: "Nutricionista" },
@@ -61,13 +65,459 @@ function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, in
   return null;
 }
 
-const PatientDashboard = () => {
+// ─── Tab Components ───────────────────────────────────
+
+const SearchTab = () => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
+
+  const { data: professionals = [], isLoading } = useQuery({
+    queryKey: ["patient-professionals", selectedSpecialty],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("get_public_professionals", {
+        specialty_filter: selectedSpecialty || undefined,
+      });
+      return data || [];
+    },
+  });
+
+  const filtered = professionals.filter((p: any) =>
+    p.name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {SPECIALTIES.map((s) => (
+          <button
+            key={s.key ?? "all"}
+            onClick={() => setSelectedSpecialty(s.key)}
+            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1 ${
+              selectedSpecialty === s.key ? "bg-primary text-primary-foreground" : "bg-accent text-muted-foreground"
+            }`}
+          >
+            <span>{s.emoji}</span> {s.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Buscar profissional..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="bg-accent border-border pl-9"
+        />
+      </div>
+
+      {isLoading ? (
+        <PageSkeleton variant="list" />
+      ) : (
+        <div className="space-y-3">
+          {filtered.length === 0 && (
+            <div className="text-center py-8 space-y-2">
+              <Search className="h-8 w-8 text-muted-foreground mx-auto" />
+              <p className="text-sm text-muted-foreground">Nenhum profissional disponível no momento.</p>
+            </div>
+          )}
+
+          {filtered.map((prof: any) => {
+            const nextSlot = getNextAvailableSlot(
+              prof.available_hours,
+              prof.slot_duration || 30,
+              prof.interval_minutes || 10,
+              prof.min_advance_hours || 3
+            );
+            const price = prof.consultation_price ? Number(prof.consultation_price) : 0;
+            const profTitle = getProfessionalTitle(prof.professional_type);
+            const councilPrefix = getCouncilPrefix(prof.professional_type);
+            const councilDisplay = prof.council_number
+              ? `${councilPrefix} ${prof.council_state ? prof.council_state + "/" : ""}${prof.council_number}`
+              : prof.crm || "";
+
+            return (
+              <motion.div
+                key={prof.user_id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card p-4 space-y-2"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                      {prof.name?.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">{prof.name}</p>
+                      <p className="text-[11px] text-muted-foreground">{profTitle}</p>
+                      {councilDisplay && (
+                        <p className="text-[10px] text-muted-foreground/70">{councilDisplay}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    {nextSlot ? (
+                      <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1">
+                        <Clock className="h-3 w-3" /> {nextSlot}
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-destructive flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" /> Sem horários disponíveis
+                      </p>
+                    )}
+                    <div className="flex items-center gap-1">
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                        ))}
+                      </div>
+                      {price > 0 && <span className="text-[11px] text-muted-foreground ml-1">R$ {price.toFixed(0)}</span>}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => navigate(`/booking?doctor=${prof.user_id}&name=${encodeURIComponent(prof.name)}`)}
+                  >
+                    Agendar
+                  </Button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const AppointmentsTab = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { data: profile } = useQuery({
+    queryKey: ["patient-profile-email", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("email").eq("user_id", user!.id).single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const email = profile?.email || user?.email || "";
+
+  const { data: appointments = [], isLoading } = useQuery({
+    queryKey: ["patient-appointments", user?.id, email],
+    queryFn: async () => {
+      if (!email) return [];
+      const { data } = await supabase
+        .from("appointments")
+        .select("id, patient_name, date, time, appointment_type, notes, status, user_id")
+        .order("date", { ascending: true })
+        .order("time", { ascending: true })
+        .limit(50);
+      return (data || []).filter((a: any) => a.notes?.toLowerCase().includes(email.toLowerCase()));
+    },
+    enabled: !!user && !!email,
+  });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("patient-appts-rt")
+      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["patient-appointments"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
+
+  const scheduled = appointments.filter((a: any) => a.status === "scheduled" && new Date(`${a.date}T${a.time}`) >= new Date());
+  const history = appointments.filter((a: any) => a.status !== "scheduled" || new Date(`${a.date}T${a.time}`) < new Date());
+
+  const [tab, setTab] = useState<"scheduled" | "history">("scheduled");
+  const [cancelId, setCancelId] = useState<string | null>(null);
+
+  const handleCancel = async () => {
+    if (!cancelId) return;
+    await supabase.from("appointments").update({ status: "cancelled" }).eq("id", cancelId);
+    queryClient.invalidateQueries({ queryKey: ["patient-appointments"] });
+    toast.success("Consulta cancelada.");
+    setCancelId(null);
+  };
+
+  if (isLoading) return <PageSkeleton variant="list" />;
+
+  const list = tab === "scheduled" ? scheduled : history;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <button
+          onClick={() => setTab("scheduled")}
+          className={`flex-1 rounded-lg py-2 text-xs font-medium transition-colors ${tab === "scheduled" ? "bg-primary text-primary-foreground" : "bg-accent text-muted-foreground"}`}
+        >
+          Agendadas ({scheduled.length})
+        </button>
+        <button
+          onClick={() => setTab("history")}
+          className={`flex-1 rounded-lg py-2 text-xs font-medium transition-colors ${tab === "history" ? "bg-primary text-primary-foreground" : "bg-accent text-muted-foreground"}`}
+        >
+          Histórico ({history.length})
+        </button>
+      </div>
+
+      {list.length === 0 ? (
+        <div className="text-center py-8 space-y-2">
+          {tab === "scheduled" ? (
+            <>
+              <Calendar className="h-8 w-8 text-muted-foreground mx-auto" />
+              <p className="text-sm text-muted-foreground">Você não tem consultas agendadas.</p>
+              <p className="text-xs text-muted-foreground">Que tal marcar uma agora?</p>
+              <Button size="sm" variant="outline" onClick={() => navigate("/patient-dashboard")} className="mt-2">
+                Buscar profissional
+              </Button>
+            </>
+          ) : (
+            <>
+              <History className="h-8 w-8 text-muted-foreground mx-auto" />
+              <p className="text-sm text-muted-foreground">Você ainda não realizou nenhuma consulta.</p>
+              <Button size="sm" variant="outline" onClick={() => navigate("/patient-dashboard")} className="mt-2">
+                Agendar minha primeira consulta
+              </Button>
+            </>
+          )}
+        </div>
+      ) : (
+        list.map((apt: any) => {
+          const aptDate = new Date(`${apt.date}T${apt.time}`);
+          const now = new Date();
+          const minutesUntil = (aptDate.getTime() - now.getTime()) / 60000;
+          const canEnterMeet = tab === "scheduled" && minutesUntil <= 30 && minutesUntil > -60;
+
+          return (
+            <div key={apt.id} className="glass-card p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold">{apt.patient_name}</p>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                  apt.status === "scheduled" ? "bg-primary/10 text-primary" :
+                  apt.status === "completed" ? "bg-muted text-muted-foreground" :
+                  "bg-destructive/10 text-destructive"
+                }`}>
+                  {apt.status === "scheduled" ? "🟢 Confirmada" : apt.status === "completed" ? "⚫ Realizada" : "Cancelada"}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                📅 {format(new Date(apt.date), "dd/MM/yyyy", { locale: ptBR })} às {apt.time?.substring(0, 5)}
+              </p>
+              {apt.appointment_type === "telehealth" && (
+                <span className="text-[10px] text-blue-500 flex items-center gap-1">🎥 Teleconsulta</span>
+              )}
+              {tab === "scheduled" && (
+                <div className="flex gap-2 pt-1">
+                  {canEnterMeet ? (
+                    <Button size="sm" className="text-xs flex-1">Entrar no Google Meet</Button>
+                  ) : minutesUntil > 30 ? (
+                    <p className="text-[10px] text-muted-foreground">
+                      Disponível em {minutesUntil > 60 ? `${Math.floor(minutesUntil / 60)}h` : `${Math.round(minutesUntil)} min`}
+                    </p>
+                  ) : null}
+                  <Button size="sm" variant="outline" className="text-xs text-destructive" onClick={() => setCancelId(apt.id)}>
+                    Cancelar
+                  </Button>
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
+
+      <Dialog open={!!cancelId} onOpenChange={() => setCancelId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancelar esta consulta?</DialogTitle>
+            <DialogDescription>Reembolso disponível com mais de 2h de antecedência.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setCancelId(null)}>Não, manter</Button>
+            <Button variant="destructive" onClick={handleCancel}>Sim, cancelar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+const ProfileTab = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("search");
+
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["patient-profile-full", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("name, email, phone, created_at").eq("user_id", user!.id).single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [passwords, setPasswords] = useState({ current: "", new1: "", new2: "" });
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name || "");
+      setPhone(profile.phone || "");
+    }
+  }, [profile]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    await supabase.from("profiles").update({ name, phone }).eq("user_id", user!.id);
+    queryClient.invalidateQueries({ queryKey: ["patient-profile-full"] });
+    toast.success("Dados atualizados!");
+    setSaving(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (passwords.new1 !== passwords.new2) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
+    if (passwords.new1.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({ password: passwords.new1 });
+    if (error) {
+      toast.error("Erro ao alterar senha.");
+    } else {
+      toast.success("Senha alterada com sucesso!");
+      setShowPasswordDialog(false);
+      setPasswords({ current: "", new1: "", new2: "" });
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/login");
+  };
+
+  if (isLoading) return <PageSkeleton variant="list" />;
+
+  return (
+    <div className="space-y-5">
+      {/* Avatar + Name */}
+      <div className="text-center space-y-2">
+        <div className="gradient-primary mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+          <User className="h-7 w-7 text-primary-foreground" />
+        </div>
+        <h2 className="text-lg font-bold">{profile?.name || "Paciente"}</h2>
+        <p className="text-xs text-muted-foreground">{profile?.email}</p>
+      </div>
+
+      {/* My Data */}
+      <div className="glass-card p-4 space-y-3">
+        <h3 className="text-sm font-semibold">Meus dados</h3>
+        <div className="space-y-2">
+          <div className="space-y-1">
+            <Label className="text-xs">Nome completo</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} className="bg-accent border-border" />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">E-mail</Label>
+            <Input value={profile?.email || ""} disabled className="bg-muted border-border text-muted-foreground" />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">WhatsApp</Label>
+            <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-accent border-border" />
+          </div>
+        </div>
+        <Button size="sm" onClick={handleSave} disabled={saving} className="w-full">
+          {saving ? "Salvando..." : "Salvar alterações"}
+        </Button>
+      </div>
+
+      {/* Security */}
+      <div className="glass-card p-4 space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-2"><Shield className="h-4 w-4" /> Segurança</h3>
+        <Button size="sm" variant="outline" className="w-full gap-2" onClick={() => setShowPasswordDialog(true)}>
+          <Lock className="h-3.5 w-3.5" /> Alterar senha
+        </Button>
+      </div>
+
+      {/* LGPD */}
+      <div className="glass-card p-4 space-y-3">
+        <h3 className="text-sm font-semibold">Privacidade e dados (LGPD)</h3>
+        <Button size="sm" variant="outline" className="w-full gap-2">
+          <Download className="h-3.5 w-3.5" /> Baixar meus dados
+        </Button>
+        <Button size="sm" variant="outline" className="w-full gap-2 text-destructive border-destructive/30" onClick={() => setShowDeleteDialog(true)}>
+          <Trash2 className="h-3.5 w-3.5" /> Excluir minha conta
+        </Button>
+      </div>
+
+      {/* Logout */}
+      <Button onClick={handleLogout} variant="outline" className="w-full border-destructive/30 text-destructive gap-2">
+        <LogOut className="h-4 w-4" /> Sair da conta
+      </Button>
+
+      {/* Change Password Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Alterar senha</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Nova senha</Label>
+              <Input type="password" value={passwords.new1} onChange={(e) => setPasswords({ ...passwords, new1: e.target.value })} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Confirmar nova senha</Label>
+              <Input type="password" value={passwords.new2} onChange={(e) => setPasswords({ ...passwords, new2: e.target.value })} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleChangePassword}>Alterar senha</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Account Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir minha conta</DialogTitle>
+            <DialogDescription>Esta ação não pode ser desfeita. Todos os seus dados serão removidos permanentemente.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancelar</Button>
+            <Button variant="destructive" onClick={() => { toast.info("Entre em contato com contato@salbcare.com.br para exclusão de conta."); setShowDeleteDialog(false); }}>
+              Confirmar exclusão
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+// ─── Main Component ───────────────────────────────────
+
+const PatientDashboard = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["patient-profile", user?.id],
@@ -78,54 +528,18 @@ const PatientDashboard = () => {
     enabled: !!user,
   });
 
-  const { data: professionals = [], isLoading: profsLoading } = useQuery({
-    queryKey: ["patient-professionals", selectedSpecialty],
-    queryFn: async () => {
-      const { data } = await supabase.rpc("get_public_professionals", {
-        specialty_filter: selectedSpecialty || null,
-      });
-      return data || [];
-    },
-  });
+  // Determine active tab from path
+  const getTabFromPath = () => {
+    if (location.pathname.includes("/consultas")) return "consultas";
+    if (location.pathname.includes("/perfil")) return "perfil";
+    return "buscar";
+  };
 
-  // Only fetch appointments when on appointments/history tab
-  const { data: myAppointments = [], isLoading: appointmentsLoading } = useQuery({
-    queryKey: ["patient-appointments", user?.id, profile?.email],
-    queryFn: async () => {
-      const email = profile?.email || user?.email;
-      if (!email) return [];
-      const { data } = await supabase
-        .from("appointments")
-        .select("id, patient_name, date, time, appointment_type, notes, status")
-        .order("date", { ascending: true })
-        .order("time", { ascending: true })
-        .limit(50);
-      return (data || []).filter((a: any) => a.notes?.includes(email));
-    },
-    enabled: !!user && !!(profile?.email || user?.email) && (activeTab === "appointments" || activeTab === "history"),
-  });
+  const activeTab = getTabFromPath();
 
-  // Realtime: listen for appointment changes
-  useEffect(() => {
-    const channel = supabase
-      .channel("patient-appointments-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["patient-appointments"] });
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [queryClient]);
-
-  const scheduledAppointments = myAppointments.filter((a: any) => a.status === "scheduled");
-  const completedAppointments = myAppointments.filter((a: any) => a.status === "completed" || a.status === "cancelled");
-
-  const filteredProfessionals = professionals.filter((p: any) =>
-    p.name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/login");
+  const setActiveTab = (tab: string) => {
+    if (tab === "buscar") navigate("/patient-dashboard");
+    else navigate(`/patient-dashboard/${tab}`);
   };
 
   if (profileLoading) {
@@ -145,229 +559,27 @@ const PatientDashboard = () => {
             <p className="text-xs text-muted-foreground">Olá,</p>
             <h1 className="text-base font-bold">{profile?.name || "Paciente"} 👋</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => setActiveTab("profile")}>
-              <User className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleLogout}>
-              <LogOut className="h-5 w-5 text-destructive" />
-            </Button>
-          </div>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-5 space-y-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="search" className="text-xs gap-1"><Search className="h-3.5 w-3.5" /> Buscar</TabsTrigger>
-            <TabsTrigger value="appointments" className="text-xs gap-1"><Calendar className="h-3.5 w-3.5" /> Agendadas</TabsTrigger>
-            <TabsTrigger value="history" className="text-xs gap-1"><History className="h-3.5 w-3.5" /> Histórico</TabsTrigger>
-          </TabsList>
-
-          {/* TAB: Search Professionals */}
-          <TabsContent value="search" className="space-y-4 mt-4">
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-              <button
-                onClick={() => setSelectedSpecialty(null)}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                  !selectedSpecialty ? "bg-primary text-primary-foreground" : "bg-accent text-muted-foreground"
-                }`}
-              >
-                Todos
-              </button>
-              {SPECIALTIES.map((s) => (
-                <button
-                  key={s.key}
-                  onClick={() => setSelectedSpecialty(s.key)}
-                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1 ${
-                    selectedSpecialty === s.key ? "bg-primary text-primary-foreground" : "bg-accent text-muted-foreground"
-                  }`}
-                >
-                  <span>{s.emoji}</span> {s.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar profissional..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="bg-accent border-border pl-9"
-              />
-            </div>
-
-            {profsLoading ? (
-              <PageSkeleton variant="list" />
-            ) : (
-              <div className="space-y-3">
-                {filteredProfessionals.length === 0 && (
-                  <div className="text-center py-8 space-y-2">
-                    <Search className="h-8 w-8 text-muted-foreground mx-auto" />
-                    <p className="text-sm text-muted-foreground">Nenhum profissional disponível no momento.</p>
-                  </div>
-                )}
-
-                {filteredProfessionals.map((prof: any) => {
-                  const nextSlot = getNextAvailableSlot(
-                    prof.available_hours,
-                    prof.slot_duration || 30,
-                    prof.interval_minutes || 10,
-                    prof.min_advance_hours || 3
-                  );
-                  const price = prof.consultation_price ? Number(prof.consultation_price) : 0;
-                  return (
-                    <motion.div
-                      key={prof.user_id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="glass-card p-4 space-y-2"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                            {prof.name?.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold">{prof.name}</p>
-                            <p className="text-[11px] text-muted-foreground">{prof.crm ? `${prof.crm} • ` : ""}{prof.professional_type}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          {nextSlot ? (
-                            <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1">
-                              <Clock className="h-3 w-3" /> {nextSlot}
-                            </p>
-                          ) : (
-                            <p className="text-[11px] text-destructive flex items-center gap-1">
-                              <AlertCircle className="h-3 w-3" /> Sem horários disponíveis
-                            </p>
-                          )}
-                          <div className="flex items-center gap-1">
-                            <div className="flex">
-                              {[1, 2, 3, 4, 5].map((s) => (
-                                <Star key={s} className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                              ))}
-                            </div>
-                            {price > 0 && <span className="text-[11px] text-muted-foreground ml-1">R$ {price.toFixed(0)}</span>}
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => navigate(`/booking?doctor=${prof.user_id}&name=${encodeURIComponent(prof.name)}`)}
-                        >
-                          Agendar
-                        </Button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* TAB: My Appointments */}
-          <TabsContent value="appointments" className="space-y-4 mt-4">
-            {appointmentsLoading ? (
-              <PageSkeleton variant="list" />
-            ) : scheduledAppointments.length === 0 ? (
-              <div className="text-center py-8 space-y-2">
-                <Calendar className="h-8 w-8 text-muted-foreground mx-auto" />
-                <p className="text-sm text-muted-foreground">Nenhuma consulta agendada.</p>
-                <p className="text-xs text-muted-foreground">Busque um profissional na aba "Buscar" para agendar sua primeira consulta.</p>
-                <Button size="sm" variant="outline" onClick={() => setActiveTab("search")} className="mt-2">
-                  Buscar profissional
-                </Button>
-              </div>
-            ) : (
-              scheduledAppointments.map((apt: any) => (
-                <div key={apt.id} className="glass-card p-4 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">{apt.patient_name}</p>
-                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Agendada</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(apt.date), "dd/MM/yyyy", { locale: ptBR })} às {apt.time?.substring(0, 5)}
-                  </p>
-                  {apt.appointment_type === "telehealth" && (
-                    <span className="text-[10px] text-blue-500 flex items-center gap-1">🎥 Teleconsulta</span>
-                  )}
-                </div>
-              ))
-            )}
-          </TabsContent>
-
-          {/* TAB: History */}
-          <TabsContent value="history" className="space-y-4 mt-4">
-            {appointmentsLoading ? (
-              <PageSkeleton variant="list" />
-            ) : completedAppointments.length === 0 ? (
-              <div className="text-center py-8 space-y-2">
-                <History className="h-8 w-8 text-muted-foreground mx-auto" />
-                <p className="text-sm text-muted-foreground">Seu histórico de consultas aparecerá aqui após suas primeiras consultas.</p>
-              </div>
-            ) : (
-              completedAppointments.map((apt: any) => (
-                <div key={apt.id} className="glass-card p-4 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">{apt.patient_name}</p>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                      apt.status === "completed" ? "bg-muted text-muted-foreground" : "bg-destructive/10 text-destructive"
-                    }`}>
-                      {apt.status === "completed" ? "Concluída" : "Cancelada"}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(apt.date), "dd/MM/yyyy", { locale: ptBR })} às {apt.time?.substring(0, 5)}
-                  </p>
-                </div>
-              ))
-            )}
-          </TabsContent>
-
-          {/* TAB: Profile (hidden from tabs, accessible via bottom nav) */}
-          <TabsContent value="profile" className="space-y-4 mt-4">
-            <div className="text-center space-y-3">
-              <div className="gradient-primary mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                <User className="h-7 w-7 text-primary-foreground" />
-              </div>
-              <h2 className="text-lg font-bold">{profile?.name || "Paciente"}</h2>
-              <p className="text-sm text-muted-foreground">{profile?.email || user?.email}</p>
-              {profile?.phone && <p className="text-sm text-muted-foreground">{profile.phone}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <div className="glass-card p-3 text-sm">
-                <span className="text-muted-foreground">E-mail:</span> {profile?.email || user?.email}
-              </div>
-              <div className="glass-card p-3 text-sm">
-                <span className="text-muted-foreground">Telefone:</span> {profile?.phone || "Não informado"}
-              </div>
-            </div>
-
-            <Button onClick={handleLogout} variant="outline" className="w-full border-border text-destructive gap-2">
-              <LogOut className="h-4 w-4" /> Sair da conta
-            </Button>
-          </TabsContent>
-        </Tabs>
+      <div className="max-w-lg mx-auto px-4 py-5">
+        {activeTab === "buscar" && <SearchTab />}
+        {activeTab === "consultas" && <AppointmentsTab />}
+        {activeTab === "perfil" && <ProfileTab />}
       </div>
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur-xl z-50">
         <div className="mx-auto flex max-w-lg items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
-          <button onClick={() => setActiveTab("search")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs ${activeTab === "search" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("buscar")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs transition-colors ${activeTab === "buscar" ? "text-primary" : "text-muted-foreground"}`}>
             <Search className="h-5 w-5" />
             <span className="font-medium">Buscar</span>
           </button>
-          <button onClick={() => setActiveTab("appointments")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs ${activeTab === "appointments" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("consultas")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs transition-colors ${activeTab === "consultas" ? "text-primary" : "text-muted-foreground"}`}>
             <Calendar className="h-5 w-5" />
             <span className="font-medium">Consultas</span>
           </button>
-          <button onClick={() => setActiveTab("profile")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs ${activeTab === "profile" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("perfil")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs transition-colors ${activeTab === "perfil" ? "text-primary" : "text-muted-foreground"}`}>
             <User className="h-5 w-5" />
             <span className="font-medium">Perfil</span>
           </button>

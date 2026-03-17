@@ -4,7 +4,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ProfessionalRoute from "@/components/ProfessionalRoute";
+import PatientRoute from "@/components/PatientRoute";
 import BottomNav from "@/components/BottomNav";
 import CookieConsent from "./components/CookieConsent";
 import PageSkeleton from "@/components/PageSkeleton";
@@ -52,8 +53,8 @@ const BookingSuccess = lazyWithRetry(() => import("./pages/BookingSuccess"), "Bo
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 2 * 60 * 1000, // 2 min default
-      gcTime: 10 * 60 * 1000,   // 10 min garbage collection
+      staleTime: 2 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
       refetchOnWindowFocus: false,
       retry: 1,
     },
@@ -75,25 +76,12 @@ const App = () => (
         <AuthProvider>
           <Suspense fallback={<LazyFallback />}>
             <Routes>
+              {/* Public routes */}
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-              <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-              <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/agenda" element={<ProtectedRoute><Agenda /></ProtectedRoute>} />
-              <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
-              <Route path="/telehealth" element={<ProtectedRoute><Telehealth /></ProtectedRoute>} />
-              <Route path="/professionals" element={<ProtectedRoute><Professionals /></ProtectedRoute>} />
-              <Route path="/financial" element={<ProtectedRoute><Financial /></ProtectedRoute>} />
-              <Route path="/accounting" element={<ProtectedRoute><Accounting /></ProtectedRoute>} />
-              <Route path="/legal" element={<ProtectedRoute><Legal /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/booking" element={<PatientBooking />} />
               <Route path="/booking-success" element={<BookingSuccess />} />
               <Route path="/sala" element={<PatientRoom />} />
@@ -103,11 +91,32 @@ const App = () => (
               <Route path="/como-funciona" element={<HowItWorks />} />
               <Route path="/test-pdf" element={<TestPrescriptionPdf />} />
               <Route path="/install" element={<Install />} />
-              <Route path="/sucesso" element={<ProtectedRoute><Sucesso /></ProtectedRoute>} />
               <Route path="/cancelado" element={<Cancelado />} />
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
               <Route path="/consulta-online/:specialty" element={<SpecialtyDirectory />} />
-              <Route path="/patient-dashboard" element={<ProtectedRoute><PatientDashboard /></ProtectedRoute>} />
+
+              {/* Professional-only routes */}
+              <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
+              <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
+              <Route path="/payment-success" element={<ProfessionalRoute><PaymentSuccess /></ProfessionalRoute>} />
+              <Route path="/dashboard" element={<ProfessionalRoute><Dashboard /></ProfessionalRoute>} />
+              <Route path="/agenda" element={<ProfessionalRoute><Agenda /></ProfessionalRoute>} />
+              <Route path="/patients" element={<ProfessionalRoute><Patients /></ProfessionalRoute>} />
+              <Route path="/telehealth" element={<ProfessionalRoute><Telehealth /></ProfessionalRoute>} />
+              <Route path="/professionals" element={<ProfessionalRoute><Professionals /></ProfessionalRoute>} />
+              <Route path="/financial" element={<ProfessionalRoute><Financial /></ProfessionalRoute>} />
+              <Route path="/accounting" element={<ProfessionalRoute><Accounting /></ProfessionalRoute>} />
+              <Route path="/legal" element={<ProfessionalRoute><Legal /></ProfessionalRoute>} />
+              <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
+              <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
+              <Route path="/admin" element={<ProfessionalRoute><AdminDashboard /></ProfessionalRoute>} />
+              <Route path="/sucesso" element={<ProfessionalRoute><Sucesso /></ProfessionalRoute>} />
+
+              {/* Patient-only routes */}
+              <Route path="/patient-dashboard" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
+              <Route path="/patient-dashboard/consultas" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
+              <Route path="/patient-dashboard/perfil" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
