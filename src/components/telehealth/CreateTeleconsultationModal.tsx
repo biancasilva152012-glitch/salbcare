@@ -7,13 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Link2 } from "lucide-react";
 
 interface CreateTeleconsultationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
   patients: { id: string; name: string; phone: string | null }[];
+  defaultMeetLink?: string;
   onSuccess: () => void;
 }
 
@@ -22,6 +23,7 @@ const CreateTeleconsultationModal = ({
   onOpenChange,
   userId,
   patients,
+  defaultMeetLink = "",
   onSuccess,
 }: CreateTeleconsultationModalProps) => {
   const [patientName, setPatientName] = useState("");
@@ -30,6 +32,7 @@ const CreateTeleconsultationModal = ({
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState("30");
   const [notes, setNotes] = useState("");
+  const [meetLink, setMeetLink] = useState(defaultMeetLink);
   const [saving, setSaving] = useState(false);
 
   const handlePatientSelect = (value: string) => {
@@ -60,19 +63,21 @@ const CreateTeleconsultationModal = ({
         duration: parseInt(duration),
         notes: notes.trim() || null,
         status: "scheduled",
+        room_url: meetLink.trim() || null,
       });
       if (error) throw error;
 
       toast.success("Teleconsulta agendada com sucesso!");
+      toast("Você acaba de economizar R$ 0 em comissões comparado a outras plataformas. Continue crescendo com a SALBCARE! 🚀", { duration: 5000 });
       onSuccess();
       onOpenChange(false);
-      // Reset form
       setPatientName("");
       setSelectedPatientId(null);
       setDate("");
       setTime("");
       setDuration("30");
       setNotes("");
+      setMeetLink(defaultMeetLink);
     } catch {
       toast.error("Não conseguimos salvar. Tente de novo em instantes.");
     } finally {
@@ -118,6 +123,21 @@ const CreateTeleconsultationModal = ({
               placeholder="Nome completo"
               className="bg-accent border-border"
             />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs flex items-center gap-1">
+              <Link2 className="h-3 w-3" /> Link do Google Meet
+            </Label>
+            <Input
+              value={meetLink}
+              onChange={(e) => setMeetLink(e.target.value)}
+              placeholder="https://meet.google.com/xxx-xxxx-xxx"
+              className="bg-accent border-border"
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Cole o link da sua sala do Google Meet. Se vazio, será usado o link padrão do perfil.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

@@ -1,6 +1,6 @@
 project_id = "fevrdqmqmbahmeaymplq"
 
-[functions.daily-room]
+[functions.get-teleconsultation]
 verify_jwt = false
 
 [functions.validate-pix-receipt]

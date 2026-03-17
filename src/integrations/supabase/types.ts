@@ -662,6 +662,7 @@ export type Database = {
           crm: string | null
           email: string
           id: string
+          meet_link: string | null
           name: string
           office_address: string | null
           payment_status: string
@@ -689,6 +690,7 @@ export type Database = {
           crm?: string | null
           email: string
           id?: string
+          meet_link?: string | null
           name: string
           office_address?: string | null
           payment_status?: string
@@ -716,6 +718,7 @@ export type Database = {
           crm?: string | null
           email?: string
           id?: string
+          meet_link?: string | null
           name?: string
           office_address?: string | null
           payment_status?: string

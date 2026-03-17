@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, DollarSign, Save, Plus, Trash2, Loader2 } from "lucide-react";
+import { Clock, DollarSign, Save, Plus, Trash2, Loader2, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,13 +31,14 @@ const ConsultationSettings = () => {
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("30");
   const [hours, setHours] = useState<AvailableHours>(DEFAULT_HOURS);
+  const [meetLink, setMeetLink] = useState("");
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile-settings", user?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("consultation_price, slot_duration, office_address, available_hours")
+        .select("consultation_price, slot_duration, office_address, available_hours, meet_link")
         .eq("user_id", user!.id)
         .single();
       return data;
@@ -49,6 +50,7 @@ const ConsultationSettings = () => {
     if (profile) {
       setPrice(profile.consultation_price?.toString() || "");
       setDuration(profile.slot_duration?.toString() || "30");
+      setMeetLink((profile as any).meet_link || "");
       if (profile.available_hours && typeof profile.available_hours === "object") {
         setHours({ ...DEFAULT_HOURS, ...(profile.available_hours as AvailableHours) });
       }
@@ -64,6 +66,7 @@ const ConsultationSettings = () => {
           slot_duration: parseInt(duration),
           office_address: null,
           available_hours: hours as any,
+          meet_link: meetLink.trim() || null,
         })
         .eq("user_id", user!.id);
       if (error) throw error;
@@ -153,6 +156,22 @@ const ConsultationSettings = () => {
 
 
 
+
+      {/* Google Meet Link */}
+      <div className="space-y-1.5">
+        <Label className="flex items-center gap-1 text-xs">
+          <Link2 className="h-3 w-3" /> Link padrão do Google Meet
+        </Label>
+        <Input
+          placeholder="https://meet.google.com/xxx-xxxx-xxx"
+          value={meetLink}
+          onChange={(e) => setMeetLink(e.target.value)}
+          className="bg-accent border-border"
+        />
+        <p className="text-[10px] text-muted-foreground">
+          Usado automaticamente em novas teleconsultas quando nenhum link específico for informado.
+        </p>
+      </div>
 
       {/* Available Hours */}
       <div className="space-y-2">

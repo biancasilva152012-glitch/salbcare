@@ -137,6 +137,7 @@ const Agenda = () => {
       setForm(emptyForm);
       setOpen(false);
       toast.success("Consulta agendada!");
+      toast("Você acaba de economizar R$ 0 em comissões comparado a outras plataformas. Continue crescendo com a SALBCARE! 🚀", { duration: 5000 });
     },
     onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
@@ -291,7 +292,7 @@ const Agenda = () => {
             )}
           >
             <span className="flex items-center gap-1.5 text-sm font-medium">🎥 Online</span>
-            <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece pela plataforma SALBCARE. Link gerado automaticamente.</span>
+            <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece via Google Meet. Link do seu perfil.</span>
           </button>
           <button
             type="button"
