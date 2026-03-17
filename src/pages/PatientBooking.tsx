@@ -134,6 +134,7 @@ const PatientBooking = () => {
     return () => { supabase.removeChannel(channel); };
   }, [doctorId, queryClient]);
 
+  const availableHours: AvailableHours = (doctor?.available_hours as AvailableHours) || {};
   const slotDuration = doctor?.slot_duration || 30;
   const intervalMinutes = (doctor as any)?.interval_minutes ?? 10;
   const minAdvanceHours = (doctor as any)?.min_advance_hours ?? 3;
