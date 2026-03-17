@@ -63,7 +63,7 @@ const Dashboard = () => {
   const { data: todayAppointments = [] } = useQuery({
     queryKey: ["today-appointments", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("appointments").select("*").eq("user_id", user!.id).eq("date", today).eq("status", "scheduled").order("time");
+      const { data } = await supabase.from("appointments").select("id, patient_name, time, appointment_type").eq("user_id", user!.id).eq("date", today).eq("status", "scheduled").order("time").limit(50);
       return data || [];
     },
     enabled: !!user,
