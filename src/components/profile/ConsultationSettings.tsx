@@ -157,6 +157,22 @@ const ConsultationSettings = () => {
 
 
 
+      {/* Google Meet Link */}
+      <div className="space-y-1.5">
+        <Label className="flex items-center gap-1 text-xs">
+          <Link2 className="h-3 w-3" /> Link padrão do Google Meet
+        </Label>
+        <Input
+          placeholder="https://meet.google.com/xxx-xxxx-xxx"
+          value={meetLink}
+          onChange={(e) => setMeetLink(e.target.value)}
+          className="bg-accent border-border"
+        />
+        <p className="text-[10px] text-muted-foreground">
+          Usado automaticamente em novas teleconsultas quando nenhum link específico for informado.
+        </p>
+      </div>
+
       {/* Available Hours */}
       <div className="space-y-2">
         <Label className="text-xs font-medium">Horários disponíveis para agendamento</Label>
