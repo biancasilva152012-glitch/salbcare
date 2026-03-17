@@ -227,6 +227,11 @@ const Financial = () => {
           </div>
         </div>
 
+        {/* Savings Estimate Card for Pro+ */}
+        {(hasAccess("accounting_marketplace")) && (
+          <SavingsEstimateCard monthlyIncome={totalIncome} />
+        )}
+
         <Tabs defaultValue="consultas" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="consultas">💰 Consultas</TabsTrigger>
