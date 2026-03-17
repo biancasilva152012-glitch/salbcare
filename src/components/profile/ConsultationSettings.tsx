@@ -38,7 +38,7 @@ const ConsultationSettings = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("consultation_price, slot_duration, office_address, available_hours")
+        .select("consultation_price, slot_duration, office_address, available_hours, meet_link")
         .eq("user_id", user!.id)
         .single();
       return data;
