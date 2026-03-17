@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { CalendarIcon, Clock, Video, User, Send, ArrowLeft, ArrowRight, Check, QrCode, CalendarPlus, Copy, ExternalLink } from "lucide-react";
 import { format, parse, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -13,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { maskPhone } from "@/utils/masks";
@@ -59,8 +61,25 @@ const STEPS = ["Horário", "Seus dados", "Confirmação", "Sucesso"];
 
 const PatientBooking = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const doctorId = searchParams.get("doctor");
   const doctorName = searchParams.get("name") || "Profissional";
+
+  // Block professionals from booking — redirect to dashboard
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.user_type === "professional") {
+          navigate("/dashboard", { replace: true });
+        }
+      });
+  }, [user, navigate]);
 
   const [step, setStep] = useState(0);
   const [selectedDate, setSelectedDate] = useState("");

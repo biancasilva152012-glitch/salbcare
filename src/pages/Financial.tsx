@@ -23,6 +23,7 @@ import { exportFinancialPdf } from "@/utils/exportFinancialPdf";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
 import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
+import SavingsEstimateCard from "@/components/financial/SavingsEstimateCard";
 import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
 import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";
@@ -225,6 +226,11 @@ const Financial = () => {
           </Dialog>
           </div>
         </div>
+
+        {/* Savings Estimate Card for Pro+ */}
+        {(hasAccess("accounting_marketplace")) && (
+          <SavingsEstimateCard monthlyIncome={totalIncome} />
+        )}
 
         <Tabs defaultValue="consultas" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
