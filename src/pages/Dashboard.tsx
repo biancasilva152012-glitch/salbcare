@@ -118,7 +118,7 @@ const Dashboard = () => {
         {/* Captação Banner */}
         <motion.div variants={item}>
           <button
-            onClick={() => navigate("/consulta-online")}
+            onClick={() => navigate("/profile?tab=consultation")}
             className="glass-card ring-1 ring-green-500/20 flex w-full items-center gap-3 p-3 sm:p-4 transition-all active:scale-[0.98] hover:border-green-500/50 bg-green-500/5"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-500/10 sm:h-10 sm:w-10">
