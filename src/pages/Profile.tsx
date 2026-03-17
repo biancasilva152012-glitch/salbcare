@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
+import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
