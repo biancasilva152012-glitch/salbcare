@@ -300,7 +300,9 @@ const Profile = () => {
         </div>
 
         {/* Consultation Settings */}
-        <ConsultationSettings />
+        <div ref={consultationRef}>
+          <ConsultationSettings />
+        </div>
 
         {/* LGPD - Privacy & Data Section */}
         <div className="space-y-2">
