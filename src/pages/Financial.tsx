@@ -23,6 +23,7 @@ import { exportFinancialPdf } from "@/utils/exportFinancialPdf";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
 import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
+import SavingsEstimateCard from "@/components/financial/SavingsEstimateCard";
 import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
 import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";

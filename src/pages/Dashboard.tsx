@@ -99,6 +99,7 @@ const Dashboard = () => {
     <PageContainer onRefresh={handleRefresh}>
       <WelcomeOnboarding />
       <InstallBanner />
+      <TrialCountdown />
       <ConnectOnboardingBanner
         pixKey={(profile as any)?.pix_key}
         cardLink={(profile as any)?.card_link}
