@@ -4,6 +4,8 @@ import { Search, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { SPECIALTY_SEO } from "@/config/specialtyLegalNotices";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const SPECIALTIES = [
   { key: "medico", emoji: "🩺", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
