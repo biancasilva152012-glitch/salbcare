@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { maskPhone } from "@/utils/masks";
 import { SPECIALTY_LEGAL_NOTICES } from "@/config/specialtyLegalNotices";
