@@ -92,6 +92,11 @@ const Telehealth = () => {
     toast.success("Consulta marcada como concluída!");
   };
 
+  // Loading state
+  if (profileLoading) {
+    return <PageContainer backTo="/dashboard"><PageSkeleton variant="list" /></PageContainer>;
+  }
+
   // Paywall for Essential plan
   const isEssential = subscription.plan === "basic";
   if (isEssential) {
