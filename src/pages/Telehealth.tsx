@@ -1,28 +1,35 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Video, Clock, FileText, Link2, Plus, Download, ExternalLink, Lock, Sparkles } from "lucide-react";
+import { Video, Clock, FileText, Plus, Download, ExternalLink, Lock, Sparkles, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
-import ShareBookingLink from "@/components/telehealth/ShareBookingLink";
 import CreateTeleconsultationModal from "@/components/telehealth/CreateTeleconsultationModal";
 import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
 import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { PLANS } from "@/config/plans";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
+import { useNavigate } from "react-router-dom";
+
+const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
+  pending_payment: { label: "Aguardando pagamento", color: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400", dot: "bg-yellow-500" },
+  scheduled: { label: "Confirmada", color: "bg-green-500/10 text-green-600 dark:text-green-400", dot: "bg-green-500" },
+  in_progress: { label: "Em andamento", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400", dot: "bg-blue-500" },
+  completed: { label: "Encerrada", color: "bg-muted text-muted-foreground", dot: "bg-muted-foreground" },
+};
 
 const Telehealth = () => {
   const { user, subscription } = useAuth();
   const { hasAccess } = useFeatureGate();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
-  const [shareOpen, setShareOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
 
   const { data: profile } = useQuery({
@@ -57,10 +64,10 @@ const Telehealth = () => {
     return { id: patient?.id || tc.patient_id, phone: patient?.phone || null };
   };
 
-  const handleJoinMeet = (tc: any) => {
-    const link = tc.room_url || (profile as any)?.meet_link;
+  const handleJoinMeet = () => {
+    const link = (profile as any)?.meet_link;
     if (!link) {
-      toast.error("Por favor, insira o link do Google Meet para esta consulta.");
+      toast.error("Configure seu link do Google Meet no Meu Perfil.");
       return;
     }
     window.open(link, "_blank");
@@ -120,11 +127,13 @@ const Telehealth = () => {
     );
   }
 
+  const meetLink = (profile as any)?.meet_link;
+
   const now = new Date();
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
   const filtered = teleconsultations.filter((t: any) =>
     tab === "upcoming"
-      ? t.status === "scheduled" && t.date >= oneHourAgo
+      ? t.status !== "completed" && t.date >= oneHourAgo
       : t.status === "completed"
   );
 
@@ -133,21 +142,25 @@ const Telehealth = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Teleconsulta</h1>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => setShareOpen(true)} className="gap-1 text-xs">
-              <Link2 className="h-3.5 w-3.5" /> Link
-            </Button>
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1 text-xs gradient-primary">
-              <Plus className="h-3.5 w-3.5" /> Nova Consulta
-            </Button>
-          </div>
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1 text-xs gradient-primary">
+            <Plus className="h-3.5 w-3.5" /> Nova Consulta
+          </Button>
         </div>
 
-        {!(profile as any)?.meet_link && (
-          <div className="glass-card p-3 border-yellow-500/30 bg-yellow-500/5">
+        {/* Warning banner if no Meet link */}
+        {!meetLink && (
+          <div className="glass-card p-3 border-yellow-500/30 bg-yellow-500/5 space-y-2">
             <p className="text-xs text-yellow-700 dark:text-yellow-300">
-              ⚠️ Configure seu link padrão do Google Meet no <a href="/profile" className="underline font-medium">Perfil</a> para agilizar suas consultas.
+              ⚠️ Configure seu link do Google Meet no Meu Perfil para ativar as teleconsultas.
             </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs border-yellow-500/30 text-yellow-700 dark:text-yellow-300"
+              onClick={() => navigate("/profile?tab=consultation")}
+            >
+              Configurar agora
+            </Button>
           </div>
         )}
 
@@ -170,51 +183,62 @@ const Telehealth = () => {
           {filtered.map((tc: any) => {
             const patientInfo = getPatientInfo(tc);
             const tcDate = new Date(tc.date);
-            const minutesUntil = (tcDate.getTime() - Date.now()) / 60000;
-            const isStartingSoon = minutesUntil > 0 && minutesUntil <= 30;
-            const isNow = minutesUntil <= 0 && tc.status === "scheduled";
-            const meetLink = tc.room_url || (profile as any)?.meet_link;
+            const statusKey = tc.status || "scheduled";
+            const statusCfg = STATUS_CONFIG[statusKey] || STATUS_CONFIG.scheduled;
 
             return (
-              <div key={tc.id} className="glass-card p-4 space-y-2">
+              <div key={tc.id} className="glass-card p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
                       {tc.patient_name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium">{tc.patient_name}</p>
-                        {isStartingSoon && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400 animate-pulse">
-                            <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Iniciar em breve
-                          </span>
-                        )}
-                      </div>
+                      <p className="text-sm font-medium">{tc.patient_name}</p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        {tcDate.toLocaleDateString("pt-BR")} • {tc.duration ? `${tc.duration} min` : "—"}
+                        {tcDate.toLocaleDateString("pt-BR")} às {tcDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })} — {tc.duration ? `${tc.duration} min` : "—"}
                       </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Status badge */}
+                <div className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${statusCfg.color}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${statusCfg.dot}`} />
+                  {statusCfg.label}
+                </div>
+
                 {tc.notes && <p className="text-xs text-muted-foreground">{tc.notes}</p>}
-                {meetLink && (
-                  <p className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
-                    <Link2 className="h-3 w-3 shrink-0" /> {meetLink}
-                  </p>
-                )}
+
                 <div className="flex gap-2">
                   {tc.status === "scheduled" && (
                     <>
                       <Button
-                        onClick={() => handleJoinMeet(tc)}
+                        onClick={handleJoinMeet}
                         size="sm"
-                        className={`flex-1 gap-1 ${isNow ? "bg-green-600 hover:bg-green-700 text-white font-bold" : "gradient-primary"}`}
+                        className="flex-1 gap-1 gradient-primary"
+                        disabled={!meetLink}
                       >
                         <ExternalLink className="h-4 w-4" />
-                        {isNow ? "Entrar na consulta agora" : "Abrir Google Meet"}
+                        Abrir Google Meet
                       </Button>
+                      {patientInfo.phone && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1 text-xs"
+                          onClick={() => {
+                            const phone = patientInfo.phone!.replace(/\D/g, "");
+                            const msg = encodeURIComponent(
+                              `Olá ${tc.patient_name}! Sua consulta está confirmada para ${tcDate.toLocaleDateString("pt-BR")} às ${tcDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}.\n\n🔗 Acesse sua consulta aqui:\n${meetLink || "(link pendente)"}\n\nSalve este link!`
+                            );
+                            window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+                          }}
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button onClick={() => handleComplete(tc)} size="sm" variant="outline" className="text-xs">
                         Concluir
                       </Button>
@@ -260,14 +284,13 @@ const Telehealth = () => {
         />
       )}
 
-      <ShareBookingLink open={shareOpen} onOpenChange={setShareOpen} userId={user?.id || ""} doctorName={profile?.name || ""} />
-
       <CreateTeleconsultationModal
         open={createOpen}
         onOpenChange={setCreateOpen}
         userId={user?.id || ""}
         patients={patients}
-        defaultMeetLink={(profile as any)?.meet_link || ""}
+        defaultMeetLink={meetLink || ""}
+        doctorPhone={(profile as any)?.phone || ""}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["teleconsultations"] })}
       />
     </PageContainer>

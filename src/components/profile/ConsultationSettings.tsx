@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, DollarSign, Save, Plus, Trash2, Loader2, Link2 } from "lucide-react";
+import { Clock, DollarSign, Save, Plus, Trash2, Loader2, Video, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +32,7 @@ const ConsultationSettings = () => {
   const [duration, setDuration] = useState("30");
   const [hours, setHours] = useState<AvailableHours>(DEFAULT_HOURS);
   const [meetLink, setMeetLink] = useState("");
+  const [meetSaved, setMeetSaved] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile-settings", user?.id],
@@ -51,6 +52,7 @@ const ConsultationSettings = () => {
       setPrice(profile.consultation_price?.toString() || "");
       setDuration(profile.slot_duration?.toString() || "30");
       setMeetLink((profile as any).meet_link || "");
+      setMeetSaved(!!(profile as any).meet_link);
       if (profile.available_hours && typeof profile.available_hours === "object") {
         setHours({ ...DEFAULT_HOURS, ...(profile.available_hours as AvailableHours) });
       }
@@ -74,6 +76,7 @@ const ConsultationSettings = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile-settings"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      setMeetSaved(!!meetLink.trim());
       toast.success("Configurações salvas!");
     },
     onError: () => toast.error("Erro ao salvar. Tente novamente."),
@@ -117,60 +120,67 @@ const ConsultationSettings = () => {
   if (isLoading) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 px-1">
-        <Clock className="h-4 w-4 text-primary" />
-        <h2 className="text-sm font-semibold">Configurações da Consulta</h2>
+    <div className="space-y-5">
+      {/* Teleconsulta - Meet Link Section */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 px-1">
+          <Video className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold">Seu link de teleconsulta</h2>
+        </div>
+        <p className="text-xs text-muted-foreground px-1">
+          Cole aqui seu link fixo do Google Meet. Ele será enviado automaticamente para cada paciente que agendar uma consulta online com você.
+        </p>
+        <div className="glass-card p-3 space-y-3">
+          <Input
+            placeholder="https://meet.google.com/seu-link"
+            value={meetLink}
+            onChange={(e) => { setMeetLink(e.target.value); setMeetSaved(false); }}
+            className="bg-accent border-border"
+          />
+          {meetSaved && meetLink.trim() && (
+            <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+              <CheckCircle className="h-3.5 w-3.5" />
+              <span>Link salvo. Pacientes receberão este link automaticamente ao agendar com você.</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Price & Duration */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label className="flex items-center gap-1 text-xs">
-            <DollarSign className="h-3 w-3" /> Valor da consulta (R$)
-          </Label>
-          <Input
-            type="number"
-            placeholder="150,00"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="bg-accent border-border"
-          />
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 px-1">
+          <Clock className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold">Configurações da Consulta</h2>
         </div>
-        <div className="space-y-1.5">
-          <Label className="flex items-center gap-1 text-xs">
-            <Clock className="h-3 w-3" /> Duração padrão
-          </Label>
-          <Select value={duration} onValueChange={setDuration}>
-            <SelectTrigger className="bg-accent border-border">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="30">30 minutos</SelectItem>
-              <SelectItem value="45">45 minutos</SelectItem>
-              <SelectItem value="60">60 minutos</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="flex items-center gap-1 text-xs">
+              <DollarSign className="h-3 w-3" /> Valor da consulta (R$)
+            </Label>
+            <Input
+              type="number"
+              placeholder="150,00"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="bg-accent border-border"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="flex items-center gap-1 text-xs">
+              <Clock className="h-3 w-3" /> Duração padrão
+            </Label>
+            <Select value={duration} onValueChange={setDuration}>
+              <SelectTrigger className="bg-accent border-border">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="30">30 minutos</SelectItem>
+                <SelectItem value="45">45 minutos</SelectItem>
+                <SelectItem value="60">60 minutos</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </div>
-
-
-
-
-      {/* Google Meet Link */}
-      <div className="space-y-1.5">
-        <Label className="flex items-center gap-1 text-xs">
-          <Link2 className="h-3 w-3" /> Link padrão do Google Meet
-        </Label>
-        <Input
-          placeholder="https://meet.google.com/xxx-xxxx-xxx"
-          value={meetLink}
-          onChange={(e) => setMeetLink(e.target.value)}
-          className="bg-accent border-border"
-        />
-        <p className="text-[10px] text-muted-foreground">
-          Usado automaticamente em novas teleconsultas quando nenhum link específico for informado.
-        </p>
       </div>
 
       {/* Available Hours */}

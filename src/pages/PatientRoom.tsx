@@ -19,7 +19,6 @@ const PatientRoom = () => {
 
   const fetchRoom = async () => {
     try {
-      // Use the edge function to get room info (public access)
       const { data, error: fnErr } = await supabase.functions.invoke("get-teleconsultation", {
         body: { teleconsultation_id: tcId },
       });
@@ -46,9 +45,7 @@ const PatientRoom = () => {
   }, [roomInfo?.date]);
 
   const handleJoin = () => {
-    if (!roomInfo?.room_url) {
-      return;
-    }
+    if (!roomInfo?.room_url) return;
     window.open(roomInfo.room_url, "_blank");
   };
 
@@ -113,7 +110,7 @@ const PatientRoom = () => {
         {roomInfo?.room_url ? (
           <Button onClick={handleJoin} className="w-full gradient-primary font-semibold text-base py-6 gap-2">
             <ExternalLink className="h-5 w-5" />
-            Entrar na consulta
+            Entrar no Google Meet
           </Button>
         ) : (
           <div className="glass-card p-4 space-y-2">
