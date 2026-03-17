@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, Banknote } from "lucide-react";
@@ -34,6 +34,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, signOut, subscription } = useAuth();
+  const consultationRef = useRef<HTMLDivElement>(null);
   const [deleteStep, setDeleteStep] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [correctOpen, setCorrectOpen] = useState(false);
@@ -65,6 +66,13 @@ const Profile = () => {
       setCardLink((profile as any).card_link || "");
     }
   }, [profile]);
+
+  // Auto-scroll to consultation settings when ?tab=consultation
+  useEffect(() => {
+    if (searchParams.get("tab") === "consultation" && consultationRef.current) {
+      setTimeout(() => consultationRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+    }
+  }, [searchParams, profile]);
 
   const handleSavePaymentData = async () => {
     if (!user) return;
@@ -292,7 +300,9 @@ const Profile = () => {
         </div>
 
         {/* Consultation Settings */}
-        <ConsultationSettings />
+        <div ref={consultationRef}>
+          <ConsultationSettings />
+        </div>
 
         {/* LGPD - Privacy & Data Section */}
         <div className="space-y-2">
