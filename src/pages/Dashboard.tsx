@@ -7,6 +7,7 @@ import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import InstallBanner from "@/components/InstallBanner";
+import TrialCountdown from "@/components/TrialCountdown";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
