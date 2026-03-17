@@ -66,6 +66,7 @@ const PatientBooking = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const doctorId = searchParams.get("doctor");
   const doctorName = searchParams.get("name") || "Profissional";
 
