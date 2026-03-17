@@ -123,6 +123,8 @@ const PatientBooking = () => {
 
   const availableHours: AvailableHours = (doctor?.available_hours as AvailableHours) || {};
   const slotDuration = doctor?.slot_duration || 30;
+  const intervalMinutes = (doctor as any)?.interval_minutes ?? 10;
+  const minAdvanceHours = (doctor as any)?.min_advance_hours ?? 3;
   const price = doctor?.consultation_price ? Number(doctor.consultation_price) : 0;
   const profType = doctor?.professional_type || "medico";
   const legalNotice = SPECIALTY_LEGAL_NOTICES[profType];
@@ -130,8 +132,8 @@ const PatientBooking = () => {
 
   const allSlots = useMemo(() => {
     if (!selectedDate) return [];
-    return generateSlots(availableHours, selectedDate, slotDuration);
-  }, [availableHours, selectedDate, slotDuration]);
+    return generateSlots(availableHours, selectedDate, slotDuration, intervalMinutes, minAdvanceHours);
+  }, [availableHours, selectedDate, slotDuration, intervalMinutes, minAdvanceHours]);
 
   const bookedTimes = new Set(existingAppointments.map((a: any) => a.time?.substring(0, 5)));
   const freeSlots = allSlots.filter((s) => !bookedTimes.has(s));
