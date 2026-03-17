@@ -4,6 +4,8 @@ import { Search, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { SPECIALTY_SEO } from "@/config/specialtyLegalNotices";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const SPECIALTIES = [
   { key: "medico", emoji: "🩺", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
@@ -15,7 +17,23 @@ const SPECIALTIES = [
 
 const ConsultaOnlineIndex = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
+
+  // Block professionals — this page is patient-only
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.user_type === "professional") {
+          navigate("/dashboard", { replace: true });
+        }
+      });
+  }, [user, navigate]);
 
   useEffect(() => {
     document.title = "Consulta Online — Agende com profissionais de saúde | SALBCARE";
