@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield, MessageCircle } from "lucide-react";
+import { Calendar, Users, Video, DollarSign, Calculator, Scale, Clock, TrendingUp, Lock, UserCog, Shield, MessageCircle, Bell } from "lucide-react";
+import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
@@ -90,6 +91,39 @@ const Dashboard = () => {
     },
     enabled: !!user,
   });
+
+  // Realtime: listen for new appointments (patient bookings)
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel('new-appointments')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'appointments',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const appt = payload.new as any;
+          toast.info(
+            `🩺 Novo agendamento!\n${appt.patient_name} — ${appt.date} às ${appt.time}`,
+            {
+              duration: 8000,
+              action: {
+                label: "Ver agenda",
+                onClick: () => navigate("/agenda"),
+              },
+            }
+          );
+          queryClient.invalidateQueries({ queryKey: ["today-appointments"] });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id, navigate, queryClient]);
 
   if (profileLoading) {
     return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
