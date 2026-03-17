@@ -24,6 +24,7 @@ import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { ptBR } from "date-fns/locale";
 import AdvancedFinancialDashboard from "@/components/financial/AdvancedFinancialDashboard";
 import SavingsEstimateCard from "@/components/financial/SavingsEstimateCard";
+import TaxSimulatorWidget from "@/components/financial/TaxSimulatorWidget";
 import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
 import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";
