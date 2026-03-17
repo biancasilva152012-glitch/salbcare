@@ -834,6 +834,8 @@ export type Database = {
           avatar_url: string
           card_link: string
           consultation_price: number
+          council_number: string
+          council_state: string
           crm: string
           interval_minutes: number
           meet_link: string
