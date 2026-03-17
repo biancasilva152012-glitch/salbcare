@@ -835,6 +835,9 @@ export type Database = {
           card_link: string
           consultation_price: number
           crm: string
+          interval_minutes: number
+          meet_link: string
+          min_advance_hours: number
           name: string
           pix_key: string
           professional_type: string
