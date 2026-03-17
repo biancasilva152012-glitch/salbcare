@@ -34,6 +34,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, signOut, subscription } = useAuth();
+  const consultationRef = useRef<HTMLDivElement>(null);
   const [deleteStep, setDeleteStep] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [correctOpen, setCorrectOpen] = useState(false);
