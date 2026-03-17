@@ -126,7 +126,7 @@ const Dashboard = () => {
             </div>
             <div className="flex-1 min-w-0 text-left">
               <p className="text-sm font-semibold">Pacientes novos pela SALBCARE</p>
-              <p className="truncate text-[11px] text-muted-foreground">Seu perfil está no diretório público. Pacientes agendam direto com você.</p>
+              <p className="truncate text-[11px] text-muted-foreground">Configure seus horários e valor para receber agendamentos.</p>
             </div>
           </button>
         </motion.div>
