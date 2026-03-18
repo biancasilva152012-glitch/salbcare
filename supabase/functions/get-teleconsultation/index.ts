@@ -12,9 +12,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { teleconsultation_id } = await req.json();
-    if (!teleconsultation_id) {
-      return new Response(JSON.stringify({ error: "Missing teleconsultation_id" }), {
+    const { teleconsultation_id, appointment_id } = await req.json();
+    const lookupId = teleconsultation_id || appointment_id;
+
+    if (!lookupId) {
+      return new Response(JSON.stringify({ error: "Missing teleconsultation_id or appointment_id" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -25,38 +27,71 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: tc } = await adminSupabase
-      .from("teleconsultations")
-      .select("room_url, date, duration, patient_name, status, user_id")
-      .eq("id", teleconsultation_id)
-      .single();
+    // Try teleconsultations table first
+    if (teleconsultation_id) {
+      const { data: tc } = await adminSupabase
+        .from("teleconsultations")
+        .select("room_url, date, duration, patient_name, status, user_id")
+        .eq("id", teleconsultation_id)
+        .single();
 
-    if (!tc) {
-      return new Response(JSON.stringify({ error: "Not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      if (tc) {
+        const { data: profile } = await adminSupabase
+          .from("profiles")
+          .select("name, professional_type, meet_link")
+          .eq("user_id", tc.user_id)
+          .single();
+
+        return new Response(
+          JSON.stringify({
+            room_url: tc.room_url || profile?.meet_link || null,
+            date: tc.date,
+            duration: tc.duration,
+            patient_name: tc.patient_name,
+            status: tc.status,
+            doctor_name: profile?.name || "",
+            professional_type: profile?.professional_type || "medico",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
 
-    // Get doctor profile including meet_link as fallback
-    const { data: profile } = await adminSupabase
-      .from("profiles")
-      .select("name, professional_type, meet_link")
-      .eq("user_id", tc.user_id)
-      .single();
+    // Try appointments table (for patient-booked appointments)
+    if (appointment_id || teleconsultation_id) {
+      const id = appointment_id || teleconsultation_id;
+      const { data: apt } = await adminSupabase
+        .from("appointments")
+        .select("date, time, patient_name, status, user_id, appointment_type")
+        .eq("id", id)
+        .single();
 
-    return new Response(
-      JSON.stringify({
-        room_url: tc.room_url || profile?.meet_link || null,
-        date: tc.date,
-        duration: tc.duration,
-        patient_name: tc.patient_name,
-        status: tc.status,
-        doctor_name: profile?.name || "",
-        professional_type: profile?.professional_type || "medico",
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+      if (apt) {
+        const { data: profile } = await adminSupabase
+          .from("profiles")
+          .select("name, professional_type, meet_link")
+          .eq("user_id", apt.user_id)
+          .single();
+
+        return new Response(
+          JSON.stringify({
+            room_url: profile?.meet_link || null,
+            date: `${apt.date}T${apt.time}`,
+            duration: null,
+            patient_name: apt.patient_name,
+            status: apt.status,
+            doctor_name: profile?.name || "",
+            professional_type: profile?.professional_type || "medico",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    return new Response(JSON.stringify({ error: "Not found" }), {
+      status: 404,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err) {
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
