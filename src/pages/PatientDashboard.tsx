@@ -551,7 +551,7 @@ const PatientDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/95 backdrop-blur-xl px-4 py-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
