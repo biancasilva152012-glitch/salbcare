@@ -44,6 +44,7 @@ const Profile = () => {
   const [downloading, setDownloading] = useState(false);
   const [pixKey, setPixKey] = useState("");
   const [cardLink, setCardLink] = useState("");
+  const [bio, setBio] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
