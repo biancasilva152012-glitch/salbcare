@@ -50,7 +50,7 @@ const Profile = () => {
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id, bio").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
