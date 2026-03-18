@@ -158,6 +158,10 @@ const SearchTab = () => {
                     </div>
                   </div>
                 </div>
+                {/* Bio / summary */}
+                {prof.bio && (
+                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">{prof.bio}</p>
+                )}
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     {nextSlot ? (
