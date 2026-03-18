@@ -83,6 +83,15 @@ export default defineConfig(({ mode }) => ({
       },
     }),
   ].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
