@@ -255,6 +255,34 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Bio / About */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 px-1">
+            <User className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold">Sobre mim (visível para pacientes)</h2>
+          </div>
+          <div className="glass-card p-3 space-y-2">
+            <Textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value.slice(0, 300))}
+              placeholder="Ex: Psicóloga clínica com 10 anos de experiência em terapia cognitivo-comportamental..."
+              className="bg-accent border-border text-sm resize-none"
+              rows={3}
+            />
+            <p className="text-[10px] text-muted-foreground text-right">{bio.length}/300</p>
+            <Button
+              size="sm"
+              className="w-full gradient-primary font-semibold"
+              onClick={async () => {
+                await supabase.from("profiles").update({ bio: bio.trim() || null } as any).eq("user_id", user!.id);
+                toast.success("Bio atualizada!");
+              }}
+            >
+              Salvar bio
+            </Button>
+          </div>
+        </div>
+
         <button onClick={openVersionedSubscriptionRoute} className="glass-card flex w-full items-center justify-between p-3 text-left">
           <div className="flex items-center gap-3">
             <CreditCard className="h-5 w-5 text-primary" />
