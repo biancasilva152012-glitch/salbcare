@@ -66,6 +66,7 @@ const Profile = () => {
     if (profile) {
       setPixKey((profile as any).pix_key || "");
       setCardLink((profile as any).card_link || "");
+      setBio((profile as any).bio || "");
     }
   }, [profile]);
 
