@@ -158,6 +158,10 @@ const SearchTab = () => {
                     </div>
                   </div>
                 </div>
+                {/* Bio / summary */}
+                {prof.bio && (
+                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">{prof.bio}</p>
+                )}
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     {nextSlot ? (
@@ -551,7 +555,7 @@ const PatientDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/95 backdrop-blur-xl px-4 py-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
@@ -562,7 +566,7 @@ const PatientDashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-5">
+      <div className="max-w-lg mx-auto px-4 py-5 pb-28">
         {activeTab === "buscar" && <SearchTab />}
         {activeTab === "consultas" && <AppointmentsTab />}
         {activeTab === "perfil" && <ProfileTab />}

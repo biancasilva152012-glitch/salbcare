@@ -44,12 +44,13 @@ const Profile = () => {
   const [downloading, setDownloading] = useState(false);
   const [pixKey, setPixKey] = useState("");
   const [cardLink, setCardLink] = useState("");
+  const [bio, setBio] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id, bio").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
@@ -65,6 +66,7 @@ const Profile = () => {
     if (profile) {
       setPixKey((profile as any).pix_key || "");
       setCardLink((profile as any).card_link || "");
+      setBio((profile as any).bio || "");
     }
   }, [profile]);
 
@@ -250,6 +252,34 @@ const Profile = () => {
           </div>
           <div className="glass-card p-3 text-sm">
             <span className="text-muted-foreground">Telefone:</span> {profile?.phone || "Não informado"}
+          </div>
+        </div>
+
+        {/* Bio / About */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 px-1">
+            <User className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold">Sobre mim (visível para pacientes)</h2>
+          </div>
+          <div className="glass-card p-3 space-y-2">
+            <Textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value.slice(0, 300))}
+              placeholder="Ex: Psicóloga clínica com 10 anos de experiência em terapia cognitivo-comportamental..."
+              className="bg-accent border-border text-sm resize-none"
+              rows={3}
+            />
+            <p className="text-[10px] text-muted-foreground text-right">{bio.length}/300</p>
+            <Button
+              size="sm"
+              className="w-full gradient-primary font-semibold"
+              onClick={async () => {
+                await supabase.from("profiles").update({ bio: bio.trim() || null } as any).eq("user_id", user!.id);
+                toast.success("Bio atualizada!");
+              }}
+            >
+              Salvar bio
+            </Button>
           </div>
         </div>
 
