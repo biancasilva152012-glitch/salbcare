@@ -654,6 +654,7 @@ export type Database = {
         Row: {
           available_hours: Json | null
           avatar_url: string | null
+          bio: string | null
           card_link: string | null
           consultation_price: number | null
           council_number: string | null
@@ -684,6 +685,7 @@ export type Database = {
         Insert: {
           available_hours?: Json | null
           avatar_url?: string | null
+          bio?: string | null
           card_link?: string | null
           consultation_price?: number | null
           council_number?: string | null
@@ -714,6 +716,7 @@ export type Database = {
         Update: {
           available_hours?: Json | null
           avatar_url?: string | null
+          bio?: string | null
           card_link?: string | null
           consultation_price?: number | null
           council_number?: string | null
@@ -832,6 +835,7 @@ export type Database = {
         Returns: {
           available_hours: Json
           avatar_url: string
+          bio: string
           card_link: string
           consultation_price: number
           council_number: string
