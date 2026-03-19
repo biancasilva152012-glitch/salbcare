@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
+import SEOHead from "@/components/SEOHead";
 
 const bullets = [
   { icon: Zap, text: "Agenda, prontuário e teleconsulta" },
