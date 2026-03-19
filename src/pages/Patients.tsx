@@ -337,6 +337,12 @@ const Patients = () => {
 
             {/* Documents Section */}
             <PatientDocuments patientId={selected.id} />
+
+            {/* Digital Prescription Section */}
+            <PatientPrescriptions patientId={selected.id} patientName={selected.name} />
+
+            {/* Digital Certificate Section */}
+            <PatientCertificates patientId={selected.id} patientName={selected.name} />
           </motion.div>
         )}
 
