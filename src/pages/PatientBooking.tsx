@@ -173,21 +173,62 @@ const PatientBooking = () => {
     if (!doctorId) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("appointments").insert({
+      const { data, error } = await supabase.from("appointments").insert({
         user_id: doctorId,
         patient_name: form.name,
         date: selectedDate,
         time: selectedTime,
         appointment_type: "telehealth",
         notes: `[Agendamento online] Tel: ${form.phone} | Email: ${form.email} | Nasc: ${form.birthDate} | Motivo: ${form.reason || "—"} | Retorno: ${form.isReturning ? "Sim" : "Não"} | Valor: R$ ${price.toFixed(2)}`,
-        status: "scheduled",
-      });
+        status: price > 0 ? "aguardando_comprovante" : "scheduled",
+      }).select("id").single();
       if (error) throw error;
-      setStep(3);
-    } catch {
+      if (price > 0) {
+        setAppointmentId(data.id);
+        setStep(3); // Go to receipt upload step
+      } else {
+        setStep(4); // Free consultation — go to success
+      }
+    } catch (err) {
+      console.error("Booking error:", err);
       toast.error("Ocorreu um erro. Tente novamente.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReceiptFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0] || null;
+    setReceiptFile(selected);
+    if (selected && selected.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setReceiptPreview(ev.target?.result as string);
+      reader.readAsDataURL(selected);
+    } else {
+      setReceiptPreview(null);
+    }
+  };
+
+  const handleUploadReceipt = async () => {
+    if (!receiptFile || !appointmentId) return;
+    setUploadingReceipt(true);
+    try {
+      const filePath = `${appointmentId}/${Date.now()}-${receiptFile.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("booking-receipts")
+        .upload(filePath, receiptFile);
+      if (uploadError) throw uploadError;
+
+      const { error } = await supabase.functions.invoke("manage-booking", {
+        body: { action: "upload_receipt", appointment_id: appointmentId, receipt_url: filePath },
+      });
+      if (error) throw error;
+
+      setStep(4); // Success
+    } catch {
+      toast.error("Erro ao enviar comprovante. Tente novamente.");
+    } finally {
+      setUploadingReceipt(false);
     }
   };
 
@@ -195,12 +236,17 @@ const PatientBooking = () => {
     if (step === 0) return !!selectedDate && !!selectedTime;
     if (step === 1) return !!form.name && !!form.email && !!form.phone && !!form.birthDate;
     if (step === 2) return true;
+    if (step === 3) return !!receiptFile;
     return false;
   };
 
   const handleNext = () => {
     if (step === 2) {
       handleSubmit();
+      return;
+    }
+    if (step === 3) {
+      handleUploadReceipt();
       return;
     }
     if (canGoNext()) setStep(step + 1);
