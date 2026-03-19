@@ -74,8 +74,6 @@ const SpecialtyDirectory = () => {
   const legalNotice = specialty ? SPECIALTY_LEGAL_NOTICES[specialty] : null;
   const professionConfig = specialty ? PROFESSION_CONFIG[specialty as keyof typeof PROFESSION_CONFIG] : null;
 
-  return () => { document.title = "SALBCARE"; };
-  }, [seo]);
 
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["public-professionals", specialty],
