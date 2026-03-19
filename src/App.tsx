@@ -50,6 +50,7 @@ const SpecialtyDirectory = lazyWithRetry(() => import("./pages/SpecialtyDirector
 const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 const PatientDashboard = lazyWithRetry(() => import("./pages/PatientDashboard"), "PatientDashboard");
 const BookingSuccess = lazyWithRetry(() => import("./pages/BookingSuccess"), "BookingSuccess");
+const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"), "VerifyDocument");
 
 const queryClient = new QueryClient({
   defaultOptions: {
