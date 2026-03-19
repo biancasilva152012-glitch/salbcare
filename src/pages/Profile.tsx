@@ -69,6 +69,7 @@ const Profile = () => {
       setPixKey((profile as any).pix_key || "");
       setCardLink((profile as any).card_link || "");
       setBio((profile as any).bio || "");
+      setAvailabilityOnline((profile as any).availability_online || false);
     }
   }, [profile]);
 
