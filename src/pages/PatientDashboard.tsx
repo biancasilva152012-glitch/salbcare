@@ -571,6 +571,7 @@ const PatientDashboard = () => {
   // Determine active tab from path
   const getTabFromPath = () => {
     if (location.pathname.includes("/consultas")) return "consultas";
+    if (location.pathname.includes("/documentos")) return "documentos";
     if (location.pathname.includes("/perfil")) return "perfil";
     return "buscar";
   };
