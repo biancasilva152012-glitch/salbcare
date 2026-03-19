@@ -74,20 +74,7 @@ const SpecialtyDirectory = () => {
   const legalNotice = specialty ? SPECIALTY_LEGAL_NOTICES[specialty] : null;
   const professionConfig = specialty ? PROFESSION_CONFIG[specialty as keyof typeof PROFESSION_CONFIG] : null;
 
-  // SEO meta tags
-  useEffect(() => {
-    if (seo) {
-      document.title = seo.metaTitle;
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute("content", seo.metaDescription);
-      else {
-        const m = document.createElement("meta");
-        m.name = "description";
-        m.content = seo.metaDescription;
-        document.head.appendChild(m);
-      }
-    }
-    return () => { document.title = "SALBCARE"; };
+  return () => { document.title = "SALBCARE"; };
   }, [seo]);
 
   const { data: professionals = [], isLoading } = useQuery({
