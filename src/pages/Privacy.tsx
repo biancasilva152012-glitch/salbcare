@@ -1,8 +1,15 @@
 import PageContainer from "@/components/PageContainer";
+import SEOHead from "@/components/SEOHead";
 
 const Privacy = () => {
   return (
     <PageContainer backTo={true}>
+      <SEOHead
+        title="Política de Privacidade | SalbCare"
+        description="Política de privacidade da plataforma SalbCare. Saiba como protegemos seus dados pessoais e informações de saúde."
+        canonical="/privacy"
+        noindex
+      />
       <div className="space-y-6 pb-8">
         <h1 className="text-2xl font-bold">Política de Privacidade</h1>
         <p className="text-xs text-muted-foreground">Última atualização: 16 de março de 2026</p>

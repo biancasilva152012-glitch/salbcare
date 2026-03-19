@@ -17,6 +17,11 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } 
 
 const HowItWorks = () => (
   <PageContainer backTo={true}>
+    <SEOHead
+      title="Como Funciona a SalbCare"
+      description="Saiba como a SalbCare ajuda profissionais de saúde autônomos com agenda, prontuário, teleconsulta e assessoria contábil integrada."
+      canonical="/como-funciona"
+    />
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-8 pb-8">
       {/* Header */}
       <motion.div variants={item} className="text-center space-y-2">
