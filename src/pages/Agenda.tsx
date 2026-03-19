@@ -118,7 +118,7 @@ const Agenda = () => {
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["appointments", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("appointments").select("id, patient_name, patient_id, date, time, appointment_type, notes, status, professional_id").eq("user_id", user!.id).neq("status", "cancelled").order("date").order("time").limit(500);
+      const { data } = await supabase.from("appointments").select("id, patient_name, patient_id, date, time, appointment_type, notes, status, professional_id, receipt_url").eq("user_id", user!.id).neq("status", "cancelled").order("date").order("time").limit(500);
       return data || [];
     },
     enabled: !!user,
