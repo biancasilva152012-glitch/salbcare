@@ -140,11 +140,12 @@ const SearchTab = () => {
           )}
 
           {filtered.map((prof: any) => {
-            const nextSlot = getNextAvailableSlot(
+            const nextSlots = getNextAvailableSlots(
               prof.available_hours,
               prof.slot_duration || 30,
               prof.interval_minutes || 10,
-              prof.min_advance_hours || 3
+              prof.min_advance_hours || 3,
+              3
             );
             const price = prof.consultation_price ? Number(prof.consultation_price) : 0;
             const profTitle = getProfessionalTitle(prof.professional_type);
@@ -152,6 +153,7 @@ const SearchTab = () => {
             const councilDisplay = prof.council_number
               ? `${councilPrefix} ${prof.council_state ? prof.council_state + "/" : ""}${prof.council_number}`
               : prof.crm || "";
+            const initials = prof.name?.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase();
 
             return (
               <motion.div
@@ -162,9 +164,17 @@ const SearchTab = () => {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                      {prof.name?.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase()}
-                    </div>
+                    {prof.avatar_url ? (
+                      <img
+                        src={prof.avatar_url}
+                        alt={prof.name}
+                        className="h-11 w-11 rounded-full object-cover border-2 border-primary/20"
+                      />
+                    ) : (
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                        {initials}
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm font-semibold">{prof.name}</p>
                       <p className="text-[11px] text-muted-foreground">{profTitle}</p>
@@ -173,6 +183,9 @@ const SearchTab = () => {
                       )}
                     </div>
                   </div>
+                  {price > 0 && (
+                    <span className="text-xs font-bold text-primary">R$ {price.toFixed(0)}</span>
+                  )}
                 </div>
                 {/* Bio / summary */}
                 {prof.bio && (
@@ -180,22 +193,25 @@ const SearchTab = () => {
                 )}
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    {nextSlot ? (
-                      <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> {nextSlot}
-                      </p>
+                    {nextSlots.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {nextSlots.map((slot, i) => (
+                          <span key={i} className="text-[10px] bg-green-500/10 text-green-700 dark:text-green-400 rounded-full px-2 py-0.5 flex items-center gap-0.5">
+                            <Clock className="h-2.5 w-2.5" /> {slot}
+                          </span>
+                        ))}
+                      </div>
                     ) : (
                       <p className="text-[11px] text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" /> Sem horários disponíveis
                       </p>
                     )}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 pt-0.5">
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((s) => (
                           <Star key={s} className="h-3 w-3 text-yellow-500 fill-yellow-500" />
                         ))}
                       </div>
-                      {price > 0 && <span className="text-[11px] text-muted-foreground ml-1">R$ {price.toFixed(0)}</span>}
                     </div>
                   </div>
                   <Button
