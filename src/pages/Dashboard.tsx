@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import ConnectOnboardingBanner from "@/components/ConnectOnboardingBanner";
+import PendingBookings from "@/components/PendingBookings";
 
 interface QuickAction {
   icon: typeof Calendar;
@@ -93,7 +94,7 @@ const Dashboard = () => {
     staleTime: 2 * 60 * 1000,
   });
 
-  // Realtime: listen for new appointments (patient bookings)
+  // Realtime: listen for new/updated appointments (patient bookings)
   useEffect(() => {
     if (!user?.id) return;
     const channel = supabase
@@ -101,24 +102,31 @@ const Dashboard = () => {
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'appointments',
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
           const appt = payload.new as any;
-          toast.info(
-            `🩺 Novo agendamento!\n${appt.patient_name} — ${appt.date} às ${appt.time}`,
-            {
-              duration: 8000,
-              action: {
-                label: "Ver agenda",
-                onClick: () => navigate("/agenda"),
-              },
-            }
-          );
+          if (payload.eventType === 'INSERT' && appt.status === 'aguardando_confirmacao') {
+            toast.info(
+              `📋 Novo agendamento pendente!\n${appt.patient_name} — ${appt.date} às ${appt.time?.substring(0, 5)}`,
+              { duration: 10000, action: { label: "Ver", onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) } }
+            );
+          } else if (payload.eventType === 'INSERT') {
+            toast.info(
+              `🩺 Novo agendamento!\n${appt.patient_name} — ${appt.date} às ${appt.time?.substring(0, 5)}`,
+              { duration: 8000, action: { label: "Ver agenda", onClick: () => navigate("/agenda") } }
+            );
+          } else if (payload.eventType === 'UPDATE' && appt.status === 'aguardando_confirmacao') {
+            toast.info(
+              `📋 Comprovante recebido!\n${appt.patient_name} enviou o comprovante de pagamento.`,
+              { duration: 10000 }
+            );
+          }
           queryClient.invalidateQueries({ queryKey: ["today-appointments"] });
+          queryClient.invalidateQueries({ queryKey: ["pending-bookings"] });
         }
       )
       .subscribe();
@@ -140,6 +148,8 @@ const Dashboard = () => {
         cardLink={(profile as any)?.card_link}
       />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
+        {/* Pending bookings alert */}
+        <PendingBookings />
         {/* Greeting — tighter on mobile */}
         <motion.div variants={item} className="space-y-0.5">
           <p className="text-xs text-muted-foreground">

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { CalendarIcon, Clock, Video, User, Send, ArrowLeft, ArrowRight, Check, QrCode, CalendarPlus, Copy, ExternalLink } from "lucide-react";
+import { CalendarIcon, Clock, Video, User, Send, ArrowLeft, ArrowRight, Check, QrCode, CalendarPlus, Copy, ExternalLink, Upload, Camera, Loader2 } from "lucide-react";
 import { format, parse, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -60,7 +60,7 @@ function hasAvailability(availableHours: AvailableHours, date: Date): boolean {
   return ranges.length > 0;
 }
 
-const STEPS = ["Horário", "Seus dados", "Confirmação", "Sucesso"];
+const STEPS = ["Horário", "Seus dados", "Confirmação", "Comprovante", "Sucesso"];
 
 const PatientBooking = () => {
   const [searchParams] = useSearchParams();
@@ -89,6 +89,10 @@ const PatientBooking = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [loading, setLoading] = useState(false);
+  const [appointmentId, setAppointmentId] = useState<string | null>(null);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -169,21 +173,62 @@ const PatientBooking = () => {
     if (!doctorId) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("appointments").insert({
+      const { data, error } = await supabase.from("appointments").insert({
         user_id: doctorId,
         patient_name: form.name,
         date: selectedDate,
         time: selectedTime,
         appointment_type: "telehealth",
         notes: `[Agendamento online] Tel: ${form.phone} | Email: ${form.email} | Nasc: ${form.birthDate} | Motivo: ${form.reason || "—"} | Retorno: ${form.isReturning ? "Sim" : "Não"} | Valor: R$ ${price.toFixed(2)}`,
-        status: "scheduled",
-      });
+        status: price > 0 ? "aguardando_comprovante" : "scheduled",
+      }).select("id").single();
       if (error) throw error;
-      setStep(3);
-    } catch {
+      if (price > 0) {
+        setAppointmentId(data.id);
+        setStep(3); // Go to receipt upload step
+      } else {
+        setStep(4); // Free consultation — go to success
+      }
+    } catch (err) {
+      console.error("Booking error:", err);
       toast.error("Ocorreu um erro. Tente novamente.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReceiptFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0] || null;
+    setReceiptFile(selected);
+    if (selected && selected.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setReceiptPreview(ev.target?.result as string);
+      reader.readAsDataURL(selected);
+    } else {
+      setReceiptPreview(null);
+    }
+  };
+
+  const handleUploadReceipt = async () => {
+    if (!receiptFile || !appointmentId) return;
+    setUploadingReceipt(true);
+    try {
+      const filePath = `${appointmentId}/${Date.now()}-${receiptFile.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("booking-receipts")
+        .upload(filePath, receiptFile);
+      if (uploadError) throw uploadError;
+
+      const { error } = await supabase.functions.invoke("manage-booking", {
+        body: { action: "upload_receipt", appointment_id: appointmentId, receipt_url: filePath },
+      });
+      if (error) throw error;
+
+      setStep(4); // Success
+    } catch {
+      toast.error("Erro ao enviar comprovante. Tente novamente.");
+    } finally {
+      setUploadingReceipt(false);
     }
   };
 
@@ -191,12 +236,17 @@ const PatientBooking = () => {
     if (step === 0) return !!selectedDate && !!selectedTime;
     if (step === 1) return !!form.name && !!form.email && !!form.phone && !!form.birthDate;
     if (step === 2) return true;
+    if (step === 3) return !!receiptFile;
     return false;
   };
 
   const handleNext = () => {
     if (step === 2) {
       handleSubmit();
+      return;
+    }
+    if (step === 3) {
+      handleUploadReceipt();
       return;
     }
     if (canGoNext()) setStep(step + 1);
@@ -238,15 +288,15 @@ const PatientBooking = () => {
         </div>
 
         {/* Step indicator */}
-        {step < 3 && (
+        {step < 4 && (
           <div className="flex items-center justify-center gap-1">
-            {STEPS.slice(0, 3).map((s, i) => (
+            {STEPS.slice(0, 4).map((s, i) => (
               <div key={s} className="flex items-center gap-1">
                 <div className={cn(
                   "h-2 w-2 rounded-full transition-colors",
                   i <= step ? "bg-primary" : "bg-muted"
                 )} />
-                {i < 2 && <div className={cn("h-px w-6", i < step ? "bg-primary" : "bg-muted")} />}
+                {i < 3 && <div className={cn("h-px w-6", i < step ? "bg-primary" : "bg-muted")} />}
               </div>
             ))}
           </div>
@@ -446,16 +496,66 @@ const PatientBooking = () => {
               <p className="text-[10px] text-muted-foreground leading-relaxed">
                 O pagamento vai direto para o profissional. 100% do valor é do profissional.
               </p>
+             </motion.div>
+          )}
+
+          {/* STEP 3: Receipt Upload */}
+          {step === 3 && (
+            <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-4">
+              <h2 className="text-sm font-semibold flex items-center gap-2">
+                <Upload className="h-4 w-4 text-primary" /> Envie o comprovante de pagamento
+              </h2>
+
+              <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1.5">
+                <p className="text-xs text-muted-foreground">
+                  Após realizar o Pix de <strong className="text-foreground">R$ {price.toFixed(2)}</strong>, envie o print ou PDF do comprovante abaixo.
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  O profissional receberá uma notificação e confirmará seu agendamento.
+                </p>
+              </div>
+
+              <label className="flex flex-col items-center gap-3 p-6 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors bg-accent/30">
+                {receiptPreview ? (
+                  <img src={receiptPreview} alt="Comprovante" className="max-h-48 rounded-lg object-contain" />
+                ) : (
+                  <>
+                    <Camera className="h-10 w-10 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Toque para selecionar imagem ou PDF</span>
+                  </>
+                )}
+                <Input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  capture="environment"
+                  onChange={handleReceiptFileChange}
+                  className="hidden"
+                />
+              </label>
+
+              {receiptFile && (
+                <p className="text-xs text-success flex items-center gap-1">
+                  <Check className="h-3 w-3" /> {receiptFile.name}
+                </p>
+              )}
             </motion.div>
           )}
 
-          {/* STEP 3: Success */}
-          {step === 3 && (
-            <motion.div key="step3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card p-6 text-center space-y-4">
+          {/* STEP 4: Success */}
+          {step === 4 && (
+            <motion.div key="step4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card p-6 text-center space-y-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 mx-auto">
                 <Check className="h-8 w-8 text-success" />
               </div>
-              <h2 className="text-lg font-bold">✅ Consulta confirmada!</h2>
+              <h2 className="text-lg font-bold">
+                {price > 0 ? "📋 Comprovante enviado!" : "✅ Consulta confirmada!"}
+              </h2>
+
+              {price > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  O profissional receberá uma notificação e confirmará o seu agendamento. Você será avisado por e-mail e WhatsApp.
+                </p>
+              )}
 
               <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1.5 text-left">
                 <div className="flex justify-between text-xs">
@@ -482,33 +582,6 @@ const PatientBooking = () => {
                 </div>
               </div>
 
-              <p className="text-sm text-muted-foreground">
-                Acesse sua consulta pelo link abaixo no horário marcado:
-              </p>
-
-              {doctor && (doctor as any).pix_key && (
-                <a
-                  href={`https://meet.google.com`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                  onClick={(e) => {
-                    // We need the doctor's meet_link — use room_url from sala page
-                    e.preventDefault();
-                    window.open(`${window.location.origin}/sala?id=latest`, "_blank");
-                  }}
-                >
-                  <Button className="w-full gradient-primary font-semibold text-base py-5 gap-2">
-                    <ExternalLink className="h-5 w-5" />
-                    Entrar no Google Meet
-                  </Button>
-                </a>
-              )}
-
-              <p className="text-xs text-muted-foreground">
-                Salve este link — ele também foi enviado para o seu WhatsApp.
-              </p>
-
               {/* WhatsApp confirmation link */}
               {form.phone && (
                 <Button
@@ -518,7 +591,7 @@ const PatientBooking = () => {
                     const phone = form.phone.replace(/\D/g, "");
                     const dateStr = selectedDate ? format(parse(selectedDate, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : "";
                     const msg = encodeURIComponent(
-                      `✅ Consulta confirmada com ${doctorName}!\n\n📅 ${dateStr} às ${selectedTime}\n⏱ ${slotDuration} minutos\n\nSalve este link. Entraremos em contato com lembretes antes da consulta.`
+                      `${price > 0 ? "📋 Agendamento enviado para confirmação" : "✅ Consulta confirmada"} com ${doctorName}!\n\n📅 ${dateStr} às ${selectedTime}\n⏱ ${slotDuration} minutos`
                     );
                     window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
                   }}
@@ -548,7 +621,7 @@ const PatientBooking = () => {
         </AnimatePresence>
 
         {/* Navigation buttons */}
-        {step < 3 && (
+        {step < 4 && step !== 3 && (
           <div className="flex gap-2">
             {step > 0 && (
               <Button variant="outline" onClick={() => setStep(step - 1)} className="gap-1 border-border">
@@ -567,6 +640,27 @@ const PatientBooking = () => {
               )}
             </Button>
           </div>
+        )}
+
+        {/* Receipt upload button */}
+        {step === 3 && (
+          <Button
+            onClick={handleNext}
+            disabled={!receiptFile || uploadingReceipt}
+            className="w-full gradient-primary font-semibold gap-2"
+          >
+            {uploadingReceipt ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Enviando comprovante...
+              </>
+            ) : (
+              <>
+                <Upload className="h-4 w-4" />
+                Enviar comprovante
+              </>
+            )}
+          </Button>
         )}
 
         <p className="text-[10px] text-center text-muted-foreground">Powered by SALBCARE</p>
