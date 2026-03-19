@@ -232,7 +232,7 @@ const SpecialtyDirectory = () => {
                       {prof.avatar_url ? (
                         <img
                           src={prof.avatar_url}
-                          alt={prof.name}
+                         alt={`Foto de perfil de ${prof.name}, ${seo?.title || 'profissional de saúde'}`}
                           className="h-12 w-12 rounded-full object-cover"
                           loading="lazy"
                         />
