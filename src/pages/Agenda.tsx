@@ -26,6 +26,8 @@ import EmptyState from "@/components/EmptyState";
 import { CalendarX, Copy, Link } from "lucide-react";
 import { usePagination } from "@/hooks/usePagination";
 import { downloadCsvTemplate, AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
+import { Badge } from "@/components/ui/badge";
+import { useQueryClient as useQC } from "@tanstack/react-query";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 const blockForm = { date: "", time: "", reason: "" };
