@@ -262,7 +262,6 @@ const Agenda = () => {
 
   const pendingCount = appointments.filter((a) => a.status === "aguardando_confirmacao" || a.status === "aguardando_comprovante").length;
 
-  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const handleBookingAction = async (appointmentId: string, action: "approve" | "reject") => {
     setProcessingId(appointmentId);
