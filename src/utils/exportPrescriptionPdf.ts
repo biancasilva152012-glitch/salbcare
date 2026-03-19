@@ -2,237 +2,229 @@ import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { getProfessionConfig } from "@/config/professions";
 
-interface PrescriptionData {
+export interface PrescriptionPdfData {
   doctorName: string;
   professionalType: string;
   doctorCrm: string;
   patientName: string;
+  patientCpf?: string;
   prescription: string;
   certificate: string;
   notes: string;
+  officeAddress?: string;
 }
 
-export function generatePrescriptionPdf(data: PrescriptionData): jsPDF {
+export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   const config = getProfessionConfig(data.professionalType || "medico");
-  const doc = new jsPDF();
+  const doc = new jsPDF({ format: "a4", orientation: "portrait" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const today = format(new Date(), "dd/MM/yyyy");
   const now = format(new Date(), "dd/MM/yyyy 'às' HH:mm");
+  const today = format(new Date(), "dd/MM/yyyy");
+  const margin = 16;
+  const contentWidth = pageWidth - margin * 2;
 
-  // Generate unique document hash for verification
-  const docHash = generateDocHash(data, now);
-
-  // Header bar
+  // ── Header ──
   doc.setFillColor(15, 23, 42);
-  doc.rect(0, 0, pageWidth, 40, "F");
+  doc.rect(0, 0, pageWidth, 36, "F");
   doc.setFillColor(45, 212, 191);
-  doc.rect(0, 40, pageWidth, 2, "F");
+  doc.rect(0, 36, pageWidth, 1.5, "F");
 
   doc.setTextColor(45, 212, 191);
-  doc.setFontSize(22);
+  doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.text("SALBCARE", 14, 18);
+  doc.text("SALBCARE", margin, 16);
 
   doc.setTextColor(200, 210, 220);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text(data.doctorName, 14, 28);
-  doc.text(`${config.label}${data.doctorCrm ? ` — ${config.councilPrefix} ${data.doctorCrm}` : ""}`, 14, 34);
+  doc.text(data.doctorName, margin, 24);
+  const councilText = data.doctorCrm
+    ? `${config.label} — ${config.councilPrefix} ${data.doctorCrm}`
+    : config.label;
+  doc.text(councilText, margin, 30);
+
+  if (data.officeAddress) {
+    doc.setFontSize(7.5);
+    doc.setTextColor(160, 170, 180);
+    const addrLines = doc.splitTextToSize(data.officeAddress, contentWidth / 2);
+    doc.text(addrLines, pageWidth - margin, 24, { align: "right" });
+  }
 
   doc.setTextColor(160, 170, 180);
-  doc.setFontSize(9);
-  doc.text(now, pageWidth - 14, 28, { align: "right" });
+  doc.setFontSize(8);
+  doc.text(`Emitido em ${now}`, pageWidth - margin, 33, { align: "right" });
 
-  let y = 54;
+  let y = 48;
+
+  // ── Document title ──
+  const docTitle = data.prescription.trim()
+    ? config.prescriptionTitle
+    : data.certificate.trim()
+      ? config.certificateTitle
+      : config.prescriptionTitle;
+
   doc.setTextColor(15, 23, 42);
-  doc.setFontSize(16);
+  doc.setFontSize(15);
   doc.setFont("helvetica", "bold");
-  doc.text(config.prescriptionTitle, 14, y);
+  doc.text(docTitle, margin, y);
   y += 10;
 
-  // Patient info box
+  // ── Patient info box ──
+  const patientBoxH = data.patientCpf ? 20 : 14;
   doc.setFillColor(245, 247, 250);
-  doc.roundedRect(14, y - 4, pageWidth - 28, 14, 2, 2, "F");
-  doc.setFontSize(11);
+  doc.roundedRect(margin, y - 4, contentWidth, patientBoxH, 2, 2, "F");
+  doc.setFontSize(10);
   doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
-  doc.text("Paciente:", 18, y + 5);
+  doc.text("Paciente:", margin + 4, y + 4);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(data.patientName, 46, y + 5);
-  y += 18;
+  doc.text(data.patientName, margin + 28, y + 4);
 
-  doc.setDrawColor(220);
-  doc.line(14, y, pageWidth - 14, y);
+  if (data.patientCpf) {
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80);
+    doc.setFontSize(9);
+    doc.text(`CPF: ${data.patientCpf}`, margin + 4, y + 12);
+  }
+
+  y += patientBoxH + 6;
+
+  // ── Date ──
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Data de emissão: ${today}`, margin, y);
   y += 8;
 
+  doc.setDrawColor(220);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 8;
+
+  // Helper: check page break
+  const checkPage = (needed: number) => {
+    if (y + needed > pageHeight - 40) {
+      doc.addPage();
+      y = 20;
+    }
+  };
+
+  // ── Prescription section ──
   if (data.prescription.trim()) {
-    doc.setFontSize(13);
+    checkPage(30);
+    doc.setFontSize(12);
     doc.setTextColor(15, 23, 42);
     doc.setFont("helvetica", "bold");
-    doc.text(config.prescriptionTitle, 14, y);
-    y += 8;
+    doc.text("Medicamentos e Posologia", margin, y);
+    y += 7;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
-    const prescLines = doc.splitTextToSize(data.prescription, pageWidth - 28);
-    doc.text(prescLines, 14, y);
-    y += prescLines.length * 5 + 8;
+    const prescLines = doc.splitTextToSize(data.prescription, contentWidth);
+    for (const line of prescLines) {
+      checkPage(6);
+      doc.text(line, margin, y);
+      y += 5;
+    }
+    y += 6;
   }
 
+  // ── Certificate section ──
   if (data.certificate.trim()) {
-    if (y > 210) { doc.addPage(); y = 20; }
+    checkPage(30);
     doc.setDrawColor(220);
-    doc.line(14, y, pageWidth - 14, y);
+    doc.line(margin, y, pageWidth - margin, y);
     y += 8;
-    doc.setFontSize(13);
+    doc.setFontSize(12);
     doc.setTextColor(15, 23, 42);
     doc.setFont("helvetica", "bold");
-    doc.text(config.certificateTitle, 14, y);
-    y += 8;
+    doc.text(config.certificateTitle, margin, y);
+    y += 7;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
-    const certLines = doc.splitTextToSize(data.certificate, pageWidth - 28);
-    doc.text(certLines, 14, y);
-    y += certLines.length * 5 + 8;
+    const certLines = doc.splitTextToSize(data.certificate, contentWidth);
+    for (const line of certLines) {
+      checkPage(6);
+      doc.text(line, margin, y);
+      y += 5;
+    }
+    y += 6;
   }
 
+  // ── Notes section ──
   if (data.notes.trim()) {
-    if (y > 210) { doc.addPage(); y = 20; }
+    checkPage(30);
     doc.setDrawColor(220);
-    doc.line(14, y, pageWidth - 14, y);
+    doc.line(margin, y, pageWidth - margin, y);
     y += 8;
-    doc.setFontSize(13);
+    doc.setFontSize(12);
     doc.setTextColor(15, 23, 42);
     doc.setFont("helvetica", "bold");
-    doc.text("Orientações", 14, y);
-    y += 8;
+    doc.text("Orientações", margin, y);
+    y += 7;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
-    const noteLines = doc.splitTextToSize(data.notes, pageWidth - 28);
-    doc.text(noteLines, 14, y);
-    y += noteLines.length * 5 + 8;
+    const noteLines = doc.splitTextToSize(data.notes, contentWidth);
+    for (const line of noteLines) {
+      checkPage(6);
+      doc.text(line, margin, y);
+      y += 5;
+    }
+    y += 6;
   }
 
   // ── Signature block ──
-  if (y > 200) { doc.addPage(); y = 20; }
-  y += 12;
+  checkPage(55);
+  y += 16;
 
-  // Signature box with border
-  const sigBoxY = y;
-  const sigBoxH = 52;
-  doc.setDrawColor(200);
-  doc.setLineWidth(0.5);
-  doc.roundedRect(pageWidth / 2 - 55, sigBoxY, 110, sigBoxH, 3, 3, "S");
-
-  // Shield icon (simulated)
-  y += 8;
-  doc.setFillColor(45, 212, 191);
-  doc.circle(pageWidth / 2, y, 4, "F");
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(6);
-  doc.setFont("helvetica", "bold");
-  doc.text("✓", pageWidth / 2, y + 1.5, { align: "center" });
-
-  y += 8;
+  // Signature line
+  const sigLineW = 80;
+  const cx = pageWidth / 2;
   doc.setDrawColor(15, 23, 42);
-  doc.setLineWidth(0.3);
-  doc.line(pageWidth / 2 - 35, y, pageWidth / 2 + 35, y);
+  doc.setLineWidth(0.4);
+  doc.line(cx - sigLineW / 2, y, cx + sigLineW / 2, y);
   y += 5;
+
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(data.doctorName, pageWidth / 2, y, { align: "center" });
+  doc.text(data.doctorName, cx, y, { align: "center" });
   y += 5;
+
   doc.setFont("helvetica", "normal");
   doc.setTextColor(80);
   doc.setFontSize(8);
-  doc.text(
-    `${config.label}${data.doctorCrm ? ` — ${config.councilPrefix} ${data.doctorCrm}` : ""}`,
-    pageWidth / 2, y, { align: "center" }
-  );
+  doc.text(councilText, cx, y, { align: "center" });
   y += 4;
+
   doc.setFontSize(7);
   doc.setTextColor(130);
-  doc.text(`${config.council}`, pageWidth / 2, y, { align: "center" });
-  y += 4;
-  doc.setFontSize(6.5);
-  doc.setTextColor(45, 212, 191);
-  doc.text(`Hash: ${docHash}`, pageWidth / 2, y, { align: "center" });
-
-  // ── ICP-Brasil notice ──
-  y = sigBoxY + sigBoxH + 8;
-  if (y > 250) { doc.addPage(); y = 20; }
-
-  doc.setFillColor(255, 251, 235); // amber-50
-  doc.roundedRect(14, y - 3, pageWidth - 28, 20, 2, 2, "F");
-  doc.setDrawColor(245, 158, 11); // amber-500
-  doc.setLineWidth(0.3);
-  doc.roundedRect(14, y - 3, pageWidth - 28, 20, 2, 2, "S");
-
-  doc.setFontSize(7);
-  doc.setTextColor(146, 64, 14); // amber-800
-  doc.setFont("helvetica", "bold");
-  doc.text("⚠ AVISO SOBRE VALIDADE JURÍDICA", 18, y + 3);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
-  doc.setTextColor(120, 53, 15);
-  const icpNotice = doc.splitTextToSize(
-    `Este documento possui identificação do profissional (${config.councilPrefix}) e hash de verificação. ` +
-    `Para plena validade jurídica conforme MP 2.200-2/2001 e Lei 14.063/2020, recomenda-se a aplicação de ` +
-    `assinatura digital qualificada com certificado ICP-Brasil (tipo A1 ou A3) via software como Adobe Acrobat, ` +
-    `BirdID ou VIDaaS.`,
-    pageWidth - 36
-  );
-  doc.text(icpNotice, 18, y + 8);
+  doc.text(config.council, cx, y, { align: "center" });
 
   // ── Footer on all pages ──
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
 
-    // Bottom border
     doc.setFillColor(15, 23, 42);
-    doc.rect(0, pageHeight - 18, pageWidth, 18, "F");
+    doc.rect(0, pageHeight - 14, pageWidth, 14, "F");
     doc.setFillColor(45, 212, 191);
-    doc.rect(0, pageHeight - 18, pageWidth, 1, "F");
+    doc.rect(0, pageHeight - 14, pageWidth, 0.8, "F");
 
     doc.setFontSize(6.5);
     doc.setTextColor(160, 170, 180);
     doc.text(
-      `SALBCARE — ${config.legalResolution}`,
-      14, pageHeight - 10
+      "Documento gerado pela SalbCare — salbcare.com.br",
+      margin, pageHeight - 6
     );
     doc.text(
-      `Emitido em ${now} — Pág. ${i}/${pageCount}`,
-      pageWidth - 14, pageHeight - 10, { align: "right" }
-    );
-    doc.setFontSize(5.5);
-    doc.setTextColor(100, 110, 120);
-    doc.text(
-      `Verificação: ${docHash}`,
-      14, pageHeight - 5
+      `Pág. ${i}/${pageCount}`,
+      pageWidth - margin, pageHeight - 6, { align: "right" }
     );
   }
 
   return doc;
-}
-
-/**
- * Generates a deterministic hash for document verification.
- * Not cryptographic — serves as a visual identifier for the document.
- */
-function generateDocHash(data: PrescriptionData, timestamp: string): string {
-  const input = `${data.doctorName}|${data.doctorCrm}|${data.patientName}|${timestamp}`;
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
-  return `SALB-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
 }
