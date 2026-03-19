@@ -20,6 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
 import PatientDocuments from "@/components/patients/PatientDocuments";
 import PatientMedicalRecords from "@/components/patients/PatientMedicalRecords";
+import PatientPrescriptions from "@/components/patients/PatientPrescriptions";
+import PatientCertificates from "@/components/patients/PatientCertificates";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -335,6 +337,12 @@ const Patients = () => {
 
             {/* Documents Section */}
             <PatientDocuments patientId={selected.id} />
+
+            {/* Digital Prescription Section */}
+            <PatientPrescriptions patientId={selected.id} patientName={selected.name} />
+
+            {/* Digital Certificate Section */}
+            <PatientCertificates patientId={selected.id} patientName={selected.name} />
           </motion.div>
         )}
 
