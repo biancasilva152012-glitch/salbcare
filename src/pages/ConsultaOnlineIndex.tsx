@@ -36,20 +36,6 @@ const ConsultaOnlineIndex = () => {
       });
   }, [user, navigate]);
 
-  useEffect(() => {
-    document.title = "Consulta Online — Agende com profissionais de saúde | SALBCARE";
-    const meta = document.querySelector('meta[name="description"]');
-    const content = "Agende sua consulta online com médicos, psicólogos, nutricionistas, dentistas e fisioterapeutas. Atendimento em todo o Brasil, sem sair de casa.";
-    if (meta) meta.setAttribute("content", content);
-    else {
-      const m = document.createElement("meta");
-      m.name = "description";
-      m.content = content;
-      document.head.appendChild(m);
-    }
-    return () => { document.title = "SALBCARE"; };
-  }, []);
-
   const filtered = SPECIALTIES.filter((s) => {
     const seo = SPECIALTY_SEO[s.key];
     return seo?.title.toLowerCase().includes(search.toLowerCase());
