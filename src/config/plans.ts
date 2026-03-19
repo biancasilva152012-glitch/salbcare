@@ -10,6 +10,8 @@ export const PLANS = {
       "Cadastro ilimitado de pacientes",
       "Teleconsulta integrada",
       "Controle financeiro básico",
+      "Receita e Atestado Digital (PDF)",
+      "⚠️ Assinatura ICP-Brasil por conta própria",
       "✅ Você fica com 100% do valor das consultas",
     ],
     hasTrial: true,
