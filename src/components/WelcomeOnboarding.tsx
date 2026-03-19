@@ -7,19 +7,19 @@ const slides = [
   {
     icon: CalendarCheck,
     title: "Bem-vindo à SALBCARE",
-    text: "Aqui você gerencia sua agenda, seus pacientes e suas consultas — tudo em um só lugar.",
+    text: "Sua Secretária Digital: a SalbCare capta pacientes para você sem sair de casa, organiza sua agenda pelo celular e elimina toda a papelada. Mais consultas, zero burocracia.",
     button: "Próximo",
   },
   {
     icon: BarChart3,
-    title: "Suas finanças no controle",
-    text: "Veja quanto você realmente ganha, receba alertas de impostos e nunca mais seja pego de surpresa pela Receita Federal.",
+    title: "Consultório no Bolso",
+    text: "Atenda por vídeo de qualquer lugar, com segurança e praticidade. E o melhor: você fica com 100% do valor das consultas pagando apenas uma mensalidade fixa — sem surpresas, sem taxas por atendimento.",
     button: "Próximo",
   },
   {
     icon: UserCheck,
-    title: "Seu contador parceiro",
-    text: "Nos planos Pro e Clínica, um contador especializado em saúde está disponível para te orientar. Ele é um profissional independente habilitado — a SALBCARE conecta vocês.",
+    title: "Seu Contador Automático",
+    text: "Suas finanças organizadas sem esforço: controle de receitas, alertas de impostos e simulador tributário para nunca pagar imposto errado. Nos planos Pro e Clínica, um contador especializado em saúde te orienta pessoalmente.",
     button: "Começar agora",
   },
 ];
