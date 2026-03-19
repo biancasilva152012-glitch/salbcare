@@ -122,13 +122,16 @@ const PatientBooking = () => {
     enabled: !!doctorId && !!selectedDate,
   });
 
-  // Realtime: instantly remove booked slots for all patients
+  // Realtime: instantly remove booked/blocked slots for all patients
   useEffect(() => {
     if (!doctorId) return;
     const channel = supabase
       .channel("booking-realtime")
       .on("postgres_changes", { event: "*", schema: "public", table: "appointments", filter: `user_id=eq.${doctorId}` }, () => {
         queryClient.invalidateQueries({ queryKey: ["booked-slots", doctorId] });
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["booking-doctor"] });
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
