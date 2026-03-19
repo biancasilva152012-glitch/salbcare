@@ -217,7 +217,7 @@ const Telehealth = () => {
 
                 {tc.notes && <p className="text-xs text-muted-foreground">{tc.notes}</p>}
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {tc.status === "scheduled" && (
                     <>
                       <Button
@@ -250,23 +250,22 @@ const Telehealth = () => {
                       </Button>
                     </>
                   )}
+                  {/* Prescription/Certificate - available for both scheduled and completed */}
+                  <Button
+                    onClick={() => {
+                      setPrescriptionTc({ ...tc, ...patientInfo });
+                      setPrescriptionOpen(true);
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                  >
+                    <FileText className="h-4 w-4" /> Receita/Atestado
+                  </Button>
                   {tc.status === "completed" && (
-                    <>
-                      <Button
-                        onClick={() => {
-                          setPrescriptionTc({ ...tc, ...patientInfo });
-                          setPrescriptionOpen(true);
-                        }}
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 gap-1"
-                      >
-                        <FileText className="h-4 w-4" /> Receita/Atestado
-                      </Button>
-                      <Button onClick={() => handleDownloadRecord(tc)} size="sm" variant="outline" className="gap-1">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </>
+                    <Button onClick={() => handleDownloadRecord(tc)} size="sm" variant="outline" className="gap-1">
+                      <Download className="h-4 w-4" />
+                    </Button>
                   )}
                 </div>
               </div>

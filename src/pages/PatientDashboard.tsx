@@ -26,12 +26,13 @@ const SPECIALTIES = [
 
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
 
-function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, intervalMin: number = 10, minAdvanceHours: number = 3): string | null {
-  if (!availableHours || typeof availableHours !== "object") return null;
+function getNextAvailableSlots(availableHours: any, slotDuration: number = 30, intervalMin: number = 10, minAdvanceHours: number = 3, maxSlots: number = 3): string[] {
+  if (!availableHours || typeof availableHours !== "object") return [];
   const now = new Date();
   const minTime = new Date(now.getTime() + minAdvanceHours * 60 * 60 * 1000);
+  const results: string[] = [];
 
-  for (let offset = 0; offset < 14; offset++) {
+  for (let offset = 0; offset < 14 && results.length < maxSlots; offset++) {
     const d = new Date(now);
     d.setDate(d.getDate() + offset);
     const dayKey = DAY_MAP[d.getDay()];
@@ -39,13 +40,14 @@ function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, in
     if (!Array.isArray(ranges) || ranges.length === 0) continue;
 
     for (const range of ranges) {
+      if (results.length >= maxSlots) break;
       const [startH, startM] = range.start.split(":").map(Number);
       const [endH, endM] = range.end.split(":").map(Number);
       let cursor = startH * 60 + startM;
       const end = endH * 60 + endM;
       const step = slotDuration + intervalMin;
 
-      while (cursor + slotDuration <= end) {
+      while (cursor + slotDuration <= end && results.length < maxSlots) {
         const h = Math.floor(cursor / 60);
         const m = cursor % 60;
         const slotDate = new Date(d);
@@ -53,16 +55,18 @@ function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, in
 
         if (slotDate > minTime) {
           const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-          if (offset === 0) return `Hoje às ${timeStr}`;
-          if (offset === 1) return `Amanhã às ${timeStr}`;
-          const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-          return `${dayNames[d.getDay()]} às ${timeStr}`;
+          if (offset === 0) results.push(`Hoje ${timeStr}`);
+          else if (offset === 1) results.push(`Amanhã ${timeStr}`);
+          else {
+            const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+            results.push(`${dayNames[d.getDay()]} ${timeStr}`);
+          }
         }
         cursor += step;
       }
     }
   }
-  return null;
+  return results;
 }
 
 // ─── Tab Components ───────────────────────────────────
@@ -136,11 +140,12 @@ const SearchTab = () => {
           )}
 
           {filtered.map((prof: any) => {
-            const nextSlot = getNextAvailableSlot(
+            const nextSlots = getNextAvailableSlots(
               prof.available_hours,
               prof.slot_duration || 30,
               prof.interval_minutes || 10,
-              prof.min_advance_hours || 3
+              prof.min_advance_hours || 3,
+              3
             );
             const price = prof.consultation_price ? Number(prof.consultation_price) : 0;
             const profTitle = getProfessionalTitle(prof.professional_type);
@@ -148,6 +153,7 @@ const SearchTab = () => {
             const councilDisplay = prof.council_number
               ? `${councilPrefix} ${prof.council_state ? prof.council_state + "/" : ""}${prof.council_number}`
               : prof.crm || "";
+            const initials = prof.name?.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase();
 
             return (
               <motion.div
@@ -158,9 +164,17 @@ const SearchTab = () => {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                      {prof.name?.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase()}
-                    </div>
+                    {prof.avatar_url ? (
+                      <img
+                        src={prof.avatar_url}
+                        alt={prof.name}
+                        className="h-11 w-11 rounded-full object-cover border-2 border-primary/20"
+                      />
+                    ) : (
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                        {initials}
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm font-semibold">{prof.name}</p>
                       <p className="text-[11px] text-muted-foreground">{profTitle}</p>
@@ -169,6 +183,9 @@ const SearchTab = () => {
                       )}
                     </div>
                   </div>
+                  {price > 0 && (
+                    <span className="text-xs font-bold text-primary">R$ {price.toFixed(0)}</span>
+                  )}
                 </div>
                 {/* Bio / summary */}
                 {prof.bio && (
@@ -176,22 +193,25 @@ const SearchTab = () => {
                 )}
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    {nextSlot ? (
-                      <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> {nextSlot}
-                      </p>
+                    {nextSlots.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {nextSlots.map((slot, i) => (
+                          <span key={i} className="text-[10px] bg-green-500/10 text-green-700 dark:text-green-400 rounded-full px-2 py-0.5 flex items-center gap-0.5">
+                            <Clock className="h-2.5 w-2.5" /> {slot}
+                          </span>
+                        ))}
+                      </div>
                     ) : (
                       <p className="text-[11px] text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" /> Sem horários disponíveis
                       </p>
                     )}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 pt-0.5">
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((s) => (
                           <Star key={s} className="h-3 w-3 text-yellow-500 fill-yellow-500" />
                         ))}
                       </div>
-                      {price > 0 && <span className="text-[11px] text-muted-foreground ml-1">R$ {price.toFixed(0)}</span>}
                     </div>
                   </div>
                   <Button

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, Banknote } from "lucide-react";
+import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, Banknote, Wifi, WifiOff } from "lucide-react";
 import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 const professionalTypeLabels: Record<string, string> = {
   medico: "Médico(a)",
@@ -46,11 +47,12 @@ const Profile = () => {
   const [cardLink, setCardLink] = useState("");
   const [bio, setBio] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
+  const [availabilityOnline, setAvailabilityOnline] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id, bio").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id, bio, availability_online").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
@@ -67,6 +69,7 @@ const Profile = () => {
       setPixKey((profile as any).pix_key || "");
       setCardLink((profile as any).card_link || "");
       setBio((profile as any).bio || "");
+      setAvailabilityOnline((profile as any).availability_online || false);
     }
   }, [profile]);
 
@@ -253,6 +256,29 @@ const Profile = () => {
           <div className="glass-card p-3 text-sm">
             <span className="text-muted-foreground">Telefone:</span> {profile?.phone || "Não informado"}
           </div>
+        </div>
+
+        {/* Online/Offline Toggle */}
+        <div className="glass-card p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {availabilityOnline ? (
+              <Wifi className="h-5 w-5 text-green-600 dark:text-green-400" />
+            ) : (
+              <WifiOff className="h-5 w-5 text-muted-foreground" />
+            )}
+            <div>
+              <p className="text-sm font-medium">{availabilityOnline ? "Disponível para pacientes" : "Offline — invisível na busca"}</p>
+              <p className="text-[10px] text-muted-foreground">Quando ativado, você aparece no diretório de pacientes</p>
+            </div>
+          </div>
+          <Switch
+            checked={availabilityOnline}
+            onCheckedChange={async (checked) => {
+              setAvailabilityOnline(checked);
+              await supabase.from("profiles").update({ availability_online: checked } as any).eq("user_id", user!.id);
+              toast.success(checked ? "Você está visível para pacientes!" : "Você está offline.");
+            }}
+          />
         </div>
 
         {/* Bio / About */}

@@ -652,6 +652,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          availability_online: boolean
           available_hours: Json | null
           avatar_url: string | null
           bio: string | null
@@ -683,6 +684,7 @@ export type Database = {
           user_type: string
         }
         Insert: {
+          availability_online?: boolean
           available_hours?: Json | null
           avatar_url?: string | null
           bio?: string | null
@@ -714,6 +716,7 @@ export type Database = {
           user_type?: string
         }
         Update: {
+          availability_online?: boolean
           available_hours?: Json | null
           avatar_url?: string | null
           bio?: string | null
