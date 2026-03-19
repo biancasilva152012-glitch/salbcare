@@ -207,8 +207,27 @@ const SpecialtyDirectory = () => {
               const councilPrefix = professionConfig?.councilPrefix || "CRM";
               return (
                 <div key={prof.user_id} className="glass-card p-4">
+                  {/* JSON-LD per professional */}
+                  <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                      __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Physician",
+                        name: prof.name,
+                        medicalSpecialty: seo?.title || prof.professional_type,
+                        ...(prof.avatar_url && { image: prof.avatar_url }),
+                        ...(prof.consultation_price && {
+                          priceRange: `R$ ${Number(prof.consultation_price).toFixed(0)}`,
+                        }),
+                        memberOf: {
+                          "@type": "MedicalOrganization",
+                          name: `${councilPrefix} ${prof.crm || ""}`,
+                        },
+                      }),
+                    }}
+                  />
                   <div className="flex items-start gap-3">
-                    {/* Avatar */}
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm">
                       {prof.avatar_url ? (
                         <img
