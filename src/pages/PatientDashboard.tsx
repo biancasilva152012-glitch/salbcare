@@ -26,12 +26,13 @@ const SPECIALTIES = [
 
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
 
-function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, intervalMin: number = 10, minAdvanceHours: number = 3): string | null {
-  if (!availableHours || typeof availableHours !== "object") return null;
+function getNextAvailableSlots(availableHours: any, slotDuration: number = 30, intervalMin: number = 10, minAdvanceHours: number = 3, maxSlots: number = 3): string[] {
+  if (!availableHours || typeof availableHours !== "object") return [];
   const now = new Date();
   const minTime = new Date(now.getTime() + minAdvanceHours * 60 * 60 * 1000);
+  const results: string[] = [];
 
-  for (let offset = 0; offset < 14; offset++) {
+  for (let offset = 0; offset < 14 && results.length < maxSlots; offset++) {
     const d = new Date(now);
     d.setDate(d.getDate() + offset);
     const dayKey = DAY_MAP[d.getDay()];
@@ -39,13 +40,14 @@ function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, in
     if (!Array.isArray(ranges) || ranges.length === 0) continue;
 
     for (const range of ranges) {
+      if (results.length >= maxSlots) break;
       const [startH, startM] = range.start.split(":").map(Number);
       const [endH, endM] = range.end.split(":").map(Number);
       let cursor = startH * 60 + startM;
       const end = endH * 60 + endM;
       const step = slotDuration + intervalMin;
 
-      while (cursor + slotDuration <= end) {
+      while (cursor + slotDuration <= end && results.length < maxSlots) {
         const h = Math.floor(cursor / 60);
         const m = cursor % 60;
         const slotDate = new Date(d);
@@ -53,16 +55,18 @@ function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, in
 
         if (slotDate > minTime) {
           const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-          if (offset === 0) return `Hoje às ${timeStr}`;
-          if (offset === 1) return `Amanhã às ${timeStr}`;
-          const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-          return `${dayNames[d.getDay()]} às ${timeStr}`;
+          if (offset === 0) results.push(`Hoje ${timeStr}`);
+          else if (offset === 1) results.push(`Amanhã ${timeStr}`);
+          else {
+            const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+            results.push(`${dayNames[d.getDay()]} ${timeStr}`);
+          }
         }
         cursor += step;
       }
     }
   }
-  return null;
+  return results;
 }
 
 // ─── Tab Components ───────────────────────────────────
