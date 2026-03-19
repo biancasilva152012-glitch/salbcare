@@ -23,6 +23,7 @@ const vitalLabels: Record<string, string> = {
 const PatientMedicalRecords = ({ patientId, patientName }: PatientMedicalRecordsProps) => {
   const { user } = useAuth();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [prescriptionModal, setPrescriptionModal] = useState<{ open: boolean; type: "prescription" | "certificate"; recordId: string | null }>({ open: false, type: "prescription", recordId: null });
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
