@@ -87,11 +87,14 @@ const SearchTab = () => {
     },
   });
 
-  // Real-time: refresh when professionals update availability
+  // Real-time: refresh when any professional profile changes (availability, bio, hours, etc.)
   useEffect(() => {
     const channel = supabase
       .channel("professionals-availability-rt")
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, () => {
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["patient-professionals"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
         queryClient.invalidateQueries({ queryKey: ["patient-professionals"] });
       })
       .subscribe();
