@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS availability_online boolean NOT NULL DEFAULT false;
