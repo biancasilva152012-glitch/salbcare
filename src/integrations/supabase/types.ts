@@ -230,6 +230,65 @@ export type Database = {
         }
         Relationships: []
       }
+      digital_documents: {
+        Row: {
+          council_number: string | null
+          council_state: string | null
+          created_at: string
+          document_type: string
+          file_path: string | null
+          hash_code: string
+          id: string
+          metadata: Json | null
+          patient_id: string | null
+          patient_name: string
+          professional_name: string
+          professional_type: string
+          signed_icp: boolean
+          user_id: string
+        }
+        Insert: {
+          council_number?: string | null
+          council_state?: string | null
+          created_at?: string
+          document_type?: string
+          file_path?: string | null
+          hash_code: string
+          id?: string
+          metadata?: Json | null
+          patient_id?: string | null
+          patient_name: string
+          professional_name: string
+          professional_type?: string
+          signed_icp?: boolean
+          user_id: string
+        }
+        Update: {
+          council_number?: string | null
+          council_state?: string | null
+          created_at?: string
+          document_type?: string
+          file_path?: string | null
+          hash_code?: string
+          id?: string
+          metadata?: Json | null
+          patient_id?: string | null
+          patient_name?: string
+          professional_name?: string
+          professional_type?: string
+          signed_icp?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "digital_documents_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financial_transactions: {
         Row: {
           amount: number
