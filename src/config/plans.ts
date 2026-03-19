@@ -11,7 +11,7 @@ export const PLANS = {
       "Teleconsulta integrada",
       "Controle financeiro básico",
       "Receita e Atestado Digital (PDF)",
-      "⚠️ Assinatura ICP-Brasil por conta própria",
+      "Instruções para assinatura ICP-Brasil gratuita",
       "✅ Você fica com 100% do valor das consultas",
     ],
     hasTrial: true,
