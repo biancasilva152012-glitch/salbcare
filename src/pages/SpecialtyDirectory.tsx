@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { SPECIALTY_SEO, SPECIALTY_LEGAL_NOTICES } from "@/config/specialtyLegalNotices";
 import { PROFESSION_CONFIG } from "@/config/professions";
+import SEOHead from "@/components/SEOHead";
 
 type Filter = "all" | "today" | "week" | "top_rated";
 
