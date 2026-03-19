@@ -121,6 +121,40 @@ const Agenda = () => {
     enabled: !!user,
   });
 
+  const blockMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("appointments").insert({
+        user_id: user!.id,
+        patient_name: "🔒 Bloqueado",
+        date: blockData.date,
+        time: blockData.time,
+        appointment_type: "blocked",
+        notes: blockData.reason || "Horário bloqueado",
+        status: "scheduled",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      setBlockData(blockForm);
+      setBlockOpen(false);
+      toast.success("Horário bloqueado!");
+    },
+    onError: () => toast.error("Erro ao bloquear horário."),
+  });
+
+  const unblockMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("appointments").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success("Horário desbloqueado!");
+    },
+    onError: () => toast.error("Erro ao desbloquear."),
+  });
+
   const addMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("appointments").insert({
