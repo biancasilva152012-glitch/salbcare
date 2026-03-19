@@ -251,7 +251,35 @@ const Agenda = () => {
       if (!canUseTeam || filterProfessional === "all") return true;
       if (filterProfessional === "unassigned") return !a.professional_id;
       return a.professional_id === filterProfessional;
+    })
+    .filter((a) => {
+      if (filterStatus === "all") return true;
+      if (filterStatus === "pending") return a.status === "aguardando_confirmacao" || a.status === "aguardando_comprovante";
+      if (filterStatus === "scheduled") return a.status === "scheduled";
+      return true;
     });
+
+  const pendingCount = appointments.filter((a) => a.status === "aguardando_confirmacao" || a.status === "aguardando_comprovante").length;
+
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+  const handleBookingAction = async (appointmentId: string, action: "approve" | "reject") => {
+    setProcessingId(appointmentId);
+    try {
+      const { error } = await supabase.functions.invoke("manage-booking", {
+        body: { action, appointment_id: appointmentId },
+      });
+      if (error) throw error;
+      toast.success(action === "approve" ? "Agendamento aprovado!" : "Agendamento recusado.");
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["pending-bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["today-appointments"] });
+    } catch {
+      toast.error("Erro ao processar. Tente novamente.");
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const grouped = filtered.reduce<Record<string, typeof appointments>>((acc, a) => {
     (acc[a.date] = acc[a.date] || []).push(a);
