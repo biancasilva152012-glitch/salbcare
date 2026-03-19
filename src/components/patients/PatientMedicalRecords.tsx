@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardList, ChevronDown, ChevronUp, Download, Calendar, Stethoscope } from "lucide-react";
+import { ClipboardList, ChevronDown, ChevronUp, Download, Calendar, Stethoscope, FileText, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
 import { toast } from "sonner";
 import { getProfessionConfig } from "@/config/professions";
+import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
 
 interface PatientMedicalRecordsProps {
   patientId: string;
@@ -22,6 +23,7 @@ const vitalLabels: Record<string, string> = {
 const PatientMedicalRecords = ({ patientId, patientName }: PatientMedicalRecordsProps) => {
   const { user } = useAuth();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [prescriptionModal, setPrescriptionModal] = useState<{ open: boolean; type: "prescription" | "certificate"; recordId: string | null }>({ open: false, type: "prescription", recordId: null });
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -214,6 +216,39 @@ const PatientMedicalRecords = ({ patientId, patientName }: PatientMedicalRecords
                     {record.follow_up_notes && (
                       <RecordField label="Retorno / Acompanhamento" value={record.follow_up_notes} />
                     )}
+
+                    {/* Document generation buttons */}
+                    <div className="border-t border-border/30 pt-3 space-y-2">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase flex items-center gap-1">
+                        <FileText className="h-3 w-3" /> Documentos
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 gap-1.5 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPrescriptionModal({ open: true, type: "prescription", recordId: record.id });
+                          }}
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          Receita Digital
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 gap-1.5 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPrescriptionModal({ open: true, type: "certificate", recordId: record.id });
+                          }}
+                        >
+                          <Award className="h-3.5 w-3.5" />
+                          Atestado Digital
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -221,6 +256,21 @@ const PatientMedicalRecords = ({ patientId, patientName }: PatientMedicalRecords
           </div>
         );
       })}
+
+      {prescriptionModal.open && (
+        <PrescriptionModal
+          open={prescriptionModal.open}
+          onOpenChange={(open) => setPrescriptionModal((prev) => ({ ...prev, open }))}
+          patientName={patientName}
+          patientPhone={null}
+          patientId={patientId}
+          teleconsultationId={prescriptionModal.recordId || ""}
+          doctorName={profile?.name || ""}
+          professionalType={profile?.professional_type || "medico"}
+          doctorCrm={profile?.crm || ""}
+          userId={user!.id}
+        />
+      )}
     </div>
   );
 };

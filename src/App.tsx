@@ -12,6 +12,7 @@ import CookieConsent from "./components/CookieConsent";
 import PageSkeleton from "@/components/PageSkeleton";
 import PageContainer from "@/components/PageContainer";
 import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
+import ScrollToTop from "@/components/ScrollToTop";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
 // Eager: login, register (entry points)
@@ -77,6 +78,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ScrollToTop />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
@@ -119,6 +121,7 @@ const App = () => (
               {/* Patient-only routes */}
               <Route path="/patient-dashboard" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
               <Route path="/patient-dashboard/consultas" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
+              <Route path="/patient-dashboard/documentos" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
               <Route path="/patient-dashboard/perfil" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
 
               <Route path="*" element={<NotFound />} />

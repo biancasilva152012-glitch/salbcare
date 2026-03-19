@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight } from "lucide-react";
+import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { getProfessionalTitle, getCouncilPrefix } from "@/config/professions";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import PatientDocumentsTab from "@/components/patients/PatientDocumentsTab";
 
 const SPECIALTIES = [
   { key: null, emoji: "✨", label: "Todos" },
@@ -570,6 +571,7 @@ const PatientDashboard = () => {
   // Determine active tab from path
   const getTabFromPath = () => {
     if (location.pathname.includes("/consultas")) return "consultas";
+    if (location.pathname.includes("/documentos")) return "documentos";
     if (location.pathname.includes("/perfil")) return "perfil";
     return "buscar";
   };
@@ -604,21 +606,26 @@ const PatientDashboard = () => {
       <div className="max-w-lg mx-auto px-4 py-5 pb-28">
         {activeTab === "buscar" && <SearchTab />}
         {activeTab === "consultas" && <AppointmentsTab />}
+        {activeTab === "documentos" && <PatientDocumentsTab />}
         {activeTab === "perfil" && <ProfileTab />}
       </div>
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur-xl z-50">
         <div className="mx-auto flex max-w-lg items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
-          <button onClick={() => setActiveTab("buscar")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs transition-colors ${activeTab === "buscar" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("buscar")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-2 text-xs transition-colors ${activeTab === "buscar" ? "text-primary" : "text-muted-foreground"}`}>
             <Search className="h-5 w-5" />
             <span className="font-medium">Buscar</span>
           </button>
-          <button onClick={() => setActiveTab("consultas")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs transition-colors ${activeTab === "consultas" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("consultas")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-2 text-xs transition-colors ${activeTab === "consultas" ? "text-primary" : "text-muted-foreground"}`}>
             <Calendar className="h-5 w-5" />
             <span className="font-medium">Consultas</span>
           </button>
-          <button onClick={() => setActiveTab("perfil")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-3 text-xs transition-colors ${activeTab === "perfil" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("documentos")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-2 text-xs transition-colors ${activeTab === "documentos" ? "text-primary" : "text-muted-foreground"}`}>
+            <FileText className="h-5 w-5" />
+            <span className="font-medium">Documentos</span>
+          </button>
+          <button onClick={() => setActiveTab("perfil")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-2 text-xs transition-colors ${activeTab === "perfil" ? "text-primary" : "text-muted-foreground"}`}>
             <User className="h-5 w-5" />
             <span className="font-medium">Perfil</span>
           </button>
