@@ -104,7 +104,7 @@ const AccountantChatTab = () => {
   const accountantName = partnerInfo?.company_name || "seu contador parceiro";
 
   return (
-    <div className="flex flex-col h-[calc(100vh-220px)]">
+    <div className="flex flex-col" style={{ height: "calc(100dvh - 220px)", minHeight: 300 }}>
       <div className="glass-card p-3 mb-3 flex items-start gap-2">
         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
         <p className="text-xs text-muted-foreground">
