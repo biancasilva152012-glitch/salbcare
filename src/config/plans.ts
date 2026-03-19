@@ -25,11 +25,6 @@ export const PLANS = {
     popular: true,
     features: [
       "Tudo do Essencial +",
-      "✅ Receita e Atestado com assinatura ICP-Brasil integrada",
-      "✅ QR Code de verificação de autenticidade",
-      "✅ Envio automático do PDF por e-mail ao paciente",
-      "✅ Histórico completo de documentos emitidos",
-      "✅ Página pública de verificação",
       "Acesso a contador especialista em saúde",
       "Emissão de NF-e 100% legal pelo contador",
       "Abertura e gestão de CNPJ",
