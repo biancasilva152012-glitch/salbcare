@@ -173,7 +173,9 @@ const PatientBooking = () => {
     if (!doctorId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase.from("appointments").insert({
+      const generatedId = crypto.randomUUID();
+      const { error } = await supabase.from("appointments").insert({
+        id: generatedId,
         user_id: doctorId,
         patient_name: form.name,
         date: selectedDate,
@@ -181,10 +183,10 @@ const PatientBooking = () => {
         appointment_type: "telehealth",
         notes: `[Agendamento online] Tel: ${form.phone} | Email: ${form.email} | Nasc: ${form.birthDate} | Motivo: ${form.reason || "—"} | Retorno: ${form.isReturning ? "Sim" : "Não"} | Valor: R$ ${price.toFixed(2)}`,
         status: price > 0 ? "aguardando_comprovante" : "scheduled",
-      }).select("id").single();
+      });
       if (error) throw error;
       if (price > 0) {
-        setAppointmentId(data.id);
+        setAppointmentId(generatedId);
         setStep(3); // Go to receipt upload step
       } else {
         setStep(4); // Free consultation — go to success

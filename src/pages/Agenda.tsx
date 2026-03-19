@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock, Check, X, FileImage, ExternalLink } from "lucide-react";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,8 @@ import EmptyState from "@/components/EmptyState";
 import { CalendarX, Copy, Link } from "lucide-react";
 import { usePagination } from "@/hooks/usePagination";
 import { downloadCsvTemplate, AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
+import { Badge } from "@/components/ui/badge";
+import { useQueryClient as useQC } from "@tanstack/react-query";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 const blockForm = { date: "", time: "", reason: "" };
@@ -43,6 +45,8 @@ const Agenda = () => {
   const [importing, setImporting] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
   const [blockData, setBlockData] = useState(blockForm);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
@@ -115,7 +119,7 @@ const Agenda = () => {
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["appointments", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("appointments").select("id, patient_name, patient_id, date, time, appointment_type, notes, status, professional_id").eq("user_id", user!.id).neq("status", "cancelled").order("date").order("time").limit(500);
+      const { data } = await supabase.from("appointments").select("id, patient_name, patient_id, date, time, appointment_type, notes, status, professional_id, receipt_url").eq("user_id", user!.id).neq("status", "cancelled").order("date").order("time").limit(500);
       return data || [];
     },
     enabled: !!user,
@@ -248,7 +252,34 @@ const Agenda = () => {
       if (!canUseTeam || filterProfessional === "all") return true;
       if (filterProfessional === "unassigned") return !a.professional_id;
       return a.professional_id === filterProfessional;
+    })
+    .filter((a) => {
+      if (filterStatus === "all") return true;
+      if (filterStatus === "pending") return a.status === "aguardando_confirmacao" || a.status === "aguardando_comprovante";
+      if (filterStatus === "scheduled") return a.status === "scheduled";
+      return true;
     });
+
+  const pendingCount = appointments.filter((a) => a.status === "aguardando_confirmacao" || a.status === "aguardando_comprovante").length;
+
+
+  const handleBookingAction = async (appointmentId: string, action: "approve" | "reject") => {
+    setProcessingId(appointmentId);
+    try {
+      const { error } = await supabase.functions.invoke("manage-booking", {
+        body: { action, appointment_id: appointmentId },
+      });
+      if (error) throw error;
+      toast.success(action === "approve" ? "Agendamento aprovado!" : "Agendamento recusado.");
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["pending-bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["today-appointments"] });
+    } catch {
+      toast.error("Erro ao processar. Tente novamente.");
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const grouped = filtered.reduce<Record<string, typeof appointments>>((acc, a) => {
     (acc[a.date] = acc[a.date] || []).push(a);
@@ -465,7 +496,33 @@ const Agenda = () => {
           <Input placeholder="Buscar paciente..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
         </div>
 
-        {/* Professional Filter - only for Clinic plan */}
+        {/* Status Filter */}
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+          <button
+            onClick={() => setFilterStatus("all")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterStatus === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setFilterStatus("scheduled")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterStatus === "scheduled" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Confirmados
+          </button>
+          <button
+            onClick={() => setFilterStatus("pending")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors relative ${filterStatus === "pending" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Pendentes
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground flex items-center justify-center">
+                {pendingCount}
+              </span>
+            )}
+          </button>
+        </div>
+
         {canUseTeam && professionals.length > 0 && (
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
             <button
@@ -570,8 +627,13 @@ const Agenda = () => {
                       );
                     }
 
+                    const isPending = apt.status === "aguardando_confirmacao" || apt.status === "aguardando_comprovante";
+                    const receiptUrl = apt.receipt_url
+                      ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/booking-receipts/${apt.receipt_url}`
+                      : null;
+
                     return (
-                      <div key={apt.id} className="glass-card p-3">
+                      <div key={apt.id} className={cn("glass-card p-3 space-y-2", isPending && "ring-1 ring-orange-500/20")}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
@@ -588,6 +650,11 @@ const Agenda = () => {
                                   <span className="inline-flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400">
                                     🏥 Presencial
                                   </span>
+                                )}
+                                {isPending && (
+                                  <Badge variant="outline" className="text-[10px] border-orange-500/30 text-orange-600 px-1.5 py-0">
+                                    <Clock className="h-3 w-3 mr-0.5" /> {apt.status === "aguardando_comprovante" ? "Aguardando comprovante" : "Pendente"}
+                                  </Badge>
                                 )}
                                 {isStartingSoon && (
                                   <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400 animate-pulse">
@@ -606,30 +673,71 @@ const Agenda = () => {
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            {isNow && (
-                              <a href="/telehealth" className="rounded-full bg-green-600 px-3 py-1.5 text-xs font-bold text-white animate-pulse hover:bg-green-700 transition-colors">
-                                Entrar agora
+                          {!isPending && (
+                            <div className="flex items-center gap-2">
+                              {isNow && (
+                                <a href="/telehealth" className="rounded-full bg-green-600 px-3 py-1.5 text-xs font-bold text-white animate-pulse hover:bg-green-700 transition-colors">
+                                  Entrar agora
+                                </a>
+                              )}
+                              <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="bg-card border-border">
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Excluir consulta?</AlertDialogTitle>
+                                    <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Pending booking actions */}
+                        {apt.status === "aguardando_confirmacao" && (
+                          <>
+                            {receiptUrl && (
+                              <a
+                                href={receiptUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 rounded-lg border border-border bg-accent/50 px-3 py-2 text-xs text-primary hover:bg-accent transition-colors"
+                              >
+                                <FileImage className="h-4 w-4" />
+                                Ver comprovante
+                                <ExternalLink className="h-3 w-3 ml-auto" />
                               </a>
                             )}
-                            <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent className="bg-card border-border">
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Excluir consulta?</AlertDialogTitle>
-                                  <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                className="flex-1 gap-1 bg-success hover:bg-success/90 text-white"
+                                disabled={processingId === apt.id}
+                                onClick={() => handleBookingAction(apt.id, "approve")}
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                                {processingId === apt.id ? "..." : "Aprovar"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 gap-1 border-destructive/30 text-destructive hover:bg-destructive/10"
+                                disabled={processingId === apt.id}
+                                onClick={() => handleBookingAction(apt.id, "reject")}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                                Recusar
+                              </Button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     );
                   })}
