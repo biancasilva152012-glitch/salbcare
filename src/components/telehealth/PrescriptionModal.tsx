@@ -7,9 +7,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
 import { getProfessionConfig } from "@/config/professions";
-import { FileText, MessageCircle, Receipt, Loader2, Check, ShieldCheck, AlertTriangle, Crown, Download, QrCode } from "lucide-react";
-import { useFeatureGate } from "@/hooks/useFeatureGate";
-import DigitalSignatureUpsellModal from "@/components/DigitalSignatureUpsellModal";
+import { FileText, MessageCircle, Receipt, Loader2, Check, ShieldCheck, AlertTriangle, Download, QrCode } from "lucide-react";
+import SigningInstructionsModal from "@/components/telehealth/SigningInstructionsModal";
 
 interface PrescriptionModalProps {
   open: boolean;
@@ -39,8 +38,6 @@ const PrescriptionModal = ({
   userId,
 }: PrescriptionModalProps) => {
   const config = getProfessionConfig(professionalType || "medico");
-  const { currentPlan } = useFeatureGate();
-  const isBasicPlan = currentPlan === "basic";
 
   const [step, setStep] = useState<Step>("form");
   const [prescription, setPrescription] = useState("");
@@ -48,7 +45,7 @@ const PrescriptionModal = ({
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [showUpsellModal, setShowUpsellModal] = useState(false);
+  const [showSigningModal, setShowSigningModal] = useState(false);
   const [docHash, setDocHash] = useState("");
 
   const handleGenerate = async () => {
@@ -92,7 +89,6 @@ const PrescriptionModal = ({
         });
       }
 
-      // Generate hash and register document for verification
       const hashCode = generateDocHashCode(doctorName, doctorCrm, patientName);
       setDocHash(hashCode);
 
@@ -119,15 +115,6 @@ const PrescriptionModal = ({
     } finally {
       setSaving(false);
     }
-  };
-
-  const handleSignIcp = () => {
-    if (isBasicPlan) {
-      setShowUpsellModal(true);
-      return;
-    }
-    // Pro/Clinic plan: mock ICP-Brasil signature (integration placeholder)
-    toast.success("🔐 Documento enviado para assinatura ICP-Brasil. Você será notificado quando estiver pronto.");
   };
 
   const handleWhatsApp = () => {
@@ -173,9 +160,7 @@ const PrescriptionModal = ({
     onOpenChange(false);
   };
 
-  const formTitle = config.canPrescribeMedication
-    ? `${config.prescriptionTitle} e ${config.certificateTitle}`
-    : `${config.prescriptionTitle} e ${config.certificateTitle}`;
+  const formTitle = `${config.prescriptionTitle} e ${config.certificateTitle}`;
 
   return (
     <>
@@ -210,27 +195,6 @@ const PrescriptionModal = ({
                   </p>
                 </div>
               </div>
-
-              {/* Plan notice */}
-              {isBasicPlan && (
-                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 space-y-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
-                    <p className="text-xs font-semibold text-amber-600">Plano Essencial</p>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
-                    A assinatura digital ICP-Brasil não está inclusa neste plano. Você pode assinar
-                    o documento com seu próprio certificado digital e enviá-lo ao paciente, ou{" "}
-                    <button
-                      onClick={() => setShowUpsellModal(true)}
-                      className="text-primary font-semibold underline underline-offset-2"
-                    >
-                      fazer upgrade para o Plano Profissional
-                    </button>{" "}
-                    para assinar direto pela plataforma.
-                  </p>
-                </div>
-              )}
 
               {/* Prescription / Orientation */}
               <div className="space-y-2">
@@ -287,10 +251,9 @@ const PrescriptionModal = ({
                   <p className="text-xs font-semibold">Validade Legal</p>
                 </div>
                 <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  {config.legalResolution}. Para plena validade jurídica, recomenda-se 
+                  {config.legalResolution}. Para plena validade jurídica, recomenda-se
                   assinatura digital com certificado <strong>ICP-Brasil (A1 ou A3)</strong>.
-                  O documento é gerado com identificação do profissional ({config.councilPrefix})
-                  e data da consulta.
+                  Após gerar o PDF, você receberá instruções para assinar gratuitamente.
                 </p>
               </div>
 
@@ -328,7 +291,7 @@ const PrescriptionModal = ({
                 )}
               </div>
 
-              {/* Download button (always available) */}
+              {/* Download button */}
               <Button
                 onClick={handleDownload}
                 variant="outline"
@@ -338,21 +301,17 @@ const PrescriptionModal = ({
                 Baixar PDF novamente
               </Button>
 
-              {/* ICP-Brasil signature button */}
+              {/* Sign with ICP-Brasil button */}
               <Button
-                onClick={handleSignIcp}
-                className={`w-full font-semibold gap-2 ${isBasicPlan ? "bg-amber-500 hover:bg-amber-600 text-white" : "gradient-primary"}`}
+                onClick={() => setShowSigningModal(true)}
+                className="w-full gradient-primary font-semibold gap-2"
               >
-                {isBasicPlan ? (
-                  <Crown className="h-4 w-4" />
-                ) : (
-                  <ShieldCheck className="h-4 w-4" />
-                )}
-                {isBasicPlan ? "Assinar com ICP-Brasil (PRO)" : "Assinar com ICP-Brasil"}
+                <ShieldCheck className="h-4 w-4" />
+                Assinar com ICP-Brasil
               </Button>
 
               {/* Verification QR */}
-              {!isBasicPlan && docHash && (
+              {docHash && (
                 <div className="glass-card p-3 text-center space-y-1">
                   <div className="flex items-center justify-center gap-1 text-primary">
                     <QrCode className="h-3.5 w-3.5" />
@@ -399,7 +358,15 @@ const PrescriptionModal = ({
         </DialogContent>
       </Dialog>
 
-      <DigitalSignatureUpsellModal open={showUpsellModal} onOpenChange={setShowUpsellModal} />
+      <SigningInstructionsModal
+        open={showSigningModal}
+        onOpenChange={setShowSigningModal}
+        patientName={patientName}
+        patientId={patientId}
+        teleconsultationId={teleconsultationId}
+        userId={userId}
+        documentHash={docHash}
+      />
     </>
   );
 };
