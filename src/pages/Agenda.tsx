@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2 } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock } from "lucide-react";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ import { usePagination } from "@/hooks/usePagination";
 import { downloadCsvTemplate, AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
+const blockForm = { date: "", time: "", reason: "" };
 
 const Agenda = () => {
   const { user } = useAuth();
@@ -40,6 +41,8 @@ const Agenda = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [importing, setImporting] = useState(false);
+  const [blockOpen, setBlockOpen] = useState(false);
+  const [blockData, setBlockData] = useState(blockForm);
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
@@ -116,6 +119,40 @@ const Agenda = () => {
       return data || [];
     },
     enabled: !!user,
+  });
+
+  const blockMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("appointments").insert({
+        user_id: user!.id,
+        patient_name: "🔒 Bloqueado",
+        date: blockData.date,
+        time: blockData.time,
+        appointment_type: "blocked",
+        notes: blockData.reason || "Horário bloqueado",
+        status: "scheduled",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      setBlockData(blockForm);
+      setBlockOpen(false);
+      toast.success("Horário bloqueado!");
+    },
+    onError: () => toast.error("Erro ao bloquear horário."),
+  });
+
+  const unblockMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("appointments").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success("Horário desbloqueado!");
+    },
+    onError: () => toast.error("Erro ao desbloquear."),
   });
 
   const addMutation = useMutation({
@@ -357,6 +394,60 @@ const Agenda = () => {
               </Button>
               <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" />
             </label>
+            <Dialog open={blockOpen} onOpenChange={(v) => { setBlockOpen(v); if (v) setBlockData(blockForm); }}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1"><Lock className="h-3.5 w-3.5" /> Bloquear</Button>
+              </DialogTrigger>
+              <DialogContent className="bg-card border-border">
+                <DialogHeader><DialogTitle>Bloquear Horário</DialogTitle></DialogHeader>
+                <div className="space-y-3 pt-2">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label>Data</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal bg-accent border-border", !blockData.date && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {blockData.date ? format(parse(blockData.date, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : "Selecionar"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={blockData.date ? parse(blockData.date, "yyyy-MM-dd", new Date()) : undefined}
+                            onSelect={(d) => setBlockData({ ...blockData, date: d ? format(d, "yyyy-MM-dd") : "" })}
+                            locale={ptBR}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Hora</Label>
+                      <Select value={blockData.time} onValueChange={(v) => setBlockData({ ...blockData, time: v })}>
+                        <SelectTrigger className="bg-accent border-border"><SelectValue placeholder="Horário" /></SelectTrigger>
+                        <SelectContent className="max-h-48">
+                          {Array.from({ length: 28 }, (_, i) => {
+                            const h = Math.floor(i / 2) + 7;
+                            const m = i % 2 === 0 ? "00" : "30";
+                            const val = `${String(h).padStart(2, "0")}:${m}`;
+                            return <SelectItem key={val} value={val}>{val}</SelectItem>;
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Motivo (opcional)</Label>
+                    <Input placeholder="Ex: Reunião, Almoço, Feriado..." value={blockData.reason} onChange={(e) => setBlockData({ ...blockData, reason: e.target.value })} className="bg-accent border-border" />
+                  </div>
+                  <Button onClick={() => blockMutation.mutate()} className="w-full" disabled={!blockData.date || !blockData.time || blockMutation.isPending}>
+                    {blockMutation.isPending ? "Bloqueando..." : "Bloquear horário"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Nova</Button>
@@ -444,12 +535,41 @@ const Agenda = () => {
                 </h3>
                 <div className="space-y-2">
                   {apts.sort((a, b) => a.time.localeCompare(b.time)).map((apt) => {
+                    const isBlocked = apt.appointment_type === "blocked";
                     const profName = getProfessionalName(apt.professional_id);
                     const isTelehealth = apt.appointment_type === "telehealth";
                     const aptDateTime = new Date(`${apt.date}T${apt.time}`);
                     const minutesUntil = (aptDateTime.getTime() - Date.now()) / 60000;
                     const isStartingSoon = isTelehealth && minutesUntil > 0 && minutesUntil <= 30;
                     const isNow = isTelehealth && minutesUntil <= 0 && minutesUntil > -60;
+
+                    if (isBlocked) {
+                      return (
+                        <div key={apt.id} className="glass-card p-3 opacity-60 border-dashed">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                                <Lock className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-muted-foreground">Bloqueado</p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <Clock className="h-3 w-3" /> {apt.time.substring(0, 5)}
+                                  {apt.notes && apt.notes !== "Horário bloqueado" && <span>• {apt.notes}</span>}
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => unblockMutation.mutate(apt.id)}
+                              className="flex items-center gap-1 text-xs text-primary hover:underline"
+                            >
+                              <Unlock className="h-3.5 w-3.5" /> Desbloquear
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
+
                     return (
                       <div key={apt.id} className="glass-card p-3">
                         <div className="flex items-center justify-between">

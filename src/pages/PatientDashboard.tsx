@@ -69,6 +69,7 @@ function getNextAvailableSlot(availableHours: any, slotDuration: number = 30, in
 
 const SearchTab = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
 
@@ -81,6 +82,17 @@ const SearchTab = () => {
       return data || [];
     },
   });
+
+  // Real-time: refresh when professionals update availability
+  useEffect(() => {
+    const channel = supabase
+      .channel("professionals-availability-rt")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["patient-professionals"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
 
   const filtered = professionals.filter((p: any) =>
     p.name?.toLowerCase().includes(search.toLowerCase())
