@@ -112,7 +112,7 @@ const AccountantChatTab = () => {
         </p>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 pb-3">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 pb-3" style={{ WebkitOverflowScrolling: "touch" as any }}>
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center space-y-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">

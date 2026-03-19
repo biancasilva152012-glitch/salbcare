@@ -535,12 +535,41 @@ const Agenda = () => {
                 </h3>
                 <div className="space-y-2">
                   {apts.sort((a, b) => a.time.localeCompare(b.time)).map((apt) => {
+                    const isBlocked = apt.appointment_type === "blocked";
                     const profName = getProfessionalName(apt.professional_id);
                     const isTelehealth = apt.appointment_type === "telehealth";
                     const aptDateTime = new Date(`${apt.date}T${apt.time}`);
                     const minutesUntil = (aptDateTime.getTime() - Date.now()) / 60000;
                     const isStartingSoon = isTelehealth && minutesUntil > 0 && minutesUntil <= 30;
                     const isNow = isTelehealth && minutesUntil <= 0 && minutesUntil > -60;
+
+                    if (isBlocked) {
+                      return (
+                        <div key={apt.id} className="glass-card p-3 opacity-60 border-dashed">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                                <Lock className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-muted-foreground">Bloqueado</p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <Clock className="h-3 w-3" /> {apt.time.substring(0, 5)}
+                                  {apt.notes && apt.notes !== "Horário bloqueado" && <span>• {apt.notes}</span>}
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => unblockMutation.mutate(apt.id)}
+                              className="flex items-center gap-1 text-xs text-primary hover:underline"
+                            >
+                              <Unlock className="h-3.5 w-3.5" /> Desbloquear
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
+
                     return (
                       <div key={apt.id} className="glass-card p-3">
                         <div className="flex items-center justify-between">
