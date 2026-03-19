@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { X, Shield, MessageCircle, Lock, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
+import SEOHead from "@/components/SEOHead";
 
 const notItems = [
   "Não somos um plano de saúde",

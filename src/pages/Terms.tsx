@@ -1,8 +1,15 @@
 import PageContainer from "@/components/PageContainer";
+import SEOHead from "@/components/SEOHead";
 
 const Terms = () => {
   return (
     <PageContainer backTo={true}>
+      <SEOHead
+        title="Termos de Uso | SalbCare"
+        description="Termos de uso da plataforma SalbCare para profissionais de saúde e pacientes."
+        canonical="/terms"
+        noindex
+      />
       <div className="space-y-6 pb-8">
         <h1 className="text-2xl font-bold">Termos de Uso</h1>
         <p className="text-xs text-muted-foreground">Última atualização: 14 de março de 2026</p>

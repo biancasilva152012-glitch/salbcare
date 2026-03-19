@@ -43,16 +43,16 @@ const ConsultaOnlineIndex = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "MedicalBusiness",
-            name: "SALBCARE — Consulta Online",
-            description: "Plataforma de teleconsulta com profissionais de saúde habilitados em todo o Brasil.",
-            url: "https://salbcare.lovable.app/consulta-online",
-          }),
+      <SEOHead
+        title="Consulta Online com Profissionais de Saúde | SalbCare"
+        description="Agende sua consulta online com médicos, psicólogos, nutricionistas, dentistas e fisioterapeutas. Atendimento em todo o Brasil, sem sair de casa."
+        canonical="/consulta-online"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "MedicalBusiness",
+          name: "SalbCare — Consulta Online",
+          description: "Plataforma de teleconsulta com profissionais de saúde habilitados em todo o Brasil.",
+          url: "https://salbcare.com.br/consulta-online",
         }}
       />
 
