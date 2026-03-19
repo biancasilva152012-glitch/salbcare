@@ -41,6 +41,8 @@ const Agenda = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [importing, setImporting] = useState(false);
+  const [blockOpen, setBlockOpen] = useState(false);
+  const [blockData, setBlockData] = useState(blockForm);
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
