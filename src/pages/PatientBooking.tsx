@@ -288,15 +288,15 @@ const PatientBooking = () => {
         </div>
 
         {/* Step indicator */}
-        {step < 3 && (
+        {step < 4 && (
           <div className="flex items-center justify-center gap-1">
-            {STEPS.slice(0, 3).map((s, i) => (
+            {STEPS.slice(0, 4).map((s, i) => (
               <div key={s} className="flex items-center gap-1">
                 <div className={cn(
                   "h-2 w-2 rounded-full transition-colors",
                   i <= step ? "bg-primary" : "bg-muted"
                 )} />
-                {i < 2 && <div className={cn("h-px w-6", i < step ? "bg-primary" : "bg-muted")} />}
+                {i < 3 && <div className={cn("h-px w-6", i < step ? "bg-primary" : "bg-muted")} />}
               </div>
             ))}
           </div>
