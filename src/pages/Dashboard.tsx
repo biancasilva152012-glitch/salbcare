@@ -141,6 +141,8 @@ const Dashboard = () => {
         cardLink={(profile as any)?.card_link}
       />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
+        {/* Pending bookings alert */}
+        <PendingBookings />
         {/* Greeting — tighter on mobile */}
         <motion.div variants={item} className="space-y-0.5">
           <p className="text-xs text-muted-foreground">

@@ -6,3 +6,6 @@ verify_jwt = false
 [functions.validate-pix-receipt]
 verify_jwt = false
 
+[functions.manage-booking]
+verify_jwt = false
+
