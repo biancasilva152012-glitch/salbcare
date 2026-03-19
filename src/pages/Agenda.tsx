@@ -627,8 +627,13 @@ const Agenda = () => {
                       );
                     }
 
+                    const isPending = apt.status === "aguardando_confirmacao" || apt.status === "aguardando_comprovante";
+                    const receiptUrl = apt.receipt_url
+                      ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/booking-receipts/${apt.receipt_url}`
+                      : null;
+
                     return (
-                      <div key={apt.id} className="glass-card p-3">
+                      <div key={apt.id} className={cn("glass-card p-3 space-y-2", isPending && "ring-1 ring-orange-500/20")}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
@@ -645,6 +650,11 @@ const Agenda = () => {
                                   <span className="inline-flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400">
                                     🏥 Presencial
                                   </span>
+                                )}
+                                {isPending && (
+                                  <Badge variant="outline" className="text-[10px] border-orange-500/30 text-orange-600 px-1.5 py-0">
+                                    <Clock className="h-3 w-3 mr-0.5" /> {apt.status === "aguardando_comprovante" ? "Aguardando comprovante" : "Pendente"}
+                                  </Badge>
                                 )}
                                 {isStartingSoon && (
                                   <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400 animate-pulse">
@@ -663,30 +673,71 @@ const Agenda = () => {
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            {isNow && (
-                              <a href="/telehealth" className="rounded-full bg-green-600 px-3 py-1.5 text-xs font-bold text-white animate-pulse hover:bg-green-700 transition-colors">
-                                Entrar agora
+                          {!isPending && (
+                            <div className="flex items-center gap-2">
+                              {isNow && (
+                                <a href="/telehealth" className="rounded-full bg-green-600 px-3 py-1.5 text-xs font-bold text-white animate-pulse hover:bg-green-700 transition-colors">
+                                  Entrar agora
+                                </a>
+                              )}
+                              <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="bg-card border-border">
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Excluir consulta?</AlertDialogTitle>
+                                    <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Pending booking actions */}
+                        {apt.status === "aguardando_confirmacao" && (
+                          <>
+                            {receiptUrl && (
+                              <a
+                                href={receiptUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 rounded-lg border border-border bg-accent/50 px-3 py-2 text-xs text-primary hover:bg-accent transition-colors"
+                              >
+                                <FileImage className="h-4 w-4" />
+                                Ver comprovante
+                                <ExternalLink className="h-3 w-3 ml-auto" />
                               </a>
                             )}
-                            <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent className="bg-card border-border">
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Excluir consulta?</AlertDialogTitle>
-                                  <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                className="flex-1 gap-1 bg-success hover:bg-success/90 text-white"
+                                disabled={processingId === apt.id}
+                                onClick={() => handleBookingAction(apt.id, "approve")}
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                                {processingId === apt.id ? "..." : "Aprovar"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 gap-1 border-destructive/30 text-destructive hover:bg-destructive/10"
+                                disabled={processingId === apt.id}
+                                onClick={() => handleBookingAction(apt.id, "reject")}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                                Recusar
+                              </Button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     );
                   })}
