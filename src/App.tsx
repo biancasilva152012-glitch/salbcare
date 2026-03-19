@@ -97,6 +97,7 @@ const App = () => (
               <Route path="/cancelado" element={<Cancelado />} />
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
               <Route path="/consulta-online/:specialty" element={<SpecialtyDirectory />} />
+              <Route path="/verificar" element={<VerifyDocument />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
