@@ -60,7 +60,7 @@ function hasAvailability(availableHours: AvailableHours, date: Date): boolean {
   return ranges.length > 0;
 }
 
-const STEPS = ["Horário", "Seus dados", "Confirmação", "Sucesso"];
+const STEPS = ["Horário", "Seus dados", "Confirmação", "Comprovante", "Sucesso"];
 
 const PatientBooking = () => {
   const [searchParams] = useSearchParams();
