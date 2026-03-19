@@ -394,6 +394,60 @@ const Agenda = () => {
               </Button>
               <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" />
             </label>
+            <Dialog open={blockOpen} onOpenChange={(v) => { setBlockOpen(v); if (v) setBlockData(blockForm); }}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1"><Lock className="h-3.5 w-3.5" /> Bloquear</Button>
+              </DialogTrigger>
+              <DialogContent className="bg-card border-border">
+                <DialogHeader><DialogTitle>Bloquear Horário</DialogTitle></DialogHeader>
+                <div className="space-y-3 pt-2">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label>Data</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal bg-accent border-border", !blockData.date && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {blockData.date ? format(parse(blockData.date, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : "Selecionar"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={blockData.date ? parse(blockData.date, "yyyy-MM-dd", new Date()) : undefined}
+                            onSelect={(d) => setBlockData({ ...blockData, date: d ? format(d, "yyyy-MM-dd") : "" })}
+                            locale={ptBR}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Hora</Label>
+                      <Select value={blockData.time} onValueChange={(v) => setBlockData({ ...blockData, time: v })}>
+                        <SelectTrigger className="bg-accent border-border"><SelectValue placeholder="Horário" /></SelectTrigger>
+                        <SelectContent className="max-h-48">
+                          {Array.from({ length: 28 }, (_, i) => {
+                            const h = Math.floor(i / 2) + 7;
+                            const m = i % 2 === 0 ? "00" : "30";
+                            const val = `${String(h).padStart(2, "0")}:${m}`;
+                            return <SelectItem key={val} value={val}>{val}</SelectItem>;
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Motivo (opcional)</Label>
+                    <Input placeholder="Ex: Reunião, Almoço, Feriado..." value={blockData.reason} onChange={(e) => setBlockData({ ...blockData, reason: e.target.value })} className="bg-accent border-border" />
+                  </div>
+                  <Button onClick={() => blockMutation.mutate()} className="w-full" disabled={!blockData.date || !blockData.time || blockMutation.isPending}>
+                    {blockMutation.isPending ? "Bloqueando..." : "Bloquear horário"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Nova</Button>
