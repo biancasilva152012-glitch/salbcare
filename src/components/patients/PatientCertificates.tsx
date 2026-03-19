@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Award, Plus, FileText, Trash2, Download, Calendar } from "lucide-react";
+import { Award, Plus, FileText, Trash2, Download, Calendar, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -13,11 +13,12 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
 import { getProfessionConfig } from "@/config/professions";
+import { maskCpf } from "@/utils/masks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
-import { parse } from "date-fns";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Props {
   patientId: string;
@@ -31,18 +32,32 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
   const [days, setDays] = useState("");
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [reason, setReason] = useState("");
+  const [manualCpf, setManualCpf] = useState("");
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, professional_type, crm, council_number, council_state")
+        .select("name, professional_type, crm, council_number, council_state, office_address")
         .eq("user_id", user!.id)
         .single();
       return data;
     },
     enabled: !!user,
+  });
+
+  const { data: patient } = useQuery({
+    queryKey: ["patient-detail", patientId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("patients")
+        .select("cpf")
+        .eq("id", patientId)
+        .single();
+      return data;
+    },
+    enabled: !!patientId,
   });
 
   const { data: certificates = [] } = useQuery({
@@ -61,19 +76,25 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
   });
 
   const config = getProfessionConfig(profile?.professional_type || "medico");
+  const councilNumber = profile?.council_number || profile?.crm || "";
+  const hasCouncil = !!councilNumber;
+  const patientCpf = patient?.cpf || "";
 
   const buildCertificateText = () => {
     const daysNum = parseInt(days) || 0;
     const dateStr = format(startDate, "dd/MM/yyyy");
     const cidText = reason ? ` CID: ${reason}.` : "";
-    return `Atesto para os devidos fins que o(a) paciente ${patientName} necessita de afastamento de suas atividades por ${daysNum} dia(s), a partir de ${dateStr}.${cidText}`;
+    return `Atesto para os devidos fins que o(a) paciente ${patientName} necessita de afastamento de suas atividades pelo período de ${daysNum} (${numberToWords(daysNum)}) dia(s), a partir de ${dateStr}.${cidText}`;
   };
 
   const generateAndSave = useMutation({
     mutationFn: async () => {
       if (!days || parseInt(days) <= 0) throw new Error("empty");
+      if (!hasCouncil) throw new Error("no_council");
 
-      const hashInput = `${profile?.name}|${profile?.crm}|${patientName}|${Date.now()}`;
+      const cpfToUse = patientCpf || manualCpf;
+
+      const hashInput = `${profile?.name}|${councilNumber}|${patientName}|${Date.now()}`;
       let hash = 0;
       for (let i = 0; i < hashInput.length; i++) {
         hash = ((hash << 5) - hash) + hashInput.charCodeAt(i);
@@ -82,16 +103,24 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
       const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
       const hashCode = `SALB-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
 
+      // Save CPF if entered manually
+      if (!patientCpf && cpfToUse) {
+        await supabase.from("patients").update({ cpf: cpfToUse }).eq("id", patientId);
+        queryClient.invalidateQueries({ queryKey: ["patient-detail", patientId] });
+      }
+
       const certificateText = buildCertificateText();
 
       const doc = generatePrescriptionPdf({
         doctorName: profile?.name || "",
         professionalType: profile?.professional_type || "medico",
-        doctorCrm: profile?.crm || "",
+        doctorCrm: councilNumber,
         patientName,
+        patientCpf: cpfToUse || undefined,
         prescription: "",
         certificate: certificateText,
         notes: "",
+        officeAddress: profile?.office_address || undefined,
       });
 
       const pdfBlob = doc.output("blob");
@@ -112,7 +141,7 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
         document_type: "certificate",
         hash_code: hashCode,
         file_path: filePath,
-        council_number: profile?.council_number || profile?.crm || null,
+        council_number: councilNumber || null,
         council_state: profile?.council_state || null,
         metadata: { days: parseInt(days), start_date: format(startDate, "yyyy-MM-dd"), reason },
       });
@@ -125,12 +154,17 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
       setDays("");
       setStartDate(new Date());
       setReason("");
+      setManualCpf("");
       setOpen(false);
       toast.success("Atestado gerado com sucesso!");
     },
     onError: (e: any) => {
       if (e.message === "empty") {
         toast.error("Informe o número de dias de afastamento.");
+        return;
+      }
+      if (e.message === "no_council") {
+        toast.error(`Cadastre seu número de registro profissional (${config.councilPrefix}) no perfil antes de gerar o atestado.`);
         return;
       }
       toast.error("Erro ao gerar atestado. Tente novamente.");
@@ -196,10 +230,34 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-3 pt-2">
+              {!hasCouncil && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    Cadastre seu número de registro profissional ({config.councilPrefix}) no perfil antes de gerar o atestado.
+                  </AlertDescription>
+                </Alert>
+              )}
               <div className="text-sm rounded-lg bg-accent p-3">
                 <span className="text-xs text-muted-foreground">Paciente:</span>{" "}
                 <span className="font-medium">{patientName}</span>
+                {patientCpf && (
+                  <p className="text-xs text-muted-foreground mt-1">CPF: {patientCpf}</p>
+                )}
               </div>
+              {!patientCpf && (
+                <div className="space-y-1.5">
+                  <Label>CPF do Paciente</Label>
+                  <Input
+                    placeholder="000.000.000-00"
+                    value={manualCpf}
+                    onChange={(e) => setManualCpf(maskCpf(e.target.value))}
+                    className="bg-accent border-border"
+                    maxLength={14}
+                  />
+                  <p className="text-[10px] text-muted-foreground">Será salvo no cadastro do paciente.</p>
+                </div>
+              )}
               <div className="space-y-1.5">
                 <Label>Dias de afastamento</Label>
                 <Input
@@ -250,7 +308,7 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
               <Button
                 onClick={() => generateAndSave.mutate()}
                 className="w-full gradient-primary font-semibold gap-2"
-                disabled={generateAndSave.isPending}
+                disabled={generateAndSave.isPending || !hasCouncil}
               >
                 <FileText className="h-4 w-4" />
                 {generateAndSave.isPending ? "Gerando..." : "Gerar PDF do Atestado"}
@@ -323,5 +381,14 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
     </div>
   );
 };
+
+/** Simple number-to-words for small numbers in Portuguese */
+function numberToWords(n: number): string {
+  const units = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez",
+    "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove", "vinte"];
+  if (n >= 0 && n <= 20) return units[n];
+  if (n <= 30) return `vinte e ${units[n - 20]}`;
+  return String(n);
+}
 
 export default PatientCertificates;

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Pill, Plus, FileText, Trash2, Download, Calendar } from "lucide-react";
+import { Pill, Plus, FileText, Trash2, Download, Calendar, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,8 +11,10 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
 import { getProfessionConfig } from "@/config/professions";
+import { maskCpf } from "@/utils/masks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Props {
   patientId: string;
@@ -23,18 +26,32 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [prescription, setPrescription] = useState("");
+  const [manualCpf, setManualCpf] = useState("");
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, professional_type, crm, council_number, council_state")
+        .select("name, professional_type, crm, council_number, council_state, office_address")
         .eq("user_id", user!.id)
         .single();
       return data;
     },
     enabled: !!user,
+  });
+
+  const { data: patient } = useQuery({
+    queryKey: ["patient-detail", patientId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("patients")
+        .select("cpf")
+        .eq("id", patientId)
+        .single();
+      return data;
+    },
+    enabled: !!patientId,
   });
 
   const { data: prescriptions = [] } = useQuery({
@@ -53,12 +70,18 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
   });
 
   const config = getProfessionConfig(profile?.professional_type || "medico");
+  const councilNumber = profile?.council_number || profile?.crm || "";
+  const hasCouncil = !!councilNumber;
+  const patientCpf = patient?.cpf || "";
 
   const generateAndSave = useMutation({
     mutationFn: async () => {
       if (!prescription.trim()) throw new Error("empty");
+      if (!hasCouncil) throw new Error("no_council");
 
-      const hashInput = `${profile?.name}|${profile?.crm}|${patientName}|${Date.now()}`;
+      const cpfToUse = patientCpf || manualCpf;
+
+      const hashInput = `${profile?.name}|${councilNumber}|${patientName}|${Date.now()}`;
       let hash = 0;
       for (let i = 0; i < hashInput.length; i++) {
         hash = ((hash << 5) - hash) + hashInput.charCodeAt(i);
@@ -67,14 +90,22 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
       const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
       const hashCode = `SALB-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
 
+      // Save CPF to patient if entered manually
+      if (!patientCpf && cpfToUse) {
+        await supabase.from("patients").update({ cpf: cpfToUse }).eq("id", patientId);
+        queryClient.invalidateQueries({ queryKey: ["patient-detail", patientId] });
+      }
+
       const doc = generatePrescriptionPdf({
         doctorName: profile?.name || "",
         professionalType: profile?.professional_type || "medico",
-        doctorCrm: profile?.crm || "",
+        doctorCrm: councilNumber,
         patientName,
+        patientCpf: cpfToUse || undefined,
         prescription,
         certificate: "",
         notes: "",
+        officeAddress: profile?.office_address || undefined,
       });
 
       const pdfBlob = doc.output("blob");
@@ -95,24 +126,28 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
         document_type: "prescription",
         hash_code: hashCode,
         file_path: filePath,
-        council_number: profile?.council_number || profile?.crm || null,
+        council_number: councilNumber || null,
         council_state: profile?.council_state || null,
         metadata: { prescription_text: prescription },
       });
       if (dbError) throw dbError;
 
-      // Also download for the professional
       doc.save(fileName);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patient-prescriptions", patientId] });
       setPrescription("");
+      setManualCpf("");
       setOpen(false);
       toast.success("Receita gerada com sucesso!");
     },
     onError: (e: any) => {
       if (e.message === "empty") {
         toast.error("Preencha os medicamentos e posologia.");
+        return;
+      }
+      if (e.message === "no_council") {
+        toast.error(`Cadastre seu número de registro profissional (${config.councilPrefix}) no perfil antes de gerar a receita.`);
         return;
       }
       toast.error("Erro ao gerar receita. Tente novamente.");
@@ -124,7 +159,6 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
       if (doc.file_path) {
         await supabase.storage.from("prescriptions").remove([doc.file_path]);
       }
-      // Use update to clear instead of delete since delete isn't allowed
       const { error } = await supabase.from("digital_documents").update({
         metadata: { deleted: true },
       }).eq("id", doc.id);
@@ -179,10 +213,34 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-3 pt-2">
+              {!hasCouncil && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    Cadastre seu número de registro profissional ({config.councilPrefix}) no perfil antes de gerar a receita.
+                  </AlertDescription>
+                </Alert>
+              )}
               <div className="text-sm rounded-lg bg-accent p-3">
                 <span className="text-xs text-muted-foreground">Paciente:</span>{" "}
                 <span className="font-medium">{patientName}</span>
+                {patientCpf && (
+                  <p className="text-xs text-muted-foreground mt-1">CPF: {patientCpf}</p>
+                )}
               </div>
+              {!patientCpf && (
+                <div className="space-y-1.5">
+                  <Label>CPF do Paciente</Label>
+                  <Input
+                    placeholder="000.000.000-00"
+                    value={manualCpf}
+                    onChange={(e) => setManualCpf(maskCpf(e.target.value))}
+                    className="bg-accent border-border"
+                    maxLength={14}
+                  />
+                  <p className="text-[10px] text-muted-foreground">Será salvo no cadastro do paciente.</p>
+                </div>
+              )}
               <div className="space-y-1.5">
                 <Label>Medicamentos e Posologia</Label>
                 <Textarea
@@ -201,7 +259,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
               <Button
                 onClick={() => generateAndSave.mutate()}
                 className="w-full gradient-primary font-semibold gap-2"
-                disabled={generateAndSave.isPending}
+                disabled={generateAndSave.isPending || !hasCouncil}
               >
                 <FileText className="h-4 w-4" />
                 {generateAndSave.isPending ? "Gerando..." : "Gerar PDF da Receita"}
