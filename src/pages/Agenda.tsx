@@ -496,7 +496,33 @@ const Agenda = () => {
           <Input placeholder="Buscar paciente..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
         </div>
 
-        {/* Professional Filter - only for Clinic plan */}
+        {/* Status Filter */}
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+          <button
+            onClick={() => setFilterStatus("all")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterStatus === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setFilterStatus("scheduled")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors ${filterStatus === "scheduled" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Confirmados
+          </button>
+          <button
+            onClick={() => setFilterStatus("pending")}
+            className={`shrink-0 text-xs px-2.5 py-1 rounded-full transition-colors relative ${filterStatus === "pending" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            Pendentes
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground flex items-center justify-center">
+                {pendingCount}
+              </span>
+            )}
+          </button>
+        </div>
+
         {canUseTeam && professionals.length > 0 && (
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
             <button
