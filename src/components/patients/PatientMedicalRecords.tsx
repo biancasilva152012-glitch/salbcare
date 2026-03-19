@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardList, ChevronDown, ChevronUp, Download, Calendar, Stethoscope } from "lucide-react";
+import { ClipboardList, ChevronDown, ChevronUp, Download, Calendar, Stethoscope, FileText, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
 import { toast } from "sonner";
 import { getProfessionConfig } from "@/config/professions";
+import PrescriptionModal from "@/components/telehealth/PrescriptionModal";
 
 interface PatientMedicalRecordsProps {
   patientId: string;
