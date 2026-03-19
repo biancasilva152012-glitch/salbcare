@@ -78,6 +78,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ScrollToTop />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
