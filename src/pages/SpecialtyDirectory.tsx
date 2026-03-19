@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { SPECIALTY_SEO, SPECIALTY_LEGAL_NOTICES } from "@/config/specialtyLegalNotices";
 import { PROFESSION_CONFIG } from "@/config/professions";
+import SEOHead from "@/components/SEOHead";
 
 type Filter = "all" | "today" | "week" | "top_rated";
 
@@ -73,21 +74,6 @@ const SpecialtyDirectory = () => {
   const legalNotice = specialty ? SPECIALTY_LEGAL_NOTICES[specialty] : null;
   const professionConfig = specialty ? PROFESSION_CONFIG[specialty as keyof typeof PROFESSION_CONFIG] : null;
 
-  // SEO meta tags
-  useEffect(() => {
-    if (seo) {
-      document.title = seo.metaTitle;
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute("content", seo.metaDescription);
-      else {
-        const m = document.createElement("meta");
-        m.name = "description";
-        m.content = seo.metaDescription;
-        document.head.appendChild(m);
-      }
-    }
-    return () => { document.title = "SALBCARE"; };
-  }, [seo]);
 
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["public-professionals", specialty],
@@ -127,17 +113,16 @@ const SpecialtyDirectory = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "MedicalBusiness",
-            name: `Consulta Online com ${seo.title} — SALBCARE`,
-            description: seo.metaDescription,
-            url: `https://salbcare.lovable.app/consulta-online/${specialty}`,
-          }),
+      <SEOHead
+        title={`${seo.metaTitle} | SalbCare`}
+        description={seo.metaDescription}
+        canonical={`/consulta-online/${specialty}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "MedicalBusiness",
+          name: `Consulta Online com ${seo.title} — SalbCare`,
+          description: seo.metaDescription,
+          url: `https://salbcare.com.br/consulta-online/${specialty}`,
         }}
       />
 
@@ -222,13 +207,32 @@ const SpecialtyDirectory = () => {
               const councilPrefix = professionConfig?.councilPrefix || "CRM";
               return (
                 <div key={prof.user_id} className="glass-card p-4">
+                  {/* JSON-LD per professional */}
+                  <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                      __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Physician",
+                        name: prof.name,
+                        medicalSpecialty: seo?.title || prof.professional_type,
+                        ...(prof.avatar_url && { image: prof.avatar_url }),
+                        ...(prof.consultation_price && {
+                          priceRange: `R$ ${Number(prof.consultation_price).toFixed(0)}`,
+                        }),
+                        memberOf: {
+                          "@type": "MedicalOrganization",
+                          name: `${councilPrefix} ${prof.crm || ""}`,
+                        },
+                      }),
+                    }}
+                  />
                   <div className="flex items-start gap-3">
-                    {/* Avatar */}
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm">
                       {prof.avatar_url ? (
                         <img
                           src={prof.avatar_url}
-                          alt={prof.name}
+                         alt={`Foto de perfil de ${prof.name}, ${seo?.title || 'profissional de saúde'}`}
                           className="h-12 w-12 rounded-full object-cover"
                           loading="lazy"
                         />

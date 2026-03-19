@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { SPECIALTY_SEO } from "@/config/specialtyLegalNotices";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import SEOHead from "@/components/SEOHead";
 
 const SPECIALTIES = [
   { key: "medico", emoji: "🩺", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
@@ -35,20 +36,6 @@ const ConsultaOnlineIndex = () => {
       });
   }, [user, navigate]);
 
-  useEffect(() => {
-    document.title = "Consulta Online — Agende com profissionais de saúde | SALBCARE";
-    const meta = document.querySelector('meta[name="description"]');
-    const content = "Agende sua consulta online com médicos, psicólogos, nutricionistas, dentistas e fisioterapeutas. Atendimento em todo o Brasil, sem sair de casa.";
-    if (meta) meta.setAttribute("content", content);
-    else {
-      const m = document.createElement("meta");
-      m.name = "description";
-      m.content = content;
-      document.head.appendChild(m);
-    }
-    return () => { document.title = "SALBCARE"; };
-  }, []);
-
   const filtered = SPECIALTIES.filter((s) => {
     const seo = SPECIALTY_SEO[s.key];
     return seo?.title.toLowerCase().includes(search.toLowerCase());
@@ -56,16 +43,16 @@ const ConsultaOnlineIndex = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "MedicalBusiness",
-            name: "SALBCARE — Consulta Online",
-            description: "Plataforma de teleconsulta com profissionais de saúde habilitados em todo o Brasil.",
-            url: "https://salbcare.lovable.app/consulta-online",
-          }),
+      <SEOHead
+        title="Consulta Online com Profissionais de Saúde | SalbCare"
+        description="Agende sua consulta online com médicos, psicólogos, nutricionistas, dentistas e fisioterapeutas. Atendimento em todo o Brasil, sem sair de casa."
+        canonical="/consulta-online"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "MedicalBusiness",
+          name: "SalbCare — Consulta Online",
+          description: "Plataforma de teleconsulta com profissionais de saúde habilitados em todo o Brasil.",
+          url: "https://salbcare.com.br/consulta-online",
         }}
       />
 

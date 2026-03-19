@@ -1,14 +1,17 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /agenda
+Disallow: /patients
+Disallow: /telehealth
+Disallow: /financial
+Disallow: /accounting
+Disallow: /legal
+Disallow: /profile
+Disallow: /subscription
+Disallow: /admin
+Disallow: /onboarding
+Disallow: /checkout
+Disallow: /patient-dashboard
+
+Sitemap: https://salbcare.com.br/sitemap.xml

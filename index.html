@@ -2,46 +2,58 @@
 <html lang="pt-BR" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>SALBCARE - Plataforma de Saúde para Profissionais</title>
-    <meta name="description" content="SALBCARE: gestão completa para profissionais de saúde. Agenda, pacientes, financeiro e contador incluso.">
-    
-    <!-- PWA Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>SalbCare | Encontre seu profissional de saúde</title>
+    <meta name="description" content="Plataforma completa para profissionais de saúde: agenda, prontuário, teleconsulta e assessoria contábil. Comece grátis por 7 dias.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://salbcare.com.br/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SalbCare" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="SalbCare | Encontre seu profissional de saúde">
+    <meta property="og:description" content="Plataforma completa para profissionais de saúde: agenda, prontuário, teleconsulta e assessoria contábil integrada.">
+    <meta property="og:image" content="https://salbcare.com.br/og-image.png">
+    <meta property="og:url" content="https://salbcare.com.br/">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SalbCare | Encontre seu profissional de saúde">
+    <meta name="twitter:description" content="Plataforma completa para profissionais de saúde: agenda, prontuário, teleconsulta e assessoria contábil integrada.">
+    <meta name="twitter:image" content="https://salbcare.com.br/og-image.png">
+
+    <!-- PWA -->
     <meta name="theme-color" content="#FFFFFF" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="SALBCARE" />
+    <meta name="apple-mobile-web-app-title" content="SalbCare" />
     <link rel="apple-touch-icon" sizes="192x192" href="/pwa-icon-192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/pwa-icon-512.png" />
     <link rel="icon" href="/pwa-icon-192.png" type="image/png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta property="og:type" content="website" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet" />
-    <meta property="og:title" content="SALBCARE - Plataforma de Saúde para Profissionais">
-  <meta name="twitter:title" content="SALBCARE - Plataforma de Saúde para Profissionais">
-  <meta property="og:description" content="SALBCARE: ecossistema completo para profissionais de saúde. Agenda, prontuários, telehealth, financeiro e muito mais.">
-  <meta name="twitter:description" content="SALBCARE: ecossistema completo para profissionais de saúde. Agenda, prontuários, telehealth, financeiro e muito mais.">
-  <meta property="og:image" content="/og-image.png">
-  <meta name="twitter:image" content="/og-image.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-</head>
+
+    <!-- Cache busting for HTML only -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+  </head>
   <body>
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
           for (var i = 0; i < registrations.length; i++) {
             registrations[i].update();
-            console.log('Service Worker atualizado com sucesso.');
           }
         });
       }
     </script>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx?t=20260316"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
