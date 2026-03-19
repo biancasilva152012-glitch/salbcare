@@ -14,6 +14,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { getProfessionalTitle, getCouncilPrefix } from "@/config/professions";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import PatientDocumentsTab from "@/components/patients/PatientDocumentsTab";
 
 const SPECIALTIES = [
   { key: null, emoji: "✨", label: "Todos" },
