@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2 } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock } from "lucide-react";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
