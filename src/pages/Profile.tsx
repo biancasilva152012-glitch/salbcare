@@ -47,6 +47,7 @@ const Profile = () => {
   const [cardLink, setCardLink] = useState("");
   const [bio, setBio] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
+  const [availabilityOnline, setAvailabilityOnline] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
