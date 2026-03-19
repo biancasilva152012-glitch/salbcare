@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import ConnectOnboardingBanner from "@/components/ConnectOnboardingBanner";
+import PendingBookings from "@/components/PendingBookings";
 
 interface QuickAction {
   icon: typeof Calendar;
