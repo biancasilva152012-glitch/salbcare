@@ -41,8 +41,8 @@ const PendingBookings = () => {
       toast.success(action === "approve" ? "Agendamento aprovado!" : "Agendamento recusado.");
       queryClient.invalidateQueries({ queryKey: ["pending-bookings"] });
       queryClient.invalidateQueries({ queryKey: ["today-appointments"] });
-    } catch {
-      toast.error("Erro ao processar. Tente novamente.");
+    } catch (error: any) {
+      toast.error(error?.message || "Erro ao processar. Tente novamente.");
     } finally {
       setProcessingId(null);
     }

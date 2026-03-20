@@ -218,7 +218,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    Cadastre seu número de registro profissional ({config.councilPrefix}) no perfil antes de gerar a receita.
+                    Cadastre seu número de registro profissional em Meu Perfil ({config.councilPrefix}) antes de gerar a receita.
                   </AlertDescription>
                 </Alert>
               )}
