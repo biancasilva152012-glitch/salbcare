@@ -115,6 +115,7 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
         doctorName: profile?.name || "",
         professionalType: profile?.professional_type || "medico",
         doctorCrm: councilNumber,
+        doctorCouncilState: profile?.council_state || undefined,
         patientName,
         patientCpf: cpfToUse || undefined,
         prescription: "",
