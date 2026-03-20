@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 
 const professionalTypeLabels: Record<string, string> = {
   medico: "Médico(a)",
-  dentista: "Dentista",
+  dentista: "Cirurgião(ã)-Dentista",
   psicologo: "Psicólogo(a)",
   fisioterapeuta: "Fisioterapeuta",
   nutricionista: "Nutricionista",
