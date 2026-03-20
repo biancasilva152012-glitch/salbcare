@@ -12,11 +12,25 @@ Deno.serve(async (req) => {
   }
 
   try {
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Método não permitido" }), {
+        status: 405,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { action, appointment_id, receipt_url } = await req.json();
+
+    if (!action || !appointment_id) {
+      return new Response(JSON.stringify({ error: "Dados incompletos" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (action === "upload_receipt") {
       // Patient uploaded receipt — update status
@@ -63,12 +77,16 @@ Deno.serve(async (req) => {
       }
 
       // Verify the appointment belongs to this professional
-      const { data: appt } = await supabase
+      const { data: appt, error: apptError } = await supabase
         .from("appointments")
         .select("*")
         .eq("id", appointment_id)
         .eq("user_id", user.id)
         .single();
+
+      if (apptError) {
+        console.error("Appointment lookup error:", apptError);
+      }
 
       if (!appt) {
         return new Response(JSON.stringify({ error: "Agendamento não encontrado" }), {
@@ -77,11 +95,19 @@ Deno.serve(async (req) => {
         });
       }
 
+      if (!["aguardando_confirmacao", "aguardando_comprovante"].includes(appt.status)) {
+        return new Response(JSON.stringify({ error: "Agendamento já foi processado" }), {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const newStatus = action === "approve" ? "scheduled" : "cancelled";
       const { error } = await supabase
         .from("appointments")
         .update({ status: newStatus })
-        .eq("id", appointment_id);
+        .eq("id", appointment_id)
+        .in("status", ["aguardando_confirmacao", "aguardando_comprovante"]);
 
       if (error) throw error;
 

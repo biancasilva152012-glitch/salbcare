@@ -6,6 +6,7 @@ export interface PrescriptionPdfData {
   doctorName: string;
   professionalType: string;
   doctorCrm: string;
+  doctorCouncilState?: string;
   patientName: string;
   patientCpf?: string;
   prescription: string;
@@ -23,6 +24,14 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   const today = format(new Date(), "dd/MM/yyyy");
   const margin = 16;
   const contentWidth = pageWidth - margin * 2;
+  const signatureTitle = data.professionalType === "dentista" ? "Cirurgião(ã)-Dentista" : config.label;
+  const normalizedCouncilNumber = data.doctorCrm?.trim() || "";
+  const normalizedCouncilState = data.doctorCouncilState?.trim().toUpperCase() || "";
+  const councilRegistrationText = normalizedCouncilNumber
+    ? data.professionalType === "dentista" && normalizedCouncilState
+      ? `CRO-${normalizedCouncilState} Nº ${normalizedCouncilNumber}`
+      : `${config.councilPrefix}${normalizedCouncilState ? `-${normalizedCouncilState}` : ""} ${normalizedCouncilNumber}`
+    : config.label;
 
   // ── Header ──
   doc.setFillColor(15, 23, 42);
@@ -39,9 +48,9 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.text(data.doctorName, margin, 24);
-  const councilText = data.doctorCrm
-    ? `${config.label} — ${config.councilPrefix} ${data.doctorCrm}`
-    : config.label;
+  const councilText = normalizedCouncilNumber
+    ? `${signatureTitle} — ${councilRegistrationText}`
+    : signatureTitle;
   doc.text(councilText, margin, 30);
 
   if (data.officeAddress) {
@@ -197,12 +206,12 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   doc.setFont("helvetica", "normal");
   doc.setTextColor(80);
   doc.setFontSize(8);
-  doc.text(councilText, cx, y, { align: "center" });
+  doc.text(signatureTitle, cx, y, { align: "center" });
   y += 4;
 
-  doc.setFontSize(7);
+  doc.setFontSize(7.5);
   doc.setTextColor(130);
-  doc.text(config.council, cx, y, { align: "center" });
+  doc.text(councilRegistrationText, cx, y, { align: "center" });
 
   // ── Footer on all pages ──
   const pageCount = doc.getNumberOfPages();
