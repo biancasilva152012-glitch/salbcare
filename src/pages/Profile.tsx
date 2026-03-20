@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, Banknote, Wifi, WifiOff } from "lucide-react";
+import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, Banknote, Wifi, WifiOff, BadgeCheck, TriangleAlert, Save, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
+import { getProfessionConfig } from "@/config/professions";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
@@ -22,6 +23,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 const professionalTypeLabels: Record<string, string> = {
   medico: "Médico(a)",
@@ -48,11 +50,15 @@ const Profile = () => {
   const [bio, setBio] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
   const [availabilityOnline, setAvailabilityOnline] = useState(false);
+  const [councilNumber, setCouncilNumber] = useState("");
+  const [councilState, setCouncilState] = useState("");
+  const [officeAddress, setOfficeAddress] = useState("");
+  const [savingRegistration, setSavingRegistration] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id, bio, availability_online").eq("user_id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("name, email, phone, professional_type, plan, payment_status, trial_start_date, pix_key, card_link, suspended_until, meet_link, consultation_price, avatar_url, user_id, bio, availability_online, council_number, council_state, office_address").eq("user_id", user!.id).single();
       return data;
     },
     enabled: !!user,
@@ -70,6 +76,9 @@ const Profile = () => {
       setCardLink((profile as any).card_link || "");
       setBio((profile as any).bio || "");
       setAvailabilityOnline((profile as any).availability_online || false);
+      setCouncilNumber((profile as any).council_number || "");
+      setCouncilState((profile as any).council_state || "");
+      setOfficeAddress((profile as any).office_address || "");
     }
   }, [profile]);
 
@@ -79,6 +88,30 @@ const Profile = () => {
       setTimeout(() => consultationRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
     }
   }, [searchParams, profile]);
+
+  const profConfig = getProfessionConfig(profile?.professional_type || "medico");
+  const hasCouncil = !!councilNumber.trim();
+
+  const handleSaveRegistration = async () => {
+    if (!user) return;
+    setSavingRegistration(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          council_number: councilNumber.trim() || null,
+          council_state: councilState.trim().toUpperCase() || null,
+          office_address: officeAddress.trim() || null,
+        } as any)
+        .eq("user_id", user.id);
+      if (error) throw error;
+      toast.success("Registro profissional atualizado!");
+    } catch {
+      toast.error("Erro ao salvar registro.");
+    } finally {
+      setSavingRegistration(false);
+    }
+  };
 
   const handleSavePaymentData = async () => {
     if (!user) return;
@@ -239,6 +272,70 @@ const Profile = () => {
         </div>
 
         {getStatusBadge()}
+
+        {/* Professional Registration Card */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 px-1">
+            <BadgeCheck className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold">Registro profissional</h2>
+          </div>
+          {!hasCouncil && (
+            <div className="flex items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+              <TriangleAlert className="h-4 w-4 shrink-0" />
+              <span>Cadastre seu {profConfig.councilPrefix} para emitir receitas e atestados digitais.</span>
+            </div>
+          )}
+          {hasCouncil && (
+            <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-xs text-success">
+              <CheckCircle className="h-4 w-4 shrink-0" />
+              <span>{profConfig.councilPrefix}{councilState ? `-${councilState.toUpperCase()}` : ""} {councilNumber} — registro validado</span>
+            </div>
+          )}
+          <div className="glass-card p-3 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Nº {profConfig.councilPrefix}</Label>
+                <Input
+                  value={councilNumber}
+                  onChange={(e) => setCouncilNumber(e.target.value)}
+                  placeholder="Ex: 12345"
+                  className="bg-accent border-border"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">UF do Conselho</Label>
+                <Input
+                  value={councilState}
+                  onChange={(e) => setCouncilState(e.target.value.toUpperCase().slice(0, 2))}
+                  placeholder="Ex: SP"
+                  maxLength={2}
+                  className="bg-accent border-border"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                Endereço do consultório <span className="text-muted-foreground">(opcional)</span>
+              </Label>
+              <Input
+                value={officeAddress}
+                onChange={(e) => setOfficeAddress(e.target.value)}
+                placeholder="Rua, número, bairro, cidade - UF"
+                className="bg-accent border-border"
+              />
+            </div>
+            <Button
+              onClick={handleSaveRegistration}
+              disabled={savingRegistration}
+              size="sm"
+              className="w-full gradient-primary font-semibold gap-1.5"
+            >
+              {savingRegistration ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {savingRegistration ? "Salvando..." : "Salvar registro profissional"}
+            </Button>
+          </div>
+        </div>
 
         {profile?.suspended_until && new Date(profile.suspended_until) > new Date() && (
           <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
