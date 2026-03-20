@@ -100,6 +100,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
         doctorName: profile?.name || "",
         professionalType: profile?.professional_type || "medico",
         doctorCrm: councilNumber,
+        doctorCouncilState: profile?.council_state || undefined,
         patientName,
         patientCpf: cpfToUse || undefined,
         prescription,
@@ -147,7 +148,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
         return;
       }
       if (e.message === "no_council") {
-        toast.error(`Cadastre seu número de registro profissional (${config.councilPrefix}) no perfil antes de gerar a receita.`);
+        toast.error(`Cadastre seu número de registro profissional em Meu Perfil (${config.councilPrefix}) antes de gerar a receita.`);
         return;
       }
       toast.error("Erro ao gerar receita. Tente novamente.");
