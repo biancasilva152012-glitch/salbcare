@@ -814,6 +814,72 @@ export type Database = {
         }
         Relationships: []
       }
+      service_requests: {
+        Row: {
+          consultation_price: number | null
+          created_at: string
+          id: string
+          notes: string | null
+          patient_address: string | null
+          patient_birth_date: string | null
+          patient_cpf: string | null
+          patient_data: Json | null
+          patient_email: string | null
+          patient_name: string | null
+          patient_phone: string | null
+          payment_status: string
+          prescription_data: Json | null
+          prescription_image_path: string | null
+          professional_id: string
+          receipt_url: string | null
+          service_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          consultation_price?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_address?: string | null
+          patient_birth_date?: string | null
+          patient_cpf?: string | null
+          patient_data?: Json | null
+          patient_email?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          payment_status?: string
+          prescription_data?: Json | null
+          prescription_image_path?: string | null
+          professional_id: string
+          receipt_url?: string | null
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          consultation_price?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_address?: string | null
+          patient_birth_date?: string | null
+          patient_cpf?: string | null
+          patient_data?: Json | null
+          patient_email?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          payment_status?: string
+          prescription_data?: Json | null
+          prescription_image_path?: string | null
+          professional_id?: string
+          receipt_url?: string | null
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       teleconsultations: {
         Row: {
           created_at: string

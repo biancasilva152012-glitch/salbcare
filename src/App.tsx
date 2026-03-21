@@ -52,6 +52,9 @@ const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIn
 const PatientDashboard = lazyWithRetry(() => import("./pages/PatientDashboard"), "PatientDashboard");
 const BookingSuccess = lazyWithRetry(() => import("./pages/BookingSuccess"), "BookingSuccess");
 const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"), "VerifyDocument");
+const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
+const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
+const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,6 +103,9 @@ const App = () => (
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
               <Route path="/consulta-online/:specialty" element={<SpecialtyDirectory />} />
               <Route path="/verificar" element={<VerifyDocument />} />
+              <Route path="/pronto-atendimento" element={<ProntoAtendimento />} />
+              <Route path="/pronto-atendimento/servico" element={<ProntoAtendimentoFlow />} />
+              <Route path="/pronto-atendimento/historico" element={<ProntoAtendimentoHistorico />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
