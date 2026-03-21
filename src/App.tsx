@@ -52,6 +52,9 @@ const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIn
 const PatientDashboard = lazyWithRetry(() => import("./pages/PatientDashboard"), "PatientDashboard");
 const BookingSuccess = lazyWithRetry(() => import("./pages/BookingSuccess"), "BookingSuccess");
 const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"), "VerifyDocument");
+const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
+const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
+const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 
 const queryClient = new QueryClient({
   defaultOptions: {
