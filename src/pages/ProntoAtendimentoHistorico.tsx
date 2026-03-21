@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { maskCPF } from "@/utils/masks";
+import { maskCpf } from "@/utils/masks";
 import SEOHead from "@/components/SEOHead";
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {

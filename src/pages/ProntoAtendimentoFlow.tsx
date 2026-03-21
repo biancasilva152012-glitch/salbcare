@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { maskCPF, maskPhone } from "@/utils/masks";
+import { maskCpf, maskPhone } from "@/utils/masks";
 import { PROFESSION_CONFIG } from "@/config/professions";
 import SEOHead from "@/components/SEOHead";
 
