@@ -73,7 +73,7 @@ const ProntoAtendimentoHistorico = () => {
             <Label className="text-xs">CPF</Label>
             <Input
               value={cpf}
-              onChange={(e) => setCpf(maskCPF(e.target.value))}
+              onChange={(e) => setCpf(maskCpf(e.target.value))}
               placeholder="000.000.000-00"
               className="bg-accent border-border"
             />
