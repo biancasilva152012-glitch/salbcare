@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock, Check, X, FileImage, ExternalLink } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock, Check, X, FileImage, ExternalLink, FilePlus } from "lucide-react";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ import { usePagination } from "@/hooks/usePagination";
 import { downloadCsvTemplate, AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 import { Badge } from "@/components/ui/badge";
 import { useQueryClient as useQC } from "@tanstack/react-query";
+import ServiceRequestsPanel from "@/components/agenda/ServiceRequestsPanel";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 const blockForm = { date: "", time: "", reason: "" };
@@ -47,6 +48,22 @@ const Agenda = () => {
   const [blockData, setBlockData] = useState(blockForm);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"appointments" | "requests">("appointments");
+
+  // Fetch service requests count for badge
+  const { data: requestsCount = 0 } = useQuery({
+    queryKey: ["service-requests-count", user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("service_requests")
+        .select("*", { count: "exact", head: true })
+        .eq("professional_id", user!.id)
+        .in("status", ["pending_review", "pending_payment"]);
+      return count || 0;
+    },
+    enabled: !!user,
+    refetchInterval: 30000,
+  });
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
@@ -403,7 +420,7 @@ const Agenda = () => {
   }
 
   return (
-    <PageContainer backTo="/dashboard" onRefresh={() => queryClient.invalidateQueries({ queryKey: ["appointments"] })}>
+    <PageContainer backTo="/dashboard" onRefresh={() => { queryClient.invalidateQueries({ queryKey: ["appointments"] }); queryClient.invalidateQueries({ queryKey: ["service-requests"] }); queryClient.invalidateQueries({ queryKey: ["service-requests-count"] }); }}>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Agenda</h1>
@@ -491,6 +508,36 @@ const Agenda = () => {
           </div>
         </div>
 
+        {/* Tab toggle */}
+        <div className="flex rounded-lg bg-muted p-1">
+          <button
+            onClick={() => setActiveTab("appointments")}
+            className={`flex-1 text-xs font-medium py-2 px-3 rounded-md transition-colors ${
+              activeTab === "appointments" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            📅 Consultas
+          </button>
+          <button
+            onClick={() => setActiveTab("requests")}
+            className={`flex-1 text-xs font-medium py-2 px-3 rounded-md transition-colors relative ${
+              activeTab === "requests" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <FilePlus className="h-3.5 w-3.5 inline mr-1" />
+            Solicitações
+            {requestsCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground flex items-center justify-center">
+                {requestsCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {activeTab === "requests" ? (
+          <ServiceRequestsPanel />
+        ) : (
+        <>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Buscar paciente..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
@@ -755,6 +802,8 @@ const Agenda = () => {
             onPrev={pagination.prevPage}
           />
         </motion.div>
+        </>
+        )}
       </div>
     </PageContainer>
   );
