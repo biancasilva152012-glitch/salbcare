@@ -111,7 +111,7 @@ const PatientCertificates = ({ patientId, patientName }: Props) => {
 
       const certificateText = buildCertificateText();
 
-      const doc = generatePrescriptionPdf({
+      const doc = await generatePrescriptionPdf({
         doctorName: profile?.name || "",
         professionalType: profile?.professional_type || "medico",
         doctorCrm: councilNumber,

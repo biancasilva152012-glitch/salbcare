@@ -23,8 +23,8 @@ const PROFESSIONS = [
 ];
 
 export default function TestPrescriptionPdf() {
-  const handleGenerate = (profType: string) => {
-    const doc = generatePrescriptionPdf({ ...TEST_DATA, professionalType: profType });
+  const handleGenerate = async (profType: string) => {
+    const doc = await generatePrescriptionPdf({ ...TEST_DATA, professionalType: profType });
     doc.save(`teste-receita-${profType}.pdf`);
   };
 
