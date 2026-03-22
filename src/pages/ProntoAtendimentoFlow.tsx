@@ -58,10 +58,6 @@ const ProntoAtendimentoFlow = () => {
   const [blockedMedication, setBlockedMedication] = useState<PrescriptionColorScheme | null>(null);
   const [showBlockedInfo, setShowBlockedInfo] = useState(false);
 
-  // Certificate fields
-  const [certReason, setCertReason] = useState("");
-  const [certDays, setCertDays] = useState("");
-  const [certRetroDate, setCertRetroDate] = useState("");
 
   // Payment
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
