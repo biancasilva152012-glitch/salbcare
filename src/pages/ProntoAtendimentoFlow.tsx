@@ -661,6 +661,19 @@ const ProntoAtendimentoFlow = () => {
                   </div>
                 </>
               )}
+
+              {/* LGPD Consent */}
+              <div className="rounded-lg border border-border p-3 space-y-2 bg-accent/30">
+                <div className="flex items-start gap-2">
+                  <Checkbox checked={lgpdConsent} onCheckedChange={(v) => setLgpdConsent(!!v)} className="mt-0.5" />
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Autorizo o uso dos meus dados de saúde para fins de atendimento médico, conforme <strong>LGPD Art. 11</strong>. Seus dados serão vinculados ao seu CPF para consulta de histórico futuro.
+                  </p>
+                </div>
+                {!lgpdConsent && (
+                  <p className="text-[10px] text-destructive">* Consentimento obrigatório para prosseguir.</p>
+                )}
+              </div>
             </motion.div>
           )}
 
