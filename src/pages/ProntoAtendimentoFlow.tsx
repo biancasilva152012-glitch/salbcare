@@ -290,7 +290,7 @@ const ProntoAtendimentoFlow = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-start justify-center p-4 pt-6 pb-24">
+    <div className="min-h-screen bg-background flex items-start justify-center p-4 pt-6 pb-32">
       <SEOHead title="Solicitar Atendimento | SalbCare" description="Solicite renovação de receita, atestado ou consulta online." />
       <div className="w-full max-w-lg space-y-5">
         {/* Header */}
@@ -715,25 +715,27 @@ const ProntoAtendimentoFlow = () => {
 
         {/* Navigation buttons */}
         {step < steps.length - 1 && (
-          <div className="flex gap-3">
-            {step > 0 && (
-              <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1">
-                <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
-              </Button>
-            )}
-            <Button
-              onClick={handleNext}
-              disabled={!canProceed() || loading}
-              className="flex-1 gradient-primary"
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : step === steps.length - 2 ? (
-                "Enviar Solicitação"
-              ) : (
-                <>Próximo <ArrowRight className="h-4 w-4 ml-1" /></>
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border p-4">
+            <div className="max-w-lg mx-auto flex gap-3">
+              {step > 0 && (
+                <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1">
+                  <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
+                </Button>
               )}
-            </Button>
+              <Button
+                onClick={handleNext}
+                disabled={!canProceed() || loading}
+                className="flex-1 gradient-primary"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : step === steps.length - 2 ? (
+                  "Enviar Solicitação"
+                ) : (
+                  <>Próximo <ArrowRight className="h-4 w-4 ml-1" /></>
+                )}
+              </Button>
+            </div>
           </div>
         )}
       </div>
