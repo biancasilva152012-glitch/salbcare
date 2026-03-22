@@ -74,26 +74,38 @@ const AcompanhamentoSolicitacao = () => {
     queryKey: ["track-request", activeId],
     queryFn: async () => {
       if (!activeId) return null;
-      // Try full UUID or short code (first 8 chars)
       const normalizedId = activeId.trim().toLowerCase();
-      
+      const selectCols = "id, status, service_type, patient_name, created_at, updated_at, consultation_price, professional_id, notes";
+
+      // If it looks like a full UUID, search exact
+      const isFullUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(normalizedId);
+      if (isFullUuid) {
+        const { data, error } = await supabase
+          .from("service_requests")
+          .select(selectCols)
+          .eq("id", normalizedId)
+          .maybeSingle();
+        if (error) throw error;
+        return data;
+      }
+
+      // Short code: cast id to text and use ilike prefix match
       const { data, error } = await supabase
         .from("service_requests")
-        .select("id, status, service_type, patient_name, created_at, updated_at, consultation_price, professional_id, notes")
-        .or(`id.eq.${normalizedId}`)
+        .select(selectCols)
+        .ilike("id::text" as any, `${normalizedId}%`)
         .limit(1)
         .maybeSingle();
-
+      
       if (error) {
-        // Try matching by prefix
-        const { data: prefixData, error: prefixErr } = await supabase
+        // Fallback: fetch recent and filter client-side
+        const { data: allData, error: allErr } = await supabase
           .from("service_requests")
-          .select("id, status, service_type, patient_name, created_at, updated_at, consultation_price, professional_id, notes")
-          .ilike("id", `${normalizedId}%`)
-          .limit(1)
-          .maybeSingle();
-        if (prefixErr) throw prefixErr;
-        return prefixData;
+          .select(selectCols)
+          .order("created_at", { ascending: false })
+          .limit(100);
+        if (allErr) throw allErr;
+        return allData?.find(r => r.id.toLowerCase().startsWith(normalizedId)) || null;
       }
 
       return data;
