@@ -73,6 +73,39 @@ const ServiceRequestsPanel = () => {
     refetchInterval: 30000,
   });
 
+  // Realtime subscription for instant updates
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel("service-requests-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "service_requests",
+          filter: `professional_id=eq.${user.id}`,
+        },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["service-requests"] });
+          queryClient.invalidateQueries({ queryKey: ["service-requests-count"] });
+          if (payload.eventType === "INSERT") {
+            const newReq = payload.new as any;
+            const serviceLabel = SERVICE_TYPE_CONFIG[newReq.service_type]?.label || "Nova solicitação";
+            toast.info(`📩 ${serviceLabel}`, {
+              description: `${newReq.patient_name || "Paciente"} enviou uma nova solicitação.`,
+              duration: 8000,
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
+
   const buildWhatsAppUrl = useCallback((req: ServiceRequest, action: "accepted" | "rejected") => {
     const phone = req.patient_phone?.replace(/\D/g, "");
     if (!phone) return null;
