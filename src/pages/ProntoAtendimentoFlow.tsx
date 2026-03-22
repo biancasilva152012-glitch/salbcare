@@ -167,6 +167,17 @@ const ProntoAtendimentoFlow = () => {
     const updated = [...medications];
     updated[index] = { ...updated[index], [field]: value };
     setMedications(updated);
+
+    // Check for blocked medications when name changes
+    if (field === "name") {
+      const allNames = updated.map(m => m.name).join(" ");
+      let blocked: PrescriptionColorScheme | null = null;
+      for (const med of updated) {
+        const result = detectBlockedMedication(med.name);
+        if (result) { blocked = result; break; }
+      }
+      setBlockedMedication(blocked);
+    }
   };
 
   const removeMedication = (index: number) => {
