@@ -215,9 +215,7 @@ const ProntoAtendimentoFlow = () => {
       const { error } = await supabase.from("service_requests").insert({
         id,
         professional_id: professionalId,
-        service_type: serviceType === "prescription" ? "prescription_renewal"
-          : serviceType === "certificate" ? "certificate"
-          : "consultation",
+        service_type: serviceType === "prescription" ? "prescription_renewal" : "consultation",
         status: "pending_review",
         patient_name: patient.name,
         patient_cpf: patient.cpf,
