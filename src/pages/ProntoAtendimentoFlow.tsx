@@ -339,8 +339,7 @@ const ProntoAtendimentoFlow = () => {
 
               <div className="grid gap-3">
                 {[
-                  { key: "prescription" as const, icon: FilePlus, title: "Renovação de Receita", desc: "Renove sua receita de uso contínuo ou controlado com avaliação médica" },
-                  { key: "certificate" as const, icon: FileText, title: "Atestado Médico", desc: "Solicite atestado de afastamento ou comparecimento" },
+                  { key: "prescription" as const, icon: FilePlus, title: "Renovação de Receita", desc: "Renove sua receita de uso contínuo mediante avaliação médica. Não atende medicamentos de tarja preta ou controlados C1/C2/C3." },
                   { key: "consultation" as const, icon: Stethoscope, title: "Consulta Online", desc: "Teleconsulta completa com profissional de saúde" },
                 ].map(({ key, icon: Icon, title, desc }) => (
                   <button
