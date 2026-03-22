@@ -68,7 +68,6 @@ type SpecialtyFilter = string | "all";
 const SERVICE_OPTIONS = [
   { key: "all" as const, label: "Todos", icon: Filter },
   { key: "prescription" as const, label: "Renovação de Receita", icon: FilePlus },
-  { key: "certificate" as const, label: "Atestado", icon: FileText },
   { key: "consultation" as const, label: "Consulta", icon: Stethoscope },
 ];
 
@@ -244,7 +243,7 @@ const ProntoAtendimento = () => {
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-3">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Pronto Atendimento Online
+            Teleconsulta Online
           </h1>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
             Renove receitas, solicite atestados ou consulte especialistas. Sem cadastro, direto pelo navegador.
@@ -259,48 +258,6 @@ const ProntoAtendimento = () => {
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">⚡ Rápido</span>
         </div>
 
-        {/* Renewal Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3"
-        >
-          <div className="flex items-center gap-2">
-            <FilePlus className="h-5 w-5 text-primary" />
-            <h2 className="text-sm font-bold">Renovação de Receita</h2>
-          </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Renove sua receita de uso contínuo sem sair de casa. Rápido, seguro e com validade legal.
-          </p>
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-xs text-foreground">
-              <span className="text-green-500">✅</span> Receitas comuns
-            </div>
-            <div className="flex items-center gap-2 text-xs text-foreground">
-              <span className="text-green-500">✅</span> Tarja vermelha simples
-            </div>
-            <div className="flex items-center gap-2 text-xs text-foreground">
-              <span className="text-green-500">✅</span> Uso contínuo
-            </div>
-            <div className="flex items-center gap-2 text-xs text-foreground">
-              <span className="text-green-500">✅</span> Receita digital com assinatura
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="text-red-500">❌</span> Tarja preta
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="text-red-500">❌</span> Controlados C1/C2/C3
-            </div>
-          </div>
-          <Button
-            size="sm"
-            className="w-full gradient-primary text-xs font-semibold gap-1"
-            onClick={() => setServiceFilter("prescription")}
-          >
-            Renovar Minha Receita Agora →
-          </Button>
-        </motion.div>
 
         {/* Service type filter */}
         <div className="space-y-2">
