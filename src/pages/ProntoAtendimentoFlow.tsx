@@ -55,6 +55,8 @@ const ProntoAtendimentoFlow = () => {
   const [prevDoctorCrm, setPrevDoctorCrm] = useState("");
   const [prevDate, setPrevDate] = useState("");
   const [isContinuousUse, setIsContinuousUse] = useState(false);
+  const [blockedMedication, setBlockedMedication] = useState<PrescriptionColorScheme | null>(null);
+  const [showBlockedInfo, setShowBlockedInfo] = useState(false);
 
   // Certificate fields
   const [certReason, setCertReason] = useState("");
