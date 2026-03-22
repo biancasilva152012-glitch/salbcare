@@ -636,18 +636,6 @@ const ProntoAtendimentoFlow = () => {
                 </div>
               )}
 
-              {serviceType === "certificate" && (
-                <>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Empresa/empregador (opcional)</Label>
-                    <Input value={patient.employer} onChange={(e) => setPatient({ ...patient, employer: e.target.value })} placeholder="Nome da empresa" className="bg-accent border-border" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Sintomas relatados</Label>
-                    <Textarea value={patient.symptoms} onChange={(e) => setPatient({ ...patient, symptoms: e.target.value.slice(0, 300) })} placeholder="Descreva os sintomas..." rows={2} className="bg-accent border-border text-sm resize-none" />
-                  </div>
-                </>
-              )}
 
               {/* LGPD Consent */}
               <div className="rounded-lg border border-border p-3 space-y-2 bg-accent/30">
