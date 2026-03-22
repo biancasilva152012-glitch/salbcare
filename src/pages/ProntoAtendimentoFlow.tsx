@@ -512,7 +512,6 @@ const ProntoAtendimentoFlow = () => {
 
           {/* PAYMENT STEP */}
           {((serviceType === "prescription" && step === 2) ||
-            (serviceType === "certificate" && step === 2) ||
             (serviceType === "consultation" && step === 1)) && (
             <motion.div key="payment" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-4">
               <h2 className="text-sm font-semibold flex items-center gap-2">
