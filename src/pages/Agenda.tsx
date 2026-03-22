@@ -420,7 +420,7 @@ const Agenda = () => {
   }
 
   return (
-    <PageContainer backTo="/dashboard" onRefresh={() => queryClient.invalidateQueries({ queryKey: ["appointments"] })}>
+    <PageContainer backTo="/dashboard" onRefresh={() => { queryClient.invalidateQueries({ queryKey: ["appointments"] }); queryClient.invalidateQueries({ queryKey: ["service-requests"] }); queryClient.invalidateQueries({ queryKey: ["service-requests-count"] }); }}>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Agenda</h1>
