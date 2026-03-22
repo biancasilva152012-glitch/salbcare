@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, Upload, Camera, Loader2, Check, Copy,
-  ExternalLink, FilePlus, FileText, Stethoscope, AlertCircle, QrCode,
+  ExternalLink, FilePlus, Stethoscope, AlertCircle, QrCode,
   ShieldAlert, Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
