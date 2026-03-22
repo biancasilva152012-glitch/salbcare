@@ -234,10 +234,6 @@ const ProntoAtendimentoFlow = () => {
           prev_doctor_name: prevDoctorName,
           prev_doctor_crm: prevDoctorCrm,
           prev_date: prevDate,
-        } : serviceType === "certificate" ? {
-          reason: certReason,
-          days: certDays,
-          retro_date: certRetroDate,
         } : {},
         receipt_url: receiptPath,
         payment_status: receiptPath ? "pending_validation" : "pending",
