@@ -509,59 +509,6 @@ const ProntoAtendimentoFlow = () => {
             </motion.div>
           )}
 
-          {/* CERTIFICATE STEP 1: Details */}
-          {step === 1 && serviceType === "certificate" && (
-            <motion.div key="cert" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-4">
-              <h2 className="text-sm font-semibold flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" />
-                Detalhes do Atestado
-              </h2>
-
-              <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-muted-foreground">
-                    A emissão do atestado está sujeita à avaliação médica. O profissional avaliará os sintomas antes de emitir o documento.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs">Motivo do atestado *</Label>
-                <Textarea
-                  placeholder="Descreva o motivo do atestado..."
-                  value={certReason}
-                  onChange={(e) => setCertReason(e.target.value.slice(0, 500))}
-                  className="bg-accent border-border text-sm resize-none"
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">Dias de afastamento *</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={certDays}
-                    onChange={(e) => setCertDays(e.target.value)}
-                    placeholder="Ex: 3"
-                    className="bg-accent border-border text-sm"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Data retroativa (opcional)</Label>
-                  <Input
-                    type="date"
-                    value={certRetroDate}
-                    onChange={(e) => setCertRetroDate(e.target.value)}
-                    className="bg-accent border-border text-sm"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
 
           {/* PAYMENT STEP */}
           {((serviceType === "prescription" && step === 2) ||
