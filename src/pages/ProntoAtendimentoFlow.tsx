@@ -290,7 +290,7 @@ const ProntoAtendimentoFlow = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-start justify-center p-4 pt-6 pb-24">
+    <div className="min-h-screen bg-background flex items-start justify-center p-4 pt-6 pb-32">
       <SEOHead title="Solicitar Atendimento | SalbCare" description="Solicite renovação de receita, atestado ou consulta online." />
       <div className="w-full max-w-lg space-y-5">
         {/* Header */}
