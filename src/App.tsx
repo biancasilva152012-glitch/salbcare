@@ -107,6 +107,7 @@ const App = () => (
               <Route path="/pronto-atendimento" element={<ProntoAtendimento />} />
               <Route path="/pronto-atendimento/servico" element={<ProntoAtendimentoFlow />} />
               <Route path="/pronto-atendimento/historico" element={<ProntoAtendimentoHistorico />} />
+              <Route path="/meu-historico" element={<ProntoAtendimentoHistorico />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
