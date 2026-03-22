@@ -3,7 +3,8 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, Upload, Camera, Loader2, Check, Copy,
-  ExternalLink, FilePlus, FileText, Stethoscope, AlertCircle, QrCode
+  ExternalLink, FilePlus, FileText, Stethoscope, AlertCircle, QrCode,
+  ShieldAlert, Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import { toast } from "sonner";
 import { maskCpf, maskPhone } from "@/utils/masks";
 import { PROFESSION_CONFIG } from "@/config/professions";
 import SEOHead from "@/components/SEOHead";
+import { detectBlockedMedication, type PrescriptionColorScheme } from "@/utils/prescriptionColors";
 
 interface MedicationEntry {
   name: string;

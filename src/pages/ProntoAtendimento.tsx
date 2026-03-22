@@ -485,10 +485,10 @@ const ProntoAtendimento = () => {
           </Button>
         </div>
 
-        {/* Footer */}
-        <div className="text-center space-y-1 pt-4 border-t border-border">
-          <p className="text-[10px] text-muted-foreground">
-            A SALBCARE é uma plataforma de gestão e não substitui orientação médica, jurídica ou contábil profissional.
+        {/* Legal Footer */}
+        <div className="text-center space-y-2 pt-4 border-t border-border">
+          <p className="text-[10px] text-muted-foreground leading-relaxed">
+            A renovação de receitas está sujeita à avaliação do profissional de saúde. Medicamentos da lista C1/C2/C3 e tarja preta (ANVISA Portaria 344/98 e RDC 471/2021) não são atendidos por este serviço.
           </p>
           <p className="text-[10px] text-muted-foreground/60">Powered by SALBCARE</p>
         </div>
