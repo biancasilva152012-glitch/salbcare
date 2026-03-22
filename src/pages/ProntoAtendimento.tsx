@@ -321,6 +321,13 @@ const ProntoAtendimento = () => {
           </motion.div>
         )}
 
+        {/* History link */}
+        <div className="text-center">
+          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/pronto-atendimento/historico")}>
+            📋 Consultar meu histórico (CPF)
+          </Button>
+        </div>
+
         {/* Footer */}
         <div className="text-center space-y-1 pt-4 border-t border-border">
           <p className="text-[10px] text-muted-foreground">
