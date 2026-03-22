@@ -246,7 +246,7 @@ const ProntoAtendimento = () => {
             Teleconsulta Online
           </h1>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Renove receitas, solicite atestados ou consulte especialistas. Sem cadastro, direto pelo navegador.
+            Consulte especialistas de saúde online ou renove suas receitas. Sem cadastro, direto pelo navegador.
           </p>
         </motion.div>
 
