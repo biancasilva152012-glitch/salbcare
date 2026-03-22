@@ -38,8 +38,8 @@ const ProntoAtendimentoFlow = () => {
   const initialService = searchParams.get("service") || "prescription";
 
   const [step, setStep] = useState(0);
-  const [serviceType, setServiceType] = useState<"prescription" | "certificate" | "consultation">(
-    initialService as any
+  const [serviceType, setServiceType] = useState<"prescription" | "consultation">(
+    initialService === "consultation" ? "consultation" : "prescription"
   );
   const [loading, setLoading] = useState(false);
   const [requestId, setRequestId] = useState<string | null>(null);
