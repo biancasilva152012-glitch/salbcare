@@ -244,7 +244,7 @@ const ProntoAtendimento = () => {
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-3">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Pronto Atendimento Online
+            Teleconsulta Online
           </h1>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
             Renove receitas, solicite atestados ou consulte especialistas. Sem cadastro, direto pelo navegador.
