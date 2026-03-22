@@ -1,17 +1,24 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Search, Star, Clock, User, Stethoscope, FileText, FilePlus,
-  CalendarCheck, Filter, Wifi, WifiOff
+  Filter, Wifi, WifiOff, Loader2, Eye, EyeOff
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PROFESSION_CONFIG } from "@/config/professions";
 import SEOHead from "@/components/SEOHead";
+import { maskPhone } from "@/utils/masks";
+import { toast } from "sonner";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
 
@@ -81,6 +88,23 @@ const ProntoAtendimento = () => {
   const [availFilter, setAvailFilter] = useState<AvailFilter>("all");
   const [specialtyFilter, setSpecialtyFilter] = useState<SpecialtyFilter>("all");
 
+  // Auth modal state
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authTab, setAuthTab] = useState<"login" | "signup">("login");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const pendingProfRef = useRef<any>(null);
+
+  // Login fields
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  // Signup fields
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPhone, setSignupPhone] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["pronto-professionals"],
     queryFn: async () => {
@@ -112,10 +136,100 @@ const ProntoAtendimento = () => {
     return list;
   }, [professionals, search, specialtyFilter, availFilter]);
 
-  const handleSelectProfessional = (prof: any) => {
+  const navigateToFlow = (prof: any) => {
     navigate(
       `/pronto-atendimento/servico?professional=${prof.user_id}&name=${encodeURIComponent(prof.name)}&service=${serviceFilter !== "all" ? serviceFilter : "prescription"}`
     );
+  };
+
+  const handleSelectProfessional = async (prof: any) => {
+    // Check if already logged in
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      navigateToFlow(prof);
+      return;
+    }
+    // Not logged in — show auth modal
+    pendingProfRef.current = prof;
+    setAuthModalOpen(true);
+  };
+
+  // Listen for auth changes to resume flow
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user && pendingProfRef.current) {
+        const prof = pendingProfRef.current;
+        pendingProfRef.current = null;
+        setAuthModalOpen(false);
+        resetAuthFields();
+        navigateToFlow(prof);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [serviceFilter]);
+
+  const resetAuthFields = () => {
+    setLoginEmail("");
+    setLoginPassword("");
+    setSignupName("");
+    setSignupEmail("");
+    setSignupPhone("");
+    setSignupPassword("");
+    setShowPassword(false);
+    setAuthLoading(false);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+      if (error) throw error;
+      // onAuthStateChange will handle navigation
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao entrar. Verifique suas credenciais.");
+      setAuthLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!signupName || !signupEmail || !signupPassword) {
+      toast.error("Preencha nome, e-mail e senha.");
+      return;
+    }
+    setAuthLoading(true);
+    try {
+      // Check if email is already used as professional
+      const { data: existingType } = await supabase.rpc("check_email_user_type", {
+        check_email: signupEmail,
+      });
+      if (existingType === "professional") {
+        toast.error("Este e-mail já está cadastrado como profissional. Use outro e-mail ou faça login.");
+        setAuthLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.signUp({
+        email: signupEmail,
+        password: signupPassword,
+        options: {
+          data: {
+            name: signupName,
+            phone: signupPhone,
+            user_type: "patient",
+          },
+        },
+      });
+      if (error) throw error;
+      // onAuthStateChange will handle navigation
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao cadastrar. Tente novamente.");
+      setAuthLoading(false);
+    }
   };
 
   return (
@@ -336,6 +450,124 @@ const ProntoAtendimento = () => {
           <p className="text-[10px] text-muted-foreground/60">Powered by SALBCARE</p>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <Dialog open={authModalOpen} onOpenChange={(open) => {
+        setAuthModalOpen(open);
+        if (!open) {
+          pendingProfRef.current = null;
+          resetAuthFields();
+        }
+      }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Entre para continuar</DialogTitle>
+            <DialogDescription className="text-xs">
+              Faça login ou cadastre-se rapidamente para solicitar o atendimento.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Tabs value={authTab} onValueChange={(v) => setAuthTab(v as any)} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="login" className="text-xs">Entrar</TabsTrigger>
+              <TabsTrigger value="signup" className="text-xs">Cadastro rápido</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="login">
+              <form onSubmit={handleLogin} className="space-y-3 pt-2">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">E-mail</Label>
+                  <Input
+                    type="email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="seu@email.com"
+                    required
+                    className="bg-accent border-border"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Senha</Label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="bg-accent border-border pr-10"
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <Button type="submit" disabled={authLoading} className="w-full gradient-primary">
+                  {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="signup">
+              <form onSubmit={handleSignup} className="space-y-3 pt-2">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Nome completo *</Label>
+                  <Input
+                    value={signupName}
+                    onChange={(e) => setSignupName(e.target.value)}
+                    placeholder="Seu nome"
+                    required
+                    className="bg-accent border-border"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">E-mail *</Label>
+                  <Input
+                    type="email"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                    placeholder="seu@email.com"
+                    required
+                    className="bg-accent border-border"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">WhatsApp</Label>
+                  <Input
+                    value={signupPhone}
+                    onChange={(e) => setSignupPhone(maskPhone(e.target.value))}
+                    placeholder="(11) 99999-9999"
+                    className="bg-accent border-border"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Senha *</Label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      placeholder="Mínimo 6 caracteres"
+                      required
+                      minLength={6}
+                      className="bg-accent border-border pr-10"
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <Button type="submit" disabled={authLoading} className="w-full gradient-primary">
+                  {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Cadastrar e continuar"}
+                </Button>
+                <p className="text-[10px] text-muted-foreground text-center">
+                  Ao cadastrar, você concorda com os <a href="/terms" target="_blank" className="underline">Termos de Uso</a>.
+                </p>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
