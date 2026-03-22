@@ -268,7 +268,7 @@ const ProntoAtendimentoFlow = () => {
   const canProceed = () => {
     if (step === 0) return true; // service selection always valid
     if (serviceType === "prescription") {
-      if (step === 1) return medications.some((m) => m.name.trim());
+      if (step === 1) return medications.some((m) => m.name.trim()) && !blockedMedication;
       if (step === 2) return price === 0 || !!receiptFile;
       if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
