@@ -660,7 +660,7 @@ const ProntoAtendimentoFlow = () => {
               </div>
               <h2 className="text-lg font-bold">Solicitação Enviada!</h2>
               <p className="text-sm text-muted-foreground">
-                Sua solicitação de {serviceType === "prescription" ? "renovação de receita" : serviceType === "certificate" ? "atestado" : "consulta"} foi enviada para <strong>{professionalName}</strong>.
+                Sua solicitação de {serviceType === "prescription" ? "renovação de receita" : "consulta"} foi enviada para <strong>{professionalName}</strong>.
               </p>
               <p className="text-[11px] text-muted-foreground">
                 O profissional avaliará sua solicitação e entrará em contato via WhatsApp ou e-mail.
