@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShieldCheck, ShieldX, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,8 @@ interface DocumentResult {
 
 const VerifyDocument = () => {
   const [searchParams] = useSearchParams();
-  const initialHash = searchParams.get("hash") || "";
+  const params = useParams();
+  const initialHash = params.hash || searchParams.get("hash") || "";
   const [hash, setHash] = useState(initialHash);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DocumentResult | null>(null);

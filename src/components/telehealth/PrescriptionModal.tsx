@@ -56,7 +56,7 @@ const PrescriptionModal = ({
 
     setSaving(true);
     try {
-      const doc = generatePrescriptionPdf({
+      const doc = await generatePrescriptionPdf({
         doctorName,
         professionalType,
         doctorCrm,

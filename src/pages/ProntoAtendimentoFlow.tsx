@@ -76,6 +76,7 @@ const ProntoAtendimentoFlow = () => {
     employer: "",
     symptoms: "",
   });
+  const [lgpdConsent, setLgpdConsent] = useState(false);
 
   const { data: doctor } = useQuery({
     queryKey: ["pronto-doctor", professionalId],
@@ -254,16 +255,16 @@ const ProntoAtendimentoFlow = () => {
     if (serviceType === "prescription") {
       if (step === 1) return medications.some((m) => m.name.trim());
       if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate;
+      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     if (serviceType === "certificate") {
       if (step === 1) return !!certReason && !!certDays;
       if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate;
+      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     if (serviceType === "consultation") {
       if (step === 1) return price === 0 || !!receiptFile;
-      if (step === 2) return !!patient.name && !!patient.cpf && !!patient.birthDate;
+      if (step === 2) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     return false;
   };
@@ -660,6 +661,19 @@ const ProntoAtendimentoFlow = () => {
                   </div>
                 </>
               )}
+
+              {/* LGPD Consent */}
+              <div className="rounded-lg border border-border p-3 space-y-2 bg-accent/30">
+                <div className="flex items-start gap-2">
+                  <Checkbox checked={lgpdConsent} onCheckedChange={(v) => setLgpdConsent(!!v)} className="mt-0.5" />
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Autorizo o uso dos meus dados de saúde para fins de atendimento médico, conforme <strong>LGPD Art. 11</strong>. Seus dados serão vinculados ao seu CPF para consulta de histórico futuro.
+                  </p>
+                </div>
+                {!lgpdConsent && (
+                  <p className="text-[10px] text-destructive">* Consentimento obrigatório para prosseguir.</p>
+                )}
+              </div>
             </motion.div>
           )}
 
