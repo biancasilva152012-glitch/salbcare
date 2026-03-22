@@ -264,7 +264,7 @@ const ProntoAtendimentoFlow = () => {
     }
     if (serviceType === "consultation") {
       if (step === 1) return price === 0 || !!receiptFile;
-      if (step === 2) return !!patient.name && !!patient.cpf && !!patient.birthDate;
+      if (step === 2) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     return false;
   };
