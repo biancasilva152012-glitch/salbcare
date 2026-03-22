@@ -466,16 +466,30 @@ const ServiceRequestsPanel = () => {
               )}
 
               {selectedRequest.status === "in_progress" && (
-                <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
+                <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 space-y-2">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <p className="text-xs text-muted-foreground">
                       Solicitação aceita. Emita a receita ou atestado pelo painel de Pacientes e atualize o status.
                     </p>
                   </div>
+                  {selectedRequest.patient_phone && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-1.5 border-green-600/30 text-green-600 hover:bg-green-600/10"
+                      onClick={() => {
+                        const url = buildWhatsAppUrl(selectedRequest, "accepted");
+                        if (url) window.open(url, "_blank", "noopener,noreferrer");
+                      }}
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      Notificar paciente via WhatsApp
+                    </Button>
+                  )}
                   <Button
                     size="sm"
-                    className="w-full mt-2 gradient-primary"
+                    className="w-full gradient-primary"
                     onClick={() => {
                       updateStatusMutation.mutate({ id: selectedRequest.id, status: "completed" });
                     }}
