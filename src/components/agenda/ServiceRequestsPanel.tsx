@@ -73,6 +73,23 @@ const ServiceRequestsPanel = () => {
     refetchInterval: 30000,
   });
 
+  const buildWhatsAppUrl = useCallback((req: ServiceRequest, action: "accepted" | "rejected") => {
+    const phone = req.patient_phone?.replace(/\D/g, "");
+    if (!phone) return null;
+    const serviceLabel = SERVICE_TYPE_CONFIG[req.service_type]?.label || "Solicitação";
+    const patientFirst = req.patient_name?.split(" ")[0] || "Paciente";
+
+    let message = "";
+    if (action === "accepted") {
+      message = `Olá ${patientFirst}! 😊\n\nSua solicitação de *${serviceLabel}* foi *aceita* pelo profissional.\n\nEm breve você receberá seu documento. Qualquer dúvida, responda esta mensagem.\n\n_Enviado via SalbCare_`;
+    } else {
+      message = `Olá ${patientFirst},\n\nInfelizmente sua solicitação de *${serviceLabel}* não pôde ser atendida no momento.\n\nPor favor, entre em contato para mais informações.\n\n_Enviado via SalbCare_`;
+    }
+
+    const fullPhone = phone.length <= 11 ? `55${phone}` : phone;
+    return `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`;
+  }, []);
+
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase
@@ -92,7 +109,19 @@ const ServiceRequestsPanel = () => {
   const handleAction = async (id: string, action: "accept" | "reject") => {
     setProcessingId(id);
     const status = action === "accept" ? "in_progress" : "rejected";
+    const req = requests.find((r) => r.id === id);
     await updateStatusMutation.mutateAsync({ id, status });
+
+    // Open WhatsApp notification after successful status update
+    if (req?.patient_phone) {
+      const waUrl = buildWhatsAppUrl(req, action === "accept" ? "accepted" : "rejected");
+      if (waUrl) {
+        window.open(waUrl, "_blank", "noopener,noreferrer");
+      }
+    } else {
+      toast.info("Paciente não informou telefone — notificação não enviada.");
+    }
+
     setProcessingId(null);
   };
 
