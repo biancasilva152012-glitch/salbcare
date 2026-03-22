@@ -1,6 +1,8 @@
 import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { getProfessionConfig } from "@/config/professions";
+import QRCode from "qrcode";
+import { type MedicationType, MEDICATION_COLORS } from "@/utils/prescriptionColors";
 
 export interface PrescriptionPdfData {
   doctorName: string;
@@ -13,9 +15,12 @@ export interface PrescriptionPdfData {
   certificate: string;
   notes: string;
   officeAddress?: string;
+  medicationType?: MedicationType;
+  hashCode?: string;
+  validationUrl?: string;
 }
 
-export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
+export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promise<jsPDF> {
   const config = getProfessionConfig(data.professionalType || "medico");
   const doc = new jsPDF({ format: "a4", orientation: "portrait" });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -24,6 +29,7 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   const today = format(new Date(), "dd/MM/yyyy");
   const margin = 16;
   const contentWidth = pageWidth - margin * 2;
+  const borderWidth = 3;
   const signatureTitle = data.professionalType === "dentista" ? "Cirurgião(ã)-Dentista" : config.label;
   const normalizedCouncilNumber = data.doctorCrm?.trim() || "";
   const normalizedCouncilState = data.doctorCouncilState?.trim().toUpperCase() || "";
@@ -33,38 +39,58 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
       : `${config.councilPrefix}${normalizedCouncilState ? `-${normalizedCouncilState}` : ""} ${normalizedCouncilNumber}`
     : config.label;
 
-  // ── Header ──
-  doc.setFillColor(15, 23, 42);
-  doc.rect(0, 0, pageWidth, 36, "F");
-  doc.setFillColor(45, 212, 191);
-  doc.rect(0, 36, pageWidth, 1.5, "F");
+  // Determine color scheme
+  let medType: MedicationType = data.medicationType || "common";
+  if (!data.medicationType && data.professionalType === "dentista") {
+    medType = "dental";
+  }
+  const colors = MEDICATION_COLORS[medType];
 
-  doc.setTextColor(45, 212, 191);
-  doc.setFontSize(20);
+  // ── Left border stripe (all pages will get this in footer loop) ──
+  const drawBorder = (d: jsPDF) => {
+    d.setFillColor(...colors.borderColor);
+    d.rect(0, 0, borderWidth, pageHeight, "F");
+  };
+  drawBorder(doc);
+
+  // ── Header with dynamic color ──
+  doc.setFillColor(...colors.headerBg);
+  doc.rect(borderWidth, 0, pageWidth - borderWidth, 36, "F");
+
+  doc.setTextColor(...colors.headerText);
+  doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("SALBCARE", margin, 16);
+  doc.text("SALBCARE", margin + borderWidth, 15);
 
-  doc.setTextColor(200, 210, 220);
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text(data.doctorName, margin, 24);
+  doc.text(data.doctorName, margin + borderWidth, 23);
   const councilText = normalizedCouncilNumber
     ? `${signatureTitle} — ${councilRegistrationText}`
     : signatureTitle;
-  doc.text(councilText, margin, 30);
+  doc.text(councilText, margin + borderWidth, 29);
 
   if (data.officeAddress) {
-    doc.setFontSize(7.5);
-    doc.setTextColor(160, 170, 180);
-    const addrLines = doc.splitTextToSize(data.officeAddress, contentWidth / 2);
-    doc.text(addrLines, pageWidth - margin, 24, { align: "right" });
+    doc.setFontSize(7);
+    const addrLines = doc.splitTextToSize(data.officeAddress, contentWidth / 2.5);
+    doc.text(addrLines, pageWidth - margin, 23, { align: "right" });
   }
 
-  doc.setTextColor(160, 170, 180);
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.text(`Emitido em ${now}`, pageWidth - margin, 33, { align: "right" });
 
-  let y = 48;
+  // ── Badge / type indicator ──
+  const badgeY = 42;
+  const badgeText = colors.label;
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  const badgeW = doc.getTextWidth(badgeText) + 12;
+  doc.setFillColor(...colors.badgeBg);
+  doc.roundedRect(margin + borderWidth, badgeY - 4, badgeW, 10, 2, 2, "F");
+  doc.setTextColor(...colors.badgeText);
+  doc.text(badgeText, margin + borderWidth + 6, badgeY + 2.5);
+
+  let y = badgeY + 14;
 
   // ── Document title ──
   const docTitle = data.prescription.trim()
@@ -74,28 +100,28 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
       : config.prescriptionTitle;
 
   doc.setTextColor(15, 23, 42);
-  doc.setFontSize(15);
+  doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text(docTitle, margin, y);
-  y += 10;
+  doc.text(docTitle, margin + borderWidth, y);
+  y += 9;
 
   // ── Patient info box ──
   const patientBoxH = data.patientCpf ? 20 : 14;
   doc.setFillColor(245, 247, 250);
-  doc.roundedRect(margin, y - 4, contentWidth, patientBoxH, 2, 2, "F");
+  doc.roundedRect(margin + borderWidth, y - 4, contentWidth - borderWidth, patientBoxH, 2, 2, "F");
   doc.setFontSize(10);
   doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
-  doc.text("Paciente:", margin + 4, y + 4);
+  doc.text("Paciente:", margin + borderWidth + 4, y + 4);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(data.patientName, margin + 28, y + 4);
+  doc.text(data.patientName, margin + borderWidth + 28, y + 4);
 
   if (data.patientCpf) {
     doc.setFont("helvetica", "normal");
     doc.setTextColor(80);
     doc.setFontSize(9);
-    doc.text(`CPF: ${data.patientCpf}`, margin + 4, y + 12);
+    doc.text(`CPF: ${data.patientCpf}`, margin + borderWidth + 4, y + 12);
   }
 
   y += patientBoxH + 6;
@@ -104,17 +130,18 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   doc.setFontSize(9);
   doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
-  doc.text(`Data de emissão: ${today}`, margin, y);
+  doc.text(`Data de emissão: ${today}`, margin + borderWidth, y);
   y += 8;
 
   doc.setDrawColor(220);
-  doc.line(margin, y, pageWidth - margin, y);
+  doc.line(margin + borderWidth, y, pageWidth - margin, y);
   y += 8;
 
   // Helper: check page break
   const checkPage = (needed: number) => {
-    if (y + needed > pageHeight - 40) {
+    if (y + needed > pageHeight - 50) {
       doc.addPage();
+      drawBorder(doc);
       y = 20;
     }
   };
@@ -125,15 +152,15 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
     doc.setFontSize(12);
     doc.setTextColor(15, 23, 42);
     doc.setFont("helvetica", "bold");
-    doc.text("Medicamentos e Posologia", margin, y);
+    doc.text("Medicamentos e Posologia", margin + borderWidth, y);
     y += 7;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
-    const prescLines = doc.splitTextToSize(data.prescription, contentWidth);
+    const prescLines = doc.splitTextToSize(data.prescription, contentWidth - borderWidth);
     for (const line of prescLines) {
       checkPage(6);
-      doc.text(line, margin, y);
+      doc.text(line, margin + borderWidth, y);
       y += 5;
     }
     y += 6;
@@ -143,20 +170,20 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   if (data.certificate.trim()) {
     checkPage(30);
     doc.setDrawColor(220);
-    doc.line(margin, y, pageWidth - margin, y);
+    doc.line(margin + borderWidth, y, pageWidth - margin, y);
     y += 8;
     doc.setFontSize(12);
     doc.setTextColor(15, 23, 42);
     doc.setFont("helvetica", "bold");
-    doc.text(config.certificateTitle, margin, y);
+    doc.text(config.certificateTitle, margin + borderWidth, y);
     y += 7;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
-    const certLines = doc.splitTextToSize(data.certificate, contentWidth);
+    const certLines = doc.splitTextToSize(data.certificate, contentWidth - borderWidth);
     for (const line of certLines) {
       checkPage(6);
-      doc.text(line, margin, y);
+      doc.text(line, margin + borderWidth, y);
       y += 5;
     }
     y += 6;
@@ -166,30 +193,45 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   if (data.notes.trim()) {
     checkPage(30);
     doc.setDrawColor(220);
-    doc.line(margin, y, pageWidth - margin, y);
+    doc.line(margin + borderWidth, y, pageWidth - margin, y);
     y += 8;
     doc.setFontSize(12);
     doc.setTextColor(15, 23, 42);
     doc.setFont("helvetica", "bold");
-    doc.text("Orientações", margin, y);
+    doc.text("Orientações", margin + borderWidth, y);
     y += 7;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
-    const noteLines = doc.splitTextToSize(data.notes, contentWidth);
+    const noteLines = doc.splitTextToSize(data.notes, contentWidth - borderWidth);
     for (const line of noteLines) {
       checkPage(6);
-      doc.text(line, margin, y);
+      doc.text(line, margin + borderWidth, y);
       y += 5;
     }
     y += 6;
+  }
+
+  // ── Legal warning for controlled substances ──
+  if (colors.legalWarning) {
+    checkPage(20);
+    doc.setFillColor(255, 243, 224);
+    doc.roundedRect(margin + borderWidth, y - 3, contentWidth - borderWidth, 14, 2, 2, "F");
+    doc.setFontSize(7);
+    doc.setTextColor(180, 60, 0);
+    doc.setFont("helvetica", "bold");
+    doc.text("⚠ AVISO LEGAL:", margin + borderWidth + 3, y + 3);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6.5);
+    const warnLines = doc.splitTextToSize(colors.legalWarning, contentWidth - borderWidth - 6);
+    doc.text(warnLines, margin + borderWidth + 3, y + 7);
+    y += 18;
   }
 
   // ── Signature block ──
   checkPage(55);
   y += 16;
 
-  // Signature line
   const sigLineW = 80;
   const cx = pageWidth / 2;
   doc.setDrawColor(15, 23, 42);
@@ -213,26 +255,63 @@ export function generatePrescriptionPdf(data: PrescriptionPdfData): jsPDF {
   doc.setTextColor(130);
   doc.text(councilRegistrationText, cx, y, { align: "center" });
 
+  // ── QR Code ──
+  let qrDataUrl: string | null = null;
+  if (data.hashCode) {
+    const qrContent = data.validationUrl || `https://salbcare.lovable.app/verificar?hash=${data.hashCode}`;
+    try {
+      qrDataUrl = await QRCode.toDataURL(qrContent, { width: 200, margin: 1, color: { dark: "#0F172A" } });
+    } catch {
+      // silently fail
+    }
+  }
+
   // ── Footer on all pages ──
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
 
+    // Ensure left border on every page
+    drawBorder(doc);
+
+    // Footer bar
     doc.setFillColor(15, 23, 42);
-    doc.rect(0, pageHeight - 14, pageWidth, 14, "F");
-    doc.setFillColor(45, 212, 191);
-    doc.rect(0, pageHeight - 14, pageWidth, 0.8, "F");
+    doc.rect(borderWidth, pageHeight - 18, pageWidth - borderWidth, 18, "F");
+    // Accent line
+    doc.setFillColor(...colors.borderColor);
+    doc.rect(borderWidth, pageHeight - 18, pageWidth - borderWidth, 0.8, "F");
 
     doc.setFontSize(6.5);
     doc.setTextColor(160, 170, 180);
     doc.text(
       "Documento gerado pela SalbCare — salbcare.com.br",
-      margin, pageHeight - 6
+      margin + borderWidth, pageHeight - 9
     );
     doc.text(
       `Pág. ${i}/${pageCount}`,
-      pageWidth - margin, pageHeight - 6, { align: "right" }
+      pageWidth - margin, pageHeight - 9, { align: "right" }
     );
+
+    if (data.hashCode) {
+      doc.setFontSize(5.5);
+      doc.text(`Código: ${data.hashCode}`, margin + borderWidth, pageHeight - 5);
+    }
+
+    // QR code on last page only
+    if (i === pageCount && qrDataUrl) {
+      const qrSize = 22;
+      const qrX = pageWidth - margin - qrSize;
+      const qrY = pageHeight - 18 - qrSize - 4;
+
+      // White background for QR
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(qrX - 2, qrY - 2, qrSize + 4, qrSize + 4, 1, 1, "F");
+      doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
+
+      doc.setFontSize(5);
+      doc.setTextColor(100);
+      doc.text("Escaneie para validar", qrX + qrSize / 2, qrY + qrSize + 4, { align: "center" });
+    }
   }
 
   return doc;

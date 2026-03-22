@@ -12,9 +12,11 @@ import { format } from "date-fns";
 import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
 import { getProfessionConfig } from "@/config/professions";
 import { maskCpf } from "@/utils/masks";
+import { MEDICATION_TYPE_OPTIONS, type MedicationType } from "@/utils/prescriptionColors";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Props {
   patientId: string;
@@ -27,6 +29,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
   const [open, setOpen] = useState(false);
   const [prescription, setPrescription] = useState("");
   const [manualCpf, setManualCpf] = useState("");
+  const [medicationType, setMedicationType] = useState<MedicationType>("common");
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -90,13 +93,18 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
       const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
       const hashCode = `SALB-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
 
+      // Auto-detect dental type
+      const effectiveType = profile?.professional_type === "dentista" && medicationType === "common"
+        ? "dental" as MedicationType
+        : medicationType;
+
       // Save CPF to patient if entered manually
       if (!patientCpf && cpfToUse) {
         await supabase.from("patients").update({ cpf: cpfToUse }).eq("id", patientId);
         queryClient.invalidateQueries({ queryKey: ["patient-detail", patientId] });
       }
 
-      const doc = generatePrescriptionPdf({
+      const doc = await generatePrescriptionPdf({
         doctorName: profile?.name || "",
         professionalType: profile?.professional_type || "medico",
         doctorCrm: councilNumber,
@@ -107,6 +115,8 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
         certificate: "",
         notes: "",
         officeAddress: profile?.office_address || undefined,
+        medicationType: effectiveType,
+        hashCode,
       });
 
       const pdfBlob = doc.output("blob");
@@ -129,7 +139,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
         file_path: filePath,
         council_number: councilNumber || null,
         council_state: profile?.council_state || null,
-        metadata: { prescription_text: prescription },
+        metadata: { prescription_text: prescription, medication_type: effectiveType },
       });
       if (dbError) throw dbError;
 
@@ -139,6 +149,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
       queryClient.invalidateQueries({ queryKey: ["patient-prescriptions", patientId] });
       setPrescription("");
       setManualCpf("");
+      setMedicationType("common");
       setOpen(false);
       toast.success("Receita gerada com sucesso!");
     },
@@ -206,7 +217,7 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
               <Plus className="h-3.5 w-3.5" /> Nova Receita
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-card border-border">
+          <DialogContent className="bg-card border-border max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Pill className="h-5 w-5 text-primary" />
@@ -242,6 +253,29 @@ const PatientPrescriptions = ({ patientId, patientName }: Props) => {
                   <p className="text-[10px] text-muted-foreground">Será salvo no cadastro do paciente.</p>
                 </div>
               )}
+
+              {/* Medication type selector */}
+              <div className="space-y-1.5">
+                <Label>Tipo de medicamento</Label>
+                <Select value={medicationType} onValueChange={(v) => setMedicationType(v as MedicationType)}>
+                  <SelectTrigger className="bg-accent border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MEDICATION_TYPE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {(medicationType === "red_stripe" || medicationType === "black_stripe") && (
+                  <p className="text-[10px] text-amber-600 font-medium">
+                    ⚠ Receitas de medicamentos controlados não substituem a receita física exigida pela ANVISA.
+                  </p>
+                )}
+              </div>
+
               <div className="space-y-1.5">
                 <Label>Medicamentos e Posologia</Label>
                 <Textarea
