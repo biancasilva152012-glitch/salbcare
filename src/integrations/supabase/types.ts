@@ -723,6 +723,7 @@ export type Database = {
           bio: string | null
           card_link: string | null
           consultation_price: number | null
+          council_document_path: string | null
           council_number: string | null
           council_state: string | null
           created_at: string
@@ -747,6 +748,7 @@ export type Database = {
           updated_at: string
           user_id: string
           user_type: string
+          verification_status: string
         }
         Insert: {
           availability_online?: boolean
@@ -755,6 +757,7 @@ export type Database = {
           bio?: string | null
           card_link?: string | null
           consultation_price?: number | null
+          council_document_path?: string | null
           council_number?: string | null
           council_state?: string | null
           created_at?: string
@@ -779,6 +782,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           user_type?: string
+          verification_status?: string
         }
         Update: {
           availability_online?: boolean
@@ -787,6 +791,7 @@ export type Database = {
           bio?: string | null
           card_link?: string | null
           consultation_price?: number | null
+          council_document_path?: string | null
           council_number?: string | null
           council_state?: string | null
           created_at?: string
@@ -811,6 +816,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           user_type?: string
+          verification_status?: string
         }
         Relationships: []
       }

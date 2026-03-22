@@ -15,9 +15,10 @@ import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
-// Eager: login, register (entry points)
+// Eager: login, register, index (entry points)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Index from "./pages/Index";
 
 // Lazy with auto-retry on stale chunks after deploy
 const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"), "ForgotPassword");
@@ -86,7 +87,7 @@ const App = () => (
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<Login />} />
+              <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
