@@ -699,10 +699,13 @@ const ProntoAtendimentoFlow = () => {
               )}
 
               <div className="space-y-2 pt-2">
-                <Button onClick={() => navigate("/pronto-atendimento")} className="w-full gradient-primary">
+                <Button onClick={() => navigate(`/acompanhamento/${requestId}`)} className="w-full gradient-primary">
+                  📍 Acompanhar Solicitação
+                </Button>
+                <Button variant="outline" onClick={() => navigate("/pronto-atendimento")} className="w-full text-xs">
                   Voltar ao Início
                 </Button>
-                <Button variant="outline" onClick={() => navigate(`/pronto-atendimento/historico`)} className="w-full text-xs">
+                <Button variant="ghost" onClick={() => navigate(`/pronto-atendimento/historico`)} className="w-full text-xs">
                   Consultar Histórico
                 </Button>
               </div>
