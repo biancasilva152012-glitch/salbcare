@@ -68,7 +68,6 @@ type SpecialtyFilter = string | "all";
 const SERVICE_OPTIONS = [
   { key: "all" as const, label: "Todos", icon: Filter },
   { key: "prescription" as const, label: "Renovação de Receita", icon: FilePlus },
-  { key: "certificate" as const, label: "Atestado", icon: FileText },
   { key: "consultation" as const, label: "Consulta", icon: Stethoscope },
 ];
 
