@@ -48,6 +48,22 @@ const Agenda = () => {
   const [blockData, setBlockData] = useState(blockForm);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"appointments" | "requests">("appointments");
+
+  // Fetch service requests count for badge
+  const { data: requestsCount = 0 } = useQuery({
+    queryKey: ["service-requests-count", user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("service_requests")
+        .select("*", { count: "exact", head: true })
+        .eq("professional_id", user!.id)
+        .in("status", ["pending_review", "pending_payment"]);
+      return count || 0;
+    },
+    enabled: !!user,
+    refetchInterval: 30000,
+  });
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
