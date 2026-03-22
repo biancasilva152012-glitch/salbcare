@@ -261,11 +261,6 @@ const ProntoAtendimentoFlow = () => {
       if (step === 2) return price === 0 || !!receiptFile;
       if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
-    if (serviceType === "certificate") {
-      if (step === 1) return !!certReason && !!certDays;
-      if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
-    }
     if (serviceType === "consultation") {
       if (step === 1) return price === 0 || !!receiptFile;
       if (step === 2) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
