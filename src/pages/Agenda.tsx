@@ -802,6 +802,8 @@ const Agenda = () => {
             onPrev={pagination.prevPage}
           />
         </motion.div>
+        </>
+        )}
       </div>
     </PageContainer>
   );
