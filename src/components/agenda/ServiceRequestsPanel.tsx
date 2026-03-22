@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   FilePlus, FileText, Stethoscope, Clock, Check, X, Eye,
   Loader2, Phone, Mail, MapPin, User, Pill, AlertCircle, FileImage, ExternalLink,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -72,6 +73,23 @@ const ServiceRequestsPanel = () => {
     refetchInterval: 30000,
   });
 
+  const buildWhatsAppUrl = useCallback((req: ServiceRequest, action: "accepted" | "rejected") => {
+    const phone = req.patient_phone?.replace(/\D/g, "");
+    if (!phone) return null;
+    const serviceLabel = SERVICE_TYPE_CONFIG[req.service_type]?.label || "Solicitação";
+    const patientFirst = req.patient_name?.split(" ")[0] || "Paciente";
+
+    let message = "";
+    if (action === "accepted") {
+      message = `Olá ${patientFirst}! 😊\n\nSua solicitação de *${serviceLabel}* foi *aceita* pelo profissional.\n\nEm breve você receberá seu documento. Qualquer dúvida, responda esta mensagem.\n\n_Enviado via SalbCare_`;
+    } else {
+      message = `Olá ${patientFirst},\n\nInfelizmente sua solicitação de *${serviceLabel}* não pôde ser atendida no momento.\n\nPor favor, entre em contato para mais informações.\n\n_Enviado via SalbCare_`;
+    }
+
+    const fullPhone = phone.length <= 11 ? `55${phone}` : phone;
+    return `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`;
+  }, []);
+
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase
@@ -91,7 +109,19 @@ const ServiceRequestsPanel = () => {
   const handleAction = async (id: string, action: "accept" | "reject") => {
     setProcessingId(id);
     const status = action === "accept" ? "in_progress" : "rejected";
+    const req = requests.find((r) => r.id === id);
     await updateStatusMutation.mutateAsync({ id, status });
+
+    // Open WhatsApp notification after successful status update
+    if (req?.patient_phone) {
+      const waUrl = buildWhatsAppUrl(req, action === "accept" ? "accepted" : "rejected");
+      if (waUrl) {
+        window.open(waUrl, "_blank", "noopener,noreferrer");
+      }
+    } else {
+      toast.info("Paciente não informou telefone — notificação não enviada.");
+    }
+
     setProcessingId(null);
   };
 
@@ -436,16 +466,30 @@ const ServiceRequestsPanel = () => {
               )}
 
               {selectedRequest.status === "in_progress" && (
-                <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
+                <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 space-y-2">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <p className="text-xs text-muted-foreground">
                       Solicitação aceita. Emita a receita ou atestado pelo painel de Pacientes e atualize o status.
                     </p>
                   </div>
+                  {selectedRequest.patient_phone && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-1.5 border-green-600/30 text-green-600 hover:bg-green-600/10"
+                      onClick={() => {
+                        const url = buildWhatsAppUrl(selectedRequest, "accepted");
+                        if (url) window.open(url, "_blank", "noopener,noreferrer");
+                      }}
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      Notificar paciente via WhatsApp
+                    </Button>
+                  )}
                   <Button
                     size="sm"
-                    className="w-full mt-2 gradient-primary"
+                    className="w-full gradient-primary"
                     onClick={() => {
                       updateStatusMutation.mutate({ id: selectedRequest.id, status: "completed" });
                     }}
