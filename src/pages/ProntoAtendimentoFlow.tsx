@@ -596,7 +596,6 @@ const ProntoAtendimentoFlow = () => {
 
           {/* PATIENT DATA STEP */}
           {((serviceType === "prescription" && step === 3) ||
-            (serviceType === "certificate" && step === 3) ||
             (serviceType === "consultation" && step === 2)) && (
             <motion.div key="patient" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-3">
               <h2 className="text-sm font-semibold">Seus Dados</h2>
