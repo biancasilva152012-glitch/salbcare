@@ -255,12 +255,12 @@ const ProntoAtendimentoFlow = () => {
     if (serviceType === "prescription") {
       if (step === 1) return medications.some((m) => m.name.trim());
       if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate;
+      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     if (serviceType === "certificate") {
       if (step === 1) return !!certReason && !!certDays;
       if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate;
+      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     if (serviceType === "consultation") {
       if (step === 1) return price === 0 || !!receiptFile;
