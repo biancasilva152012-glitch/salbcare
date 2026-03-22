@@ -3,13 +3,13 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, Upload, Camera, Loader2, Check, Copy,
-  ExternalLink, FilePlus, FileText, Stethoscope, AlertCircle, QrCode,
+  ExternalLink, FilePlus, Stethoscope, AlertCircle, QrCode,
   ShieldAlert, Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +27,7 @@ interface MedicationEntry {
 }
 
 const STEPS_PRESCRIPTION = ["Serviço", "Receita Anterior", "Pagamento", "Seus Dados", "Confirmação"];
-const STEPS_CERTIFICATE = ["Serviço", "Detalhes", "Pagamento", "Seus Dados", "Confirmação"];
+
 const STEPS_CONSULTATION = ["Serviço", "Pagamento", "Seus Dados", "Confirmação"];
 
 const ProntoAtendimentoFlow = () => {
@@ -38,8 +38,8 @@ const ProntoAtendimentoFlow = () => {
   const initialService = searchParams.get("service") || "prescription";
 
   const [step, setStep] = useState(0);
-  const [serviceType, setServiceType] = useState<"prescription" | "certificate" | "consultation">(
-    initialService as any
+  const [serviceType, setServiceType] = useState<"prescription" | "consultation">(
+    initialService === "consultation" ? "consultation" : "prescription"
   );
   const [loading, setLoading] = useState(false);
   const [requestId, setRequestId] = useState<string | null>(null);
@@ -58,10 +58,6 @@ const ProntoAtendimentoFlow = () => {
   const [blockedMedication, setBlockedMedication] = useState<PrescriptionColorScheme | null>(null);
   const [showBlockedInfo, setShowBlockedInfo] = useState(false);
 
-  // Certificate fields
-  const [certReason, setCertReason] = useState("");
-  const [certDays, setCertDays] = useState("");
-  const [certRetroDate, setCertRetroDate] = useState("");
 
   // Payment
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
@@ -98,7 +94,6 @@ const ProntoAtendimentoFlow = () => {
 
   const getSteps = () => {
     if (serviceType === "prescription") return STEPS_PRESCRIPTION;
-    if (serviceType === "certificate") return STEPS_CERTIFICATE;
     return STEPS_CONSULTATION;
   };
 
@@ -220,9 +215,7 @@ const ProntoAtendimentoFlow = () => {
       const { error } = await supabase.from("service_requests").insert({
         id,
         professional_id: professionalId,
-        service_type: serviceType === "prescription" ? "prescription_renewal"
-          : serviceType === "certificate" ? "certificate"
-          : "consultation",
+        service_type: serviceType === "prescription" ? "prescription_renewal" : "consultation",
         status: "pending_review",
         patient_name: patient.name,
         patient_cpf: patient.cpf,
@@ -241,10 +234,6 @@ const ProntoAtendimentoFlow = () => {
           prev_doctor_name: prevDoctorName,
           prev_doctor_crm: prevDoctorCrm,
           prev_date: prevDate,
-        } : serviceType === "certificate" ? {
-          reason: certReason,
-          days: certDays,
-          retro_date: certRetroDate,
         } : {},
         receipt_url: receiptPath,
         payment_status: receiptPath ? "pending_validation" : "pending",
@@ -269,11 +258,6 @@ const ProntoAtendimentoFlow = () => {
     if (step === 0) return true; // service selection always valid
     if (serviceType === "prescription") {
       if (step === 1) return medications.some((m) => m.name.trim()) && !blockedMedication;
-      if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
-    }
-    if (serviceType === "certificate") {
-      if (step === 1) return !!certReason && !!certDays;
       if (step === 2) return price === 0 || !!receiptFile;
       if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
@@ -525,63 +509,9 @@ const ProntoAtendimentoFlow = () => {
             </motion.div>
           )}
 
-          {/* CERTIFICATE STEP 1: Details */}
-          {step === 1 && serviceType === "certificate" && (
-            <motion.div key="cert" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-4">
-              <h2 className="text-sm font-semibold flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" />
-                Detalhes do Atestado
-              </h2>
-
-              <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-muted-foreground">
-                    A emissão do atestado está sujeita à avaliação médica. O profissional avaliará os sintomas antes de emitir o documento.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs">Motivo do atestado *</Label>
-                <Textarea
-                  placeholder="Descreva o motivo do atestado..."
-                  value={certReason}
-                  onChange={(e) => setCertReason(e.target.value.slice(0, 500))}
-                  className="bg-accent border-border text-sm resize-none"
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">Dias de afastamento *</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={certDays}
-                    onChange={(e) => setCertDays(e.target.value)}
-                    placeholder="Ex: 3"
-                    className="bg-accent border-border text-sm"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Data retroativa (opcional)</Label>
-                  <Input
-                    type="date"
-                    value={certRetroDate}
-                    onChange={(e) => setCertRetroDate(e.target.value)}
-                    className="bg-accent border-border text-sm"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
 
           {/* PAYMENT STEP */}
           {((serviceType === "prescription" && step === 2) ||
-            (serviceType === "certificate" && step === 2) ||
             (serviceType === "consultation" && step === 1)) && (
             <motion.div key="payment" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-4">
               <h2 className="text-sm font-semibold flex items-center gap-2">
@@ -666,7 +596,6 @@ const ProntoAtendimentoFlow = () => {
 
           {/* PATIENT DATA STEP */}
           {((serviceType === "prescription" && step === 3) ||
-            (serviceType === "certificate" && step === 3) ||
             (serviceType === "consultation" && step === 2)) && (
             <motion.div key="patient" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-3">
               <h2 className="text-sm font-semibold">Seus Dados</h2>
@@ -707,18 +636,6 @@ const ProntoAtendimentoFlow = () => {
                 </div>
               )}
 
-              {serviceType === "certificate" && (
-                <>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Empresa/empregador (opcional)</Label>
-                    <Input value={patient.employer} onChange={(e) => setPatient({ ...patient, employer: e.target.value })} placeholder="Nome da empresa" className="bg-accent border-border" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Sintomas relatados</Label>
-                    <Textarea value={patient.symptoms} onChange={(e) => setPatient({ ...patient, symptoms: e.target.value.slice(0, 300) })} placeholder="Descreva os sintomas..." rows={2} className="bg-accent border-border text-sm resize-none" />
-                  </div>
-                </>
-              )}
 
               {/* LGPD Consent */}
               <div className="rounded-lg border border-border p-3 space-y-2 bg-accent/30">
@@ -743,7 +660,7 @@ const ProntoAtendimentoFlow = () => {
               </div>
               <h2 className="text-lg font-bold">Solicitação Enviada!</h2>
               <p className="text-sm text-muted-foreground">
-                Sua solicitação de {serviceType === "prescription" ? "renovação de receita" : serviceType === "certificate" ? "atestado" : "consulta"} foi enviada para <strong>{professionalName}</strong>.
+                Sua solicitação de {serviceType === "prescription" ? "renovação de receita" : "consulta"} foi enviada para <strong>{professionalName}</strong>.
               </p>
               <p className="text-[11px] text-muted-foreground">
                 O profissional avaliará sua solicitação e entrará em contato via WhatsApp ou e-mail.
