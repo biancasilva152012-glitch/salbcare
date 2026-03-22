@@ -55,6 +55,7 @@ const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"), "Ve
 const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
 const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
 const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
+const AcompanhamentoSolicitacao = lazyWithRetry(() => import("./pages/AcompanhamentoSolicitacao"), "AcompanhamentoSolicitacao");
 
 const queryClient = new QueryClient({
   defaultOptions: {
