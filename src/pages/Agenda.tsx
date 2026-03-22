@@ -508,6 +508,36 @@ const Agenda = () => {
           </div>
         </div>
 
+        {/* Tab toggle */}
+        <div className="flex rounded-lg bg-muted p-1">
+          <button
+            onClick={() => setActiveTab("appointments")}
+            className={`flex-1 text-xs font-medium py-2 px-3 rounded-md transition-colors ${
+              activeTab === "appointments" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            📅 Consultas
+          </button>
+          <button
+            onClick={() => setActiveTab("requests")}
+            className={`flex-1 text-xs font-medium py-2 px-3 rounded-md transition-colors relative ${
+              activeTab === "requests" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <FilePlus className="h-3.5 w-3.5 inline mr-1" />
+            Solicitações
+            {requestsCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground flex items-center justify-center">
+                {requestsCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {activeTab === "requests" ? (
+          <ServiceRequestsPanel />
+        ) : (
+        <>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Buscar paciente..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
