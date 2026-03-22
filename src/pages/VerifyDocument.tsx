@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShieldCheck, ShieldX, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
