@@ -479,6 +479,50 @@ const ProntoAtendimentoFlow = () => {
                 <Checkbox checked={isContinuousUse} onCheckedChange={(v) => setIsContinuousUse(!!v)} />
                 <Label className="text-xs">Uso contínuo</Label>
               </div>
+
+              {/* Blocked medication alert */}
+              {blockedMedication && (
+                <div className="rounded-xl border-2 border-destructive/50 bg-destructive/5 p-4 space-y-3">
+                  <div className="flex items-start gap-2">
+                    <ShieldAlert className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-destructive">Medicamento não permitido</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Este medicamento exige receituário especial físico e não pode ser renovado por teleconsulta. Consulte um médico presencialmente.
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground italic">
+                    {blockedMedication.blockReason}
+                  </p>
+                  <button
+                    onClick={() => setShowBlockedInfo(!showBlockedInfo)}
+                    className="flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Info className="h-3.5 w-3.5" />
+                    {showBlockedInfo ? "Ocultar detalhes" : "Entender mais →"}
+                  </button>
+                  {showBlockedInfo && (
+                    <div className="rounded-lg bg-accent p-3 text-[11px] text-muted-foreground leading-relaxed space-y-2">
+                      <p><strong>Por que este medicamento não pode ser renovado online?</strong></p>
+                      <p>A ANVISA, por meio da Portaria 344/98 e RDC 471/2021, exige que medicamentos das listas C1 (psicotrópicos), C2 (retinoides), C3 (imunossupressores) e de tarja preta sejam prescritos exclusivamente com receituário especial físico, com retenção obrigatória na farmácia.</p>
+                      <p>Receitas digitais ou por teleconsulta <strong>não substituem</strong> esse requisito legal. Consulte um médico presencialmente para obter a receita adequada.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Red stripe warning (allowed but with notice) */}
+              {!blockedMedication && medications.some(m => m.name.trim()) && (
+                <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-muted-foreground">
+                      Receita válida mediante avaliação médica na teleconsulta. Sujeita à aprovação do profissional.
+                    </p>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 
