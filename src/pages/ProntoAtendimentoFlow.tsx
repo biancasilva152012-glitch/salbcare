@@ -94,7 +94,6 @@ const ProntoAtendimentoFlow = () => {
 
   const getSteps = () => {
     if (serviceType === "prescription") return STEPS_PRESCRIPTION;
-    if (serviceType === "certificate") return STEPS_CERTIFICATE;
     return STEPS_CONSULTATION;
   };
 
