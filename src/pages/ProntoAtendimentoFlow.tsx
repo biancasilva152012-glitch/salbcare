@@ -76,6 +76,7 @@ const ProntoAtendimentoFlow = () => {
     employer: "",
     symptoms: "",
   });
+  const [lgpdConsent, setLgpdConsent] = useState(false);
 
   const { data: doctor } = useQuery({
     queryKey: ["pronto-doctor", professionalId],
