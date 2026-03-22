@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   FilePlus, FileText, Stethoscope, Clock, Check, X, Eye,
   Loader2, Phone, Mail, MapPin, User, Pill, AlertCircle, FileImage, ExternalLink,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
