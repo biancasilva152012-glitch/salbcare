@@ -27,7 +27,7 @@ interface MedicationEntry {
 }
 
 const STEPS_PRESCRIPTION = ["Serviço", "Receita Anterior", "Pagamento", "Seus Dados", "Confirmação"];
-const STEPS_CERTIFICATE = ["Serviço", "Detalhes", "Pagamento", "Seus Dados", "Confirmação"];
+
 const STEPS_CONSULTATION = ["Serviço", "Pagamento", "Seus Dados", "Confirmação"];
 
 const ProntoAtendimentoFlow = () => {
