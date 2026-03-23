@@ -27,6 +27,7 @@ type ServiceRequest = {
   patient_phone: string | null;
   patient_address: string | null;
   patient_birth_date: string | null;
+  patient_data: any;
   prescription_data: any;
   prescription_image_path: string | null;
   receipt_url: string | null;
