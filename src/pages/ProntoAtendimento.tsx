@@ -252,7 +252,6 @@ const ProntoAtendimento = () => {
 
         {/* Trust badges */}
         <div className="flex flex-wrap justify-center gap-2 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">✅ Sem cadastro</span>
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">🔒 Seguro</span>
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">📱 Pelo navegador</span>
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">⚡ Rápido</span>
