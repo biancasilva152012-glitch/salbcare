@@ -268,6 +268,11 @@ const ServiceRequestsPanel = () => {
                       <Clock className="h-3 w-3" />
                       {format(createdDate, "dd/MM HH:mm", { locale: ptBR })}
                     </div>
+                    {(req.patient_data as any)?.symptoms && (
+                      <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                        💬 {(req.patient_data as any).symptoms}
+                      </p>
+                    )}
                     {req.consultation_price != null && req.consultation_price > 0 && (
                       <p className="text-[11px] text-primary font-medium mt-0.5">
                         R$ {req.consultation_price.toFixed(2)}
