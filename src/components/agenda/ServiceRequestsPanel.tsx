@@ -387,6 +387,16 @@ const ServiceRequestsPanel = () => {
                 )}
               </div>
 
+              {/* Chief complaint / Symptoms */}
+              {(selectedRequest.patient_data as any)?.symptoms && (
+                <div className="rounded-lg border border-border p-3 space-y-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                    <MessageCircle className="h-3.5 w-3.5" /> Queixa Principal
+                  </h3>
+                  <p className="text-sm">{(selectedRequest.patient_data as any).symptoms}</p>
+                </div>
+              )}
+
               {/* Prescription data */}
               {selectedRequest.service_type === "prescription_renewal" && selectedRequest.prescription_data && (
                 <div className="rounded-lg border border-border p-3 space-y-2">
