@@ -168,7 +168,7 @@ const Register = () => {
   };
 
   const canGoNext = () => {
-    if (step === 0) return !!form.name && !!form.email && !!form.phone && !!form.password;
+    if (step === 0) return !!form.name && !!form.email && !!form.phone && !!form.password && !!form.cpf;
     if (step === 1) return !!form.professional_type && !!form.council_number && !!form.council_state;
     if (step === 2) return true; // document upload is optional but encouraged
     return true;
