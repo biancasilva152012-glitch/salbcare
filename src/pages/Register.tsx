@@ -50,6 +50,7 @@ const Register = () => {
     email: "",
     password: "",
     phone: "",
+    cpf: "",
     professional_type: "",
     council_number: "",
     council_state: "",
