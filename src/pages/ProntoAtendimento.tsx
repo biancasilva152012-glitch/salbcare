@@ -252,7 +252,6 @@ const ProntoAtendimento = () => {
 
         {/* Trust badges */}
         <div className="flex flex-wrap justify-center gap-2 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">✅ Sem cadastro</span>
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">🔒 Seguro</span>
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">📱 Pelo navegador</span>
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">⚡ Rápido</span>
@@ -461,111 +460,67 @@ const ProntoAtendimento = () => {
       }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-lg">Entre para continuar</DialogTitle>
+            <DialogTitle className="text-lg">Cadastro rápido</DialogTitle>
             <DialogDescription className="text-xs">
-              Faça login ou cadastre-se rapidamente para solicitar o atendimento.
+              Cadastre-se rapidamente para solicitar o atendimento.
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs value={authTab} onValueChange={(v) => setAuthTab(v as any)} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login" className="text-xs">Entrar</TabsTrigger>
-              <TabsTrigger value="signup" className="text-xs">Cadastro rápido</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-3 pt-2">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">E-mail</Label>
-                  <Input
-                    type="email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="seu@email.com"
-                    required
-                    className="bg-accent border-border"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Senha</Label>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      className="bg-accent border-border pr-10"
-                    />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-                <Button type="submit" disabled={authLoading} className="w-full gradient-primary">
-                  {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-3 pt-2">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Nome completo *</Label>
-                  <Input
-                    value={signupName}
-                    onChange={(e) => setSignupName(e.target.value)}
-                    placeholder="Seu nome"
-                    required
-                    className="bg-accent border-border"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">E-mail *</Label>
-                  <Input
-                    type="email"
-                    value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
-                    placeholder="seu@email.com"
-                    required
-                    className="bg-accent border-border"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">WhatsApp</Label>
-                  <Input
-                    value={signupPhone}
-                    onChange={(e) => setSignupPhone(maskPhone(e.target.value))}
-                    placeholder="(11) 99999-9999"
-                    className="bg-accent border-border"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Senha *</Label>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
-                      placeholder="Mínimo 6 caracteres"
-                      required
-                      minLength={6}
-                      className="bg-accent border-border pr-10"
-                    />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-                <Button type="submit" disabled={authLoading} className="w-full gradient-primary">
-                  {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Cadastrar e continuar"}
-                </Button>
-                <p className="text-[10px] text-muted-foreground text-center">
-                  Ao cadastrar, você concorda com os <a href="/terms" target="_blank" className="underline">Termos de Uso</a>.
-                </p>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleSignup} className="space-y-3 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Nome completo *</Label>
+              <Input
+                value={signupName}
+                onChange={(e) => setSignupName(e.target.value)}
+                placeholder="Seu nome"
+                required
+                className="bg-accent border-border"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">E-mail *</Label>
+              <Input
+                type="email"
+                value={signupEmail}
+                onChange={(e) => setSignupEmail(e.target.value)}
+                placeholder="seu@email.com"
+                required
+                className="bg-accent border-border"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">WhatsApp</Label>
+              <Input
+                value={signupPhone}
+                onChange={(e) => setSignupPhone(maskPhone(e.target.value))}
+                placeholder="(11) 99999-9999"
+                className="bg-accent border-border"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Senha *</Label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  required
+                  minLength={6}
+                  className="bg-accent border-border pr-10"
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <Button type="submit" disabled={authLoading} className="w-full gradient-primary">
+              {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Cadastrar e continuar"}
+            </Button>
+            <p className="text-[10px] text-muted-foreground text-center">
+              Ao cadastrar, você concorda com os <a href="/terms" target="_blank" className="underline">Termos de Uso</a>.
+            </p>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
