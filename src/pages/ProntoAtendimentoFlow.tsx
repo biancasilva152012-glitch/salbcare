@@ -352,6 +352,23 @@ const ProntoAtendimentoFlow = () => {
                 ))}
               </div>
 
+              {serviceType === "consultation" && (
+                <div className="space-y-2">
+                  <Label htmlFor="chiefComplaint" className="text-xs font-medium">
+                    Queixa principal / Motivo da consulta
+                  </Label>
+                  <Textarea
+                    id="chiefComplaint"
+                    placeholder="Descreva brevemente o motivo da sua consulta (ex: dor de cabeça frequente, acompanhamento de rotina...)"
+                    value={patient.symptoms}
+                    onChange={(e) => setPatient((p) => ({ ...p, symptoms: e.target.value }))}
+                    className="bg-background border-border text-sm min-h-[80px] resize-none"
+                    maxLength={500}
+                  />
+                  <p className="text-[10px] text-muted-foreground text-right">{patient.symptoms.length}/500</p>
+                </div>
+              )}
+
               {price > 0 && (
                 <div className="text-center text-sm font-medium text-foreground">
                   Valor: <span className="text-primary">R$ {price.toFixed(2)}</span>
