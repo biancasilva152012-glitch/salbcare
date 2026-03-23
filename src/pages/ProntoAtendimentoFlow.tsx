@@ -657,7 +657,7 @@ const ProntoAtendimentoFlow = () => {
                 <div className="text-center py-6 space-y-2">
                   <Check className="h-10 w-10 text-green-500 mx-auto" />
                   <p className="text-sm font-medium">Atendimento gratuito</p>
-                  <p className="text-[11px] text-muted-foreground">Prossiga para informar seus dados.</p>
+                  <p className="text-[11px] text-muted-foreground">Prossiga para enviar sua solicitação.</p>
                 </div>
               )}
             </motion.div>
