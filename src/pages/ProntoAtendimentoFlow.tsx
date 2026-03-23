@@ -27,9 +27,9 @@ interface MedicationEntry {
   posology: string;
 }
 
-const STEPS_PRESCRIPTION = ["Serviço", "Receita Anterior", "Pagamento", "Seus Dados", "Confirmação"];
+const STEPS_PRESCRIPTION = ["Serviço", "Receita Anterior", "Pagamento", "Confirmação"];
 
-const STEPS_CONSULTATION = ["Serviço", "Pagamento", "Seus Dados", "Confirmação"];
+const STEPS_CONSULTATION = ["Serviço", "Pagamento", "Confirmação"];
 
 const ProntoAtendimentoFlow = () => {
   const [searchParams] = useSearchParams();
@@ -256,15 +256,13 @@ const ProntoAtendimentoFlow = () => {
 
   // Step validation
   const canProceed = () => {
-    if (step === 0) return true; // service selection always valid
+    if (step === 0) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     if (serviceType === "prescription") {
       if (step === 1) return medications.some((m) => m.name.trim()) && !blockedMedication;
       if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     if (serviceType === "consultation") {
       if (step === 1) return price === 0 || !!receiptFile;
-      if (step === 2) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     return false;
   };
@@ -374,6 +372,59 @@ const ProntoAtendimentoFlow = () => {
                   Valor: <span className="text-primary">R$ {price.toFixed(2)}</span>
                 </div>
               )}
+
+              {/* Patient data inline */}
+              <div className="border-t border-border pt-4 space-y-3">
+                <h3 className="text-sm font-semibold">Seus Dados</h3>
+                <p className="text-[11px] text-muted-foreground">Necessários para emissão do documento.</p>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Nome completo *</Label>
+                  <Input value={patient.name} onChange={(e) => setPatient({ ...patient, name: e.target.value })} placeholder="Seu nome completo" className="bg-accent border-border" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">CPF *</Label>
+                    <Input value={patient.cpf} onChange={(e) => setPatient({ ...patient, cpf: maskCpf(e.target.value) })} placeholder="000.000.000-00" className="bg-accent border-border" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Data de nascimento *</Label>
+                    <Input type="date" value={patient.birthDate} onChange={(e) => setPatient({ ...patient, birthDate: e.target.value })} className="bg-accent border-border" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">E-mail</Label>
+                  <Input type="email" value={patient.email} onChange={(e) => setPatient({ ...patient, email: e.target.value })} placeholder="seu@email.com" className="bg-accent border-border" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">WhatsApp</Label>
+                  <Input value={patient.phone} onChange={(e) => setPatient({ ...patient, phone: maskPhone(e.target.value) })} placeholder="(11) 99999-9999" className="bg-accent border-border" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Endereço completo</Label>
+                  <Input value={patient.address} onChange={(e) => setPatient({ ...patient, address: e.target.value })} placeholder="Rua, número, bairro, cidade - UF" className="bg-accent border-border" />
+                </div>
+
+                {serviceType === "prescription" && (
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Alergias conhecidas</Label>
+                    <Input value={patient.allergies} onChange={(e) => setPatient({ ...patient, allergies: e.target.value })} placeholder="Liste alergias ou 'Nenhuma'" className="bg-accent border-border" />
+                  </div>
+                )}
+
+                {/* LGPD Consent */}
+                <div className="rounded-lg border border-border p-3 space-y-2 bg-accent/30">
+                  <div className="flex items-start gap-2">
+                    <Checkbox checked={lgpdConsent} onCheckedChange={(v) => setLgpdConsent(!!v)} className="mt-0.5" />
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Autorizo o uso dos meus dados de saúde para fins de atendimento médico, conforme <strong>LGPD Art. 11</strong>. Seus dados serão vinculados ao seu CPF para consulta de histórico futuro.
+                    </p>
+                  </div>
+                  {!lgpdConsent && (
+                    <p className="text-[10px] text-destructive">* Consentimento obrigatório para prosseguir.</p>
+                  )}
+                </div>
+              </div>
             </motion.div>
           )}
 
@@ -606,69 +657,13 @@ const ProntoAtendimentoFlow = () => {
                 <div className="text-center py-6 space-y-2">
                   <Check className="h-10 w-10 text-green-500 mx-auto" />
                   <p className="text-sm font-medium">Atendimento gratuito</p>
-                  <p className="text-[11px] text-muted-foreground">Prossiga para informar seus dados.</p>
+                  <p className="text-[11px] text-muted-foreground">Prossiga para enviar sua solicitação.</p>
                 </div>
               )}
             </motion.div>
           )}
 
-          {/* PATIENT DATA STEP */}
-          {((serviceType === "prescription" && step === 3) ||
-            (serviceType === "consultation" && step === 2)) && (
-            <motion.div key="patient" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-card p-5 space-y-3">
-              <h2 className="text-sm font-semibold">Seus Dados</h2>
-              <p className="text-[11px] text-muted-foreground">Necessários para emissão do documento.</p>
 
-              <div className="space-y-1.5">
-                <Label className="text-xs">Nome completo *</Label>
-                <Input value={patient.name} onChange={(e) => setPatient({ ...patient, name: e.target.value })} placeholder="Seu nome completo" className="bg-accent border-border" />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">CPF *</Label>
-                  <Input value={patient.cpf} onChange={(e) => setPatient({ ...patient, cpf: maskCpf(e.target.value) })} placeholder="000.000.000-00" className="bg-accent border-border" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Data de nascimento *</Label>
-                  <Input type="date" value={patient.birthDate} onChange={(e) => setPatient({ ...patient, birthDate: e.target.value })} className="bg-accent border-border" />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">E-mail</Label>
-                <Input type="email" value={patient.email} onChange={(e) => setPatient({ ...patient, email: e.target.value })} placeholder="seu@email.com" className="bg-accent border-border" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">WhatsApp</Label>
-                <Input value={patient.phone} onChange={(e) => setPatient({ ...patient, phone: maskPhone(e.target.value) })} placeholder="(11) 99999-9999" className="bg-accent border-border" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Endereço completo</Label>
-                <Input value={patient.address} onChange={(e) => setPatient({ ...patient, address: e.target.value })} placeholder="Rua, número, bairro, cidade - UF" className="bg-accent border-border" />
-              </div>
-
-              {/* Conditional fields */}
-              {serviceType === "prescription" && (
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Alergias conhecidas</Label>
-                  <Input value={patient.allergies} onChange={(e) => setPatient({ ...patient, allergies: e.target.value })} placeholder="Liste alergias ou 'Nenhuma'" className="bg-accent border-border" />
-                </div>
-              )}
-
-
-              {/* LGPD Consent */}
-              <div className="rounded-lg border border-border p-3 space-y-2 bg-accent/30">
-                <div className="flex items-start gap-2">
-                  <Checkbox checked={lgpdConsent} onCheckedChange={(v) => setLgpdConsent(!!v)} className="mt-0.5" />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    Autorizo o uso dos meus dados de saúde para fins de atendimento médico, conforme <strong>LGPD Art. 11</strong>. Seus dados serão vinculados ao seu CPF para consulta de histórico futuro.
-                  </p>
-                </div>
-                {!lgpdConsent && (
-                  <p className="text-[10px] text-destructive">* Consentimento obrigatório para prosseguir.</p>
-                )}
-              </div>
-            </motion.div>
-          )}
 
           {/* CONFIRMATION STEP */}
           {step === steps.length - 1 && (

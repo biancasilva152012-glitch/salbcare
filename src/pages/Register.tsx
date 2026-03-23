@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { maskPhone } from "@/utils/masks";
+import { maskPhone, maskCpf } from "@/utils/masks";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +50,7 @@ const Register = () => {
     email: "",
     password: "",
     phone: "",
+    cpf: "",
     professional_type: "",
     council_number: "",
     council_state: "",
@@ -167,7 +168,7 @@ const Register = () => {
   };
 
   const canGoNext = () => {
-    if (step === 0) return !!form.name && !!form.email && !!form.phone && !!form.password;
+    if (step === 0) return !!form.name && !!form.email && !!form.phone && !!form.password && !!form.cpf;
     if (step === 1) return !!form.professional_type && !!form.council_number && !!form.council_state;
     if (step === 2) return true; // document upload is optional but encouraged
     return true;
@@ -310,6 +311,10 @@ const Register = () => {
                 <div className="space-y-1.5">
                   <Label>WhatsApp *</Label>
                   <Input placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })} className="bg-background/50 border-border/60" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>CPF *</Label>
+                  <Input placeholder="000.000.000-00" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCpf(e.target.value) })} className="bg-background/50 border-border/60" />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Senha *</Label>

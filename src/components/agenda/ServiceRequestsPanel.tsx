@@ -27,6 +27,7 @@ type ServiceRequest = {
   patient_phone: string | null;
   patient_address: string | null;
   patient_birth_date: string | null;
+  patient_data: any;
   prescription_data: any;
   prescription_image_path: string | null;
   receipt_url: string | null;
@@ -267,6 +268,11 @@ const ServiceRequestsPanel = () => {
                       <Clock className="h-3 w-3" />
                       {format(createdDate, "dd/MM HH:mm", { locale: ptBR })}
                     </div>
+                    {(req.patient_data as any)?.symptoms && (
+                      <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                        💬 {(req.patient_data as any).symptoms}
+                      </p>
+                    )}
                     {req.consultation_price != null && req.consultation_price > 0 && (
                       <p className="text-[11px] text-primary font-medium mt-0.5">
                         R$ {req.consultation_price.toFixed(2)}
@@ -380,6 +386,16 @@ const ServiceRequestsPanel = () => {
                   </div>
                 )}
               </div>
+
+              {/* Chief complaint / Symptoms */}
+              {(selectedRequest.patient_data as any)?.symptoms && (
+                <div className="rounded-lg border border-border p-3 space-y-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                    <MessageCircle className="h-3.5 w-3.5" /> Queixa Principal
+                  </h3>
+                  <p className="text-sm">{(selectedRequest.patient_data as any).symptoms}</p>
+                </div>
+              )}
 
               {/* Prescription data */}
               {selectedRequest.service_type === "prescription_renewal" && selectedRequest.prescription_data && (
