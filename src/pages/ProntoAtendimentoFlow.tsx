@@ -27,9 +27,9 @@ interface MedicationEntry {
   posology: string;
 }
 
-const STEPS_PRESCRIPTION = ["Serviço", "Receita Anterior", "Pagamento", "Seus Dados", "Confirmação"];
+const STEPS_PRESCRIPTION = ["Serviço", "Receita Anterior", "Pagamento", "Confirmação"];
 
-const STEPS_CONSULTATION = ["Serviço", "Pagamento", "Seus Dados", "Confirmação"];
+const STEPS_CONSULTATION = ["Serviço", "Pagamento", "Confirmação"];
 
 const ProntoAtendimentoFlow = () => {
   const [searchParams] = useSearchParams();
