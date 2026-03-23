@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -350,6 +351,23 @@ const ProntoAtendimentoFlow = () => {
                   </button>
                 ))}
               </div>
+
+              {serviceType === "consultation" && (
+                <div className="space-y-2">
+                  <Label htmlFor="chiefComplaint" className="text-xs font-medium">
+                    Queixa principal / Motivo da consulta
+                  </Label>
+                  <Textarea
+                    id="chiefComplaint"
+                    placeholder="Descreva brevemente o motivo da sua consulta (ex: dor de cabeça frequente, acompanhamento de rotina...)"
+                    value={patient.symptoms}
+                    onChange={(e) => setPatient((p) => ({ ...p, symptoms: e.target.value }))}
+                    className="bg-background border-border text-sm min-h-[80px] resize-none"
+                    maxLength={500}
+                  />
+                  <p className="text-[10px] text-muted-foreground text-right">{patient.symptoms.length}/500</p>
+                </div>
+              )}
 
               {price > 0 && (
                 <div className="text-center text-sm font-medium text-foreground">
