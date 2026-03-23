@@ -315,6 +315,7 @@ const Register = () => {
                 <div className="space-y-1.5">
                   <Label>CPF *</Label>
                   <Input placeholder="000.000.000-00" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCpf(e.target.value) })} className="bg-background/50 border-border/60" />
+                </div>
                 <div className="space-y-1.5">
                   <Label>Senha *</Label>
                   <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" required minLength={6} />
