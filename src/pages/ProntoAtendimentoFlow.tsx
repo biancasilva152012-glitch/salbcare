@@ -256,15 +256,13 @@ const ProntoAtendimentoFlow = () => {
 
   // Step validation
   const canProceed = () => {
-    if (step === 0) return true; // service selection always valid
+    if (step === 0) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     if (serviceType === "prescription") {
       if (step === 1) return medications.some((m) => m.name.trim()) && !blockedMedication;
       if (step === 2) return price === 0 || !!receiptFile;
-      if (step === 3) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     if (serviceType === "consultation") {
       if (step === 1) return price === 0 || !!receiptFile;
-      if (step === 2) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
     }
     return false;
   };
