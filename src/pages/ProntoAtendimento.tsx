@@ -163,30 +163,12 @@ const ProntoAtendimento = () => {
   }, [serviceFilter]);
 
   const resetAuthFields = () => {
-    setLoginEmail("");
-    setLoginPassword("");
     setSignupName("");
     setSignupEmail("");
     setSignupPhone("");
     setSignupPassword("");
     setShowPassword(false);
     setAuthLoading(false);
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
-      if (error) throw error;
-      // onAuthStateChange will handle navigation
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao entrar. Verifique suas credenciais.");
-      setAuthLoading(false);
-    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
