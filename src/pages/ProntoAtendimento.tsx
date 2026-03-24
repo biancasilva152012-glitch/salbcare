@@ -89,14 +89,9 @@ const ProntoAtendimento = () => {
 
   // Auth modal state
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [authLoading, setAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const pendingProfRef = useRef<any>(null);
-
-  // Login fields
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
 
   // Signup fields
   const [signupName, setSignupName] = useState("");
