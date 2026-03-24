@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
 
@@ -89,14 +89,9 @@ const ProntoAtendimento = () => {
 
   // Auth modal state
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [authLoading, setAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const pendingProfRef = useRef<any>(null);
-
-  // Login fields
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
 
   // Signup fields
   const [signupName, setSignupName] = useState("");
@@ -168,30 +163,12 @@ const ProntoAtendimento = () => {
   }, [serviceFilter]);
 
   const resetAuthFields = () => {
-    setLoginEmail("");
-    setLoginPassword("");
     setSignupName("");
     setSignupEmail("");
     setSignupPhone("");
     setSignupPassword("");
     setShowPassword(false);
     setAuthLoading(false);
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
-      if (error) throw error;
-      // onAuthStateChange will handle navigation
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao entrar. Verifique suas credenciais.");
-      setAuthLoading(false);
-    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
