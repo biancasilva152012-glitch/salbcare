@@ -54,7 +54,7 @@ const Login = () => {
       const userType = (profile as any)?.user_type || "professional";
 
       if (userType === "patient") {
-        navigate("/patient-dashboard");
+        navigate("/patient-dashboard/perfil");
       } else {
         const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
         navigate(needsOnboarding ? "/onboarding" : "/dashboard");
