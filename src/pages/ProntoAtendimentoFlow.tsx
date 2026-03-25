@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { maskCpf, maskPhone } from "@/utils/masks";
+import { isValidCpf } from "@/utils/cpfValidator";
 import { PROFESSION_CONFIG } from "@/config/professions";
 import SEOHead from "@/components/SEOHead";
 import { detectBlockedMedication, type PrescriptionColorScheme } from "@/utils/prescriptionColors";
@@ -254,9 +255,11 @@ const ProntoAtendimentoFlow = () => {
 
   const steps = getSteps();
 
+  const cpfError = patient.cpf.replace(/\D/g, "").length === 11 && !isValidCpf(patient.cpf) ? "CPF inválido" : "";
+
   // Step validation
   const canProceed = () => {
-    if (step === 0) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
+    if (step === 0) return !!patient.name && !!patient.cpf && isValidCpf(patient.cpf) && !!patient.birthDate && lgpdConsent;
     if (serviceType === "prescription") {
       if (step === 1) return medications.some((m) => m.name.trim()) && !blockedMedication;
       if (step === 2) return price === 0 || !!receiptFile;
@@ -385,7 +388,8 @@ const ProntoAtendimentoFlow = () => {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1.5">
                     <Label className="text-xs">CPF *</Label>
-                    <Input value={patient.cpf} onChange={(e) => setPatient({ ...patient, cpf: maskCpf(e.target.value) })} placeholder="000.000.000-00" className="bg-accent border-border" />
+                    <Input value={patient.cpf} onChange={(e) => setPatient({ ...patient, cpf: maskCpf(e.target.value) })} placeholder="000.000.000-00" className={`bg-accent border-border ${cpfError ? "border-destructive" : ""}`} />
+                    {cpfError && <p className="text-[10px] text-destructive">{cpfError}</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs">Data de nascimento *</Label>
