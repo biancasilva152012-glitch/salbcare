@@ -388,7 +388,8 @@ const ProntoAtendimentoFlow = () => {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1.5">
                     <Label className="text-xs">CPF *</Label>
-                    <Input value={patient.cpf} onChange={(e) => setPatient({ ...patient, cpf: maskCpf(e.target.value) })} placeholder="000.000.000-00" className="bg-accent border-border" />
+                    <Input value={patient.cpf} onChange={(e) => setPatient({ ...patient, cpf: maskCpf(e.target.value) })} placeholder="000.000.000-00" className={`bg-accent border-border ${cpfError ? "border-destructive" : ""}`} />
+                    {cpfError && <p className="text-[10px] text-destructive">{cpfError}</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs">Data de nascimento *</Label>
