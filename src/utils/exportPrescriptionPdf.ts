@@ -46,7 +46,7 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
   }
   const colors = MEDICATION_COLORS[medType];
 
-  // ── Left border stripe (all pages will get this in footer loop) ──
+  // ── Left border stripe ──
   const drawBorder = (d: jsPDF) => {
     d.setFillColor(...colors.borderColor);
     d.rect(0, 0, borderWidth, pageHeight, "F");
@@ -55,32 +55,43 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
 
   // ── Header with dynamic color ──
   doc.setFillColor(...colors.headerBg);
-  doc.rect(borderWidth, 0, pageWidth - borderWidth, 36, "F");
+  doc.rect(borderWidth, 0, pageWidth - borderWidth, 42, "F");
 
+  // Top-left: Platform name
   doc.setTextColor(...colors.headerText);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("SALBCARE", margin + borderWidth, 15);
+  doc.text("SALBCARE", margin + borderWidth, 14);
 
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
+  // Professional info - left side
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
   doc.text(data.doctorName, margin + borderWidth, 23);
-  const councilText = normalizedCouncilNumber
-    ? `${signatureTitle} — ${councilRegistrationText}`
-    : signatureTitle;
-  doc.text(councilText, margin + borderWidth, 29);
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.text(signatureTitle, margin + borderWidth, 29);
 
+  // Council registration - prominently displayed
+  if (normalizedCouncilNumber) {
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text(councilRegistrationText, margin + borderWidth, 36);
+  }
+
+  // Right side: address + date
   if (data.officeAddress) {
     doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
     const addrLines = doc.splitTextToSize(data.officeAddress, contentWidth / 2.5);
-    doc.text(addrLines, pageWidth - margin, 23, { align: "right" });
+    doc.text(addrLines, pageWidth - margin, 14, { align: "right" });
   }
 
   doc.setFontSize(7.5);
-  doc.text(`Emitido em ${now}`, pageWidth - margin, 33, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.text(`Emitido em ${now}`, pageWidth - margin, 39, { align: "right" });
 
   // ── Badge / type indicator ──
-  const badgeY = 42;
+  const badgeY = 50;
   const badgeText = colors.label;
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
@@ -106,9 +117,12 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
   y += 9;
 
   // ── Patient info box ──
-  const patientBoxH = data.patientCpf ? 20 : 14;
+  const patientBoxH = data.patientCpf ? 22 : 16;
   doc.setFillColor(245, 247, 250);
   doc.roundedRect(margin + borderWidth, y - 4, contentWidth - borderWidth, patientBoxH, 2, 2, "F");
+  doc.setDrawColor(220, 225, 230);
+  doc.roundedRect(margin + borderWidth, y - 4, contentWidth - borderWidth, patientBoxH, 2, 2, "S");
+
   doc.setFontSize(10);
   doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
@@ -121,17 +135,16 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
     doc.setFont("helvetica", "normal");
     doc.setTextColor(80);
     doc.setFontSize(9);
-    doc.text(`CPF: ${data.patientCpf}`, margin + borderWidth + 4, y + 12);
+    doc.text(`CPF: ${data.patientCpf}`, margin + borderWidth + 4, y + 13);
   }
 
-  y += patientBoxH + 6;
-
-  // ── Date ──
-  doc.setFontSize(9);
+  // Date on the right inside patient box
+  doc.setFontSize(8);
   doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
-  doc.text(`Data de emissão: ${today}`, margin + borderWidth, y);
-  y += 8;
+  doc.text(`Data: ${today}`, pageWidth - margin - 4, y + 4, { align: "right" });
+
+  y += patientBoxH + 8;
 
   doc.setDrawColor(220);
   doc.line(margin + borderWidth, y, pageWidth - margin, y);
@@ -139,7 +152,7 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
 
   // Helper: check page break
   const checkPage = (needed: number) => {
-    if (y + needed > pageHeight - 50) {
+    if (y + needed > pageHeight - 65) {
       doc.addPage();
       drawBorder(doc);
       y = 20;
@@ -161,7 +174,7 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
     for (const line of prescLines) {
       checkPage(6);
       doc.text(line, margin + borderWidth, y);
-      y += 5;
+      y += 5.5;
     }
     y += 6;
   }
@@ -184,7 +197,7 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
     for (const line of certLines) {
       checkPage(6);
       doc.text(line, margin + borderWidth, y);
-      y += 5;
+      y += 5.5;
     }
     y += 6;
   }
@@ -207,7 +220,7 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
     for (const line of noteLines) {
       checkPage(6);
       doc.text(line, margin + borderWidth, y);
-      y += 5;
+      y += 5.5;
     }
     y += 6;
   }
@@ -228,32 +241,84 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
     y += 18;
   }
 
-  // ── Signature block ──
-  checkPage(55);
-  y += 16;
+  // ── Stamp / Signature block ──
+  checkPage(70);
+  y += 10;
 
-  const sigLineW = 80;
+  // Stamp area - dashed rectangle for professional stamp
+  const stampW = 90;
+  const stampH = 40;
+  const stampX = (pageWidth - stampW) / 2;
+
+  doc.setDrawColor(180, 185, 195);
+  doc.setLineWidth(0.3);
+  // Draw dashed border
+  const dashLen = 3;
+  const gapLen = 2;
+  // Top
+  for (let dx = 0; dx < stampW; dx += dashLen + gapLen) {
+    doc.line(stampX + dx, y, stampX + Math.min(dx + dashLen, stampW), y);
+  }
+  // Bottom
+  for (let dx = 0; dx < stampW; dx += dashLen + gapLen) {
+    doc.line(stampX + dx, y + stampH, stampX + Math.min(dx + dashLen, stampW), y + stampH);
+  }
+  // Left
+  for (let dy = 0; dy < stampH; dy += dashLen + gapLen) {
+    doc.line(stampX, y + dy, stampX, y + Math.min(dy + dashLen, stampH));
+  }
+  // Right
+  for (let dy = 0; dy < stampH; dy += dashLen + gapLen) {
+    doc.line(stampX + stampW, y + dy, stampX + stampW, y + Math.min(dy + dashLen, stampH));
+  }
+
+  // Label inside stamp area
+  doc.setFontSize(7);
+  doc.setTextColor(160);
+  doc.setFont("helvetica", "normal");
+  doc.text("CARIMBO E ASSINATURA DO PROFISSIONAL", pageWidth / 2, y + 6, { align: "center" });
+
+  // Pre-filled professional info inside stamp
   const cx = pageWidth / 2;
-  doc.setDrawColor(15, 23, 42);
-  doc.setLineWidth(0.4);
-  doc.line(cx - sigLineW / 2, y, cx + sigLineW / 2, y);
-  y += 5;
-
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
-  doc.text(data.doctorName, cx, y, { align: "center" });
-  y += 5;
+  doc.text(data.doctorName, cx, y + 16, { align: "center" });
 
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(80);
-  doc.setFontSize(8);
-  doc.text(signatureTitle, cx, y, { align: "center" });
-  y += 4;
+  doc.setTextColor(60);
+  doc.setFontSize(9);
+  doc.text(signatureTitle, cx, y + 22, { align: "center" });
 
-  doc.setFontSize(7.5);
+  if (normalizedCouncilNumber) {
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 23, 42);
+    doc.text(councilRegistrationText, cx, y + 28, { align: "center" });
+  }
+
+  // Signature line below stamp
+  y += stampH + 8;
+  const sigLineW = 80;
+  doc.setDrawColor(15, 23, 42);
+  doc.setLineWidth(0.4);
+  doc.line(cx - sigLineW / 2, y, cx + sigLineW / 2, y);
+  y += 4;
+  doc.setFontSize(7);
   doc.setTextColor(130);
-  doc.text(councilRegistrationText, cx, y, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.text("Assinatura do Profissional", cx, y, { align: "center" });
+
+  // ── Legal resolution line ──
+  y += 10;
+  checkPage(12);
+  doc.setFillColor(248, 249, 252);
+  doc.roundedRect(margin + borderWidth, y - 3, contentWidth - borderWidth, 10, 1.5, 1.5, "F");
+  doc.setFontSize(6.5);
+  doc.setTextColor(120);
+  doc.setFont("helvetica", "normal");
+  doc.text(config.legalResolution, pageWidth / 2, y + 3, { align: "center" });
+  y += 12;
 
   // ── QR Code ──
   let qrDataUrl: string | null = null;
@@ -270,40 +335,49 @@ export async function generatePrescriptionPdf(data: PrescriptionPdfData): Promis
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-
-    // Ensure left border on every page
     drawBorder(doc);
 
     // Footer bar
     doc.setFillColor(15, 23, 42);
-    doc.rect(borderWidth, pageHeight - 18, pageWidth - borderWidth, 18, "F");
+    doc.rect(borderWidth, pageHeight - 20, pageWidth - borderWidth, 20, "F");
     // Accent line
     doc.setFillColor(...colors.borderColor);
-    doc.rect(borderWidth, pageHeight - 18, pageWidth - borderWidth, 0.8, "F");
+    doc.rect(borderWidth, pageHeight - 20, pageWidth - borderWidth, 0.8, "F");
 
+    // Footer text
     doc.setFontSize(6.5);
     doc.setTextColor(160, 170, 180);
     doc.text(
       "Documento gerado pela SalbCare — salbcare.com.br",
-      margin + borderWidth, pageHeight - 9
+      margin + borderWidth, pageHeight - 12
     );
+
+    // Council registration in footer
+    if (normalizedCouncilNumber) {
+      doc.setFontSize(6);
+      doc.text(
+        `${data.doctorName} — ${councilRegistrationText}`,
+        margin + borderWidth, pageHeight - 7
+      );
+    }
+
+    doc.setFontSize(6.5);
     doc.text(
       `Pág. ${i}/${pageCount}`,
-      pageWidth - margin, pageHeight - 9, { align: "right" }
+      pageWidth - margin, pageHeight - 12, { align: "right" }
     );
 
     if (data.hashCode) {
       doc.setFontSize(5.5);
-      doc.text(`Código: ${data.hashCode}`, margin + borderWidth, pageHeight - 5);
+      doc.text(`Código de verificação: ${data.hashCode}`, pageWidth - margin, pageHeight - 7, { align: "right" });
     }
 
     // QR code on last page only
     if (i === pageCount && qrDataUrl) {
       const qrSize = 22;
       const qrX = pageWidth - margin - qrSize;
-      const qrY = pageHeight - 18 - qrSize - 4;
+      const qrY = pageHeight - 20 - qrSize - 6;
 
-      // White background for QR
       doc.setFillColor(255, 255, 255);
       doc.roundedRect(qrX - 2, qrY - 2, qrSize + 4, qrSize + 4, 1, 1, "F");
       doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
