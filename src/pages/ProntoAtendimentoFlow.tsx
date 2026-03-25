@@ -255,9 +255,11 @@ const ProntoAtendimentoFlow = () => {
 
   const steps = getSteps();
 
+  const cpfError = patient.cpf.replace(/\D/g, "").length === 11 && !isValidCpf(patient.cpf) ? "CPF inválido" : "";
+
   // Step validation
   const canProceed = () => {
-    if (step === 0) return !!patient.name && !!patient.cpf && !!patient.birthDate && lgpdConsent;
+    if (step === 0) return !!patient.name && !!patient.cpf && isValidCpf(patient.cpf) && !!patient.birthDate && lgpdConsent;
     if (serviceType === "prescription") {
       if (step === 1) return medications.some((m) => m.name.trim()) && !blockedMedication;
       if (step === 2) return price === 0 || !!receiptFile;
