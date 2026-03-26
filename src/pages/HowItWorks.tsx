@@ -61,17 +61,28 @@ const HowItWorks = () => (
       {/* Pilares do ecossistema */}
       <motion.div variants={item} className="space-y-3">
         <h2 className="text-center text-lg font-bold">Os 6 pilares do ecossistema</h2>
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <motion.div
+          className="grid grid-cols-3 gap-2 sm:gap-3"
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } }}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+        >
           {pillars.map(({ icon: Icon, label, desc }) => (
-            <div key={label} className="glass-card flex flex-col items-center gap-1.5 p-3 sm:p-4 text-center">
+            <motion.div
+              key={label}
+              variants={{ hidden: { opacity: 0, y: 20, scale: 0.9 }, show: { opacity: 1, y: 0, scale: 1 } }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              className="glass-card flex flex-col items-center gap-1.5 p-3 sm:p-4 text-center"
+            >
               <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary sm:h-12 sm:w-12">
                 <Icon className="h-5 w-5 text-primary-foreground sm:h-6 sm:w-6" />
               </div>
               <span className="text-xs font-semibold sm:text-sm">{label}</span>
               <span className="text-[10px] text-muted-foreground leading-tight sm:text-xs">{desc}</span>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </motion.div>
 
       {/* Seção 2 */}
