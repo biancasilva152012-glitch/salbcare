@@ -36,9 +36,16 @@ const HowItWorks = () => (
       <motion.div variants={item} className="glass-card p-5 space-y-3">
         <h2 className="text-lg font-bold">O que é a SALBCARE</h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          A SALBCARE é uma plataforma de gestão para profissionais de saúde autônomos. 
-          Aqui você organiza sua agenda, seus pacientes, suas finanças e tem acesso a um 
-          contador especializado em saúde — tudo em um lugar só.
+          A SALBCARE é um ecossistema digital completo para profissionais de saúde autônomos. 
+          Tudo que o profissional precisa para gerir e crescer seu consultório está em um único lugar: 
+          agenda, prontuário, teleconsulta, captação de pacientes, controle financeiro e assessoria 
+          contábil especializada em saúde.
+        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          A plataforma opera como um <span className="font-semibold text-foreground">marketplace de saúde</span>: 
+          profissionais pagam mensalidade para acessar o ecossistema e crescer; pacientes criam conta 
+          gratuitamente para encontrar profissionais e agendar consultas. Tudo acontece dentro da 
+          plataforma — sem ferramentas externas, sem redirecionamentos.
         </p>
       </motion.div>
 
