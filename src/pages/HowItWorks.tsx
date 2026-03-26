@@ -1,9 +1,18 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { X, Shield, MessageCircle, Lock, HelpCircle } from "lucide-react";
+import { X, Shield, MessageCircle, Lock, HelpCircle, Calendar, FileText, Video, UserSearch, DollarSign, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
+
+const pillars = [
+  { icon: Calendar, label: "Agenda", desc: "Gerencie horários e agendamentos" },
+  { icon: FileText, label: "Prontuário", desc: "Registros clínicos digitais" },
+  { icon: Video, label: "Teleconsulta", desc: "Atendimento remoto seguro" },
+  { icon: UserSearch, label: "Captação", desc: "Pacientes encontram você" },
+  { icon: DollarSign, label: "Financeiro", desc: "Controle receitas e despesas" },
+  { icon: Calculator, label: "Contabilidade", desc: "Contador especializado em saúde" },
+];
 
 const notItems = [
   "Não somos um plano de saúde",
