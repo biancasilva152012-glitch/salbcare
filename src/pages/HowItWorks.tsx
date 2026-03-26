@@ -1,9 +1,18 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { X, Shield, MessageCircle, Lock, HelpCircle } from "lucide-react";
+import { X, Shield, MessageCircle, Lock, HelpCircle, Calendar, FileText, Video, UserSearch, DollarSign, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
+
+const pillars = [
+  { icon: Calendar, label: "Agenda", desc: "Gerencie horários e agendamentos" },
+  { icon: FileText, label: "Prontuário", desc: "Registros clínicos digitais" },
+  { icon: Video, label: "Teleconsulta", desc: "Atendimento remoto seguro" },
+  { icon: UserSearch, label: "Captação", desc: "Pacientes encontram você" },
+  { icon: DollarSign, label: "Financeiro", desc: "Controle receitas e despesas" },
+  { icon: Calculator, label: "Contabilidade", desc: "Contador especializado em saúde" },
+];
 
 const notItems = [
   "Não somos um plano de saúde",
@@ -47,6 +56,22 @@ const HowItWorks = () => (
           gratuitamente para encontrar profissionais e agendar consultas. Tudo acontece dentro da 
           plataforma — sem ferramentas externas, sem redirecionamentos.
         </p>
+      </motion.div>
+
+      {/* Pilares do ecossistema */}
+      <motion.div variants={item} className="space-y-3">
+        <h2 className="text-center text-lg font-bold">Os 6 pilares do ecossistema</h2>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          {pillars.map(({ icon: Icon, label, desc }) => (
+            <div key={label} className="glass-card flex flex-col items-center gap-1.5 p-3 sm:p-4 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary sm:h-12 sm:w-12">
+                <Icon className="h-5 w-5 text-primary-foreground sm:h-6 sm:w-6" />
+              </div>
+              <span className="text-xs font-semibold sm:text-sm">{label}</span>
+              <span className="text-[10px] text-muted-foreground leading-tight sm:text-xs">{desc}</span>
+            </div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Seção 2 */}
