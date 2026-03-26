@@ -58,6 +58,22 @@ const HowItWorks = () => (
         </p>
       </motion.div>
 
+      {/* Pilares do ecossistema */}
+      <motion.div variants={item} className="space-y-3">
+        <h2 className="text-center text-lg font-bold">Os 6 pilares do ecossistema</h2>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          {pillars.map(({ icon: Icon, label, desc }) => (
+            <div key={label} className="glass-card flex flex-col items-center gap-1.5 p-3 sm:p-4 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary sm:h-12 sm:w-12">
+                <Icon className="h-5 w-5 text-primary-foreground sm:h-6 sm:w-6" />
+              </div>
+              <span className="text-xs font-semibold sm:text-sm">{label}</span>
+              <span className="text-[10px] text-muted-foreground leading-tight sm:text-xs">{desc}</span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
       {/* Seção 2 */}
       <motion.div variants={item} className="glass-card p-5 space-y-3">
         <h2 className="text-lg font-bold">O que a SALBCARE não é</h2>
