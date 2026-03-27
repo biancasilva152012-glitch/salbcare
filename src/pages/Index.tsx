@@ -384,7 +384,7 @@ const Index = () => {
                             <span className="text-sm text-muted-foreground line-through">R$ {annual.originalMonthly}</span>
                             <span className="text-xs font-semibold text-primary">Economize R$ {annual.savings}/ano</span>
                           </div>
-                          <p className="text-[10px] text-muted-foreground mt-1">R$ {annual.total} cobrado uma única vez por ano</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">Cobrança anual</p>
                         </motion.div>
                       ) : (
                         <motion.div

@@ -24,7 +24,7 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { priceId } = await req.json();
+    const { priceId, billingPeriod } = await req.json();
     if (!priceId) throw new Error("priceId is required");
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
@@ -37,13 +37,20 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
 
+    // Annual plans use mode "payment" (one-time charge), monthly uses "subscription"
+    const mode = billingPeriod === "annual" ? "payment" : "subscription";
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceId, quantity: 1 }],
-      mode: "subscription",
+      mode,
       success_url: `${origin}/sucesso`,
       cancel_url: `${origin}/cancelado`,
+      metadata: {
+        user_id: user.id,
+        billing_period: billingPeriod || "monthly",
+      },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
