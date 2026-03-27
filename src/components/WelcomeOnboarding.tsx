@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 const slides = [
   {
     icon: CalendarCheck,
-    title: "Bem-vindo à SALBCARE",
+    title: "Bem-vindo à SalbCare",
     text: "Sua Secretária Digital: a SalbCare capta pacientes para você sem sair de casa, organiza sua agenda pelo celular e elimina toda a papelada. Mais consultas, zero burocracia.",
     button: "Próximo",
   },

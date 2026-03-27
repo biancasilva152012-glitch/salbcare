@@ -57,15 +57,15 @@ const HowItWorks = () => {
         <div className="mx-auto mb-4 h-16 w-16">
           <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
         </div>
-        <h1 className="text-2xl font-bold">Como funciona a SALBCARE</h1>
+        <h1 className="text-2xl font-bold">Como Funciona a SalbCare</h1>
         <p className="text-sm text-muted-foreground">Tudo que você precisa saber em 2 minutos</p>
       </motion.div>
 
       {/* Seção 1 */}
       <motion.div variants={item} className="glass-card p-5 space-y-3">
-        <h2 className="text-lg font-bold">O que é a SALBCARE</h2>
+        <h2 className="text-lg font-bold">O que é a SalbCare</h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          A SALBCARE é um ecossistema digital completo para profissionais de saúde autônomos. 
+          A SalbCare é um ecossistema digital completo para profissionais de saúde autônomos. 
           Tudo que o profissional precisa para gerir e crescer seu consultório está em um único lugar: 
           agenda, prontuário, teleconsulta, captação de pacientes, controle financeiro e assessoria 
           contábil especializada em saúde.
@@ -107,7 +107,7 @@ const HowItWorks = () => {
 
       {/* Seção 2 */}
       <motion.div variants={item} className="glass-card p-5 space-y-3">
-        <h2 className="text-lg font-bold">O que a SALBCARE não é</h2>
+        <h2 className="text-lg font-bold">O que a SalbCare não é</h2>
         <ul className="space-y-3">
           {notItems.map((text) => (
             <li key={text} className="flex items-start gap-3">
@@ -127,7 +127,7 @@ const HowItWorks = () => {
           <h2 className="text-lg font-bold">Como funciona o contador parceiro</h2>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Você será atendido por um contador parceiro da SALBCARE com CRC ativo, 
+          Você será atendido por um contador parceiro da SalbCare com CRC ativo, 
           especializado em profissionais de saúde. Ele orienta você sobre impostos, regime 
           tributário e planejamento financeiro via chat.
         </p>
@@ -161,7 +161,7 @@ const HowItWorks = () => {
       {/* Calculadora de Economia */}
       <motion.div variants={item} className="space-y-3">
         <h2 className="text-center text-lg font-bold">Calculadora de Economia Tributária</h2>
-        <p className="text-center text-xs text-muted-foreground">Descubra quanto você pode economizar como PJ na SALBCARE</p>
+        <p className="text-center text-xs text-muted-foreground">Descubra quanto você pode economizar como PJ na SalbCare</p>
         <TaxSimulatorWidget />
       </motion.div>
 
@@ -175,12 +175,12 @@ const HowItWorks = () => {
         <h2 className="text-center text-lg font-bold">Perguntas Frequentes</h2>
         <Accordion type="single" collapsible className="space-y-2">
           {[
-            { q: "Preciso ter CNPJ para usar a SALBCARE?", a: "Não. Você pode começar como pessoa física. Se quiser abrir CNPJ, ajudamos com o processo direto pela plataforma." },
-            { q: "A SALBCARE substitui meu contador?", a: "Não. Oferecemos um contador parceiro especializado em saúde para orientações e planejamento tributário. Para obrigações acessórias completas (balanço, folha, escrita fiscal), você combina diretamente com o contador." },
+            { q: "Preciso ter CNPJ para usar a SalbCare?", a: "Não. Você pode começar como pessoa física. Se quiser abrir CNPJ, ajudamos com o processo direto pela plataforma." },
+            { q: "A SalbCare substitui meu contador?", a: "Não. Oferecemos um contador parceiro especializado em saúde para orientações e planejamento tributário. Para obrigações acessórias completas (balanço, folha, escrita fiscal), você combina diretamente com o contador." },
             { q: "Os dados dos meus pacientes estão seguros?", a: "Sim. Todos os dados são armazenados com criptografia e seguimos a LGPD. Você pode solicitar, corrigir ou excluir dados a qualquer momento." },
             { q: "Como funciona a teleconsulta?", a: "Você cria uma sala de atendimento, compartilha o link com o paciente e realiza a consulta por vídeo. Prontuário, receita e atestado podem ser preenchidos durante a chamada." },
             { q: "Posso testar antes de assinar?", a: "Sim! Oferecemos um período de teste gratuito para que você conheça todas as funcionalidades do ecossistema." },
-            { q: "Quanto economizo com a SALBCARE?", a: "Depende do seu faturamento. Use a calculadora acima para simular a economia comparando tributação como pessoa física vs pessoa jurídica pelo Simples Nacional." },
+            { q: "Quanto economizo com a SalbCare?", a: "Depende do seu faturamento. Use a calculadora acima para simular a economia comparando tributação como pessoa física vs pessoa jurídica pelo Simples Nacional." },
             { q: "Pacientes pagam para usar a plataforma?", a: "Não. Pacientes criam conta gratuitamente, encontram profissionais e agendam consultas sem custo." },
             { q: "Quais profissões de saúde podem usar?", a: "Médicos, dentistas, psicólogos, fisioterapeutas, nutricionistas, fonoaudiólogos, enfermeiros e outros profissionais de saúde autônomos." },
           ].map(({ q, a }, i) => (

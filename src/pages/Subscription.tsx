@@ -62,9 +62,9 @@ const Subscription = () => {
     <PageContainer backTo="/profile">
       <div className="space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">Planos SALBCARE</h1>
+          <h1 className="text-2xl font-bold">Planos SalbCare</h1>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-            Gestão completa para profissionais de saúde. A SALBCARE conecta você a contadores especializados em saúde.
+            Gestão completa para profissionais de saúde. A SalbCare conecta você a contadores especializados em saúde.
           </p>
         </div>
 
@@ -204,7 +204,7 @@ const Subscription = () => {
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-accent/50 border border-border">
                     <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                       Assessoria contábil realizada por contadores parceiros independentes com CRC ativo. A SALBCARE conecta você ao profissional certo para facilitar sua vida.
+                       Assessoria contábil realizada por contadores parceiros independentes com CRC ativo. A SalbCare conecta você ao profissional certo para facilitar sua vida.
                      </p>
                   </div>
                 )}

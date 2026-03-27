@@ -39,7 +39,7 @@ const TaxSimulatorWidget = () => {
 
   const chartData = [
     { name: "Pessoa Física", value: pfTotal, fill: "hsl(var(--destructive))" },
-    { name: "SALBCARE", value: pjTotal, fill: "hsl(var(--primary))" },
+    { name: "SalbCare", value: pjTotal, fill: "hsl(var(--primary))" },
   ];
 
   const canChat = subscription.plan === "professional" || subscription.plan === "clinic";

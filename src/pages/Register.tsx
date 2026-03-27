@@ -215,7 +215,7 @@ const Register = () => {
           <div className="space-y-2">
             <h1 className="text-2xl font-bold">Cadastro em análise</h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Seu cadastro está sendo verificado pela equipe SALBCARE. Você receberá um e-mail em até <strong>24 horas</strong> com a aprovação ou instruções adicionais.
+              Seu cadastro está sendo verificado pela equipe SalbCare. Você receberá um e-mail em até <strong>24 horas</strong> com a aprovação ou instruções adicionais.
             </p>
           </div>
 

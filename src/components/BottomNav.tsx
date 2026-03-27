@@ -38,13 +38,13 @@ const BottomNav = () => {
       {/* Legal footer — centered and properly aligned */}
       <div className="text-center px-4 pb-2 space-y-1">
         <p className="text-[9px] text-muted-foreground/40 leading-relaxed">
-          A SALBCARE é uma plataforma de gestão e não substitui orientação médica, jurídica ou contábil profissional.
+          A SalbCare é uma plataforma de gestão e não substitui orientação médica, jurídica ou contábil profissional.
         </p>
         <p className="text-[9px] text-muted-foreground/40">
           contato@salbcare.com.br
         </p>
         <p className="text-[9px] text-muted-foreground/40">
-          SALBCARE Tecnologia LTDA
+          SalbCare Tecnologia LTDA
         </p>
         <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[10px]">
           <Link to="/terms" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">

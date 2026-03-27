@@ -45,7 +45,7 @@ const Privacy = () => {
           <section className="space-y-2">
             <h2 className="text-base font-semibold text-foreground">Compartilhamento de dados</h2>
             <p>
-              A SALBCARE poderá compartilhar dados <strong>agregados e anonimizados</strong> com parceiros comerciais (B2B) para fins de análise de mercado, relatórios setoriais e melhoria de serviços. Esses dados:
+              A SalbCare poderá compartilhar dados <strong>agregados e anonimizados</strong> com parceiros comerciais (B2B) para fins de análise de mercado, relatórios setoriais e melhoria de serviços. Esses dados:
             </p>
             <ul className="list-disc pl-4 space-y-1">
               <li>Não permitem a identificação individual de profissionais ou pacientes</li>
@@ -65,7 +65,7 @@ const Privacy = () => {
             <ul className="list-disc pl-4 space-y-1">
               <li>Armazenados de forma criptografada em servidores seguros</li>
               <li>Acessíveis apenas por você (o profissional que os registrou)</li>
-              <li>Nunca acessados pela equipe da SALBCARE sem sua autorização</li>
+              <li>Nunca acessados pela equipe da SalbCare sem sua autorização</li>
               <li>Protegidos por controles de acesso baseados em autenticação</li>
             </ul>
           </section>
@@ -108,7 +108,7 @@ const Privacy = () => {
             </p>
             <ul className="list-none space-y-1">
               <li>📧 E-mail: <a href="mailto:contato@salbcare.com.br" className="text-primary hover:underline">contato@salbcare.com.br</a></li>
-              <li>📍 Responsável: SALBCARE Tecnologia LTDA</li>
+              <li>📍 Responsável: SalbCare Tecnologia LTDA</li>
             </ul>
           </section>
         </div>

@@ -65,21 +65,10 @@ const Login = () => {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center px-6 overflow-hidden">
       <SEOHead
-        title="SalbCare | Encontre seu profissional de saúde"
-        description="Plataforma completa para profissionais de saúde: agenda, prontuário, teleconsulta e assessoria contábil. Comece grátis por 7 dias."
-        canonical="/"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "SalbCare",
-          url: "https://salbcare.com.br",
-          description: "Plataforma de gestão para profissionais de saúde com agenda, prontuário eletrônico, teleconsulta e assessoria contábil integrada.",
-          potentialAction: {
-            "@type": "SearchAction",
-            target: "https://salbcare.com.br/consulta-online/{search_term_string}",
-            "query-input": "required name=search_term_string",
-          },
-        }}
+        title="Entrar | SalbCare"
+        description="Acesse sua conta SalbCare para gerenciar sua agenda, pacientes, teleconsultas e financeiro."
+        canonical="/login"
+        noindex
       />
       {floatingOrbs.map((orb, i) => (
         <motion.div

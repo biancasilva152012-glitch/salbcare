@@ -133,7 +133,7 @@ const ProntoAtendimentoHistorico = () => {
 
         <div className="text-center pt-4 border-t border-border">
           <p className="text-[10px] text-muted-foreground">
-            A SALBCARE é uma plataforma de gestão e não substitui orientação médica profissional.
+            A SalbCare é uma plataforma de gestão e não substitui orientação médica profissional.
           </p>
         </div>
       </div>
