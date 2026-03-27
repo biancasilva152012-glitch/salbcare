@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { X, Shield, MessageCircle, Lock, HelpCircle, Calendar, FileText, Video, UserSearch, DollarSign, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
+import TaxSimulatorWidget from "@/components/financial/TaxSimulatorWidget";
 
 const pillars = [
   { icon: Calendar, label: "Agenda", desc: "Gerencie horários e agendamentos" },
