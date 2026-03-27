@@ -315,7 +315,7 @@ const Index = () => {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.1 }}
-              className="grid gap-6 md:grid-cols-3"
+              className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-3"
             >
               {planCards.map(({ key, popular }) => {
                 const plan = PLANS[key];
