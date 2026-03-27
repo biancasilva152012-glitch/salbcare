@@ -74,6 +74,19 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Responsive base typography */
+  html {
+    font-size: 16px;
+  }
+
+  @media (max-width: 374px) {
+    html {
+      font-size: 14px;
+    }
   }
 
   /* Respect user motion preferences */
@@ -90,6 +103,17 @@
   button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  /* Full-width inputs on mobile */
+  input, textarea, select, [role="combobox"] {
+    max-width: 100%;
+  }
+
+  /* Images scale correctly */
+  img, video, svg {
+    max-width: 100%;
+    height: auto;
   }
 
   /* Allow smaller inline elements */

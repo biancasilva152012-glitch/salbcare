@@ -130,17 +130,17 @@ const Index = () => {
         </nav>
 
         {/* ── Hero Section ── */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 pt-16 pb-20 sm:pt-24 sm:pb-28">
+        <section className="mx-auto max-w-6xl px-5 sm:px-6 pt-12 pb-16 sm:pt-24 sm:pb-28">
           <motion.div
             variants={stagger}
             initial="hidden"
             animate="show"
-            className="grid gap-12 lg:grid-cols-2 lg:items-center"
+            className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:items-center"
           >
             <div className="space-y-6 text-center lg:text-left">
               <motion.h1
                 variants={fadeUp}
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight"
+                className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight"
               >
                 Sua <span className="gradient-text">Vitrine</span> para Pacientes.{" "}
                 <br className="hidden sm:block" />
@@ -315,7 +315,7 @@ const Index = () => {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.1 }}
-              className="grid gap-6 md:grid-cols-3"
+              className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-3"
             >
               {planCards.map(({ key, popular }) => {
                 const plan = PLANS[key];
@@ -401,12 +401,12 @@ const Index = () => {
         {/* ── Footer ── */}
         <footer className="border-t border-border/40 py-10">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
               <div className="flex items-center gap-2">
                 <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
                 <span className="text-sm font-bold gradient-text">SALBCARE</span>
               </div>
-              <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+              <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
                 <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
                 <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
                 <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
@@ -415,7 +415,7 @@ const Index = () => {
                 <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
                 <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
               </nav>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
                 <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
                   <Link to="/login">Entrar</Link>
                 </Button>

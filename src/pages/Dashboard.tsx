@@ -221,7 +221,7 @@ const Dashboard = () => {
           <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:mb-3 sm:text-sm">
             Acesso rápido
           </h2>
-          <div className="grid grid-cols-4 gap-2 sm:grid-cols-4 sm:gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3">
             {quickActions.map(({ icon: Icon, label, to, requiredFeature, highlight }) => {
               const locked = requiredFeature && !hasAccess(requiredFeature);
 
