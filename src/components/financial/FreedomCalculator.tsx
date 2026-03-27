@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DollarSign, Calendar, Video, Calculator, ArrowRight } from "lucide-react";
+import { Calendar, Video, Calculator, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,36 @@ const fields = [
 ] as const;
 
 const SALBCARE_PRICE = 49;
+
+/** Animated counter hook */
+function useAnimatedNumber(target: number, duration = 600) {
+  const [display, setDisplay] = useState(0);
+  const rafRef = useRef<number>();
+
+  useEffect(() => {
+    const start = display;
+    const diff = target - start;
+    if (diff === 0) return;
+    const startTime = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(start + diff * eased));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, duration]);
+
+  return display;
+}
 
 const FreedomCalculator = () => {
   const navigate = useNavigate();
@@ -29,6 +59,9 @@ const FreedomCalculator = () => {
     return { total: t, savings: sav, hasSavings: sav > 0, hasInput: t > 0 };
   }, [values]);
 
+  const animatedSavings = useAnimatedNumber(hasSavings ? savings : 0);
+  const animatedAnnual = useAnimatedNumber(hasSavings ? savings * 12 : 0);
+
   const fmt = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -37,7 +70,7 @@ const FreedomCalculator = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto w-full max-w-md rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.4)] p-6 sm:p-8 space-y-6"
+      className="mx-auto w-full max-w-md rounded-2xl bg-card/80 backdrop-blur-xl border border-border/50 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.4)] p-6 sm:p-8 space-y-6"
     >
       {/* Header */}
       <div className="space-y-1 text-center">
@@ -67,7 +100,7 @@ const FreedomCalculator = () => {
                 placeholder={placeholder}
                 value={values[key]}
                 onChange={(e) => update(key, e.target.value)}
-                className="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.04] pl-16 pr-4 text-sm font-medium text-foreground placeholder:text-muted-foreground/40 outline-none transition-all duration-200 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+                className="h-11 w-full rounded-xl border border-border/50 bg-accent/30 pl-16 pr-4 text-sm font-medium text-foreground placeholder:text-muted-foreground/40 outline-none transition-all duration-200 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
@@ -86,8 +119,7 @@ const FreedomCalculator = () => {
             className="overflow-hidden"
           >
             <div className="space-y-3 pt-2">
-              {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
 
               {hasSavings ? (
                 <>
@@ -97,7 +129,7 @@ const FreedomCalculator = () => {
                     className="text-center text-sm font-bold text-foreground"
                   >
                     Você está perdendo{" "}
-                    <span className="text-destructive">{fmt(savings)}</span>{" "}
+                    <span className="text-destructive tabular-nums">{fmt(animatedSavings)}</span>{" "}
                     por mês.
                   </motion.p>
                   <p className="text-center text-xs text-muted-foreground leading-relaxed">
@@ -106,7 +138,7 @@ const FreedomCalculator = () => {
                   </p>
                   <p className="text-center text-[10px] text-muted-foreground/70">
                     Economia anual de{" "}
-                    <span className="font-semibold text-primary">{fmt(savings * 12)}</span>
+                    <span className="font-semibold text-primary tabular-nums">{fmt(animatedAnnual)}</span>
                   </p>
                 </>
               ) : (
