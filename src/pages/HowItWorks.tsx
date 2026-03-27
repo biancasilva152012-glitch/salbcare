@@ -57,7 +57,7 @@ const HowItWorks = () => {
         <div className="mx-auto mb-4 h-16 w-16">
           <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
         </div>
-        <h1 className="text-2xl font-bold">Como funciona a SALBCARE</h1>
+        <h1 className="text-2xl font-bold">Como Funciona a SalbCare</h1>
         <p className="text-sm text-muted-foreground">Tudo que você precisa saber em 2 minutos</p>
       </motion.div>
 
