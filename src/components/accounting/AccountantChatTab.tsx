@@ -182,7 +182,7 @@ const AccountantChatTab = () => {
       {/* Fixed footer disclaimer */}
       <div className="pt-2 pb-1">
         <p className="text-[10px] text-muted-foreground/60 text-center leading-relaxed">
-          A assessoria contábil é prestada por contador parceiro independente com CRC ativo. A SALBCARE é a plataforma de conexão — não é um escritório de contabilidade.
+          A assessoria contábil é prestada por contador parceiro independente com CRC ativo. A SalbCare é a plataforma de conexão — não é um escritório de contabilidade.
         </p>
       </div>
 
