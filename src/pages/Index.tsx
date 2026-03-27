@@ -415,7 +415,7 @@ const Index = () => {
                 <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
                 <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
               </nav>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
                 <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
                   <Link to="/login">Entrar</Link>
                 </Button>

@@ -105,6 +105,17 @@
     min-width: 44px;
   }
 
+  /* Full-width inputs on mobile */
+  input, textarea, select, [role="combobox"] {
+    max-width: 100%;
+  }
+
+  /* Images scale correctly */
+  img, video, svg {
+    max-width: 100%;
+    height: auto;
+  }
+
   /* Allow smaller inline elements */
   span > button, .text-\[8px\], .text-\[9px\], .text-\[10px\], .text-\[11px\] {
     min-height: unset;
