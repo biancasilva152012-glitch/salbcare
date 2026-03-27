@@ -30,7 +30,7 @@ export const PLANS = {
       "Abertura e gestão de CNPJ",
       "Declaração de Imposto de Renda",
       "Marketplace jurídico",
-      "✅ Você fica com 100% do valor das consultas",
+      "Você fica com 100% do valor das consultas",
     ],
   },
   clinic: {
