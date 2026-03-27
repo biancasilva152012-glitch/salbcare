@@ -38,7 +38,7 @@ const BottomNav = () => {
       {/* Legal footer — centered and properly aligned */}
       <div className="text-center px-4 pb-2 space-y-1">
         <p className="text-[9px] text-muted-foreground/40 leading-relaxed">
-          A SALBCARE é uma plataforma de gestão e não substitui orientação médica, jurídica ou contábil profissional.
+          A SalbCare é uma plataforma de gestão e não substitui orientação médica, jurídica ou contábil profissional.
         </p>
         <p className="text-[9px] text-muted-foreground/40">
           contato@salbcare.com.br
