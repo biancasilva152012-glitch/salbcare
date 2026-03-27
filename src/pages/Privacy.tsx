@@ -45,7 +45,7 @@ const Privacy = () => {
           <section className="space-y-2">
             <h2 className="text-base font-semibold text-foreground">Compartilhamento de dados</h2>
             <p>
-              A SALBCARE poderá compartilhar dados <strong>agregados e anonimizados</strong> com parceiros comerciais (B2B) para fins de análise de mercado, relatórios setoriais e melhoria de serviços. Esses dados:
+              A SalbCare poderá compartilhar dados <strong>agregados e anonimizados</strong> com parceiros comerciais (B2B) para fins de análise de mercado, relatórios setoriais e melhoria de serviços. Esses dados:
             </p>
             <ul className="list-disc pl-4 space-y-1">
               <li>Não permitem a identificação individual de profissionais ou pacientes</li>
