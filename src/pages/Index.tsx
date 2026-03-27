@@ -377,14 +377,14 @@ const Index = () => {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
                           <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-bold">R$ {annual.total}</span>
-                            <span className="text-sm text-muted-foreground">/ano</span>
+                            <span className="text-3xl font-bold">R$ {annual.monthly}</span>
+                            <span className="text-sm text-muted-foreground">/mês</span>
                           </div>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-sm text-muted-foreground line-through">R$ {annual.original}</span>
-                            <span className="text-xs font-semibold text-primary">Economize R$ {annual.savings}</span>
+                            <span className="text-sm text-muted-foreground line-through">R$ {annual.originalMonthly}</span>
+                            <span className="text-xs font-semibold text-primary">Economize R$ {annual.savings}/ano</span>
                           </div>
-                          <p className="text-[10px] text-muted-foreground mt-1">Cobrado uma única vez por ano</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">R$ {annual.total} cobrado uma única vez por ano</p>
                         </motion.div>
                       ) : (
                         <motion.div
