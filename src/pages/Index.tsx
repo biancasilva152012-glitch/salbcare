@@ -140,7 +140,7 @@ const Index = () => {
             <div className="space-y-6 text-center lg:text-left">
               <motion.h1
                 variants={fadeUp}
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight"
+                className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight"
               >
                 Sua <span className="gradient-text">Vitrine</span> para Pacientes.{" "}
                 <br className="hidden sm:block" />
