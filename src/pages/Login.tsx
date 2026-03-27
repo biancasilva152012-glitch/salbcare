@@ -69,19 +69,7 @@ const Login = () => {
         description="Acesse sua conta SalbCare para gerenciar sua agenda, pacientes, teleconsultas e financeiro."
         canonical="/login"
         noindex
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "SalbCare",
-          url: "https://salbcare.com.br",
-          description: "Plataforma de gestão para profissionais de saúde com agenda, prontuário eletrônico, teleconsulta e assessoria contábil integrada.",
-          potentialAction: {
-            "@type": "SearchAction",
-            target: "https://salbcare.com.br/consulta-online/{search_term_string}",
-            "query-input": "required name=search_term_string",
-          },
-        }}
       />
-      {floatingOrbs.map((orb, i) => (
         <motion.div
           key={i}
           className="pointer-events-none absolute rounded-full opacity-[0.07]"

@@ -204,7 +204,7 @@ const Subscription = () => {
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-accent/50 border border-border">
                     <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                       Assessoria contábil realizada por contadores parceiros independentes com CRC ativo. A SALBCARE conecta você ao profissional certo para facilitar sua vida.
+                       Assessoria contábil realizada por contadores parceiros independentes com CRC ativo. A SalbCare conecta você ao profissional certo para facilitar sua vida.
                      </p>
                   </div>
                 )}

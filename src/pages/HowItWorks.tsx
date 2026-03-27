@@ -161,7 +161,7 @@ const HowItWorks = () => {
       {/* Calculadora de Economia */}
       <motion.div variants={item} className="space-y-3">
         <h2 className="text-center text-lg font-bold">Calculadora de Economia Tributária</h2>
-        <p className="text-center text-xs text-muted-foreground">Descubra quanto você pode economizar como PJ na SALBCARE</p>
+        <p className="text-center text-xs text-muted-foreground">Descubra quanto você pode economizar como PJ na SalbCare</p>
         <TaxSimulatorWidget />
       </motion.div>
 

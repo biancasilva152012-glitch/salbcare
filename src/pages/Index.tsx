@@ -379,7 +379,7 @@ const Index = () => {
               <motion.div variants={fadeUp} className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/10 mx-auto">
                 <UserRound className="h-7 w-7 text-secondary" />
               </motion.div>
-              <motion.h2 variants={fadeUp} className="text-2xl font-bold">É paciente?</motion.h2>
+              <motion.h2 variants={fadeUp} className="text-2xl font-bold">Você é paciente?</motion.h2>
               <motion.p variants={fadeUp} className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
                 Encontre profissionais de saúde verificados, agende teleconsultas e acesse seu histórico — tudo gratuito.
               </motion.p>

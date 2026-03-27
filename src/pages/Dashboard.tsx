@@ -170,8 +170,8 @@ const Dashboard = () => {
               <span className="text-lg">🚀</span>
             </div>
             <div className="flex-1 min-w-0 text-left">
-              <p className="text-sm font-semibold">Pacientes novos pela SALBCARE</p>
-              <p className="truncate text-[11px] text-muted-foreground">Configure seus horários e valor para receber agendamentos.</p>
+              <p className="text-sm font-semibold">Pacientes novos pela SalbCare</p>
+              <p className="truncate text-[11px] text-muted-foreground">Configure seus horários e valor para receber agendamentos</p>
             </div>
           </button>
         </motion.div>
