@@ -368,6 +368,7 @@ const Index = () => {
                     </div>
 
                     <AnimatePresence mode="wait">
+                      <div className="min-h-[80px]">
                       {isAnnual ? (
                         <motion.div
                           key="annual"
