@@ -184,8 +184,23 @@ const HowItWorks = () => {
           </Link>
         </div>
       </motion.div>
+
+      {/* CTA fixo */}
+      <motion.div variants={item} className="glass-card p-5 text-center space-y-3 ring-1 ring-primary/30">
+        <h2 className="text-lg font-bold">Pronto para transformar seu consultório?</h2>
+        <p className="text-sm text-muted-foreground">Comece agora com um período de teste gratuito</p>
+        <Button
+          onClick={() => navigate("/register")}
+          className="w-full gradient-primary font-semibold gap-2"
+          size="lg"
+        >
+          Criar minha conta grátis
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </motion.div>
     </motion.div>
   </PageContainer>
-);
+  );
+};
 
 export default HowItWorks;
