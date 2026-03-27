@@ -65,7 +65,7 @@ const HowItWorks = () => {
       <motion.div variants={item} className="glass-card p-5 space-y-3">
         <h2 className="text-lg font-bold">O que é a SalbCare</h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          A SALBCARE é um ecossistema digital completo para profissionais de saúde autônomos. 
+          A SalbCare é um ecossistema digital completo para profissionais de saúde autônomos. 
           Tudo que o profissional precisa para gerir e crescer seu consultório está em um único lugar: 
           agenda, prontuário, teleconsulta, captação de pacientes, controle financeiro e assessoria 
           contábil especializada em saúde.
