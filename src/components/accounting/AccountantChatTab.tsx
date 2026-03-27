@@ -197,7 +197,7 @@ const AccountantChatTab = () => {
             <DialogDescription asChild>
               <div className="text-sm leading-relaxed pt-2 space-y-3">
                 <p>
-                  Você será atendido por <span className="font-medium text-foreground">{accountantName}</span>, contador parceiro da SALBCARE com CRC ativo.
+                  Você será atendido por <span className="font-medium text-foreground">{accountantName}</span>, contador parceiro da SalbCare com CRC ativo.
                 </p>
 
                 <div>

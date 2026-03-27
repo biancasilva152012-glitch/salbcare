@@ -108,7 +108,7 @@ const Privacy = () => {
             </p>
             <ul className="list-none space-y-1">
               <li>📧 E-mail: <a href="mailto:contato@salbcare.com.br" className="text-primary hover:underline">contato@salbcare.com.br</a></li>
-              <li>📍 Responsável: SALBCARE Tecnologia LTDA</li>
+              <li>📍 Responsável: SalbCare Tecnologia LTDA</li>
             </ul>
           </section>
         </div>
