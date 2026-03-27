@@ -401,7 +401,7 @@ const Index = () => {
         {/* ── Footer ── */}
         <footer className="border-t border-border/40 py-10">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
               <div className="flex items-center gap-2">
                 <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
                 <span className="text-sm font-bold gradient-text">SALBCARE</span>
