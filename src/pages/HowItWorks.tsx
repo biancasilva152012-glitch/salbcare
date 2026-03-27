@@ -31,6 +31,19 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } 
 
 const HowItWorks = () => {
   const navigate = useNavigate();
+  const { subscription, user } = useAuth();
+  const isPaying = user && subscription.paymentStatus === "active";
+
+  const handleContadorClick = () => {
+    if (!isPaying) {
+      toast.error("Acesso exclusivo para assinantes. Assine um plano para falar com o contador.", {
+        action: { label: "Ver planos", onClick: () => navigate("/subscription") },
+      });
+      return;
+    }
+    navigate("/accounting");
+  };
+
   return (
   <PageContainer backTo={true}>
     <SEOHead
