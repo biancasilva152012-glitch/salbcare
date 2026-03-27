@@ -52,8 +52,23 @@ const Index = () => {
   return (
     <>
       <SEOHead
-        title="SALBCARE — Sua Vitrine para Pacientes. Seu Controle para Gestão."
-        description="O ecossistema completo para profissionais de saúde. Seja encontrado por novos pacientes e organize seu financeiro em um só lugar. Tudo por R$ 49/mês."
+        title="SalbCare | Gestão e Captação para Profissionais de Saúde"
+        description="A plataforma completa para médicos, psicólogos e dentistas. Agenda, financeiro e captação por R$ 49/mês. Teste grátis!"
+        canonical="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "SalbCare",
+          "url": "https://salbcare.com.br",
+          "description": "A plataforma completa para médicos, psicólogos e dentistas. Agenda, financeiro e captação por R$ 49/mês.",
+          "applicationCategory": "HealthApplication",
+          "operatingSystem": "Web",
+          "offers": {
+            "@type": "Offer",
+            "price": "49",
+            "priceCurrency": "BRL"
+          }
+        }}
       />
 
       <div className="min-h-screen bg-background">
