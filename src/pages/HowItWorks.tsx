@@ -144,6 +144,11 @@ const HowItWorks = () => {
         <TaxSimulatorWidget />
       </motion.div>
 
+      {/* Calculadora de Liberdade */}
+      <motion.div variants={item}>
+        <FreedomCalculator />
+      </motion.div>
+
       {/* FAQ */}
       <motion.div variants={item} className="space-y-3">
         <h2 className="text-center text-lg font-bold">Perguntas Frequentes</h2>
