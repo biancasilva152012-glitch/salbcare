@@ -65,10 +65,10 @@ const Login = () => {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center px-6 overflow-hidden">
       <SEOHead
-        title="SalbCare | Encontre seu profissional de saúde"
-        description="Plataforma completa para profissionais de saúde: agenda, prontuário, teleconsulta e assessoria contábil. Comece grátis por 7 dias."
-        canonical="/"
-        jsonLd={{
+        title="Entrar | SalbCare"
+        description="Acesse sua conta SalbCare para gerenciar sua agenda, pacientes, teleconsultas e financeiro."
+        canonical="/login"
+        noindex
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "SalbCare",
