@@ -70,6 +70,7 @@ const Login = () => {
         canonical="/login"
         noindex
       />
+      {floatingOrbs.map((orb, i) => (
         <motion.div
           key={i}
           className="pointer-events-none absolute rounded-full opacity-[0.07]"
