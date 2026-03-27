@@ -352,7 +352,7 @@ const Index = () => {
                   <motion.div
                     key={key}
                     variants={fadeUp}
-                    className={`glass-card p-6 sm:p-8 space-y-5 relative flex flex-col ${popular ? "ring-2 ring-primary/60" : ""}`}
+                    className={`glass-card p-6 sm:p-8 space-y-5 relative flex flex-col ${popular ? "ring-2 ring-primary/60 mt-3" : "mt-3"}`}
                   >
                     {popular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
