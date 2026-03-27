@@ -44,7 +44,7 @@ export const PLANS = {
       "Gestão de múltiplos profissionais",
       "Painel financeiro avançado",
       "Suporte prioritário e dedicado",
-      "✅ Você fica com 100% do valor das consultas",
+      "Você fica com 100% do valor das consultas",
     ],
   },
 } as const;
