@@ -130,7 +130,7 @@ const Index = () => {
         </nav>
 
         {/* ── Hero Section ── */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 pt-16 pb-20 sm:pt-24 sm:pb-28">
+        <section className="mx-auto max-w-6xl px-5 sm:px-6 pt-12 pb-16 sm:pt-24 sm:pb-28">
           <motion.div
             variants={stagger}
             initial="hidden"
