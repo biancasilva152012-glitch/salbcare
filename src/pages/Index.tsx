@@ -343,7 +343,7 @@ const Index = () => {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.1 }}
-              className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-3"
+              className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-3 items-start"
             >
               {planCards.map(({ key, popular }) => {
                 const plan = PLANS[key];
@@ -352,7 +352,7 @@ const Index = () => {
                   <motion.div
                     key={key}
                     variants={fadeUp}
-                    className={`glass-card p-6 sm:p-8 space-y-5 relative flex flex-col ${popular ? "ring-2 ring-primary/60" : ""}`}
+                    className={`glass-card p-6 sm:p-8 space-y-5 relative flex flex-col ${popular ? "ring-2 ring-primary/60 mt-3" : "mt-3"}`}
                   >
                     {popular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -362,12 +362,13 @@ const Index = () => {
                         </span>
                       </div>
                     )}
-                    <div className="min-h-[60px]">
+                    <div className="min-h-[68px]">
                       <h3 className="text-lg font-bold">{plan.name}</h3>
                       <p className="text-xs text-muted-foreground mt-1">{plan.subtitle}</p>
                     </div>
 
                     <AnimatePresence mode="wait">
+                      <div className="min-h-[80px]">
                       {isAnnual ? (
                         <motion.div
                           key="annual"
@@ -399,6 +400,7 @@ const Index = () => {
                           <span className="text-sm text-muted-foreground">/mês</span>
                         </motion.div>
                       )}
+                      </div>
                     </AnimatePresence>
 
                     <ul className="space-y-2.5 flex-1">
