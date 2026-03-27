@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Search, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";

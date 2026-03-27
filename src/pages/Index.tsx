@@ -261,7 +261,7 @@ const Index = () => {
                   Prontuário digital, teleconsulta integrada e carnê-leão automático. Gerencie tudo sem sair da plataforma.
                 </p>
                 <ul className="space-y-2">
-                  {["Prontuário eletrônico completo", "Teleconsulta por vídeo", "Controle financeiro e Carnê-Leão"].map((f) => (
+                  {["Prontuário eletrônico completo", "Teleconsulta por vídeo", "Controle financeiro e Carnê-Leão", "Assessoria jurídica", "Assessoria contábil especializada em saúde"].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
                       <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                       {f}
