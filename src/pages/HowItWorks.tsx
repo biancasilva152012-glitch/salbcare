@@ -135,6 +135,12 @@ const HowItWorks = () => {
           O atendimento e a responsabilidade técnica são do contador. 
           Para serviços além do escopo do plano, vocês combinam diretamente.
         </p>
+        <Button
+          onClick={handleContadorClick}
+          className="w-full gradient-primary font-semibold"
+        >
+          Falar com meu contador agora
+        </Button>
       </motion.div>
 
       {/* Seção 4 */}
