@@ -7,6 +7,8 @@ import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
 import TaxSimulatorWidget from "@/components/financial/TaxSimulatorWidget";
 import FreedomCalculator from "@/components/financial/FreedomCalculator";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const pillars = [
   { icon: Calendar, label: "Agenda", desc: "Gerencie horários e agendamentos" },
