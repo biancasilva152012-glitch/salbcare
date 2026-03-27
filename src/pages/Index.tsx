@@ -46,8 +46,15 @@ const planCards = [
   },
 ];
 
+const annualPrices: Record<string, { total: number; original: number; savings: number }> = {
+  basic: { total: 470, original: 588, savings: 118 },
+  professional: { total: 950, original: 1188, savings: 238 },
+  clinic: { total: 1814, original: 2268, savings: 454 },
+};
+
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(false);
 
   return (
     <>
