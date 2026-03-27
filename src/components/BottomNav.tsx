@@ -47,6 +47,10 @@ const BottomNav = () => {
           SalbCare Tecnologia LTDA
         </p>
         <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[10px]">
+          <Link to="/install" className="text-primary/70 hover:text-primary transition-colors font-semibold flex items-center gap-0.5">
+            <Download className="h-3 w-3" />
+            Baixar App
+          </Link>
           <Link to="/terms" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
             Termos de Uso
           </Link>
