@@ -62,9 +62,9 @@ const Subscription = () => {
     <PageContainer backTo="/profile">
       <div className="space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">Planos SALBCARE</h1>
+          <h1 className="text-2xl font-bold">Planos SalbCare</h1>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-            Gestão completa para profissionais de saúde. A SALBCARE conecta você a contadores especializados em saúde.
+            Gestão completa para profissionais de saúde. A SalbCare conecta você a contadores especializados em saúde.
           </p>
         </div>
 
