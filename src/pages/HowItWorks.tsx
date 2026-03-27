@@ -180,7 +180,7 @@ const HowItWorks = () => {
             { q: "Os dados dos meus pacientes estão seguros?", a: "Sim. Todos os dados são armazenados com criptografia e seguimos a LGPD. Você pode solicitar, corrigir ou excluir dados a qualquer momento." },
             { q: "Como funciona a teleconsulta?", a: "Você cria uma sala de atendimento, compartilha o link com o paciente e realiza a consulta por vídeo. Prontuário, receita e atestado podem ser preenchidos durante a chamada." },
             { q: "Posso testar antes de assinar?", a: "Sim! Oferecemos um período de teste gratuito para que você conheça todas as funcionalidades do ecossistema." },
-            { q: "Quanto economizo com a SALBCARE?", a: "Depende do seu faturamento. Use a calculadora acima para simular a economia comparando tributação como pessoa física vs pessoa jurídica pelo Simples Nacional." },
+            { q: "Quanto economizo com a SalbCare?", a: "Depende do seu faturamento. Use a calculadora acima para simular a economia comparando tributação como pessoa física vs pessoa jurídica pelo Simples Nacional." },
             { q: "Pacientes pagam para usar a plataforma?", a: "Não. Pacientes criam conta gratuitamente, encontram profissionais e agendam consultas sem custo." },
             { q: "Quais profissões de saúde podem usar?", a: "Médicos, dentistas, psicólogos, fisioterapeutas, nutricionistas, fonoaudiólogos, enfermeiros e outros profissionais de saúde autônomos." },
           ].map(({ q, a }, i) => (
