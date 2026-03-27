@@ -400,31 +400,29 @@ const Index = () => {
 
         {/* ── Footer ── */}
         <footer className="border-t border-border/40 py-10">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
-              <div className="flex items-center gap-2">
-                <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
-                <span className="text-sm font-bold gradient-text">SALBCARE</span>
-              </div>
-              <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
-                <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
-                <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
-                <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
-                <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
-                <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
-                <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
-              </nav>
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
-                <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
-                  <Link to="/login">Entrar</Link>
-                </Button>
-                <Button asChild size="sm" className="gradient-primary font-semibold text-xs">
-                  <Link to="/register">Criar Conta</Link>
-                </Button>
-              </div>
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
+            <div className="flex items-center justify-center gap-2">
+              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
+              <span className="text-sm font-bold gradient-text">SALBCARE</span>
             </div>
-            <p className="text-center text-[10px] text-muted-foreground/60 mt-6">
+            <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+              <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
+              <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
+              <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
+              <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
+              <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
+              <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
+              <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
+            </nav>
+            <div className="flex items-center justify-center gap-3">
+              <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
+                <Link to="/login">Entrar</Link>
+              </Button>
+              <Button asChild size="sm" className="gradient-primary font-semibold text-xs">
+                <Link to="/register">Criar Conta</Link>
+              </Button>
+            </div>
+            <p className="text-center text-[10px] text-muted-foreground/60">
               © {new Date().getFullYear()} SALBCARE. Todos os direitos reservados.
             </p>
           </div>
