@@ -106,6 +106,23 @@ const AccountantChatTab = () => {
 
   const accountantName = partnerInfo?.company_name || "seu contador parceiro";
 
+  if (!isPaying) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+          <Lock className="h-7 w-7 text-primary" />
+        </div>
+        <h3 className="text-lg font-bold">Acesso exclusivo para assinantes</h3>
+        <p className="text-sm text-muted-foreground max-w-xs">
+          O chat com o contador parceiro está disponível apenas para assinantes com pagamento ativo. Assine um plano para ter acesso.
+        </p>
+        <Button onClick={() => navigate("/subscription")} className="gradient-primary font-semibold">
+          Ver planos e assinar
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col" style={{ height: "calc(100dvh - 220px)", minHeight: 300 }}>
       <div className="glass-card p-3 mb-3 flex items-start gap-2">
