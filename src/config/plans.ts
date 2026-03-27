@@ -12,7 +12,7 @@ export const PLANS = {
       "Controle financeiro básico",
       "Receita e Atestado Digital (PDF)",
       "Instruções para assinatura ICP-Brasil gratuita",
-      "✅ Você fica com 100% do valor das consultas",
+      "Você fica com 100% do valor das consultas",
     ],
     hasTrial: true,
   },
