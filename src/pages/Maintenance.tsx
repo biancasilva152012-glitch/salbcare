@@ -13,7 +13,7 @@ const Maintenance = () => (
       </div>
       <h1 className="text-2xl font-bold">Manutenção rápida</h1>
       <p className="text-sm text-muted-foreground leading-relaxed">
-        A SALBCARE está em manutenção rápida.<br />
+        A SalbCare está em manutenção rápida.<br />
         Voltamos em breve — normalmente em menos de 1 hora.
       </p>
       <div className="glass-card p-4 text-sm text-muted-foreground">

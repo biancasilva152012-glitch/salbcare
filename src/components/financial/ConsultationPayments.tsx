@@ -106,7 +106,7 @@ const ConsultationPayments = () => {
         <EmptyState
           icon={DollarSign}
           title="Nenhuma consulta paga"
-          description="As consultas pagas via SALBCARE aparecerão aqui."
+          description="As consultas pagas via SalbCare aparecerão aqui."
         />
       ) : (
         <div className="space-y-2">
