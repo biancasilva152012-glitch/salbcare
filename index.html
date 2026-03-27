@@ -46,10 +46,25 @@
   </head>
   <body>
     <script>
+      // Force service worker update on every page load
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
           for (var i = 0; i < registrations.length; i++) {
             registrations[i].update();
+          }
+        });
+        // Listen for new SW and auto-activate it
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+          window.location.reload();
+        });
+      }
+      // Purge old caches on load
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (var i = 0; i < names.length; i++) {
+            if (names[i].indexOf('workbox-precache') === -1 && names[i].indexOf('google-fonts') === -1 && names[i].indexOf('gstatic-fonts') === -1) {
+              caches.delete(names[i]);
+            }
           }
         });
       }
