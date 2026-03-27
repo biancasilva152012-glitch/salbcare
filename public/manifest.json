@@ -4,8 +4,8 @@
   "description": "Plataforma de gestão para profissionais de saúde",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "icons": [
     {
       "src": "/pwa-icon-192.png",
