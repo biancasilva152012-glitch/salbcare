@@ -52,8 +52,23 @@ const Index = () => {
   return (
     <>
       <SEOHead
-        title="SALBCARE — Sua Vitrine para Pacientes. Seu Controle para Gestão."
-        description="O ecossistema completo para profissionais de saúde. Seja encontrado por novos pacientes e organize seu financeiro em um só lugar. Tudo por R$ 49/mês."
+        title="SalbCare | Gestão e Captação para Profissionais de Saúde"
+        description="A plataforma completa para médicos, psicólogos e dentistas. Agenda, financeiro e captação por R$ 49/mês. Teste grátis!"
+        canonical="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "SalbCare",
+          "url": "https://salbcare.com.br",
+          "description": "A plataforma completa para médicos, psicólogos e dentistas. Agenda, financeiro e captação por R$ 49/mês.",
+          "applicationCategory": "HealthApplication",
+          "operatingSystem": "Web",
+          "offers": {
+            "@type": "Offer",
+            "price": "49",
+            "priceCurrency": "BRL"
+          }
+        }}
       />
 
       <div className="min-h-screen bg-background">
@@ -391,12 +406,15 @@ const Index = () => {
                 <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
                 <span className="text-sm font-bold gradient-text">SALBCARE</span>
               </div>
-              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-                <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como funciona</Link>
+              <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+                <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
+                <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
+                <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
+                <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
                 <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
                 <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
                 <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
-              </div>
+              </nav>
               <div className="flex items-center gap-3">
                 <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
                   <Link to="/login">Entrar</Link>
