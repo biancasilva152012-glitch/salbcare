@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Send, Bot, User, Info, ShieldCheck, ExternalLink, Star } from "lucide-react";
+import { Send, Bot, User, Info, ShieldCheck, ExternalLink, Star, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
@@ -20,7 +21,9 @@ interface Message {
 const WELCOME_MODAL_KEY = "salbcare_chat_welcome_seen";
 
 const AccountantChatTab = () => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
+  const navigate = useNavigate();
+  const isPaying = subscription.paymentStatus === "active";
   const queryClient = useQueryClient();
   const [message, setMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
