@@ -175,7 +175,7 @@ const HowItWorks = () => {
         <h2 className="text-center text-lg font-bold">Perguntas Frequentes</h2>
         <Accordion type="single" collapsible className="space-y-2">
           {[
-            { q: "Preciso ter CNPJ para usar a SALBCARE?", a: "Não. Você pode começar como pessoa física. Se quiser abrir CNPJ, ajudamos com o processo direto pela plataforma." },
+            { q: "Preciso ter CNPJ para usar a SalbCare?", a: "Não. Você pode começar como pessoa física. Se quiser abrir CNPJ, ajudamos com o processo direto pela plataforma." },
             { q: "A SALBCARE substitui meu contador?", a: "Não. Oferecemos um contador parceiro especializado em saúde para orientações e planejamento tributário. Para obrigações acessórias completas (balanço, folha, escrita fiscal), você combina diretamente com o contador." },
             { q: "Os dados dos meus pacientes estão seguros?", a: "Sim. Todos os dados são armazenados com criptografia e seguimos a LGPD. Você pode solicitar, corrigir ou excluir dados a qualquer momento." },
             { q: "Como funciona a teleconsulta?", a: "Você cria uma sala de atendimento, compartilha o link com o paciente e realiza a consulta por vídeo. Prontuário, receita e atestado podem ser preenchidos durante a chamada." },
