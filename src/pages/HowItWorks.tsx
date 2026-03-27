@@ -26,7 +26,9 @@ const notItems = [
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
-const HowItWorks = () => (
+const HowItWorks = () => {
+  const navigate = useNavigate();
+  return (
   <PageContainer backTo={true}>
     <SEOHead
       title="Como Funciona a SalbCare"
