@@ -107,7 +107,7 @@ const HowItWorks = () => {
 
       {/* Seção 2 */}
       <motion.div variants={item} className="glass-card p-5 space-y-3">
-        <h2 className="text-lg font-bold">O que a SALBCARE não é</h2>
+        <h2 className="text-lg font-bold">O que a SalbCare não é</h2>
         <ul className="space-y-3">
           {notItems.map((text) => (
             <li key={text} className="flex items-start gap-3">
