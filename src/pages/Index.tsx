@@ -46,8 +46,15 @@ const planCards = [
   },
 ];
 
+const annualPrices: Record<string, { total: number; original: number; savings: number }> = {
+  basic: { total: 470, original: 588, savings: 118 },
+  professional: { total: 950, original: 1188, savings: 238 },
+  clinic: { total: 1814, original: 2268, savings: 454 },
+};
+
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(false);
 
   return (
     <>
@@ -244,7 +251,7 @@ const Index = () => {
                 <ul className="space-y-2">
                   {["Perfil público profissional", "Agendamento online 24h", "Pronto Atendimento Digital"].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                      <span className="shrink-0">•</span>
                       {f}
                     </li>
                   ))}
@@ -263,7 +270,7 @@ const Index = () => {
                 <ul className="space-y-2">
                   {["Prontuário eletrônico completo", "Teleconsulta por vídeo", "Controle financeiro e Carnê-Leão", "Assessoria jurídica", "Assessoria contábil especializada em saúde"].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                      <span className="shrink-0">•</span>
                       {f}
                     </li>
                   ))}
@@ -310,6 +317,25 @@ const Index = () => {
               <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
                 Você fica com 100% do valor das suas consultas. Sempre.
               </motion.p>
+
+              {/* Toggle Mensal / Anual */}
+              <motion.div variants={fadeUp} className="flex items-center justify-center gap-1 mt-4">
+                <button
+                  onClick={() => setIsAnnual(false)}
+                  className={`px-4 py-2 rounded-l-xl text-sm font-semibold transition-colors ${!isAnnual ? "gradient-primary text-primary-foreground" : "bg-accent text-muted-foreground"}`}
+                >
+                  Mensal
+                </button>
+                <button
+                  onClick={() => setIsAnnual(true)}
+                  className={`px-4 py-2 rounded-r-xl text-sm font-semibold transition-colors flex items-center gap-1.5 ${isAnnual ? "gradient-primary text-primary-foreground" : "bg-accent text-muted-foreground"}`}
+                >
+                  Anual
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isAnnual ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary/10 text-primary"}`}>
+                    -20%
+                  </span>
+                </button>
+              </motion.div>
             </motion.div>
 
             <motion.div
@@ -321,6 +347,7 @@ const Index = () => {
             >
               {planCards.map(({ key, popular }) => {
                 const plan = PLANS[key];
+                const annual = annualPrices[key];
                 return (
                   <motion.div
                     key={key}
@@ -339,14 +366,30 @@ const Index = () => {
                       <h3 className="text-lg font-bold">{plan.name}</h3>
                       <p className="text-xs text-muted-foreground mt-1">{plan.subtitle}</p>
                     </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold">R$ {plan.price}</span>
-                      <span className="text-sm text-muted-foreground">/mês</span>
-                    </div>
+
+                    {isAnnual ? (
+                      <div>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl font-bold">R$ {annual.total}</span>
+                          <span className="text-sm text-muted-foreground">/ano</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm text-muted-foreground line-through">R$ {annual.original}</span>
+                          <span className="text-xs font-semibold text-primary">Economize R$ {annual.savings}</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground mt-1">Cobrado uma única vez por ano</p>
+                      </div>
+                    ) : (
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl font-bold">R$ {plan.price}</span>
+                        <span className="text-sm text-muted-foreground">/mês</span>
+                      </div>
+                    )}
+
                     <ul className="space-y-2.5 flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <span className="shrink-0 mt-0.5">•</span>
                           <span>{f}</span>
                         </li>
                       ))}
@@ -409,7 +452,7 @@ const Index = () => {
             </div>
             <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
               <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
-              <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
+              <a href="#planos" className="hover:text-foreground transition-colors">Planos</a>
               <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
               <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
               <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
