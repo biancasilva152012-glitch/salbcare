@@ -65,7 +65,7 @@ const Privacy = () => {
             <ul className="list-disc pl-4 space-y-1">
               <li>Armazenados de forma criptografada em servidores seguros</li>
               <li>Acessíveis apenas por você (o profissional que os registrou)</li>
-              <li>Nunca acessados pela equipe da SALBCARE sem sua autorização</li>
+              <li>Nunca acessados pela equipe da SalbCare sem sua autorização</li>
               <li>Protegidos por controles de acesso baseados em autenticação</li>
             </ul>
           </section>
