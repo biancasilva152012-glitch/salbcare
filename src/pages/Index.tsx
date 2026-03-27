@@ -173,12 +173,14 @@ const Index = () => {
                     <span className="text-xs font-semibold">Dashboard Financeiro</span>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    {["Receitas", "Despesas", "Lucro"].map((l) => (
-                      <div key={l} className="rounded-lg bg-accent/50 p-2.5 text-center">
-                        <span className="text-[10px] text-muted-foreground">{l}</span>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-primary/30">
-                          <div className="h-full rounded-full gradient-primary" style={{ width: `${60 + Math.random() * 30}%` }} />
-                        </div>
+                    {[
+                      { label: "Receita Mensal", value: "R$ 18.400" },
+                      { label: "Consultas", value: "46" },
+                      { label: "Valor/Consulta", value: "R$ 400" },
+                    ].map((m) => (
+                      <div key={m.label} className="rounded-lg bg-accent/50 p-2.5 text-center">
+                        <span className="text-[10px] text-muted-foreground">{m.label}</span>
+                        <p className="text-xs font-bold mt-1 text-foreground">{m.value}</p>
                       </div>
                     ))}
                   </div>
