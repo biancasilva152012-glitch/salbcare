@@ -135,7 +135,7 @@ const Index = () => {
             variants={stagger}
             initial="hidden"
             animate="show"
-            className="grid gap-12 lg:grid-cols-2 lg:items-center"
+            className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:items-center"
           >
             <div className="space-y-6 text-center lg:text-left">
               <motion.h1
