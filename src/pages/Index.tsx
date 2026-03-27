@@ -406,7 +406,7 @@ const Index = () => {
                 <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
                 <span className="text-sm font-bold gradient-text">SALBCARE</span>
               </div>
-              <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+              <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
                 <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
                 <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
                 <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
