@@ -362,7 +362,7 @@ const Index = () => {
                         </span>
                       </div>
                     )}
-                    <div className="min-h-[60px]">
+                    <div className="min-h-[68px]">
                       <h3 className="text-lg font-bold">{plan.name}</h3>
                       <p className="text-xs text-muted-foreground mt-1">{plan.subtitle}</p>
                     </div>
