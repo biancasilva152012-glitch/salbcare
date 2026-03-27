@@ -1,5 +1,5 @@
 import { NavLink, useLocation, Link } from "react-router-dom";
-import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
+import { Home, Calendar, Users, DollarSign, User, Download } from "lucide-react";
 
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Painel" },
