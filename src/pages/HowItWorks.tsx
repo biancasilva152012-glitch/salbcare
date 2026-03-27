@@ -6,6 +6,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
 import TaxSimulatorWidget from "@/components/financial/TaxSimulatorWidget";
+import FreedomCalculator from "@/components/financial/FreedomCalculator";
 
 const pillars = [
   { icon: Calendar, label: "Agenda", desc: "Gerencie horários e agendamentos" },
@@ -141,6 +142,11 @@ const HowItWorks = () => {
         <h2 className="text-center text-lg font-bold">Calculadora de Economia Tributária</h2>
         <p className="text-center text-xs text-muted-foreground">Descubra quanto você pode economizar como PJ na SALBCARE</p>
         <TaxSimulatorWidget />
+      </motion.div>
+
+      {/* Calculadora de Liberdade */}
+      <motion.div variants={item}>
+        <FreedomCalculator />
       </motion.div>
 
       {/* FAQ */}
