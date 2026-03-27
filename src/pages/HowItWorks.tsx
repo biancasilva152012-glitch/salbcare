@@ -7,6 +7,8 @@ import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
 import TaxSimulatorWidget from "@/components/financial/TaxSimulatorWidget";
 import FreedomCalculator from "@/components/financial/FreedomCalculator";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const pillars = [
   { icon: Calendar, label: "Agenda", desc: "Gerencie horários e agendamentos" },
@@ -29,6 +31,19 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } 
 
 const HowItWorks = () => {
   const navigate = useNavigate();
+  const { subscription, user } = useAuth();
+  const isPaying = user && subscription.paymentStatus === "active";
+
+  const handleContadorClick = () => {
+    if (!isPaying) {
+      toast.error("Acesso exclusivo para assinantes. Assine um plano para falar com o contador.", {
+        action: { label: "Ver planos", onClick: () => navigate("/subscription") },
+      });
+      return;
+    }
+    navigate("/accounting");
+  };
+
   return (
   <PageContainer backTo={true}>
     <SEOHead
@@ -120,6 +135,12 @@ const HowItWorks = () => {
           O atendimento e a responsabilidade técnica são do contador. 
           Para serviços além do escopo do plano, vocês combinam diretamente.
         </p>
+        <Button
+          onClick={handleContadorClick}
+          className="w-full gradient-primary font-semibold"
+        >
+          Falar com meu contador agora
+        </Button>
       </motion.div>
 
       {/* Seção 4 */}
