@@ -400,6 +400,7 @@ const Index = () => {
                           <span className="text-sm text-muted-foreground">/mês</span>
                         </motion.div>
                       )}
+                      </div>
                     </AnimatePresence>
 
                     <ul className="space-y-2.5 flex-1">
