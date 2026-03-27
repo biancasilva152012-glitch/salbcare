@@ -12,7 +12,7 @@ export const PLANS = {
       "Controle financeiro básico",
       "Receita e Atestado Digital (PDF)",
       "Instruções para assinatura ICP-Brasil gratuita",
-      "✅ Você fica com 100% do valor das consultas",
+      "Você fica com 100% do valor das consultas",
     ],
     hasTrial: true,
   },
@@ -30,7 +30,7 @@ export const PLANS = {
       "Abertura e gestão de CNPJ",
       "Declaração de Imposto de Renda",
       "Marketplace jurídico",
-      "✅ Você fica com 100% do valor das consultas",
+      "Você fica com 100% do valor das consultas",
     ],
   },
   clinic: {
@@ -44,7 +44,7 @@ export const PLANS = {
       "Gestão de múltiplos profissionais",
       "Painel financeiro avançado",
       "Suporte prioritário e dedicado",
-      "✅ Você fica com 100% do valor das consultas",
+      "Você fica com 100% do valor das consultas",
     ],
   },
 } as const;

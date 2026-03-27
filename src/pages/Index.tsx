@@ -46,10 +46,10 @@ const planCards = [
   },
 ];
 
-const annualPrices: Record<string, { total: number; original: number; savings: number }> = {
-  basic: { total: 470, original: 588, savings: 118 },
-  professional: { total: 950, original: 1188, savings: 238 },
-  clinic: { total: 1814, original: 2268, savings: 454 },
+const annualPrices: Record<string, { monthly: number; originalMonthly: number; total: number; savings: number }> = {
+  basic: { monthly: 39, originalMonthly: 49, total: 470, savings: 118 },
+  professional: { monthly: 79, originalMonthly: 99, total: 950, savings: 238 },
+  clinic: { monthly: 151, originalMonthly: 189, total: 1814, savings: 454 },
 };
 
 const Index = () => {
@@ -377,14 +377,14 @@ const Index = () => {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
                           <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-bold">R$ {annual.total}</span>
-                            <span className="text-sm text-muted-foreground">/ano</span>
+                            <span className="text-3xl font-bold">R$ {annual.monthly}</span>
+                            <span className="text-sm text-muted-foreground">/mês</span>
                           </div>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-sm text-muted-foreground line-through">R$ {annual.original}</span>
-                            <span className="text-xs font-semibold text-primary">Economize R$ {annual.savings}</span>
+                            <span className="text-sm text-muted-foreground line-through">R$ {annual.originalMonthly}</span>
+                            <span className="text-xs font-semibold text-primary">Economize R$ {annual.savings}/ano</span>
                           </div>
-                          <p className="text-[10px] text-muted-foreground mt-1">Cobrado uma única vez por ano</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">R$ {annual.total} cobrado uma única vez por ano</p>
                         </motion.div>
                       ) : (
                         <motion.div
