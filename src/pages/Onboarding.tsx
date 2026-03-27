@@ -24,7 +24,8 @@ const Onboarding = () => {
 
     // Only basic gets a free trial
     if (planKey !== "basic") {
-      navigate(`/checkout?plan=${planKey}`);
+      // Default to monthly checkout from onboarding
+      navigate(`/checkout?plan=${planKey}&period=monthly`);
       return;
     }
 
