@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { X, Shield, MessageCircle, Lock, HelpCircle, Calendar, FileText, Video, UserSearch, DollarSign, Calculator } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { X, Shield, MessageCircle, Lock, HelpCircle, Calendar, FileText, Video, UserSearch, DollarSign, Calculator, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import PageContainer from "@/components/PageContainer";
@@ -26,7 +26,9 @@ const notItems = [
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
-const HowItWorks = () => (
+const HowItWorks = () => {
+  const navigate = useNavigate();
+  return (
   <PageContainer backTo={true}>
     <SEOHead
       title="Como Funciona a SalbCare"
@@ -182,8 +184,23 @@ const HowItWorks = () => (
           </Link>
         </div>
       </motion.div>
+
+      {/* CTA fixo */}
+      <motion.div variants={item} className="glass-card p-5 text-center space-y-3 ring-1 ring-primary/30">
+        <h2 className="text-lg font-bold">Pronto para transformar seu consultório?</h2>
+        <p className="text-sm text-muted-foreground">Comece agora com um período de teste gratuito</p>
+        <Button
+          onClick={() => navigate("/register")}
+          className="w-full gradient-primary font-semibold gap-2"
+          size="lg"
+        >
+          Criar minha conta grátis
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </motion.div>
     </motion.div>
   </PageContainer>
-);
+  );
+};
 
 export default HowItWorks;
