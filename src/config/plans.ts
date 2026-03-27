@@ -54,7 +54,7 @@ export type PlanKey = keyof typeof PLANS;
 export function getPlanByProductId(productId: string | null): PlanKey {
   if (!productId) return "basic";
   for (const [key, plan] of Object.entries(PLANS)) {
-    if (plan.product_id === productId) return key as PlanKey;
+    if (plan.product_id === productId || plan.annual_product_id === productId) return key as PlanKey;
   }
   return "basic";
 }
