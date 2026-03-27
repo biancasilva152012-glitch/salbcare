@@ -45,7 +45,7 @@ const HowItWorks = () => {
   };
 
   return (
-  <PageContainer backTo={true}>
+  <PageContainer backTo="/" className="overflow-y-auto">
     <SEOHead
       title="Como Funciona a SalbCare"
       description="Saiba como a SalbCare ajuda profissionais de saúde autônomos com agenda, prontuário, teleconsulta e assessoria contábil integrada."

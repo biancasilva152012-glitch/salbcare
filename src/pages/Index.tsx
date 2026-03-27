@@ -173,12 +173,14 @@ const Index = () => {
                     <span className="text-xs font-semibold">Dashboard Financeiro</span>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    {["Receitas", "Despesas", "Lucro"].map((l) => (
-                      <div key={l} className="rounded-lg bg-accent/50 p-2.5 text-center">
-                        <span className="text-[10px] text-muted-foreground">{l}</span>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-primary/30">
-                          <div className="h-full rounded-full gradient-primary" style={{ width: `${60 + Math.random() * 30}%` }} />
-                        </div>
+                    {[
+                      { label: "Receita Mensal", value: "R$ 18.400" },
+                      { label: "Consultas", value: "46" },
+                      { label: "Valor/Consulta", value: "R$ 400" },
+                    ].map((m) => (
+                      <div key={m.label} className="rounded-lg bg-accent/50 p-2.5 text-center">
+                        <span className="text-[10px] text-muted-foreground">{m.label}</span>
+                        <p className="text-xs font-bold mt-1 text-foreground">{m.value}</p>
                       </div>
                     ))}
                   </div>
@@ -259,7 +261,7 @@ const Index = () => {
                   Prontuário digital, teleconsulta integrada e carnê-leão automático. Gerencie tudo sem sair da plataforma.
                 </p>
                 <ul className="space-y-2">
-                  {["Prontuário eletrônico completo", "Teleconsulta por vídeo", "Controle financeiro e Carnê-Leão"].map((f) => (
+                  {["Prontuário eletrônico completo", "Teleconsulta por vídeo", "Controle financeiro e Carnê-Leão", "Assessoria jurídica", "Assessoria contábil especializada em saúde"].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
                       <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                       {f}
@@ -333,7 +335,7 @@ const Index = () => {
                         </span>
                       </div>
                     )}
-                    <div>
+                    <div className="min-h-[60px]">
                       <h3 className="text-lg font-bold">{plan.name}</h3>
                       <p className="text-xs text-muted-foreground mt-1">{plan.subtitle}</p>
                     </div>
@@ -400,31 +402,29 @@ const Index = () => {
 
         {/* ── Footer ── */}
         <footer className="border-t border-border/40 py-10">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
-              <div className="flex items-center gap-2">
-                <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
-                <span className="text-sm font-bold gradient-text">SALBCARE</span>
-              </div>
-              <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
-                <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
-                <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
-                <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
-                <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
-                <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
-                <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
-              </nav>
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
-                <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
-                  <Link to="/login">Entrar</Link>
-                </Button>
-                <Button asChild size="sm" className="gradient-primary font-semibold text-xs">
-                  <Link to="/register">Criar Conta</Link>
-                </Button>
-              </div>
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
+            <div className="flex items-center justify-center gap-2">
+              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
+              <span className="text-sm font-bold gradient-text">SALBCARE</span>
             </div>
-            <p className="text-center text-[10px] text-muted-foreground/60 mt-6">
+            <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+              <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
+              <Link to="/subscription" className="hover:text-foreground transition-colors">Planos</Link>
+              <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
+              <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
+              <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
+              <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
+              <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
+            </nav>
+            <div className="flex items-center justify-center gap-3">
+              <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
+                <Link to="/login">Entrar</Link>
+              </Button>
+              <Button asChild size="sm" className="gradient-primary font-semibold text-xs">
+                <Link to="/register">Criar Conta</Link>
+              </Button>
+            </div>
+            <p className="text-center text-[10px] text-muted-foreground/60">
               © {new Date().getFullYear()} SALBCARE. Todos os direitos reservados.
             </p>
           </div>

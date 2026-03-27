@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Search, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,16 @@ const ConsultaOnlineIndex = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header with back to home */}
+      <div className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-2xl items-center px-4">
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-7 w-7" />
+            <span className="text-base font-bold gradient-text">SALBCARE</span>
+          </Link>
+        </div>
+      </div>
+
       <SEOHead
         title="Consulta Online com Profissionais de Saúde | SalbCare"
         description="Agende sua consulta online com médicos, psicólogos, nutricionistas, dentistas e fisioterapeutas. Atendimento em todo o Brasil, sem sair de casa."
