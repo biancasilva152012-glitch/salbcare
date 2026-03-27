@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { X, Shield, MessageCircle, Lock, HelpCircle, Calendar, FileText, Video, UserSearch, DollarSign, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
+import TaxSimulatorWidget from "@/components/financial/TaxSimulatorWidget";
 
 const pillars = [
   { icon: Calendar, label: "Agenda", desc: "Gerencie horários e agendamentos" },
@@ -130,6 +132,35 @@ const HowItWorks = () => (
           <Link to="/profile" className="text-primary font-medium hover:underline">Meu Perfil</Link>.
         </p>
         <p className="text-sm font-medium text-foreground">Nunca vendemos seus dados.</p>
+      </motion.div>
+
+      {/* Calculadora de Economia */}
+      <motion.div variants={item} className="space-y-3">
+        <h2 className="text-center text-lg font-bold">Calculadora de Economia Tributária</h2>
+        <p className="text-center text-xs text-muted-foreground">Descubra quanto você pode economizar como PJ na SALBCARE</p>
+        <TaxSimulatorWidget />
+      </motion.div>
+
+      {/* FAQ */}
+      <motion.div variants={item} className="space-y-3">
+        <h2 className="text-center text-lg font-bold">Perguntas Frequentes</h2>
+        <Accordion type="single" collapsible className="space-y-2">
+          {[
+            { q: "Preciso ter CNPJ para usar a SALBCARE?", a: "Não. Você pode começar como pessoa física. Se quiser abrir CNPJ, ajudamos com o processo direto pela plataforma." },
+            { q: "A SALBCARE substitui meu contador?", a: "Não. Oferecemos um contador parceiro especializado em saúde para orientações e planejamento tributário. Para obrigações acessórias completas (balanço, folha, escrita fiscal), você combina diretamente com o contador." },
+            { q: "Os dados dos meus pacientes estão seguros?", a: "Sim. Todos os dados são armazenados com criptografia e seguimos a LGPD. Você pode solicitar, corrigir ou excluir dados a qualquer momento." },
+            { q: "Como funciona a teleconsulta?", a: "Você cria uma sala de atendimento, compartilha o link com o paciente e realiza a consulta por vídeo. Prontuário, receita e atestado podem ser preenchidos durante a chamada." },
+            { q: "Posso testar antes de assinar?", a: "Sim! Oferecemos um período de teste gratuito para que você conheça todas as funcionalidades do ecossistema." },
+            { q: "Quanto economizo com a SALBCARE?", a: "Depende do seu faturamento. Use a calculadora acima para simular a economia comparando tributação como pessoa física vs pessoa jurídica pelo Simples Nacional." },
+            { q: "Pacientes pagam para usar a plataforma?", a: "Não. Pacientes criam conta gratuitamente, encontram profissionais e agendam consultas sem custo." },
+            { q: "Quais profissões de saúde podem usar?", a: "Médicos, dentistas, psicólogos, fisioterapeutas, nutricionistas, fonoaudiólogos, enfermeiros e outros profissionais de saúde autônomos." },
+          ].map(({ q, a }, i) => (
+            <AccordionItem key={i} value={`faq-${i}`} className="glass-card border-none px-4">
+              <AccordionTrigger className="text-sm text-left font-semibold hover:no-underline py-3">{q}</AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">{a}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </motion.div>
 
       {/* Seção 5 */}
