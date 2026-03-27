@@ -305,7 +305,7 @@ const Register = () => {
                   <Input placeholder="Seu nome completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-background/50 border-border/60" required />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>E-mail profissional *</Label>
+                  <Label>E-mail *</Label>
                   <Input type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-background/50 border-border/60" required />
                 </div>
                 <div className="space-y-1.5">
