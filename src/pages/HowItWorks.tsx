@@ -72,9 +72,9 @@ const HowItWorks = () => {
         </p>
         <p className="text-sm text-muted-foreground leading-relaxed">
           A plataforma opera como um <span className="font-semibold text-foreground">marketplace de saúde</span>: 
-          profissionais pagam mensalidade para acessar o ecossistema e crescer; pacientes criam conta 
-          gratuitamente para encontrar profissionais e agendar consultas. Tudo acontece dentro da 
-          plataforma — sem ferramentas externas, sem redirecionamentos.
+          profissionais pagam mensalidade para acessar o ecossistema e crescer. Pacientes descobrem 
+          seu perfil sem precisar se cadastrar — a conta é criada só na hora de agendar. Tudo acontece 
+          dentro da plataforma, sem ferramentas externas, sem redirecionamentos.
         </p>
       </motion.div>
 

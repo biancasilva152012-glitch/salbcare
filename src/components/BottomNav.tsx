@@ -11,7 +11,7 @@ const navItems = [
 
 const BottomNav = () => {
   const location = useLocation();
-  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona", "/patient-dashboard"];
+  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona", "/patient-dashboard", "/onboarding"];
   if (hideOn.includes(location.pathname)) return null;
   if (location.pathname.startsWith("/booking") || location.pathname.startsWith("/consulta-online") || location.pathname.startsWith("/sala") || location.pathname.startsWith("/patient-dashboard") || location.pathname.startsWith("/pronto-atendimento") || location.pathname.startsWith("/meu-historico") || location.pathname.startsWith("/acompanhamento")) return null;
 

@@ -154,8 +154,10 @@ const Index = () => {
                 Seu <span className="gradient-text">Controle</span> para Gestão.
               </motion.h1>
               <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                O ecossistema completo para profissionais de saúde. Seja encontrado por novos pacientes e organize seu financeiro em um só lugar.{" "}
-                <span className="font-semibold text-foreground">Tudo por R$ 49/mês.</span>
+                Agenda, prontuário, teleconsulta, captação e financeiro — tudo em um só lugar.
+              </motion.p>
+              <motion.p variants={fadeUp} className="text-lg sm:text-xl font-bold text-foreground max-w-lg mx-auto lg:mx-0">
+                Tudo isso por R$ 49/mês.
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Button asChild size="lg" className="gradient-primary font-semibold gap-2 h-12 px-8 rounded-xl text-base shadow-lg shadow-primary/20">
