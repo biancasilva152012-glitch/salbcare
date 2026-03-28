@@ -30,7 +30,7 @@ const PageContainer = ({ children, className = "", onRefresh, backTo, backLabel 
     <div className={`flex flex-col min-h-[100dvh] ${className}`}>
       <main
         ref={setRef}
-        className="flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-32"
+        className="flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-20"
         style={{ WebkitOverflowScrolling: "touch" as any }}
       >
         {/* Pull-to-refresh indicator */}

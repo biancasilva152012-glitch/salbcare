@@ -84,7 +84,7 @@ const Index = () => {
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link to="/" className="flex items-center gap-2">
               <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-8 w-8" />
-              <span className="text-lg font-bold gradient-text">SALBCARE</span>
+              <span className="text-lg font-bold text-foreground">SALBCARE</span>
             </Link>
 
             {/* Desktop nav links */}
@@ -154,10 +154,7 @@ const Index = () => {
                 Seu <span className="gradient-text">Controle</span> para Gestão.
               </motion.h1>
               <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                Agenda, prontuário, teleconsulta, captação e financeiro — tudo em um só lugar.
-              </motion.p>
-              <motion.p variants={fadeUp} className="text-lg sm:text-xl font-bold text-foreground max-w-lg mx-auto lg:mx-0">
-                Tudo isso por R$ 49/mês.
+                O ecossistema completo para profissionais de saúde. Agenda, Prontuário, Teleconsulta, Captação e Financeiro em um só lugar. Tudo por R$ 49/mês.
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Button asChild size="lg" className="gradient-primary font-semibold gap-2 h-12 px-8 rounded-xl text-base shadow-lg shadow-primary/20">

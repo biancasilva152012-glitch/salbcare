@@ -1,5 +1,5 @@
-import { NavLink, useLocation, Link } from "react-router-dom";
-import { Home, Calendar, Users, DollarSign, User, Download } from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
 
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Painel" },
@@ -17,7 +17,6 @@ const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-card/95 backdrop-blur-2xl">
-      {/* Navigation icons */}
       <div className="mx-auto flex max-w-lg items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)]">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -33,37 +32,6 @@ const BottomNav = () => {
             <span className="font-medium text-center leading-tight">{label}</span>
           </NavLink>
         ))}
-      </div>
-
-      {/* Legal footer — centered and properly aligned */}
-      <div className="text-center px-4 pb-2 space-y-1">
-        <p className="text-[9px] text-muted-foreground/40 leading-relaxed">
-          A SalbCare é uma plataforma de gestão e não substitui orientação médica, jurídica ou contábil profissional.
-        </p>
-        <p className="text-[9px] text-muted-foreground/40">
-          contato@salbcare.com.br
-        </p>
-        <p className="text-[9px] text-muted-foreground/40">
-          SalbCare Tecnologia LTDA
-        </p>
-        <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[10px]">
-          <Link to="/install" className="text-primary/70 hover:text-primary transition-colors font-semibold flex items-center gap-0.5">
-            <Download className="h-3 w-3" />
-            Baixar App
-          </Link>
-          <Link to="/terms" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-            Termos de Uso
-          </Link>
-          <Link to="/privacy" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-            Política de Privacidade
-          </Link>
-          <Link to="/como-funciona" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-            Como funciona
-          </Link>
-          <a href="mailto:contato@salbcare.com.br" className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-            Fale conosco
-          </a>
-        </div>
       </div>
     </nav>
   );
