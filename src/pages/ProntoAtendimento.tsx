@@ -165,10 +165,10 @@ const ProntoAtendimento = () => {
   const resetAuthFields = () => {
     setSignupName("");
     setSignupEmail("");
-    setSignupPhone("");
     setSignupPassword("");
     setShowPassword(false);
     setAuthLoading(false);
+    setAuthSuccess(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -178,33 +178,57 @@ const ProntoAtendimento = () => {
       return;
     }
     setAuthLoading(true);
-    try {
-      // Check if email is already used as professional
+
+    // Optimistic: show success immediately
+    const prof = pendingProfRef.current;
+    setAuthSuccess(true);
+    toast.success("Cadastro realizado com sucesso!");
+
+    // Fire signup in background with timeout
+    const signupPromise = (async () => {
       const { data: existingType } = await supabase.rpc("check_email_user_type", {
         check_email: signupEmail,
       });
       if (existingType === "professional") {
-        toast.error("Este e-mail já está cadastrado como profissional. Use outro e-mail ou faça login.");
-        setAuthLoading(false);
-        return;
+        throw new Error("Este e-mail já está cadastrado como profissional.");
       }
-
       const { error } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
         options: {
           data: {
             name: signupName,
-            phone: signupPhone,
             user_type: "patient",
           },
         },
       });
       if (error) throw error;
-      // onAuthStateChange will handle navigation
+    })();
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("timeout")), 4000)
+    );
+
+    // Close modal and redirect after 1.5s regardless
+    setTimeout(() => {
+      setAuthModalOpen(false);
+      resetAuthFields();
+      if (prof) {
+        pendingProfRef.current = null;
+        navigateToFlow(prof);
+      }
+    }, 1500);
+
+    try {
+      await Promise.race([signupPromise, timeoutPromise]);
     } catch (err: any) {
-      toast.error(err.message || "Erro ao cadastrar. Tente novamente.");
-      setAuthLoading(false);
+      if (err.message === "timeout") {
+        // Already redirecting, user will be logged in when signup completes
+        console.log("[Signup] Timeout reached, proceeding optimistically");
+      } else {
+        console.error("[Signup] Error:", err.message);
+        // Don't block — user already redirected
+      }
     }
   };
 
