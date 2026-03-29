@@ -84,34 +84,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     lastCheckTime.current = now;
 
     try {
-      const { data, error } = await supabase.functions.invoke("check-subscription");
-      if (error) throw error;
+      // Run edge function and profile query in parallel instead of sequentially
+      const userId = session?.user?.id;
+      if (!userId) {
+        setSubscription((s) => ({ ...s, loading: false }));
+        return;
+      }
+
+      const [subResult, profileResult] = await Promise.all([
+        supabase.functions.invoke("check-subscription"),
+        supabase
+          .from("profiles")
+          .select("plan, trial_start_date, payment_status")
+          .eq("user_id", userId)
+          .single(),
+      ]);
+
+      if (subResult.error) throw subResult.error;
+      const data = subResult.data;
 
       let plan: PlanKey = getPlanByProductId(data.product_id);
       let trialDaysRemaining = 0;
       let paymentStatus = "none";
       let needsOnboarding = false;
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("plan, trial_start_date, payment_status")
-          .eq("user_id", user.id)
-          .single();
+      const profile = profileResult.data;
+      if (profile) {
+        paymentStatus = (profile as any).payment_status || "none";
+        const trialStart = (profile as any).trial_start_date;
+        trialDaysRemaining = getTrialDaysRemaining(trialStart);
 
-        if (profile) {
-          paymentStatus = (profile as any).payment_status || "none";
-          const trialStart = (profile as any).trial_start_date;
-          trialDaysRemaining = getTrialDaysRemaining(trialStart);
+        if (!data.subscribed && profile.plan && (profile.plan === "professional" || profile.plan === "clinic")) {
+          plan = profile.plan as PlanKey;
+        }
 
-          if (!data.subscribed && profile.plan && (profile.plan === "professional" || profile.plan === "clinic")) {
-            plan = profile.plan as PlanKey;
-          }
-
-          if (!trialStart && paymentStatus === "none" && profile.plan === "basic") {
-            needsOnboarding = true;
-          }
+        if (!trialStart && paymentStatus === "none" && profile.plan === "basic") {
+          needsOnboarding = true;
         }
       }
 
@@ -129,7 +137,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       subCheckInFlight.current = false;
     }
-  }, []);
+  }, [session?.user?.id]);
 
   useEffect(() => {
     let initialCheckDone = false;
