@@ -111,6 +111,11 @@ body[data-scroll-locked] {
     }
   }
 
+  /* GPU-accelerated spinner */
+  .animate-spin {
+    will-change: transform;
+  }
+
   /* Minimum touch target for mobile */
   button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
     min-height: 44px;
