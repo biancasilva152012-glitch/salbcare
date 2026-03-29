@@ -40,9 +40,21 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
   const queryClient = useQueryClient();
+
+  // If arriving from Stripe checkout, set flag for SubscriptionGuard polling
+  useEffect(() => {
+    if (searchParams.get("from_checkout") === "true") {
+      sessionStorage.setItem("salbcare_from_checkout", "true");
+      // Clean up URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("from_checkout");
+      window.history.replaceState({}, "", url.pathname);
+    }
+  }, [searchParams]);
 
   const handleRefresh = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: ["today-appointments", user?.id] });
