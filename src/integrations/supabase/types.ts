@@ -680,9 +680,12 @@ export type Database = {
           crm: string | null
           email: string | null
           id: string
+          meet_link: string | null
           name: string
           phone: string | null
+          signature_url: string | null
           specialty: string
+          stamp_url: string | null
           status: string
           updated_at: string
           user_id: string
@@ -693,9 +696,12 @@ export type Database = {
           crm?: string | null
           email?: string | null
           id?: string
+          meet_link?: string | null
           name: string
           phone?: string | null
+          signature_url?: string | null
           specialty?: string
+          stamp_url?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -706,9 +712,12 @@ export type Database = {
           crm?: string | null
           email?: string | null
           id?: string
+          meet_link?: string | null
           name?: string
           phone?: string | null
+          signature_url?: string | null
           specialty?: string
+          stamp_url?: string | null
           status?: string
           updated_at?: string
           user_id?: string
