@@ -1,0 +1,1 @@
+UPDATE profiles SET council_number = NULL, council_state = NULL WHERE email = 'teste.redir@teste.com';
