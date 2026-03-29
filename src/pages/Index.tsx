@@ -149,9 +149,8 @@ const Index = () => {
                 variants={fadeUp}
                 className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight"
               >
-                Sua <span className="gradient-text">Vitrine</span> para Pacientes.{" "}
-                <br className="hidden sm:block" />
-                Seu <span className="gradient-text">Controle</span> para Gestão.
+                <span className="block">Sua <span className="gradient-text">Vitrine</span> para Pacientes.</span>
+                <span className="block">Seu <span className="gradient-text">Controle</span> para Gestão.</span>
               </motion.h1>
               <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
                 O ecossistema completo para profissionais de saúde. Agenda, Prontuário, Teleconsulta, Captação e Financeiro em um só lugar. Tudo por R$ 49/mês.

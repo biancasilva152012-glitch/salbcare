@@ -5,12 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
-import { ArrowLeft, Stethoscope, Upload, FileCheck, Clock } from "lucide-react";
+import { ArrowLeft, Stethoscope } from "lucide-react";
 
 const professionalTypes = [
   { value: "medico", label: "Médico(a)", prefix: "CRM" },
@@ -39,11 +38,8 @@ const floatingOrbs = [
 
 const Register = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(0); // 0=data, 1=professional-details, 2=document, 3=accept
+  const [step, setStep] = useState(0); // 0=data, 1=professional-details, 2=confirm
   const [loading, setLoading] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [councilDoc, setCouncilDoc] = useState<File | null>(null);
-  const [uploadingDoc, setUploadingDoc] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -56,26 +52,10 @@ const Register = () => {
     council_state: "",
   });
 
-  const totalSteps = 4; // data + professional + document + accept
+  const totalSteps = 3; // data + professional + confirm
   const councilPrefix = professionalTypes.find(p => p.value === form.professional_type)?.prefix || "Conselho";
 
-  const uploadCouncilDocument = async (userId: string): Promise<string | null> => {
-    if (!councilDoc) return null;
-    const ext = councilDoc.name.split(".").pop() || "pdf";
-    const path = `${userId}/council-document.${ext}`;
-    const { error } = await supabase.storage.from("patient-documents").upload(path, councilDoc, { upsert: true });
-    if (error) {
-      console.error("Upload error:", error);
-      return null;
-    }
-    return path;
-  };
-
   const handleSubmit = async () => {
-    if (!acceptTerms) {
-      toast.error("Aceite os termos para continuar.");
-      return;
-    }
     if (!form.name || !form.email || !form.phone || !form.password) {
       toast.error("Preencha todos os campos para continuar.");
       return;
@@ -128,24 +108,11 @@ const Register = () => {
         return;
       }
 
-      // Upload council document if provided
-      if (signUpData?.user && councilDoc) {
-        setUploadingDoc(true);
-        const docPath = await uploadCouncilDocument(signUpData.user.id);
-        if (docPath) {
-          await supabase
-            .from("profiles")
-            .update({ council_document_path: docPath, verification_status: "pending" } as any)
-            .eq("user_id", signUpData.user.id);
-        }
-        setUploadingDoc(false);
-      }
-
-      // Update verification_status to pending
+      // Set verification_status to approved immediately (no manual validation)
       if (signUpData?.user) {
         await supabase
           .from("profiles")
-          .update({ verification_status: "pending" } as any)
+          .update({ verification_status: "approved" } as any)
           .eq("user_id", signUpData.user.id);
       }
 
@@ -157,9 +124,9 @@ const Register = () => {
         return;
       }
 
-      // Show awaiting validation screen
-      navigate("/register?status=pending");
-      toast.success("Conta criada com sucesso! Seu cadastro está em análise.");
+      // Redirect directly to onboarding/dashboard
+      toast.success("Conta criada com sucesso!");
+      navigate("/onboarding");
     } catch (err) {
       console.error("Unexpected signup error:", err);
       setLoading(false);
@@ -170,7 +137,6 @@ const Register = () => {
   const canGoNext = () => {
     if (step === 0) return !!form.name && !!form.email && !!form.phone && !!form.password && !!form.cpf;
     if (step === 1) return !!form.professional_type && !!form.council_number && !!form.council_state;
-    if (step === 2) return true; // document upload is optional but encouraged
     return true;
   };
 
@@ -190,60 +156,6 @@ const Register = () => {
     }
     setStep(step - 1);
   };
-
-  // Check if we should show pending status screen
-  const urlParams = new URLSearchParams(window.location.search);
-  const isPending = urlParams.get("status") === "pending";
-
-  if (isPending) {
-    return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-10 overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 w-full max-w-sm space-y-6 text-center"
-        >
-          <motion.div
-            className="mx-auto h-16 w-16 flex items-center justify-center rounded-2xl bg-primary/10"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-          >
-            <Clock className="h-8 w-8 text-primary" />
-          </motion.div>
-
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Cadastro em análise</h1>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Seu cadastro está sendo verificado pela equipe SalbCare. Você receberá um e-mail em até <strong>24 horas</strong> com a aprovação ou instruções adicionais.
-            </p>
-          </div>
-
-          <div className="glass-card p-4 space-y-2 text-left">
-            <p className="text-xs font-medium text-muted-foreground">O que acontece agora?</p>
-            <ul className="space-y-1.5 text-[11px] text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                Validaremos seu registro profissional junto ao conselho informado
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                Após aprovação, seu perfil ficará visível na listagem pública
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                Você poderá acessar o painel completo para gerenciar sua agenda
-              </li>
-            </ul>
-          </div>
-
-          <Button asChild variant="outline" className="w-full h-11">
-            <Link to="/login">Voltar para o login</Link>
-          </Button>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-10 overflow-hidden">
@@ -375,68 +287,11 @@ const Register = () => {
             </motion.div>
           )}
 
-          {/* STEP 2: Council Document Upload */}
+          {/* STEP 2: Confirm & Create */}
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div className="text-center space-y-1">
-                <h2 className="text-lg font-bold">Documento do conselho</h2>
-                <p className="text-xs text-muted-foreground">Etapa 3 de {totalSteps}</p>
-              </div>
-
-              <div className="glass-card p-5 space-y-4">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Envie uma foto ou PDF da sua carteirinha do conselho profissional para acelerar a validação do cadastro.
-                </p>
-
-                <label
-                  htmlFor="council-doc"
-                  className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-6 cursor-pointer transition-colors ${
-                    councilDoc
-                      ? "border-primary/50 bg-primary/5"
-                      : "border-border/50 hover:border-primary/30 hover:bg-accent/30"
-                  }`}
-                >
-                  {councilDoc ? (
-                    <>
-                      <FileCheck className="h-8 w-8 text-primary" />
-                      <span className="text-sm font-medium text-primary">{councilDoc.name}</span>
-                      <span className="text-[10px] text-muted-foreground">Clique para trocar</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-8 w-8 text-muted-foreground" />
-                      <span className="text-sm font-medium text-muted-foreground">Clique para enviar</span>
-                      <span className="text-[10px] text-muted-foreground">PDF, JPG ou PNG • Máx 10MB</span>
-                    </>
-                  )}
-                  <input
-                    id="council-doc"
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file && file.size > 10 * 1024 * 1024) {
-                        toast.error("Arquivo muito grande. Máximo 10MB.");
-                        return;
-                      }
-                      setCouncilDoc(file || null);
-                    }}
-                  />
-                </label>
-
-                <p className="text-[10px] text-muted-foreground text-center">
-                  Opcional, mas recomendado para agilizar a aprovação
-                </p>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 3: Terms acceptance */}
-          {step === 3 && (
-            <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-              <div className="text-center space-y-1">
-                <h2 className="text-lg font-bold">Quase lá!</h2>
+                <h2 className="text-lg font-bold">Confirme seus dados</h2>
                 <p className="text-xs text-muted-foreground">Última etapa</p>
               </div>
 
@@ -447,33 +302,14 @@ const Register = () => {
                   <p className="text-[11px] text-muted-foreground">
                     {professionalTypes.find(p => p.value === form.professional_type)?.label || "Profissional"} • {councilPrefix} {form.council_number} ({form.council_state})
                   </p>
-                  {councilDoc && (
-                    <p className="text-[11px] text-primary flex items-center gap-1">
-                      <FileCheck className="h-3 w-3" /> Documento anexado
-                    </p>
-                  )}
                 </div>
 
-                <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    ⏳ Após o cadastro, sua conta ficará com status <strong>"Aguardando validação"</strong>. A equipe SALBCARE validará seu registro profissional e você receberá um e-mail em até 24h.
-                  </p>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <Checkbox
-                    id="terms"
-                    checked={acceptTerms}
-                    onCheckedChange={(v) => setAcceptTerms(!!v)}
-                    className="mt-0.5"
-                  />
-                  <label htmlFor="terms" className="text-[11px] text-muted-foreground leading-relaxed cursor-pointer">
-                    Li e concordo com os{" "}
-                    <Link to="/terms" className="text-primary hover:underline" target="_blank">Termos de Uso</Link>
-                    {" "}e a{" "}
-                    <Link to="/privacy" className="text-primary hover:underline" target="_blank">Política de Privacidade</Link>.
-                  </label>
-                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed text-center">
+                  Ao criar sua conta, você concorda com os{" "}
+                  <Link to="/terms" className="text-primary hover:underline" target="_blank">Termos de Uso</Link>
+                  {" "}e a{" "}
+                  <Link to="/privacy" className="text-primary hover:underline" target="_blank">Política de Privacidade</Link>.
+                </p>
               </div>
             </motion.div>
           )}
@@ -488,11 +324,11 @@ const Register = () => {
             onClick={handleNext}
             className="flex-1 h-11 font-semibold"
             style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))" }}
-            disabled={!canGoNext() || loading || (step === totalSteps - 1 && !acceptTerms)}
+            disabled={!canGoNext() || loading}
           >
-            {loading || uploadingDoc ? (
+            {loading ? (
               <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>
-                {uploadingDoc ? "Enviando documento..." : "Criando conta..."}
+                Criando conta...
               </motion.span>
             ) : step === totalSteps - 1 ? (
               "Criar minha conta"
