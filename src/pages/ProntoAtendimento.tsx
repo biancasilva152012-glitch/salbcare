@@ -467,6 +467,15 @@ const ProntoAtendimento = () => {
             </DialogDescription>
           </DialogHeader>
 
+          {authSuccess ? (
+            <div className="flex flex-col items-center gap-3 py-6">
+              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                <span className="text-2xl">✅</span>
+              </div>
+              <p className="text-sm font-medium text-foreground">Cadastro realizado com sucesso!</p>
+              <p className="text-xs text-muted-foreground">Redirecionando...</p>
+            </div>
+          ) : (
           <form onSubmit={handleSignup} className="space-y-3 pt-2">
             <div className="space-y-1.5">
               <Label className="text-xs">Nome completo *</Label>
@@ -486,15 +495,6 @@ const ProntoAtendimento = () => {
                 onChange={(e) => setSignupEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
-                className="bg-accent border-border"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">WhatsApp</Label>
-              <Input
-                value={signupPhone}
-                onChange={(e) => setSignupPhone(maskPhone(e.target.value))}
-                placeholder="(11) 99999-9999"
                 className="bg-accent border-border"
               />
             </div>
@@ -522,6 +522,7 @@ const ProntoAtendimento = () => {
               Ao cadastrar, você concorda com os <a href="/terms" target="_blank" className="underline">Termos de Uso</a>.
             </p>
           </form>
+          )}
         </DialogContent>
       </Dialog>
     </div>
