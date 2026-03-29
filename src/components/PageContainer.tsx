@@ -12,7 +12,7 @@ interface PageContainerProps {
   backLabel?: string;
 }
 
-const PageContainer = ({ children, className = "", onRefresh, backTo, backLabel }: PageContainerProps) => {
+const PageContainer = memo(({ children, className = "", onRefresh, backTo, backLabel }: PageContainerProps) => {
   const { scrollRef, pullDistance, isRefreshing } = usePullToRefresh({
     onRefresh,
   });
