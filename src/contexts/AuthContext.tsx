@@ -84,34 +84,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     lastCheckTime.current = now;
 
     try {
-      const { data, error } = await supabase.functions.invoke("check-subscription");
-      if (error) throw error;
+      // Run edge function and profile query in parallel instead of sequentially
+      const userId = session?.user?.id;
+      if (!userId) {
+        setSubscription((s) => ({ ...s, loading: false }));
+        return;
+      }
+
+      const [subResult, profileResult] = await Promise.all([
+        supabase.functions.invoke("check-subscription"),
+        supabase
+          .from("profiles")
+          .select("plan, trial_start_date, payment_status")
+          .eq("user_id", userId)
+          .single(),
+      ]);
+
+      if (subResult.error) throw subResult.error;
+      const data = subResult.data;
 
       let plan: PlanKey = getPlanByProductId(data.product_id);
       let trialDaysRemaining = 0;
       let paymentStatus = "none";
       let needsOnboarding = false;
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("plan, trial_start_date, payment_status")
-          .eq("user_id", user.id)
-          .single();
+      const profile = profileResult.data;
+      if (profile) {
+        paymentStatus = (profile as any).payment_status || "none";
+        const trialStart = (profile as any).trial_start_date;
+        trialDaysRemaining = getTrialDaysRemaining(trialStart);
 
-        if (profile) {
-          paymentStatus = (profile as any).payment_status || "none";
-          const trialStart = (profile as any).trial_start_date;
-          trialDaysRemaining = getTrialDaysRemaining(trialStart);
+        if (!data.subscribed && profile.plan && (profile.plan === "professional" || profile.plan === "clinic")) {
+          plan = profile.plan as PlanKey;
+        }
 
-          if (!data.subscribed && profile.plan && (profile.plan === "professional" || profile.plan === "clinic")) {
-            plan = profile.plan as PlanKey;
-          }
-
-          if (!trialStart && paymentStatus === "none" && profile.plan === "basic") {
-            needsOnboarding = true;
-          }
+        if (!trialStart && paymentStatus === "none" && profile.plan === "basic") {
+          needsOnboarding = true;
         }
       }
 
@@ -129,35 +137,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       subCheckInFlight.current = false;
     }
-  }, []);
+  }, [session?.user?.id]);
 
   useEffect(() => {
     let initialCheckDone = false;
 
-    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
       if (session?.user) {
-        fetchUserType(session.user.id);
-        if (initialCheckDone) checkSubscription();
-
-        // For OAuth sign-ins (e.g. Google), check if professional profile is incomplete
-        if (_event === "SIGNED_IN") {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("user_type, council_number")
-            .eq("user_id", session.user.id)
-            .single();
-
-          if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
-            // Incomplete professional — redirect to complete profile
-            const currentPath = window.location.pathname;
-            if (currentPath !== "/complete-profile" && currentPath !== "/register") {
-              console.log("[Auth] Incomplete professional profile, redirecting to /complete-profile");
-              navigate("/complete-profile");
-            }
+        // Fetch user type; for SIGNED_IN also check incomplete profiles
+        fetchUserType(session.user.id).then(() => {
+          if (_event === "SIGNED_IN") {
+            supabase
+              .from("profiles")
+              .select("user_type, council_number")
+              .eq("user_id", session.user.id)
+              .single()
+              .then(({ data: profile }) => {
+                if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
+                  const currentPath = window.location.pathname;
+                  if (currentPath !== "/complete-profile" && currentPath !== "/register" && currentPath !== "/login") {
+                    navigate("/complete-profile");
+                  }
+                }
+              });
           }
-        }
+        });
+        if (initialCheckDone) checkSubscription();
       } else {
         setUserType(null);
         setUserTypeLoading(false);
