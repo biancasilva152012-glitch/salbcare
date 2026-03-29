@@ -134,12 +134,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let initialCheckDone = false;
 
-    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setLoading(false);
       if (session?.user) {
         fetchUserType(session.user.id);
         if (initialCheckDone) checkSubscription();
+
+        // For OAuth sign-ins (e.g. Google), check if professional profile is incomplete
+        if (_event === "SIGNED_IN") {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("user_type, council_number")
+            .eq("user_id", session.user.id)
+            .single();
+
+          if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
+            // Incomplete professional — redirect to complete profile
+            const currentPath = window.location.pathname;
+            if (currentPath !== "/complete-profile" && currentPath !== "/register") {
+              console.log("[Auth] Incomplete professional profile, redirecting to /complete-profile");
+              navigate("/complete-profile");
+            }
+          }
+        }
       } else {
         setUserType(null);
         setUserTypeLoading(false);
