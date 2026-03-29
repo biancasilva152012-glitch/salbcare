@@ -4,7 +4,13 @@
 
 html, body {
   overflow-y: auto !important;
+  overflow-x: hidden !important;
   height: auto !important;
+}
+
+/* Prevent modals/drawers from permanently locking scroll */
+body[data-scroll-locked] {
+  overflow: hidden !important;
 }
 
 @layer base {
