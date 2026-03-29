@@ -48,13 +48,21 @@ const Subscription = () => {
       const priceId = isAnnual ? plan.annual_price_id : plan.price_id;
       const billingPeriod = isAnnual ? "annual" : "monthly";
 
+      console.log(`[Checkout] Iniciando checkout ${planKey} para user:`, subData.status);
+
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: { priceId, billingPeriod },
       });
       if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
-    } catch {
-      toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
+      if (data?.url) {
+        console.log(`[Checkout] Session criada | redirect para Stripe`);
+        // Mark that we're coming from checkout so the guard can poll
+        sessionStorage.setItem("salbcare_from_checkout", "true");
+        window.open(data.url, "_blank");
+      }
+    } catch (err) {
+      console.error("[Checkout] Erro:", err);
+      toast.error("Ocorreu um erro ao iniciar o pagamento. Tente novamente ou fale com o suporte.");
     } finally {
       setLoadingPlan(null);
     }
