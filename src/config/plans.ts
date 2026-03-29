@@ -6,8 +6,8 @@ export const PLANS = {
     price_id: "price_1TBcE4BUEEEAHx2hfOYZN30W",
     product_id: "prod_U9w63fgoL24Mi4",
     annual_price: 490,
-    annual_price_id: "price_1TFfbUBUEEEAHx2hSVD43KlA",
-    annual_product_id: "prod_UE7rcjFtRARJyZ",
+    annual_price_id: "price_1TGKlBBUEEEAHx2hKvXbHuOz",
+    annual_product_id: "prod_UEoNmf2THoTBES",
     features: [
       "Agenda inteligente de consultas",
       "Cadastro ilimitado de pacientes",
@@ -26,8 +26,8 @@ export const PLANS = {
     price_id: "price_1TBcg4BUEEEAHx2hiJNr2qhu",
     product_id: "prod_U9wZ94gRJJq1HU",
     annual_price: 990,
-    annual_price_id: "price_1TFfc2BUEEEAHx2hge1NjbOm",
-    annual_product_id: "prod_UE7rM9elNBWYOU",
+    annual_price_id: "price_1TGKlcBUEEEAHx2hO8MT6Xu4",
+    annual_product_id: "prod_UEoOm2A6OmaeQN",
     popular: true,
     features: [
       "Tudo do Essencial +",
@@ -46,8 +46,8 @@ export const PLANS = {
     price_id: "price_1TBcgQBUEEEAHx2hwimX7ktu",
     product_id: "prod_U9wZAYvh6Gb6ct",
     annual_price: 1890,
-    annual_price_id: "price_1TFfcWBUEEEAHx2hTMq5L9dc",
-    annual_product_id: "prod_UE7sxFE8sPony6",
+    annual_price_id: "price_1TGKmJBUEEEAHx2hS9x2Jn7m",
+    annual_product_id: "prod_UEoPdJuOeBi1gG",
     features: [
       "Tudo do Profissional +",
       "Gestão de múltiplos profissionais",
