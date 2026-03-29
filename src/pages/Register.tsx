@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { maskPhone, maskCpf } from "@/utils/masks";
 import { isValidCpf } from "@/utils/cpfValidator";
@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
-import { ArrowLeft, Stethoscope, Upload, X, FileSignature } from "lucide-react";
+import { ArrowLeft, Stethoscope } from "lucide-react";
 
 const professionalTypes = [
   { value: "medico", label: "Médico(a)", prefix: "CRM" },
@@ -41,7 +41,6 @@ const Register = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const signatureInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -52,76 +51,24 @@ const Register = () => {
     professional_type: "",
     council_number: "",
     council_state: "",
-    meet_link: "",
   });
-
-  const [signatureFile, setSignatureFile] = useState<File | null>(null);
-  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
 
   const totalSteps = 3;
   const councilPrefix = professionalTypes.find(p => p.value === form.professional_type)?.prefix || "Conselho";
 
-  const handleSignatureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Envie uma imagem (PNG, JPG) da sua assinatura.");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 2MB.");
-      return;
-    }
-    setSignatureFile(file);
-    setSignaturePreview(URL.createObjectURL(file));
-  };
-
-  const removeSignature = () => {
-    setSignatureFile(null);
-    setSignaturePreview(null);
-    if (signatureInputRef.current) signatureInputRef.current.value = "";
-  };
-
-  const uploadSignature = async (userId: string): Promise<string | null> => {
-    if (!signatureFile) return null;
-    const ext = signatureFile.name.split(".").pop() || "png";
-    const filePath = `${userId}/signature.${ext}`;
-    console.log("[Register] Uploading signature to professional-assets:", filePath);
-
-    const { error } = await supabase.storage
-      .from("professional-assets")
-      .upload(filePath, signatureFile, { upsert: true });
-
-    if (error) {
-      console.error("[Register] Signature upload error:", error);
-      return null;
-    }
-
-    const { data: urlData } = supabase.storage
-      .from("professional-assets")
-      .getPublicUrl(filePath);
-
-    console.log("[Register] Signature public URL:", urlData.publicUrl);
-    return urlData.publicUrl;
-  };
-
   const handleSubmit = async () => {
-    // Validate all fields
     if (!form.name.trim()) { toast.error("Preencha seu nome completo."); return; }
     if (!form.cpf || !isValidCpf(form.cpf)) { toast.error("CPF inválido. Verifique os dígitos."); return; }
     if (!form.phone || form.phone.replace(/\D/g, "").length < 10) { toast.error("Telefone inválido."); return; }
     if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { toast.error("E-mail inválido."); return; }
-    if (!form.password || form.password.length < 8) { toast.error("A senha deve ter no mínimo 8 caracteres."); return; }
+    if (!form.password || form.password.length < 6) { toast.error("A senha deve ter no mínimo 6 caracteres."); return; }
     if (!form.professional_type) { toast.error("Selecione sua profissão."); return; }
     if (!form.council_number.trim()) { toast.error("Preencha o número do conselho."); return; }
     if (!form.council_state) { toast.error("Selecione o estado do conselho."); return; }
-    if (!form.meet_link.trim()) { toast.error("Preencha o link do Google Meet."); return; }
-    if (!signatureFile) { toast.error("Envie sua assinatura digital."); return; }
 
     setLoading(true);
 
     try {
-      // Check if email already exists
       const { data: existingType, error: rpcError } = await supabase.rpc("check_email_user_type", { check_email: form.email });
       if (rpcError) console.error("[Register] RPC error:", rpcError);
       if (existingType) {
@@ -140,15 +87,12 @@ const Register = () => {
         council_state: form.council_state,
       };
 
-      console.log("[Register] Creating account with signUp...", { email: form.email, metadata });
+      console.log("[Register] Creating account with signUp...", { email: form.email });
 
       const { data: signUpData, error } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
-        options: {
-          data: metadata,
-          emailRedirectTo: window.location.origin,
-        },
+        options: { data: metadata, emailRedirectTo: window.location.origin },
       });
 
       if (error) {
@@ -156,7 +100,7 @@ const Register = () => {
         if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
           toast.error("Este e-mail já possui uma conta. Tente entrar ou recupere sua senha.");
         } else if (msg.includes("password") || msg.includes("senha")) {
-          toast.error("A senha precisa ter pelo menos 8 caracteres.");
+          toast.error("A senha precisa ter pelo menos 6 caracteres.");
         } else if (msg.includes("email") && msg.includes("invalid")) {
           toast.error("E-mail inválido. Verifique e tente novamente.");
         } else if (msg.includes("rate") || msg.includes("limit")) {
@@ -181,14 +125,8 @@ const Register = () => {
       // Set verification_status to approved immediately
       await supabase
         .from("profiles")
-        .update({ 
-          verification_status: "approved",
-          meet_link: form.meet_link.trim(),
-        } as any)
+        .update({ verification_status: "approved" } as any)
         .eq("user_id", userId);
-
-      // Upload signature
-      const signatureUrl = await uploadSignature(userId);
 
       // Insert into professionals table
       console.log("[Register] Inserting into professionals table...");
@@ -202,13 +140,10 @@ const Register = () => {
           specialty: form.professional_type,
           crm: `${councilPrefix} ${form.council_number}`,
           status: "active",
-          signature_url: signatureUrl,
-          meet_link: form.meet_link.trim(),
         } as any);
 
       if (profError) {
         console.error("[Register] Error inserting into professionals:", profError);
-        // Non-blocking: profile was already created, professional record is supplementary
       } else {
         console.log("[Register] Professional record created successfully");
       }
@@ -231,21 +166,14 @@ const Register = () => {
   };
 
   const canGoNext = () => {
-    if (step === 0) {
-      return !!form.name.trim() && !!form.email && !!form.phone && form.password.length >= 8 && !!form.cpf && isValidCpf(form.cpf);
-    }
-    if (step === 1) {
-      return !!form.professional_type && !!form.council_number.trim() && !!form.council_state && !!form.meet_link.trim() && !!signatureFile;
-    }
+    if (step === 0) return !!form.name.trim() && !!form.email && !!form.phone && form.password.length >= 6 && !!form.cpf && isValidCpf(form.cpf);
+    if (step === 1) return !!form.professional_type && !!form.council_number.trim() && !!form.council_state;
     return true;
   };
 
   const handleNext = () => {
     if (!canGoNext()) return;
-    if (step === totalSteps - 1) {
-      handleSubmit();
-      return;
-    }
+    if (step === totalSteps - 1) { handleSubmit(); return; }
     setStep(step + 1);
   };
 
@@ -276,7 +204,6 @@ const Register = () => {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-sm space-y-6"
       >
-        {/* Branding */}
         <motion.div className="text-center" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
           <motion.div className="mx-auto mb-2 h-16 w-16 relative" whileHover={{ scale: 1.05 }}>
             <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
@@ -287,27 +214,19 @@ const Register = () => {
           </div>
         </motion.div>
 
-        {/* Progress indicator */}
         <div className="flex gap-1.5 px-4">
           {Array.from({ length: totalSteps }).map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                i <= step ? "bg-primary" : "bg-border/50"
-              }`}
-            />
+            <div key={i} className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= step ? "bg-primary" : "bg-border/50"}`} />
           ))}
         </div>
 
         <AnimatePresence mode="wait">
-          {/* STEP 0: Personal Data */}
           {step === 0 && (
             <motion.div key="step0" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div className="text-center space-y-1">
                 <h2 className="text-lg font-bold">Dados pessoais</h2>
                 <p className="text-xs text-muted-foreground">Etapa 1 de {totalSteps}</p>
               </div>
-
               <div className="glass-card p-5 space-y-3">
                 <div className="space-y-1.5">
                   <Label>Nome completo *</Label>
@@ -330,118 +249,52 @@ const Register = () => {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Senha *</Label>
-                  <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" required minLength={8} />
-                  <p className="text-[10px] text-muted-foreground">Mínimo 8 caracteres</p>
-                  {form.password && form.password.length > 0 && form.password.length < 8 && (
-                    <p className="text-[10px] text-destructive">Senha muito curta</p>
-                  )}
+                  <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" required minLength={6} />
+                  <p className="text-[10px] text-muted-foreground">Mínimo 6 caracteres</p>
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* STEP 1: Professional Details + Meet + Signature */}
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div className="text-center space-y-1">
                 <h2 className="text-lg font-bold">Dados profissionais</h2>
                 <p className="text-xs text-muted-foreground">Etapa 2 de {totalSteps}</p>
               </div>
-
               <div className="glass-card p-5 space-y-3">
                 <div className="space-y-1.5">
                   <Label>Conselho profissional *</Label>
                   <Select onValueChange={(v) => setForm({ ...form, professional_type: v })} value={form.professional_type}>
-                    <SelectTrigger className="bg-background/50 border-border/60">
-                      <SelectValue placeholder="Selecione seu conselho" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-background/50 border-border/60"><SelectValue placeholder="Selecione seu conselho" /></SelectTrigger>
                     <SelectContent>
-                      {professionalTypes.map((t) => (
-                        <SelectItem key={t.value} value={t.value}>
-                          {t.prefix} — {t.label}
-                        </SelectItem>
-                      ))}
+                      {professionalTypes.map((t) => <SelectItem key={t.value} value={t.value}>{t.prefix} — {t.label}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Nº {councilPrefix} *</Label>
-                  <Input
-                    placeholder={`Ex: ${councilPrefix}/12345`}
-                    value={form.council_number}
-                    onChange={(e) => setForm({ ...form, council_number: e.target.value })}
-                    className="bg-background/50 border-border/60"
-                  />
+                  <Input placeholder={`Ex: ${councilPrefix}/12345`} value={form.council_number} onChange={(e) => setForm({ ...form, council_number: e.target.value })} className="bg-background/50 border-border/60" />
                 </div>
                 <div className="space-y-1.5">
                   <Label>UF do registro *</Label>
                   <Select onValueChange={(v) => setForm({ ...form, council_state: v })} value={form.council_state}>
-                    <SelectTrigger className="bg-background/50 border-border/60">
-                      <SelectValue placeholder="Selecione o estado" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-background/50 border-border/60"><SelectValue placeholder="Selecione o estado" /></SelectTrigger>
                     <SelectContent>
-                      {brStates.map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
+                      {brStates.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Link do Google Meet *</Label>
-                  <Input
-                    placeholder="https://meet.google.com/xxx-yyyy-zzz"
-                    value={form.meet_link}
-                    onChange={(e) => setForm({ ...form, meet_link: e.target.value })}
-                    className="bg-background/50 border-border/60"
-                  />
-                  <p className="text-[10px] text-muted-foreground">Usado nas teleconsultas</p>
-                </div>
-
-                {/* Signature upload */}
-                <div className="space-y-1.5">
-                  <Label>Assinatura digital *</Label>
-                  {signaturePreview ? (
-                    <div className="relative border border-border/60 rounded-md p-2 bg-background/50">
-                      <img src={signaturePreview} alt="Assinatura" className="max-h-20 mx-auto object-contain" />
-                      <button
-                        type="button"
-                        onClick={removeSignature}
-                        className="absolute top-1 right-1 p-0.5 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => signatureInputRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 h-20 rounded-md border-2 border-dashed border-border/60 bg-background/30 text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors"
-                    >
-                      <FileSignature className="h-5 w-5" />
-                      <span className="text-xs">Enviar imagem da assinatura</span>
-                    </button>
-                  )}
-                  <input
-                    ref={signatureInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleSignatureChange}
-                    className="hidden"
-                  />
-                  <p className="text-[10px] text-muted-foreground">PNG ou JPG, máx 2MB — usada em receitas e atestados</p>
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* STEP 2: Confirm & Create */}
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div className="text-center space-y-1">
                 <h2 className="text-lg font-bold">Confirme seus dados</h2>
                 <p className="text-xs text-muted-foreground">Última etapa</p>
               </div>
-
               <div className="glass-card p-5 space-y-4">
                 <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1">
                   <p className="text-xs font-medium">Resumo da conta</p>
@@ -449,12 +302,7 @@ const Register = () => {
                   <p className="text-[11px] text-muted-foreground">
                     {professionalTypes.find(p => p.value === form.professional_type)?.label || "Profissional"} • {councilPrefix} {form.council_number} ({form.council_state})
                   </p>
-                  <p className="text-[11px] text-muted-foreground">Meet: {form.meet_link}</p>
-                  {signatureFile && (
-                    <p className="text-[11px] text-muted-foreground">✓ Assinatura digital anexada</p>
-                  )}
                 </div>
-
                 <p className="text-[11px] text-muted-foreground leading-relaxed text-center">
                   Ao criar sua conta, você concorda com os{" "}
                   <Link to="/terms" className="text-primary hover:underline" target="_blank">Termos de Uso</Link>
@@ -466,7 +314,6 @@ const Register = () => {
           )}
         </AnimatePresence>
 
-        {/* Navigation buttons */}
         <div className="flex gap-3">
           <Button variant="outline" onClick={handleBack} className="gap-1.5">
             <ArrowLeft className="h-4 w-4" /> Voltar
@@ -478,18 +325,11 @@ const Register = () => {
             disabled={!canGoNext() || loading}
           >
             {loading ? (
-              <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>
-                Criando conta...
-              </motion.span>
-            ) : step === totalSteps - 1 ? (
-              "Criar minha conta"
-            ) : (
-              "Próximo"
-            )}
+              <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>Criando conta...</motion.span>
+            ) : step === totalSteps - 1 ? "Criar minha conta" : "Próximo"}
           </Button>
         </div>
 
-        {/* Divider + Google */}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-border/60" />
           <span className="text-xs text-muted-foreground">ou</span>
