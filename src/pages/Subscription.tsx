@@ -24,6 +24,7 @@ const annualPrices: Record<string, { monthly: number; originalMonthly: number; s
 
 const Subscription = () => {
   const { subscription, refreshSubscription } = useAuth();
+  const subData = useSubscription();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
