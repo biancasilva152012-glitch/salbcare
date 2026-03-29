@@ -26,8 +26,8 @@ export const PLANS = {
     price_id: "price_1TBcg4BUEEEAHx2hiJNr2qhu",
     product_id: "prod_U9wZ94gRJJq1HU",
     annual_price: 990,
-    annual_price_id: "price_1TFfc2BUEEEAHx2hge1NjbOm",
-    annual_product_id: "prod_UE7rM9elNBWYOU",
+    annual_price_id: "price_1TGKlcBUEEEAHx2hO8MT6Xu4",
+    annual_product_id: "prod_UEoOm2A6OmaeQN",
     popular: true,
     features: [
       "Tudo do Essencial +",
