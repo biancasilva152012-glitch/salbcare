@@ -7,6 +7,17 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const logStep = (step: string, details?: any) => {
+  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+  console.log(`[Checkout] ${step}${detailsStr}`);
+};
+
+// Price IDs that are eligible for 7-day free trial (Essencial plan)
+const TRIAL_ELIGIBLE_PRICES = [
+  "price_1TBcE4BUEEEAHx2hfOYZN30W", // Essencial mensal
+  "price_1TGKlBBUEEEAHx2hKvXbHuOz", // Essencial anual
+];
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -24,6 +35,8 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
+    logStep("Iniciando checkout", { userId: user.id, email: user.email });
+
     const { priceId, billingPeriod } = await req.json();
     if (!priceId) throw new Error("priceId is required");
 
@@ -37,21 +50,48 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
 
-    // All plans use subscription mode (monthly recurring or annual recurring)
-    const mode = "subscription" as const;
+    // Check if user already had a trial
+    const supabaseService = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
 
-    const session = await stripe.checkout.sessions.create({
+    const { data: prof } = await supabaseService
+      .from("professionals")
+      .select("had_trial")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const hadTrial = (prof as any)?.had_trial ?? false;
+    const isTrialEligible = TRIAL_ELIGIBLE_PRICES.includes(priceId) && !hadTrial;
+
+    logStep("Trial check", { priceId, hadTrial, isTrialEligible });
+
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceId, quantity: 1 }],
-      mode,
-      success_url: `${origin}/sucesso`,
-      cancel_url: `${origin}/cancelado`,
+      mode: "subscription",
+      success_url: `${origin}/dashboard?from_checkout=true`,
+      cancel_url: `${origin}/subscription`,
       metadata: {
         user_id: user.id,
         billing_period: billingPeriod || "monthly",
       },
-    });
+    };
+
+    // Add 7-day trial if eligible
+    if (isTrialEligible) {
+      sessionParams.subscription_data = {
+        trial_period_days: 7,
+      };
+      logStep("Trial de 7 dias adicionado ao checkout");
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
+
+    logStep("Session criada", { sessionId: session.id, url: session.url });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -59,6 +99,7 @@ serve(async (req) => {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
+    logStep("ERRO", { message: msg });
     return new Response(JSON.stringify({ error: msg }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
