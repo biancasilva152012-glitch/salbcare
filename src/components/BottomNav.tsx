@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
 
