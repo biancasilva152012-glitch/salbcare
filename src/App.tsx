@@ -113,6 +113,7 @@ const App = () => (
               <Route path="/meu-historico" element={<ProntoAtendimentoHistorico />} />
               <Route path="/acompanhamento" element={<AcompanhamentoSolicitacao />} />
               <Route path="/acompanhamento/:id" element={<AcompanhamentoSolicitacao />} />
+              <Route path="/complete-profile" element={<CompleteProfile />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
