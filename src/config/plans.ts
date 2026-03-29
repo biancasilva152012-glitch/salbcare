@@ -25,7 +25,7 @@ export const PLANS = {
     price: 99,
     price_id: "price_1TBcg4BUEEEAHx2hiJNr2qhu",
     product_id: "prod_U9wZ94gRJJq1HU",
-    annual_price: 950,
+    annual_price: 990,
     annual_price_id: "price_1TFfc2BUEEEAHx2hge1NjbOm",
     annual_product_id: "prod_UE7rM9elNBWYOU",
     popular: true,
