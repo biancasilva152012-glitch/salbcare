@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Zap, Building2, Loader2, ExternalLink, ShieldCheck, Info, Clock } from "lucide-react";
+import { Crown, Zap, Building2, Loader2, ExternalLink, ShieldCheck, Info, Clock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PLANS, PlanKey } from "@/config/plans";
 import { toast } from "sonner";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const planIcons: Record<PlanKey, typeof Zap> = {
   basic: Zap,
