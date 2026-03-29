@@ -257,7 +257,7 @@ const Subscription = () => {
                     {loadingPlan === key ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      (plan as any).hasTrial ? "Começar 7 dias grátis" : "Assinar agora"
+                      (plan as any).hasTrial && !subData.hadTrial ? "Começar 7 dias grátis" : "Assinar agora"
                     )}
                   </Button>
                 )}
