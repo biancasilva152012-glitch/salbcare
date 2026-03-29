@@ -5,7 +5,7 @@ export const PLANS = {
     price: 49,
     price_id: "price_1TBcE4BUEEEAHx2hfOYZN30W",
     product_id: "prod_U9w63fgoL24Mi4",
-    annual_price: 470,
+    annual_price: 490,
     annual_price_id: "price_1TFfbUBUEEEAHx2hSVD43KlA",
     annual_product_id: "prod_UE7rcjFtRARJyZ",
     features: [
@@ -25,7 +25,7 @@ export const PLANS = {
     price: 99,
     price_id: "price_1TBcg4BUEEEAHx2hiJNr2qhu",
     product_id: "prod_U9wZ94gRJJq1HU",
-    annual_price: 950,
+    annual_price: 990,
     annual_price_id: "price_1TFfc2BUEEEAHx2hge1NjbOm",
     annual_product_id: "prod_UE7rM9elNBWYOU",
     popular: true,
@@ -45,7 +45,7 @@ export const PLANS = {
     price: 189,
     price_id: "price_1TBcgQBUEEEAHx2hwimX7ktu",
     product_id: "prod_U9wZAYvh6Gb6ct",
-    annual_price: 1814,
+    annual_price: 1890,
     annual_price_id: "price_1TFfcWBUEEEAHx2hTMq5L9dc",
     annual_product_id: "prod_UE7sxFE8sPony6",
     features: [

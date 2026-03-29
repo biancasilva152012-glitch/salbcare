@@ -204,7 +204,7 @@ const HowItWorks = () => {
               Falar com o suporte
             </Button>
           </a>
-          <Link to="/terms">
+          <Link to="/como-funciona#faq-0">
             <Button variant="outline" className="w-full">
               Ver perguntas frequentes
             </Button>

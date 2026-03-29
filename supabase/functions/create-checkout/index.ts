@@ -37,8 +37,8 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
 
-    // Annual plans use mode "payment" (one-time charge), monthly uses "subscription"
-    const mode = billingPeriod === "annual" ? "payment" : "subscription";
+    // All plans use subscription mode (monthly recurring or annual recurring)
+    const mode = "subscription" as const;
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

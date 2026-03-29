@@ -47,9 +47,9 @@ const planCards = [
 ];
 
 const annualPrices: Record<string, { monthly: number; originalMonthly: number; total: number; savings: number }> = {
-  basic: { monthly: 39, originalMonthly: 49, total: 470, savings: 118 },
-  professional: { monthly: 79, originalMonthly: 99, total: 950, savings: 238 },
-  clinic: { monthly: 151, originalMonthly: 189, total: 1814, savings: 454 },
+  basic: { monthly: 41, originalMonthly: 49, total: 490, savings: 98 },
+  professional: { monthly: 83, originalMonthly: 99, total: 990, savings: 198 },
+  clinic: { monthly: 158, originalMonthly: 189, total: 1890, savings: 378 },
 };
 
 const Index = () => {
