@@ -90,13 +90,13 @@ const ProntoAtendimento = () => {
   // Auth modal state
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  const [authSuccess, setAuthSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const pendingProfRef = useRef<any>(null);
 
   // Signup fields
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
-  const [signupPhone, setSignupPhone] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
 
   const { data: professionals = [], isLoading } = useQuery({
