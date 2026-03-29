@@ -462,7 +462,7 @@ const Index = () => {
         <footer className="border-t border-border/40 py-10">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
             <div className="flex items-center justify-center gap-2">
-              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
+              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" width={24} height={24} loading="lazy" />
               <span className="text-sm font-bold text-white">SALBCARE</span>
             </div>
             <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">

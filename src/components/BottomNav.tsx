@@ -36,6 +36,8 @@ const BottomNav = memo(() => {
       </div>
     </nav>
   );
-};
+});
+
+BottomNav.displayName = "BottomNav";
 
 export default BottomNav;
