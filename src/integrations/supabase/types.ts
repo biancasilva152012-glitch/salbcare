@@ -676,49 +676,73 @@ export type Database = {
       professionals: {
         Row: {
           avatar_url: string | null
+          billing: string | null
           created_at: string
           crm: string | null
           email: string | null
+          had_trial: boolean | null
           id: string
           meet_link: string | null
           name: string
           phone: string | null
+          plan: string | null
+          plan_updated_at: string | null
           signature_url: string | null
           specialty: string
           stamp_url: string | null
           status: string
+          stripe_customer_id: string | null
+          subscription_id: string | null
+          subscription_status: string | null
+          trial_ends_at: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          billing?: string | null
           created_at?: string
           crm?: string | null
           email?: string | null
+          had_trial?: boolean | null
           id?: string
           meet_link?: string | null
           name: string
           phone?: string | null
+          plan?: string | null
+          plan_updated_at?: string | null
           signature_url?: string | null
           specialty?: string
           stamp_url?: string | null
           status?: string
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          billing?: string | null
           created_at?: string
           crm?: string | null
           email?: string | null
+          had_trial?: boolean | null
           id?: string
           meet_link?: string | null
           name?: string
           phone?: string | null
+          plan?: string | null
+          plan_updated_at?: string | null
           signature_url?: string | null
           specialty?: string
           stamp_url?: string | null
           status?: string
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Zap, Building2, Loader2, ExternalLink, ShieldCheck, Info, Clock } from "lucide-react";
+import { Crown, Zap, Building2, Loader2, ExternalLink, ShieldCheck, Info, Clock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PLANS, PlanKey } from "@/config/plans";
 import { toast } from "sonner";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const planIcons: Record<PlanKey, typeof Zap> = {
   basic: Zap,
@@ -23,6 +24,7 @@ const annualPrices: Record<string, { monthly: number; originalMonthly: number; s
 
 const Subscription = () => {
   const { subscription, refreshSubscription } = useAuth();
+  const subData = useSubscription();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
@@ -74,7 +76,11 @@ const Subscription = () => {
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">Planos SalbCare</h1>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-            Gestão completa para profissionais de saúde.
+            {subData.status === "canceled"
+              ? "Sua assinatura foi cancelada. Escolha um plano para voltar a usar o SalbCare."
+              : subData.status === null && !subData.isLoading
+              ? "Escolha seu plano para começar a usar o SalbCare."
+              : "Gestão completa para profissionais de saúde."}
           </p>
         </div>
 
@@ -251,7 +257,7 @@ const Subscription = () => {
                     {loadingPlan === key ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      (plan as any).hasTrial ? "Começar 7 dias grátis" : "Assinar agora"
+                      (plan as any).hasTrial && !subData.hadTrial ? "Começar 7 dias grátis" : "Assinar agora"
                     )}
                   </Button>
                 )}

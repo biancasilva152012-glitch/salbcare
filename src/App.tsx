@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProfessionalRoute from "@/components/ProfessionalRoute";
 import PatientRoute from "@/components/PatientRoute";
+import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import BottomNav from "@/components/BottomNav";
 import CookieConsent from "./components/CookieConsent";
 import PageSkeleton from "@/components/PageSkeleton";
@@ -119,15 +120,15 @@ const App = () => (
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
               <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
               <Route path="/payment-success" element={<ProfessionalRoute><PaymentSuccess /></ProfessionalRoute>} />
-              <Route path="/dashboard" element={<ProfessionalRoute><Dashboard /></ProfessionalRoute>} />
-              <Route path="/agenda" element={<ProfessionalRoute><Agenda /></ProfessionalRoute>} />
-              <Route path="/patients" element={<ProfessionalRoute><Patients /></ProfessionalRoute>} />
-              <Route path="/telehealth" element={<ProfessionalRoute><Telehealth /></ProfessionalRoute>} />
-              <Route path="/professionals" element={<ProfessionalRoute><Professionals /></ProfessionalRoute>} />
-              <Route path="/financial" element={<ProfessionalRoute><Financial /></ProfessionalRoute>} />
-              <Route path="/accounting" element={<ProfessionalRoute><Accounting /></ProfessionalRoute>} />
-              <Route path="/legal" element={<ProfessionalRoute><Legal /></ProfessionalRoute>} />
-              <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
+              <Route path="/dashboard" element={<ProfessionalRoute><SubscriptionGuard><Dashboard /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/agenda" element={<ProfessionalRoute><SubscriptionGuard><Agenda /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/patients" element={<ProfessionalRoute><SubscriptionGuard><Patients /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/telehealth" element={<ProfessionalRoute><SubscriptionGuard><Telehealth /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/professionals" element={<ProfessionalRoute><SubscriptionGuard><Professionals /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/financial" element={<ProfessionalRoute><SubscriptionGuard><Financial /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/accounting" element={<ProfessionalRoute><SubscriptionGuard><Accounting /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/legal" element={<ProfessionalRoute><SubscriptionGuard><Legal /></SubscriptionGuard></ProfessionalRoute>} />
+              <Route path="/profile" element={<ProfessionalRoute><SubscriptionGuard><Profile /></SubscriptionGuard></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<ProfessionalRoute><AdminDashboard /></ProfessionalRoute>} />
               <Route path="/sucesso" element={<ProfessionalRoute><Sucesso /></ProfessionalRoute>} />

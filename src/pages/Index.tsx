@@ -153,7 +153,7 @@ const Index = () => {
                 <span className="block">Seu <span className="gradient-text">Controle</span> para Gestão.</span>
               </motion.h1>
               <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                O ecossistema completo para profissionais de saúde. Agenda, Prontuário, Teleconsulta, Captação e Financeiro em um só lugar. Tudo por R$ 49/mês.
+                O ecossistema completo para profissionais de saúde. Agenda, Prontuário, Teleconsulta, Captação e Financeiro em um só lugar. Tudo por R$ <span className="text-white font-semibold">49</span>/mês.
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Button asChild size="lg" className="gradient-primary font-semibold gap-2 h-12 px-8 rounded-xl text-base shadow-lg shadow-primary/20">
@@ -463,7 +463,7 @@ const Index = () => {
           <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
             <div className="flex items-center justify-center gap-2">
               <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
-              <span className="text-sm font-bold gradient-text">SALBCARE</span>
+              <span className="text-sm font-bold text-white">SALBCARE</span>
             </div>
             <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
               <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
