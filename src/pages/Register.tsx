@@ -157,7 +157,7 @@ const Register = () => {
       }
 
       toast.success("Conta criada com sucesso!");
-      navigate("/onboarding");
+      navigate("/dashboard");
     } catch (err) {
       console.error("[Register] Unexpected signup error:", err);
       setLoading(false);

@@ -87,7 +87,7 @@ const CompleteProfile = () => {
       if (profErr) console.error("[CompleteProfile] Professional insert error:", profErr);
 
       toast.success("Perfil profissional completado!");
-      navigate("/onboarding");
+      navigate("/dashboard");
     } catch (err) {
       console.error("[CompleteProfile] Error:", err);
       toast.error("Erro ao salvar dados. Tente novamente.");
