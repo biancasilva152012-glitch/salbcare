@@ -66,6 +66,8 @@ const PageContainer = memo(({ children, className = "", onRefresh, backTo, backL
       </main>
     </div>
   );
-};
+});
+
+PageContainer.displayName = "PageContainer";
 
 export default PageContainer;
