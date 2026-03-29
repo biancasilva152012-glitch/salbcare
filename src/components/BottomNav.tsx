@@ -10,7 +10,7 @@ const navItems = [
   { to: "/profile", icon: User, label: "Meu perfil" },
 ];
 
-const BottomNav = () => {
+const BottomNav = memo(() => {
   const location = useLocation();
   const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona", "/patient-dashboard", "/onboarding"];
   if (hideOn.includes(location.pathname)) return null;
