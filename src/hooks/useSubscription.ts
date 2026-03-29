@@ -1,17 +1,19 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { isAdminEmail } from "@/config/admin";
 
 export interface SubscriptionData {
   status: string | null; // 'trialing' | 'active' | 'past_due' | 'canceled' | null
-  plan: string | null; // 'essencial' | 'pro' | 'clinica' | null
-  billing: string | null; // 'monthly' | 'annual' | null
+  plan: string | null;
+  billing: string | null;
   hadTrial: boolean;
   trialEndsAt: string | null;
   isActive: boolean;
   isPastDue: boolean;
   isCanceled: boolean;
   isLoading: boolean;
+  isAdmin: boolean;
 }
 
 const defaultState: SubscriptionData = {
@@ -24,6 +26,7 @@ const defaultState: SubscriptionData = {
   isPastDue: false,
   isCanceled: true,
   isLoading: true,
+  isAdmin: false,
 };
 
 export function useSubscription(): SubscriptionData {
@@ -37,10 +40,27 @@ export function useSubscription(): SubscriptionData {
       return;
     }
 
+    // Admin bypass — full access always
+    if (isAdminEmail(user.email)) {
+      setData({
+        status: "active",
+        plan: "clinic",
+        billing: "monthly",
+        hadTrial: false,
+        trialEndsAt: null,
+        isActive: true,
+        isPastDue: false,
+        isCanceled: false,
+        isLoading: false,
+        isAdmin: true,
+      });
+      return;
+    }
+
     try {
       const { data: prof, error } = await supabase
         .from("professionals")
-        .select("subscription_status, plan, billing, had_trial, trial_ends_at")
+        .select("subscription_status, plan, billing, had_trial, trial_ends_at, created_at")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -54,6 +74,17 @@ export function useSubscription(): SubscriptionData {
       const billing = (prof as any).billing as string | null;
       const hadTrial = (prof as any).had_trial ?? false;
       const trialEndsAt = (prof as any).trial_ends_at as string | null;
+      const createdAt = (prof as any).created_at as string | null;
+
+      // Grace period: if status is null and account was created less than 1 hour ago,
+      // don't treat as canceled — the user is still choosing a plan
+      const isNewAccount = createdAt
+        ? Date.now() - new Date(createdAt).getTime() < 60 * 60 * 1000
+        : false;
+
+      const isActive = status === "active" || status === "trialing";
+      const isPastDue = status === "past_due";
+      const isCanceled = status === "canceled" || (status === null && !isNewAccount);
 
       setData({
         status,
@@ -61,10 +92,11 @@ export function useSubscription(): SubscriptionData {
         billing,
         hadTrial,
         trialEndsAt,
-        isActive: status === "active" || status === "trialing",
-        isPastDue: status === "past_due",
-        isCanceled: status === "canceled" || status === null,
+        isActive,
+        isPastDue,
+        isCanceled,
         isLoading: false,
+        isAdmin: false,
       });
     } catch {
       setData({ ...defaultState, isLoading: false });
