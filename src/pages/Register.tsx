@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { maskPhone, maskCpf } from "@/utils/masks";
+import { isValidCpf } from "@/utils/cpfValidator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
-import { ArrowLeft, Stethoscope } from "lucide-react";
+import { ArrowLeft, Stethoscope, Upload, X, FileSignature } from "lucide-react";
 
 const professionalTypes = [
   { value: "medico", label: "Médico(a)", prefix: "CRM" },
@@ -38,8 +39,9 @@ const floatingOrbs = [
 
 const Register = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(0); // 0=data, 1=professional-details, 2=confirm
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const signatureInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -50,21 +52,78 @@ const Register = () => {
     professional_type: "",
     council_number: "",
     council_state: "",
+    meet_link: "",
   });
 
-  const totalSteps = 3; // data + professional + confirm
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+
+  const totalSteps = 3;
   const councilPrefix = professionalTypes.find(p => p.value === form.professional_type)?.prefix || "Conselho";
 
-  const handleSubmit = async () => {
-    if (!form.name || !form.email || !form.phone || !form.password) {
-      toast.error("Preencha todos os campos para continuar.");
+  const handleSignatureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Envie uma imagem (PNG, JPG) da sua assinatura.");
       return;
     }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 2MB.");
+      return;
+    }
+    setSignatureFile(file);
+    setSignaturePreview(URL.createObjectURL(file));
+  };
+
+  const removeSignature = () => {
+    setSignatureFile(null);
+    setSignaturePreview(null);
+    if (signatureInputRef.current) signatureInputRef.current.value = "";
+  };
+
+  const uploadSignature = async (userId: string): Promise<string | null> => {
+    if (!signatureFile) return null;
+    const ext = signatureFile.name.split(".").pop() || "png";
+    const filePath = `${userId}/signature.${ext}`;
+    console.log("[Register] Uploading signature to professional-assets:", filePath);
+
+    const { error } = await supabase.storage
+      .from("professional-assets")
+      .upload(filePath, signatureFile, { upsert: true });
+
+    if (error) {
+      console.error("[Register] Signature upload error:", error);
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("professional-assets")
+      .getPublicUrl(filePath);
+
+    console.log("[Register] Signature public URL:", urlData.publicUrl);
+    return urlData.publicUrl;
+  };
+
+  const handleSubmit = async () => {
+    // Validate all fields
+    if (!form.name.trim()) { toast.error("Preencha seu nome completo."); return; }
+    if (!form.cpf || !isValidCpf(form.cpf)) { toast.error("CPF inválido. Verifique os dígitos."); return; }
+    if (!form.phone || form.phone.replace(/\D/g, "").length < 10) { toast.error("Telefone inválido."); return; }
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { toast.error("E-mail inválido."); return; }
+    if (!form.password || form.password.length < 8) { toast.error("A senha deve ter no mínimo 8 caracteres."); return; }
+    if (!form.professional_type) { toast.error("Selecione sua profissão."); return; }
+    if (!form.council_number.trim()) { toast.error("Preencha o número do conselho."); return; }
+    if (!form.council_state) { toast.error("Selecione o estado do conselho."); return; }
+    if (!form.meet_link.trim()) { toast.error("Preencha o link do Google Meet."); return; }
+    if (!signatureFile) { toast.error("Envie sua assinatura digital."); return; }
+
     setLoading(true);
 
     try {
+      // Check if email already exists
       const { data: existingType, error: rpcError } = await supabase.rpc("check_email_user_type", { check_email: form.email });
-      if (rpcError) console.error("RPC error:", rpcError);
+      if (rpcError) console.error("[Register] RPC error:", rpcError);
       if (existingType) {
         const typeLabel = existingType === "professional" ? "profissional" : "paciente";
         toast.error(`Este e-mail já possui uma conta como ${typeLabel}. Tente entrar ou recupere sua senha.`);
@@ -81,6 +140,8 @@ const Register = () => {
         council_state: form.council_state,
       };
 
+      console.log("[Register] Creating account with signUp...", { email: form.email, metadata });
+
       const { data: signUpData, error } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
@@ -89,54 +150,93 @@ const Register = () => {
           emailRedirectTo: window.location.origin,
         },
       });
-      
+
       if (error) {
         const msg = error.message.toLowerCase();
         if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
           toast.error("Este e-mail já possui uma conta. Tente entrar ou recupere sua senha.");
         } else if (msg.includes("password") || msg.includes("senha")) {
-          toast.error("A senha precisa ter pelo menos 6 caracteres.");
+          toast.error("A senha precisa ter pelo menos 8 caracteres.");
         } else if (msg.includes("email") && msg.includes("invalid")) {
           toast.error("E-mail inválido. Verifique e tente novamente.");
         } else if (msg.includes("rate") || msg.includes("limit")) {
           toast.error("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
         } else {
-          console.error("Signup error:", error);
+          console.error("[Register] Signup error:", error);
           toast.error("Não conseguimos criar sua conta agora. Tente novamente em instantes.");
         }
         setLoading(false);
         return;
       }
 
-      // Set verification_status to approved immediately (no manual validation)
-      if (signUpData?.user) {
-        await supabase
-          .from("profiles")
-          .update({ verification_status: "approved" } as any)
-          .eq("user_id", signUpData.user.id);
+      if (!signUpData?.user) {
+        toast.error("Erro inesperado ao criar conta. Tente novamente.");
+        setLoading(false);
+        return;
+      }
+
+      const userId = signUpData.user.id;
+      console.log("[Register] User created:", userId);
+
+      // Set verification_status to approved immediately
+      await supabase
+        .from("profiles")
+        .update({ 
+          verification_status: "approved",
+          meet_link: form.meet_link.trim(),
+        } as any)
+        .eq("user_id", userId);
+
+      // Upload signature
+      const signatureUrl = await uploadSignature(userId);
+
+      // Insert into professionals table
+      console.log("[Register] Inserting into professionals table...");
+      const { error: profError } = await supabase
+        .from("professionals")
+        .insert({
+          user_id: userId,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          specialty: form.professional_type,
+          crm: `${councilPrefix} ${form.council_number}`,
+          status: "active",
+          signature_url: signatureUrl,
+          meet_link: form.meet_link.trim(),
+        } as any);
+
+      if (profError) {
+        console.error("[Register] Error inserting into professionals:", profError);
+        // Non-blocking: profile was already created, professional record is supplementary
+      } else {
+        console.log("[Register] Professional record created successfully");
       }
 
       setLoading(false);
 
-      if (signUpData?.user && !signUpData.session) {
+      if (!signUpData.session) {
         toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.", { duration: 6000 });
         navigate("/login");
         return;
       }
 
-      // Redirect directly to onboarding/dashboard
       toast.success("Conta criada com sucesso!");
       navigate("/onboarding");
     } catch (err) {
-      console.error("Unexpected signup error:", err);
+      console.error("[Register] Unexpected signup error:", err);
       setLoading(false);
       toast.error("Não conseguimos criar sua conta agora. Tente novamente em instantes.");
     }
   };
 
   const canGoNext = () => {
-    if (step === 0) return !!form.name && !!form.email && !!form.phone && !!form.password && !!form.cpf;
-    if (step === 1) return !!form.professional_type && !!form.council_number && !!form.council_state;
+    if (step === 0) {
+      return !!form.name.trim() && !!form.email && !!form.phone && form.password.length >= 8 && !!form.cpf && isValidCpf(form.cpf);
+    }
+    if (step === 1) {
+      return !!form.professional_type && !!form.council_number.trim() && !!form.council_state && !!form.meet_link.trim() && !!signatureFile;
+    }
     return true;
   };
 
@@ -150,10 +250,7 @@ const Register = () => {
   };
 
   const handleBack = () => {
-    if (step === 0) {
-      navigate("/");
-      return;
-    }
+    if (step === 0) { navigate("/"); return; }
     setStep(step - 1);
   };
 
@@ -227,17 +324,23 @@ const Register = () => {
                 <div className="space-y-1.5">
                   <Label>CPF *</Label>
                   <Input placeholder="000.000.000-00" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCpf(e.target.value) })} className="bg-background/50 border-border/60" />
+                  {form.cpf && form.cpf.replace(/\D/g, "").length === 11 && !isValidCpf(form.cpf) && (
+                    <p className="text-[10px] text-destructive">CPF inválido</p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>Senha *</Label>
-                  <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" required minLength={6} />
-                  <p className="text-[10px] text-muted-foreground">Mínimo 6 caracteres</p>
+                  <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" required minLength={8} />
+                  <p className="text-[10px] text-muted-foreground">Mínimo 8 caracteres</p>
+                  {form.password && form.password.length > 0 && form.password.length < 8 && (
+                    <p className="text-[10px] text-destructive">Senha muito curta</p>
+                  )}
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* STEP 1: Professional Details */}
+          {/* STEP 1: Professional Details + Meet + Signature */}
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div className="text-center space-y-1">
@@ -283,6 +386,50 @@ const Register = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-1.5">
+                  <Label>Link do Google Meet *</Label>
+                  <Input
+                    placeholder="https://meet.google.com/xxx-yyyy-zzz"
+                    value={form.meet_link}
+                    onChange={(e) => setForm({ ...form, meet_link: e.target.value })}
+                    className="bg-background/50 border-border/60"
+                  />
+                  <p className="text-[10px] text-muted-foreground">Usado nas teleconsultas</p>
+                </div>
+
+                {/* Signature upload */}
+                <div className="space-y-1.5">
+                  <Label>Assinatura digital *</Label>
+                  {signaturePreview ? (
+                    <div className="relative border border-border/60 rounded-md p-2 bg-background/50">
+                      <img src={signaturePreview} alt="Assinatura" className="max-h-20 mx-auto object-contain" />
+                      <button
+                        type="button"
+                        onClick={removeSignature}
+                        className="absolute top-1 right-1 p-0.5 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => signatureInputRef.current?.click()}
+                      className="w-full flex items-center justify-center gap-2 h-20 rounded-md border-2 border-dashed border-border/60 bg-background/30 text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors"
+                    >
+                      <FileSignature className="h-5 w-5" />
+                      <span className="text-xs">Enviar imagem da assinatura</span>
+                    </button>
+                  )}
+                  <input
+                    ref={signatureInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSignatureChange}
+                    className="hidden"
+                  />
+                  <p className="text-[10px] text-muted-foreground">PNG ou JPG, máx 2MB — usada em receitas e atestados</p>
+                </div>
               </div>
             </motion.div>
           )}
@@ -302,6 +449,10 @@ const Register = () => {
                   <p className="text-[11px] text-muted-foreground">
                     {professionalTypes.find(p => p.value === form.professional_type)?.label || "Profissional"} • {councilPrefix} {form.council_number} ({form.council_state})
                   </p>
+                  <p className="text-[11px] text-muted-foreground">Meet: {form.meet_link}</p>
+                  {signatureFile && (
+                    <p className="text-[11px] text-muted-foreground">✓ Assinatura digital anexada</p>
+                  )}
                 </div>
 
                 <p className="text-[11px] text-muted-foreground leading-relaxed text-center">
@@ -349,8 +500,12 @@ const Register = () => {
           variant="outline"
           className="w-full h-11 text-sm font-medium gap-2 border-border/60 bg-background/50 backdrop-blur-sm hover:bg-accent/80"
           onClick={async () => {
+            console.log("[Register] Google OAuth redirect_uri:", window.location.origin);
             const { error } = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-            if (error) toast.error("Erro ao cadastrar com Google.");
+            if (error) {
+              console.error("[Register] Google OAuth error:", error);
+              toast.error("Erro ao cadastrar com Google. Verifique se popups estão habilitados.");
+            }
           }}
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24">

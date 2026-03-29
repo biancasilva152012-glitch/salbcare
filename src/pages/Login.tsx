@@ -47,7 +47,7 @@ const Login = () => {
     } else if (authData.user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("trial_start_date, payment_status, user_type")
+        .select("trial_start_date, payment_status, user_type, council_number")
         .eq("user_id", authData.user.id)
         .single();
 
@@ -56,8 +56,13 @@ const Login = () => {
       if (userType === "patient") {
         navigate("/patient-dashboard/perfil");
       } else {
-        const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
-        navigate(needsOnboarding ? "/onboarding" : "/dashboard");
+        // Check if professional profile is incomplete (e.g. Google OAuth user without council data)
+        if (!(profile as any)?.council_number) {
+          navigate("/complete-profile");
+        } else {
+          const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
+          navigate(needsOnboarding ? "/onboarding" : "/dashboard");
+        }
       }
     }
   };
