@@ -31,6 +31,8 @@ const Checkout = () => {
 
     setLoading(true);
     try {
+      console.log(`[Checkout] Iniciando checkout ${planKey} para user: ${user.id}`);
+
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: {
           priceId,
@@ -40,12 +42,14 @@ const Checkout = () => {
 
       if (error) throw error;
       if (data?.url) {
+        console.log(`[Checkout] Session criada: ${data.url} | redirect para Stripe`);
+        sessionStorage.setItem("salbcare_from_checkout", "true");
         window.open(data.url, "_blank");
       } else {
         throw new Error("URL de checkout não retornada");
       }
     } catch (err) {
-      console.error(err);
+      console.error("[Checkout] Erro:", err);
       toast.error("Erro ao iniciar o pagamento. Tente novamente.");
     } finally {
       setLoading(false);

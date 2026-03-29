@@ -1,10 +1,11 @@
-import { ReactNode, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { ReactNode, useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
   children: ReactNode;
@@ -13,14 +14,59 @@ interface Props {
 export function SubscriptionGuard({ children }: Props) {
   const sub = useSubscription();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [polling, setPolling] = useState(false);
+  const [resolved, setResolved] = useState(false);
+  const pollCount = useRef(0);
+
+  // Post-checkout polling: if user just came from Stripe, poll for up to 5s
+  const pollSubscription = useCallback(async () => {
+    if (!user || pollCount.current >= 5) {
+      setPolling(false);
+      setResolved(true);
+      return;
+    }
+
+    pollCount.current += 1;
+    const { data: prof } = await supabase
+      .from("professionals")
+      .select("subscription_status")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const status = (prof as any)?.subscription_status;
+    if (status === "trialing" || status === "active") {
+      setPolling(false);
+      setResolved(true);
+      // Force page reload to refresh subscription state
+      window.location.reload();
+      return;
+    }
+
+    setTimeout(pollSubscription, 1000);
+  }, [user]);
 
   useEffect(() => {
-    if (!sub.isLoading && sub.isCanceled) {
+    // If status is null/canceled but we just came from checkout, poll
+    if (!sub.isLoading && sub.isCanceled && !sub.isAdmin) {
+      const fromCheckout = sessionStorage.getItem("salbcare_from_checkout");
+      if (fromCheckout === "true") {
+        sessionStorage.removeItem("salbcare_from_checkout");
+        setPolling(true);
+        pollCount.current = 0;
+        pollSubscription();
+        return;
+      }
       navigate("/subscription", { replace: true });
     }
-  }, [sub.isLoading, sub.isCanceled, navigate]);
+  }, [sub.isLoading, sub.isCanceled, sub.isAdmin, navigate, pollSubscription]);
 
-  if (sub.isLoading) {
+  // Admin bypass — no banners, full access
+  if (sub.isAdmin) {
+    return <>{children}</>;
+  }
+
+  if (sub.isLoading || polling) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getPlanByProductId, PlanKey, getTrialDaysRemaining } from "@/config/plans";
+import { isAdminEmail } from "@/config/admin";
 
 interface SubscriptionState {
   subscribed: boolean;
@@ -84,6 +85,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     lastCheckTime.current = now;
 
     try {
+      // Admin bypass — always return full access
+      if (isAdminEmail(session?.user?.email)) {
+        setSubscription({
+          subscribed: true,
+          plan: "clinic" as PlanKey,
+          subscriptionEnd: null,
+          loading: false,
+          trialDaysRemaining: 0,
+          paymentStatus: "active",
+          needsOnboarding: false,
+        });
+        return;
+      }
+
       // Run edge function and profile query in parallel instead of sequentially
       const userId = session?.user?.id;
       if (!userId) {

@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
 import { PLANS } from "@/config/plans";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
+import { isAdminEmail } from "@/config/admin";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface FeatureGateProps {
   feature: Feature;
@@ -23,6 +25,10 @@ const CLINIC_BENEFITS = [
 
 const FeatureGate = ({ feature, children }: FeatureGateProps) => {
   const { hasAccess, requiredPlan } = useFeatureGate();
+  const { user } = useAuth();
+
+  // Admin bypass
+  if (isAdminEmail(user?.email)) return <>{children}</>;
 
   if (hasAccess(feature)) return <>{children}</>;
 
