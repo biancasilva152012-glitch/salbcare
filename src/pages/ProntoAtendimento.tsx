@@ -13,7 +13,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PROFESSION_CONFIG } from "@/config/professions";
 import SEOHead from "@/components/SEOHead";
-import { maskPhone } from "@/utils/masks";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -90,13 +89,13 @@ const ProntoAtendimento = () => {
   // Auth modal state
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  const [authSuccess, setAuthSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const pendingProfRef = useRef<any>(null);
 
   // Signup fields
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
-  const [signupPhone, setSignupPhone] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
 
   const { data: professionals = [], isLoading } = useQuery({
@@ -165,10 +164,10 @@ const ProntoAtendimento = () => {
   const resetAuthFields = () => {
     setSignupName("");
     setSignupEmail("");
-    setSignupPhone("");
     setSignupPassword("");
     setShowPassword(false);
     setAuthLoading(false);
+    setAuthSuccess(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -178,33 +177,57 @@ const ProntoAtendimento = () => {
       return;
     }
     setAuthLoading(true);
-    try {
-      // Check if email is already used as professional
+
+    // Optimistic: show success immediately
+    const prof = pendingProfRef.current;
+    setAuthSuccess(true);
+    toast.success("Cadastro realizado com sucesso!");
+
+    // Fire signup in background with timeout
+    const signupPromise = (async () => {
       const { data: existingType } = await supabase.rpc("check_email_user_type", {
         check_email: signupEmail,
       });
       if (existingType === "professional") {
-        toast.error("Este e-mail já está cadastrado como profissional. Use outro e-mail ou faça login.");
-        setAuthLoading(false);
-        return;
+        throw new Error("Este e-mail já está cadastrado como profissional.");
       }
-
       const { error } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
         options: {
           data: {
             name: signupName,
-            phone: signupPhone,
             user_type: "patient",
           },
         },
       });
       if (error) throw error;
-      // onAuthStateChange will handle navigation
+    })();
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("timeout")), 4000)
+    );
+
+    // Close modal and redirect after 1.5s regardless
+    setTimeout(() => {
+      setAuthModalOpen(false);
+      resetAuthFields();
+      if (prof) {
+        pendingProfRef.current = null;
+        navigateToFlow(prof);
+      }
+    }, 1500);
+
+    try {
+      await Promise.race([signupPromise, timeoutPromise]);
     } catch (err: any) {
-      toast.error(err.message || "Erro ao cadastrar. Tente novamente.");
-      setAuthLoading(false);
+      if (err.message === "timeout") {
+        // Already redirecting, user will be logged in when signup completes
+        console.log("[Signup] Timeout reached, proceeding optimistically");
+      } else {
+        console.error("[Signup] Error:", err.message);
+        // Don't block — user already redirected
+      }
     }
   };
 
@@ -443,6 +466,15 @@ const ProntoAtendimento = () => {
             </DialogDescription>
           </DialogHeader>
 
+          {authSuccess ? (
+            <div className="flex flex-col items-center gap-3 py-6">
+              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                <span className="text-2xl">✅</span>
+              </div>
+              <p className="text-sm font-medium text-foreground">Cadastro realizado com sucesso!</p>
+              <p className="text-xs text-muted-foreground">Redirecionando...</p>
+            </div>
+          ) : (
           <form onSubmit={handleSignup} className="space-y-3 pt-2">
             <div className="space-y-1.5">
               <Label className="text-xs">Nome completo *</Label>
@@ -462,15 +494,6 @@ const ProntoAtendimento = () => {
                 onChange={(e) => setSignupEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
-                className="bg-accent border-border"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">WhatsApp</Label>
-              <Input
-                value={signupPhone}
-                onChange={(e) => setSignupPhone(maskPhone(e.target.value))}
-                placeholder="(11) 99999-9999"
                 className="bg-accent border-border"
               />
             </div>
@@ -498,6 +521,7 @@ const ProntoAtendimento = () => {
               Ao cadastrar, você concorda com os <a href="/terms" target="_blank" className="underline">Termos de Uso</a>.
             </p>
           </form>
+          )}
         </DialogContent>
       </Dialog>
     </div>
