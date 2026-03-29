@@ -31,7 +31,7 @@ const TrialCountdown = () => {
     }
   }, [days, dismissed]);
 
-  if (!days || days <= 0 || subscription.subscribed) return null;
+  if (!days || days <= 0 || subscription.subscribed || isAdminEmail(user?.email)) return null;
 
   const urgency = days <= 1 ? "text-destructive" : days <= 2 ? "text-orange-400" : "text-primary";
   const bgUrgency = days <= 1 ? "ring-destructive/30" : days <= 2 ? "ring-orange-400/30" : "ring-primary/20";
