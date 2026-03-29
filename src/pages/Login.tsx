@@ -60,8 +60,7 @@ const Login = () => {
         if (!(profile as any)?.council_number) {
           navigate("/complete-profile");
         } else {
-          const needsOnboarding = !profile?.trial_start_date && (profile as any)?.payment_status === "none";
-          navigate(needsOnboarding ? "/onboarding" : "/dashboard");
+          navigate("/dashboard");
         }
       }
     }
