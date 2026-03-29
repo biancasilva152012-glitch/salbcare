@@ -34,8 +34,8 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       const msg = error.message.toLowerCase();
       if (msg.includes("invalid") || msg.includes("credentials") || msg.includes("password")) {
         toast.error("E-mail ou senha incorretos. Esqueceu sua senha?");
@@ -44,25 +44,28 @@ const Login = () => {
       } else {
         toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
       }
-    } else if (authData.user) {
+      return;
+    }
+    if (authData.user) {
+      // Single profile query — no duplicate
       const { data: profile } = await supabase
         .from("profiles")
-        .select("trial_start_date, payment_status, user_type, council_number")
+        .select("user_type, council_number")
         .eq("user_id", authData.user.id)
         .single();
 
+      setLoading(false);
       const userType = (profile as any)?.user_type || "professional";
 
       if (userType === "patient") {
         navigate("/patient-dashboard/perfil");
+      } else if (!(profile as any)?.council_number) {
+        navigate("/complete-profile");
       } else {
-        // Check if professional profile is incomplete (e.g. Google OAuth user without council data)
-        if (!(profile as any)?.council_number) {
-          navigate("/complete-profile");
-        } else {
-          navigate("/dashboard");
-        }
+        navigate("/dashboard");
       }
+    } else {
+      setLoading(false);
     }
   };
 
