@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from "react";
+import { ReactNode, useCallback, memo } from "react";
 import { Loader2 } from "lucide-react";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import BackButton from "@/components/BackButton";
