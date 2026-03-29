@@ -4,7 +4,13 @@
 
 html, body {
   overflow-y: auto !important;
+  overflow-x: hidden !important;
   height: auto !important;
+}
+
+/* Prevent modals/drawers from permanently locking scroll */
+body[data-scroll-locked] {
+  overflow: hidden !important;
 }
 
 @layer base {
@@ -74,6 +80,7 @@ html, body {
     @apply bg-background text-foreground font-body antialiased;
     min-height: 100%;
     overflow-x: hidden;
+    scroll-padding-top: 4.5rem; /* height of sticky navbar */
     scroll-padding-bottom: 120px;
   }
 
@@ -102,6 +109,11 @@ html, body {
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+
+  /* GPU-accelerated spinner */
+  .animate-spin {
+    will-change: transform;
   }
 
   /* Minimum touch target for mobile */

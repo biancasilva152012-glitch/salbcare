@@ -8,7 +8,8 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Instant scroll on route change to avoid jarring delayed scroll
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   return null;

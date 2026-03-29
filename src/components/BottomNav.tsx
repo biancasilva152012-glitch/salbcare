@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
 
@@ -9,7 +10,7 @@ const navItems = [
   { to: "/profile", icon: User, label: "Meu perfil" },
 ];
 
-const BottomNav = () => {
+const BottomNav = memo(() => {
   const location = useLocation();
   const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona", "/patient-dashboard", "/onboarding"];
   if (hideOn.includes(location.pathname)) return null;
@@ -35,6 +36,8 @@ const BottomNav = () => {
       </div>
     </nav>
   );
-};
+});
+
+BottomNav.displayName = "BottomNav";
 
 export default BottomNav;

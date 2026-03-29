@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from "react";
+import { ReactNode, useCallback, memo } from "react";
 import { Loader2 } from "lucide-react";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import BackButton from "@/components/BackButton";
@@ -12,7 +12,7 @@ interface PageContainerProps {
   backLabel?: string;
 }
 
-const PageContainer = ({ children, className = "", onRefresh, backTo, backLabel }: PageContainerProps) => {
+const PageContainer = memo(({ children, className = "", onRefresh, backTo, backLabel }: PageContainerProps) => {
   const { scrollRef, pullDistance, isRefreshing } = usePullToRefresh({
     onRefresh,
   });
@@ -66,6 +66,8 @@ const PageContainer = ({ children, className = "", onRefresh, backTo, backLabel 
       </main>
     </div>
   );
-};
+});
+
+PageContainer.displayName = "PageContainer";
 
 export default PageContainer;

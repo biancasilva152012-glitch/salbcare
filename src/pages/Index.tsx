@@ -83,7 +83,7 @@ const Index = () => {
         <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-8 w-8" />
+              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-8 w-8" width={32} height={32} />
               <span className="text-lg font-bold text-foreground">SALBCARE</span>
             </Link>
 
@@ -462,7 +462,7 @@ const Index = () => {
         <footer className="border-t border-border/40 py-10">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
             <div className="flex items-center justify-center gap-2">
-              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" />
+              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" width={24} height={24} loading="lazy" />
               <span className="text-sm font-bold text-white">SALBCARE</span>
             </div>
             <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
