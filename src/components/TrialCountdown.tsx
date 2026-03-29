@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { isAdminEmail } from "@/config/admin";
 
 const TrialCountdown = () => {
-  const { subscription } = useAuth();
+  const { subscription, user } = useAuth();
   const navigate = useNavigate();
   const [showOffer, setShowOffer] = useState(false);
   const [dismissed, setDismissed] = useState(false);
