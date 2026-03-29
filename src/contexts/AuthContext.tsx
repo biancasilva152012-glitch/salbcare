@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getPlanByProductId, PlanKey, getTrialDaysRemaining } from "@/config/plans";
+import { isAdminEmail } from "@/config/admin";
 
 interface SubscriptionState {
   subscribed: boolean;
