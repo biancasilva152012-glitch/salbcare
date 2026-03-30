@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight, FileText } from "lucide-react";
+import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight, FileText, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -478,8 +478,22 @@ const ProfileTab = () => {
             <Input value={profile?.email || ""} disabled className="bg-muted border-border text-muted-foreground" />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">WhatsApp</Label>
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-accent border-border" />
+            <Label className="text-xs flex items-center gap-1.5">
+              <MessageCircle className="h-3 w-3 text-green-500" /> WhatsApp
+            </Label>
+            <Input
+              value={phone}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                let formatted = digits;
+                if (digits.length > 2) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                if (digits.length > 7) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+                setPhone(formatted);
+              }}
+              placeholder="(00) 00000-0000"
+              className="bg-accent border-border"
+            />
+            <p className="text-[10px] text-muted-foreground">Opcional — usado para lembretes de consulta</p>
           </div>
         </div>
         <Button size="sm" onClick={handleSave} disabled={saving} className="w-full">
