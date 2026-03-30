@@ -153,7 +153,7 @@ const Index = () => {
                 <span className="block">Seu <span className="gradient-text">Controle</span> para Gestão.</span>
               </motion.h1>
               <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                O ecossistema completo para profissionais de saúde. Agenda, Prontuário, Teleconsulta, Captação e Financeiro em um só lugar. <span className="text-white font-semibold">Tudo por R$ 49/mês.</span>
+                O ecossistema completo para profissionais de saúde. Agenda, Prontuário, Teleconsulta, Captação e Financeiro em um só lugar. <span className="text-white font-semibold">A partir de R$ 49/mês.</span>
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Button asChild size="lg" className="gradient-primary font-semibold gap-2 h-12 px-8 rounded-xl text-base shadow-lg shadow-primary/20">

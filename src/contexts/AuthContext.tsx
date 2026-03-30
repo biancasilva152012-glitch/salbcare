@@ -172,7 +172,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               .then(({ data: profile }) => {
                 if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
                   const currentPath = window.location.pathname;
-                  if (currentPath !== "/complete-profile" && currentPath !== "/register" && currentPath !== "/login") {
+                  // Only redirect to complete-profile from dashboard/professional routes
+                  // Never redirect from public pages like /, /pronto-atendimento, /login, /register
+                  const publicPaths = ["/", "/pronto-atendimento", "/login", "/register", "/complete-profile", "/como-funciona", "/terms", "/privacy", "/consulta-online", "/especialidades", "/patient-dashboard"];
+                  const isPublicPath = publicPaths.some(p => currentPath === p || currentPath.startsWith("/pronto-atendimento") || currentPath.startsWith("/patient-dashboard") || currentPath.startsWith("/acompanhamento"));
+                  if (!isPublicPath) {
                     navigate("/complete-profile");
                   }
                 }
