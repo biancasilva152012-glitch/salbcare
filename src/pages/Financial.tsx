@@ -222,7 +222,7 @@ const Financial = () => {
               </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
-              <TransactionForm isEdit={false} />
+              {transactionFormJsx(false)}
             </DialogContent>
           </Dialog>
           </div>
