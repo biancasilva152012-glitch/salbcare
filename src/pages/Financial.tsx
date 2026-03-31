@@ -167,7 +167,7 @@ const Financial = () => {
     }));
   }, [filteredByMonth]);
 
-  const TransactionForm = ({ isEdit }: { isEdit: boolean }) => (
+  const transactionFormJsx = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5"><Label>Descrição</Label><Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" /></div>
       <div className="grid grid-cols-2 gap-3">
@@ -222,7 +222,7 @@ const Financial = () => {
               </DialogTrigger>
             <DialogContent className="bg-card border-border">
               <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
-              <TransactionForm isEdit={false} />
+              {transactionFormJsx(false)}
             </DialogContent>
           </Dialog>
           </div>
@@ -391,7 +391,7 @@ const Financial = () => {
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="bg-card border-border">
             <DialogHeader><DialogTitle>Editar Transação</DialogTitle></DialogHeader>
-            <TransactionForm isEdit={true} />
+            {transactionFormJsx(true)}
           </DialogContent>
         </Dialog>
 
