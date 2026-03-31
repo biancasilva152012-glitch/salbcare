@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PROFESSION_CONFIG } from "@/config/professions";
 import SEOHead from "@/components/SEOHead";
 import { toast } from "sonner";
@@ -98,6 +98,8 @@ const ProntoAtendimento = () => {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
 
+  const queryClient = useQueryClient();
+
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["pronto-professionals"],
     queryFn: async () => {
@@ -108,6 +110,21 @@ const ProntoAtendimento = () => {
       return data || [];
     },
   });
+
+  // Real-time: auto-refresh when professionals update their profiles
+  useEffect(() => {
+    const channel = supabase
+      .channel("public-professionals-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["pronto-professionals"] });
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
 
   const filtered = useMemo(() => {
     let list = professionals as any[];

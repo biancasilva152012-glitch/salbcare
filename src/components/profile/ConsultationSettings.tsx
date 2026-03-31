@@ -119,6 +119,10 @@ const ConsultationSettings = () => {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      // Auto-set availability_online based on whether any slot exists
+      const hasAnySlot = Object.values(hours).some(
+        (slots) => Array.isArray(slots) && slots.length > 0
+      );
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -129,6 +133,7 @@ const ConsultationSettings = () => {
           meet_link: meetLink.trim() || null,
           interval_minutes: parseInt(intervalMin),
           min_advance_hours: parseInt(minAdvance),
+          availability_online: hasAnySlot,
         } as any)
         .eq("user_id", user!.id);
       if (error) throw error;

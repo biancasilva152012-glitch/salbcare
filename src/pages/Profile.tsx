@@ -355,27 +355,21 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Online/Offline Toggle */}
-        <div className="glass-card p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {availabilityOnline ? (
-              <Wifi className="h-5 w-5 text-green-600 dark:text-green-400" />
-            ) : (
-              <WifiOff className="h-5 w-5 text-muted-foreground" />
-            )}
-            <div>
-              <p className="text-sm font-medium">{availabilityOnline ? "Disponível para pacientes" : "Offline — invisível na busca"}</p>
-              <p className="text-[10px] text-muted-foreground">Quando ativado, você aparece no diretório de pacientes</p>
-            </div>
+        {/* Automatic Visibility Info */}
+        <div className="glass-card p-4 flex items-center gap-3">
+          {availabilityOnline ? (
+            <Wifi className="h-5 w-5 text-green-600 dark:text-green-400" />
+          ) : (
+            <WifiOff className="h-5 w-5 text-muted-foreground" />
+          )}
+          <div>
+            <p className="text-sm font-medium">{availabilityOnline ? "Visível para pacientes" : "Invisível na busca"}</p>
+            <p className="text-[10px] text-muted-foreground">
+              {availabilityOnline
+                ? "Você aparece no diretório porque tem horários configurados."
+                : "Configure seus horários na seção abaixo para aparecer no diretório."}
+            </p>
           </div>
-          <Switch
-            checked={availabilityOnline}
-            onCheckedChange={async (checked) => {
-              setAvailabilityOnline(checked);
-              await supabase.from("profiles").update({ availability_online: checked } as any).eq("user_id", user!.id);
-              toast.success(checked ? "Você está visível para pacientes!" : "Você está offline.");
-            }}
-          />
         </div>
 
         {/* Bio / About */}
