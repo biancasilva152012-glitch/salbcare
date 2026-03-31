@@ -391,7 +391,7 @@ const Financial = () => {
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="bg-card border-border">
             <DialogHeader><DialogTitle>Editar Transação</DialogTitle></DialogHeader>
-            <TransactionForm isEdit={true} />
+            {transactionFormJsx(true)}
           </DialogContent>
         </Dialog>
 
