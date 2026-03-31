@@ -254,7 +254,18 @@ const Subscription = () => {
 
                 {isCurrentPlan ? (
                   <Button disabled className="w-full" variant="outline">
-                    Plano Atual
+                    Seu plano atual
+                  </Button>
+                ) : subscription.subscribed && subscription.paymentStatus === "active" ? (
+                  <Button
+                    onClick={handleManage}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                    {Object.keys(PLANS).indexOf(key) > Object.keys(PLANS).indexOf(subscription.plan)
+                      ? "Fazer upgrade"
+                      : "Fazer downgrade"}
                   </Button>
                 ) : (
                   <Button
