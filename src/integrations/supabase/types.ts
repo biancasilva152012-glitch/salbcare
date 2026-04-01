@@ -44,6 +44,72 @@ export type Database = {
         }
         Relationships: []
       }
+      ambassador_applications: {
+        Row: {
+          conversions: number
+          coupon_code: string | null
+          created_at: string
+          email: string
+          free_months_earned: number
+          id: string
+          motivation: string | null
+          name: string
+          phone: string | null
+          social_media: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversions?: number
+          coupon_code?: string | null
+          created_at?: string
+          email: string
+          free_months_earned?: number
+          id?: string
+          motivation?: string | null
+          name: string
+          phone?: string | null
+          social_media?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversions?: number
+          coupon_code?: string | null
+          created_at?: string
+          email?: string
+          free_months_earned?: number
+          id?: string
+          motivation?: string | null
+          name?: string
+          phone?: string | null
+          social_media?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ambassador_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           appointment_type: string
@@ -1003,6 +1069,7 @@ export type Database = {
         Returns: boolean
       }
       check_email_user_type: { Args: { check_email: string }; Returns: string }
+      get_ambassador_spots_taken: { Args: never; Returns: number }
       get_public_professionals: {
         Args: { specialty_filter?: string }
         Returns: {
