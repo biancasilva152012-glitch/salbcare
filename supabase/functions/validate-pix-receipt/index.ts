@@ -28,13 +28,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { file_path, plan_key, expected_amount } = await req.json();
+    const { file_path, expected_amount } = await req.json();
     if (!file_path || !expected_amount) {
       return new Response(JSON.stringify({ error: "Dados incompletos" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Resolve plan from the user's profile server-side (NEVER trust client input)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("user_id", user.id)
+      .single();
+    const resolvedPlan = profile?.plan || "basic";
 
     // Download the receipt image from storage
     const { data: fileData, error: downloadError } = await supabase.storage
@@ -95,10 +103,9 @@ Responda APENAS com um JSON válido neste formato exato:
 
     if (!aiResponse.ok) {
       console.error("AI response error:", await aiResponse.text());
-      // If AI fails, set to manual review
       await supabase
         .from("profiles")
-        .update({ payment_status: "pending_approval", plan: plan_key || "basic", trial_start_date: new Date().toISOString() })
+        .update({ payment_status: "pending_approval", plan: resolvedPlan, trial_start_date: new Date().toISOString() })
         .eq("user_id", user.id);
 
       return new Response(
@@ -110,7 +117,6 @@ Responda APENAS com um JSON válido neste formato exato:
     const aiData = await aiResponse.json();
     const aiText = aiData.choices?.[0]?.message?.content || "";
 
-    // Parse AI response - extract JSON from possible markdown
     let result: { validated: boolean; reason: string };
     try {
       const jsonMatch = aiText.match(/\{[\s\S]*\}/);
@@ -120,12 +126,11 @@ Responda APENAS com um JSON válido neste formato exato:
     }
 
     if (result.validated) {
-      // Auto-confirm payment
       await supabase
         .from("profiles")
         .update({
           payment_status: "active",
-          plan: plan_key || "basic",
+          plan: resolvedPlan,
           trial_start_date: new Date().toISOString(),
         })
         .eq("user_id", user.id);
@@ -135,12 +140,11 @@ Responda APENAS com um JSON válido neste formato exato:
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } else {
-      // Manual review
       await supabase
         .from("profiles")
         .update({
           payment_status: "pending_approval",
-          plan: plan_key || "basic",
+          plan: resolvedPlan,
           trial_start_date: new Date().toISOString(),
         })
         .eq("user_id", user.id);

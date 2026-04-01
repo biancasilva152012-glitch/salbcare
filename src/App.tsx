@@ -59,6 +59,7 @@ const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendime
 const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 const AcompanhamentoSolicitacao = lazyWithRetry(() => import("./pages/AcompanhamentoSolicitacao"), "AcompanhamentoSolicitacao");
 const CompleteProfile = lazyWithRetry(() => import("./pages/CompleteProfile"), "CompleteProfile");
+const Embaixadores = lazyWithRetry(() => import("./pages/Embaixadores"), "Embaixadores");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -115,6 +116,7 @@ const App = () => (
               <Route path="/acompanhamento" element={<AcompanhamentoSolicitacao />} />
               <Route path="/acompanhamento/:id" element={<AcompanhamentoSolicitacao />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
+              <Route path="/embaixadores" element={<Embaixadores />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
