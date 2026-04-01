@@ -82,9 +82,13 @@ export function useSubscription(): SubscriptionData {
         ? Date.now() - new Date(createdAt).getTime() < 60 * 60 * 1000
         : false;
 
-      const isActive = status === "active" || status === "trialing";
+      // Pre-Stripe users: if status is null AND never had a trial AND no plan set,
+      // they registered before subscriptions existed — grant access
+      const isPreStripeUser = status === null && !hadTrial && !plan;
+
+      const isActive = status === "active" || status === "trialing" || isPreStripeUser;
       const isPastDue = status === "past_due";
-      const isCanceled = status === "canceled" || (status === null && !isNewAccount);
+      const isCanceled = status === "canceled" || (status === null && !isNewAccount && !isPreStripeUser);
 
       setData({
         status,
