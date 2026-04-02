@@ -378,8 +378,8 @@ const Patients = () => {
               icon={Users}
               title="Nenhum paciente cadastrado"
               description="Cadastre manualmente, ou importe uma planilha CSV com seus pacientes."
-              actionLabel="Cadastrar paciente"
-              onAction={() => { setForm(emptyForm); setOpen(true); }}
+              actionLabel={canAddPatient ? "Cadastrar paciente" : undefined}
+              onAction={canAddPatient ? () => { setForm(emptyForm); setOpen(true); } : undefined}
               extra={
                 <div className="flex gap-2 mt-2">
                   <Button
