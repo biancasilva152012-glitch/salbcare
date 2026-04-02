@@ -650,6 +650,45 @@ export type Database = {
           },
         ]
       }
+      partner_interests: {
+        Row: {
+          city: string
+          cnpj: string | null
+          company_name: string
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          partner_type: string
+          phone: string | null
+          plan_interest: string | null
+        }
+        Insert: {
+          city: string
+          cnpj?: string | null
+          company_name: string
+          contact_name: string
+          created_at?: string
+          email: string
+          id?: string
+          partner_type?: string
+          phone?: string | null
+          plan_interest?: string | null
+        }
+        Update: {
+          city?: string
+          cnpj?: string | null
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          partner_type?: string
+          phone?: string | null
+          plan_interest?: string | null
+        }
+        Relationships: []
+      }
       patient_documents: {
         Row: {
           created_at: string
