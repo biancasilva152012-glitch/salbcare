@@ -92,7 +92,9 @@ export function useSubscription(): SubscriptionData {
       // they registered before subscriptions existed — grant access
       const isPreStripeUser = status === null && !hadTrial && !plan;
 
-      const isActive = status === "active" || status === "trialing" || isPreStripeUser;
+      const isTrialing = status === "trialing";
+      const trialExpired = hadTrial && !isTrialing && status !== "active";
+      const isActive = status === "active" || isTrialing || isPreStripeUser;
       const isPastDue = status === "past_due";
       const isCanceled = status === "canceled" || (status === null && !isNewAccount && !isPreStripeUser);
 
@@ -103,6 +105,8 @@ export function useSubscription(): SubscriptionData {
         hadTrial,
         trialEndsAt,
         isActive,
+        isTrialing,
+        trialExpired,
         isPastDue,
         isCanceled,
         isLoading: false,
