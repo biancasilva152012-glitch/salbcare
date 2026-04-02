@@ -153,8 +153,8 @@ const Parcerias = () => {
             className="rounded-2xl border border-border bg-card p-6 space-y-4"
           >
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <FlaskConical className="h-6 w-6 text-blue-500" />
+              <div className="h-12 w-12 rounded-xl bg-secondary/10 flex items-center justify-center">
+                <FlaskConical className="h-6 w-6 text-secondary" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Para Laboratórios</h3>
