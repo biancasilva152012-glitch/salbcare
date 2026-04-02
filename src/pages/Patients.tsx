@@ -35,6 +35,7 @@ const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", m
 
 const Patients = () => {
   const { user } = useAuth();
+  const sub = useSubscription();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Tables<"patients"> | null>(null);
@@ -43,6 +44,9 @@ const Patients = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+
+  // Block new patient creation only when trial expired AND no active subscription
+  const canAddPatient = sub.isAdmin || sub.isActive;
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
