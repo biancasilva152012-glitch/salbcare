@@ -53,6 +53,8 @@ export function useSubscription(): SubscriptionData {
         hadTrial: false,
         trialEndsAt: null,
         isActive: true,
+        isTrialing: false,
+        trialExpired: false,
         isPastDue: false,
         isCanceled: false,
         isLoading: false,
