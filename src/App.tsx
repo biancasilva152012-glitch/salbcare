@@ -118,6 +118,7 @@ const App = () => (
               <Route path="/acompanhamento/:id" element={<AcompanhamentoSolicitacao />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
               <Route path="/embaixadores" element={<Embaixadores />} />
+              <Route path="/parcerias" element={<Parcerias />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
