@@ -24,6 +24,7 @@ import PatientPrescriptions from "@/components/patients/PatientPrescriptions";
 import PatientCertificates from "@/components/patients/PatientCertificates";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
@@ -34,6 +35,7 @@ const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", m
 
 const Patients = () => {
   const { user } = useAuth();
+  const sub = useSubscription();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Tables<"patients"> | null>(null);
@@ -42,6 +44,9 @@ const Patients = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+
+  // Block new patient creation only when trial expired AND no active subscription
+  const canAddPatient = sub.isAdmin || sub.isActive;
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
@@ -255,25 +260,38 @@ const Patients = () => {
               <FileDown className="h-3.5 w-3.5" /> Modelo
             </Button>
             <label>
-              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing} asChild>
+              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing || !canAddPatient} asChild>
                 <span>
                   {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
                   {importing ? "Importando..." : "Importar"}
                 </span>
               </Button>
-              <input type="file" accept=".csv,.txt,.xls,.xlsx" onChange={handleCsvImport} className="hidden" />
+              <input type="file" accept=".csv,.txt,.xls,.xlsx" onChange={handleCsvImport} className="hidden" disabled={!canAddPatient} />
             </label>
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
-              </DialogTrigger>
-              <DialogContent className="bg-card border-border">
-                <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
-                {renderPatientForm(false)}
-              </DialogContent>
-            </Dialog>
+            {canAddPatient ? (
+              <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
+                  {renderPatientForm(false)}
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Button size="sm" className="gap-1 opacity-60" disabled>
+                <Plus className="h-4 w-4" /> Novo
+              </Button>
+            )}
           </div>
         </div>
+
+        {!canAddPatient && (
+          <div className="bg-muted/50 border border-border rounded-lg px-4 py-3 text-sm text-muted-foreground flex items-center justify-between gap-3">
+            <span>Seu período de teste expirou. Assine para cadastrar novos pacientes.</span>
+            <Button size="sm" variant="default" onClick={() => window.location.href = "/subscription"}>Ver planos</Button>
+          </div>
+        )}
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -360,8 +378,8 @@ const Patients = () => {
               icon={Users}
               title="Nenhum paciente cadastrado"
               description="Cadastre manualmente, ou importe uma planilha CSV com seus pacientes."
-              actionLabel="Cadastrar paciente"
-              onAction={() => { setForm(emptyForm); setOpen(true); }}
+              actionLabel={canAddPatient ? "Cadastrar paciente" : undefined}
+              onAction={canAddPatient ? () => { setForm(emptyForm); setOpen(true); } : undefined}
               extra={
                 <div className="flex gap-2 mt-2">
                   <Button

@@ -10,6 +10,8 @@ export interface SubscriptionData {
   hadTrial: boolean;
   trialEndsAt: string | null;
   isActive: boolean;
+  isTrialing: boolean;
+  trialExpired: boolean;
   isPastDue: boolean;
   isCanceled: boolean;
   isLoading: boolean;
@@ -23,6 +25,8 @@ const defaultState: SubscriptionData = {
   hadTrial: false,
   trialEndsAt: null,
   isActive: false,
+  isTrialing: false,
+  trialExpired: false,
   isPastDue: false,
   isCanceled: true,
   isLoading: true,
@@ -49,6 +53,8 @@ export function useSubscription(): SubscriptionData {
         hadTrial: false,
         trialEndsAt: null,
         isActive: true,
+        isTrialing: false,
+        trialExpired: false,
         isPastDue: false,
         isCanceled: false,
         isLoading: false,
@@ -86,7 +92,9 @@ export function useSubscription(): SubscriptionData {
       // they registered before subscriptions existed — grant access
       const isPreStripeUser = status === null && !hadTrial && !plan;
 
-      const isActive = status === "active" || status === "trialing" || isPreStripeUser;
+      const isTrialing = status === "trialing";
+      const trialExpired = hadTrial && !isTrialing && status !== "active";
+      const isActive = status === "active" || isTrialing || isPreStripeUser;
       const isPastDue = status === "past_due";
       const isCanceled = status === "canceled" || (status === null && !isNewAccount && !isPreStripeUser);
 
@@ -97,6 +105,8 @@ export function useSubscription(): SubscriptionData {
         hadTrial,
         trialEndsAt,
         isActive,
+        isTrialing,
+        trialExpired,
         isPastDue,
         isCanceled,
         isLoading: false,
