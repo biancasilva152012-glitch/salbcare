@@ -25,6 +25,8 @@ const defaultState: SubscriptionData = {
   hadTrial: false,
   trialEndsAt: null,
   isActive: false,
+  isTrialing: false,
+  trialExpired: false,
   isPastDue: false,
   isCanceled: true,
   isLoading: true,
