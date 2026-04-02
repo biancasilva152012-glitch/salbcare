@@ -260,23 +260,29 @@ const Patients = () => {
               <FileDown className="h-3.5 w-3.5" /> Modelo
             </Button>
             <label>
-              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing} asChild>
+              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing || !canAddPatient} asChild>
                 <span>
                   {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
                   {importing ? "Importando..." : "Importar"}
                 </span>
               </Button>
-              <input type="file" accept=".csv,.txt,.xls,.xlsx" onChange={handleCsvImport} className="hidden" />
+              <input type="file" accept=".csv,.txt,.xls,.xlsx" onChange={handleCsvImport} className="hidden" disabled={!canAddPatient} />
             </label>
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
-              </DialogTrigger>
-              <DialogContent className="bg-card border-border">
-                <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
-                {renderPatientForm(false)}
-              </DialogContent>
-            </Dialog>
+            {canAddPatient ? (
+              <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
+                  {renderPatientForm(false)}
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Button size="sm" className="gap-1 opacity-60" disabled>
+                <Plus className="h-4 w-4" /> Novo
+              </Button>
+            )}
           </div>
         </div>
 
