@@ -10,6 +10,8 @@ export interface SubscriptionData {
   hadTrial: boolean;
   trialEndsAt: string | null;
   isActive: boolean;
+  isTrialing: boolean;
+  trialExpired: boolean;
   isPastDue: boolean;
   isCanceled: boolean;
   isLoading: boolean;
