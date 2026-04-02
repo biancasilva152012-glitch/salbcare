@@ -24,6 +24,7 @@ import PatientPrescriptions from "@/components/patients/PatientPrescriptions";
 import PatientCertificates from "@/components/patients/PatientCertificates";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
