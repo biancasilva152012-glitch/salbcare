@@ -286,6 +286,13 @@ const Patients = () => {
           </div>
         </div>
 
+        {!canAddPatient && (
+          <div className="bg-muted/50 border border-border rounded-lg px-4 py-3 text-sm text-muted-foreground flex items-center justify-between gap-3">
+            <span>Seu período de teste expirou. Assine para cadastrar novos pacientes.</span>
+            <Button size="sm" variant="default" onClick={() => window.location.href = "/subscription"}>Ver planos</Button>
+          </div>
+        )}
+
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Buscar paciente..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-accent border-border pl-9" />
