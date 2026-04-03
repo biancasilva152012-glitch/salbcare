@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Search, Star, Clock, User, Stethoscope, FileText, FilePlus,
-  Filter, Wifi, WifiOff, Loader2, Eye, EyeOff
+  Filter, Wifi, WifiOff, Loader2, Eye, EyeOff, Bot
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
