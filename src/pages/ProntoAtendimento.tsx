@@ -86,6 +86,7 @@ const ProntoAtendimento = () => {
   const [serviceFilter, setServiceFilter] = useState<ServiceFilter>("all");
   const [availFilter, setAvailFilter] = useState<AvailFilter>("all");
   const [specialtyFilter, setSpecialtyFilter] = useState<SpecialtyFilter>("all");
+  const [triageOpen, setTriageOpen] = useState(false);
 
   // Auth modal state
   const [authModalOpen, setAuthModalOpen] = useState(false);
