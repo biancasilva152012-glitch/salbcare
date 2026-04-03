@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Search, Star, Clock, User, Stethoscope, FileText, FilePlus,
-  Filter, Wifi, WifiOff, Loader2, Eye, EyeOff
+  Filter, Wifi, WifiOff, Loader2, Eye, EyeOff, Bot
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import TriageChat from "@/components/triage/TriageChat";
 
 
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
@@ -85,6 +86,7 @@ const ProntoAtendimento = () => {
   const [serviceFilter, setServiceFilter] = useState<ServiceFilter>("all");
   const [availFilter, setAvailFilter] = useState<AvailFilter>("all");
   const [specialtyFilter, setSpecialtyFilter] = useState<SpecialtyFilter>("all");
+  const [triageOpen, setTriageOpen] = useState(false);
 
   // Auth modal state
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -274,8 +276,29 @@ const ProntoAtendimento = () => {
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">⚡ Rápido</span>
         </div>
 
+        {/* Triage Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-4 border-primary/20 bg-primary/5"
+        >
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Bot className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <p className="text-sm font-semibold">Não sabe qual especialidade você precisa?</p>
+              <p className="text-xs text-muted-foreground">
+                Me conte o que você está sentindo e eu te indico o profissional certo.
+              </p>
+              <Button size="sm" className="gradient-primary text-xs mt-1" onClick={() => setTriageOpen(true)}>
+                🤖 Começar triagem gratuita
+              </Button>
+            </div>
+          </div>
+        </motion.div>
 
-        {/* Service type filter */}
+
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Tipo de serviço:</p>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -539,6 +562,27 @@ const ProntoAtendimento = () => {
             </p>
           </form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Triage Dialog */}
+      <Dialog open={triageOpen} onOpenChange={setTriageOpen}>
+        <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg flex items-center gap-2">
+              <Bot className="h-5 w-5 text-primary" /> Triagem Inteligente
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Responda algumas perguntas para encontrar o profissional ideal.
+            </DialogDescription>
+          </DialogHeader>
+          <TriageChat
+            onSpecialtyRecommended={(key) => {
+              setSpecialtyFilter(key);
+              setTriageOpen(false);
+            }}
+            onClose={() => setTriageOpen(false)}
+          />
         </DialogContent>
       </Dialog>
     </div>
