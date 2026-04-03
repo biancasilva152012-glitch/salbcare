@@ -490,78 +490,24 @@ const ProntoAtendimento = () => {
         </div>
       </div>
 
-      {/* Auth Modal */}
-      <Dialog open={authModalOpen} onOpenChange={(open) => {
-        setAuthModalOpen(open);
-        if (!open) {
-          pendingProfRef.current = null;
-          resetAuthFields();
-        }
-      }}>
-        <DialogContent className="max-w-sm">
+      {/* Triage Dialog */}
+      <Dialog open={triageOpen} onOpenChange={setTriageOpen}>
+        <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-lg">Cadastro rápido</DialogTitle>
+            <DialogTitle className="text-lg flex items-center gap-2">
+              <Bot className="h-5 w-5 text-primary" /> Triagem Inteligente
+            </DialogTitle>
             <DialogDescription className="text-xs">
-              Cadastre-se rapidamente para solicitar o atendimento.
+              Responda algumas perguntas para encontrar o profissional ideal.
             </DialogDescription>
           </DialogHeader>
-
-          {authSuccess ? (
-            <div className="flex flex-col items-center gap-3 py-6">
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-2xl">✅</span>
-              </div>
-              <p className="text-sm font-medium text-foreground">Cadastro realizado com sucesso!</p>
-              <p className="text-xs text-muted-foreground">Redirecionando...</p>
-            </div>
-          ) : (
-          <form onSubmit={handleSignup} className="space-y-3 pt-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs">Nome completo *</Label>
-              <Input
-                value={signupName}
-                onChange={(e) => setSignupName(e.target.value)}
-                placeholder="Seu nome"
-                required
-                className="bg-accent border-border"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">E-mail *</Label>
-              <Input
-                type="email"
-                value={signupEmail}
-                onChange={(e) => setSignupEmail(e.target.value)}
-                placeholder="seu@email.com"
-                required
-                className="bg-accent border-border"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Senha *</Label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                  required
-                  minLength={6}
-                  className="bg-accent border-border pr-10"
-                />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-            <Button type="submit" disabled={authLoading} className="w-full gradient-primary">
-              {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Cadastrar e continuar"}
-            </Button>
-            <p className="text-[10px] text-muted-foreground text-center">
-              Ao cadastrar, você concorda com os <a href="/terms" target="_blank" className="underline">Termos de Uso</a>.
-            </p>
-          </form>
-          )}
+          <TriageChat
+            onSpecialtyRecommended={(key) => {
+              setSpecialtyFilter(key);
+              setTriageOpen(false);
+            }}
+            onClose={() => setTriageOpen(false)}
+          />
         </DialogContent>
       </Dialog>
     </div>
