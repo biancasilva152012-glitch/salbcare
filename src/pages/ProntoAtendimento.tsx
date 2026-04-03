@@ -276,8 +276,29 @@ const ProntoAtendimento = () => {
           <span className="flex items-center gap-1 bg-accent rounded-full px-2.5 py-1">⚡ Rápido</span>
         </div>
 
+        {/* Triage Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-4 border-primary/20 bg-primary/5"
+        >
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Bot className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <p className="text-sm font-semibold">Não sabe qual especialidade você precisa?</p>
+              <p className="text-xs text-muted-foreground">
+                Me conte o que você está sentindo e eu te indico o profissional certo.
+              </p>
+              <Button size="sm" className="gradient-primary text-xs mt-1" onClick={() => setTriageOpen(true)}>
+                🤖 Começar triagem gratuita
+              </Button>
+            </div>
+          </div>
+        </motion.div>
 
-        {/* Service type filter */}
+
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Tipo de serviço:</p>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
