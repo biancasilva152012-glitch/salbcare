@@ -1,0 +1,1 @@
+UPDATE profiles SET availability_online = true WHERE user_id = 'd135956b-281d-4fea-aa16-81f30ac3895a';
