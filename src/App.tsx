@@ -140,6 +140,7 @@ const App = () => (
               {/* Patient-only routes */}
               <Route path="/patient-dashboard" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
               <Route path="/patient-dashboard/consultas" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
+              <Route path="/patient-dashboard/farmacias" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
               <Route path="/patient-dashboard/documentos" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
               <Route path="/patient-dashboard/perfil" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
 
