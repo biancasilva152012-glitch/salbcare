@@ -15,6 +15,7 @@ import { getProfessionalTitle, getCouncilPrefix } from "@/config/professions";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import PatientDocumentsTab from "@/components/patients/PatientDocumentsTab";
+import PharmacyTab from "@/components/patient/PharmacyTab";
 
 const SPECIALTIES = [
   { key: null, emoji: "✨", label: "Todos" },
