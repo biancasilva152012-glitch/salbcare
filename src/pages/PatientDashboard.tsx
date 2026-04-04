@@ -622,6 +622,7 @@ const PatientDashboard = () => {
       <div className="max-w-lg mx-auto px-4 py-5 pb-28">
         {activeTab === "buscar" && <SearchTab />}
         {activeTab === "consultas" && <AppointmentsTab />}
+        {activeTab === "farmacias" && <PharmacyTab />}
         {activeTab === "documentos" && <PatientDocumentsTab />}
         {activeTab === "perfil" && <ProfileTab />}
       </div>
