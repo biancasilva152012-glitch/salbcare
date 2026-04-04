@@ -531,6 +531,7 @@ const Index = () => {
             <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
               <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
               <a href="#planos" className="hover:text-foreground transition-colors">Planos</a>
+              <Link to="/parcerias" className="hover:text-foreground transition-colors">Parcerias</Link>
               <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
               <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
               <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
