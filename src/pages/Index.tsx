@@ -426,8 +426,71 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── Ecossistema Completo ── */}
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={stagger}
+              className="text-center mb-12 space-y-3"
+            >
+              <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-bold">
+                De A a Z, sua saúde em um lugar
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
+                O ecossistema completo que conecta pacientes, profissionais, farmácias e laboratórios.
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.1 }}
+              className="flex flex-wrap justify-center gap-2 sm:gap-0 sm:flex-nowrap items-center max-w-3xl mx-auto"
+            >
+              {[
+                { emoji: "🤖", label: "Triagem IA" },
+                { emoji: "👨‍⚕️", label: "Consulta" },
+                { emoji: "💊", label: "Receita" },
+                { emoji: "🧪", label: "Exames" },
+                { emoji: "🏥", label: "Resultado" },
+                { emoji: "🔄", label: "Retorno" },
+              ].map((step, i, arr) => (
+                <motion.div key={step.label} variants={fadeUp} className="flex items-center">
+                  <div className="flex flex-col items-center gap-1.5 w-20 sm:w-24">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-xl">
+                      {step.emoji}
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-medium text-muted-foreground text-center leading-tight">{step.label}</span>
+                  </div>
+                  {i < arr.length - 1 && (
+                    <ArrowRight className="h-4 w-4 text-muted-foreground/40 shrink-0 hidden sm:block" />
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="text-center mt-10"
+            >
+              <Button asChild variant="outline" size="sm" className="rounded-xl border-primary/30 text-primary hover:bg-primary/5">
+                <Link to="/parcerias">
+                  Faça parte do ecossistema <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ── Área do Paciente ── */}
-        <section id="pacientes" className="py-16 sm:py-24">
+        <section id="pacientes" className="bg-accent/30 py-16 sm:py-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <motion.div
               initial="hidden"
