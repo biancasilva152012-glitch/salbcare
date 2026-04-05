@@ -588,6 +588,7 @@ const PatientDashboard = () => {
   const getTabFromPath = () => {
     if (location.pathname.includes("/consultas")) return "consultas";
     if (location.pathname.includes("/farmacias")) return "farmacias";
+    if (location.pathname.includes("/laboratorios")) return "laboratorios";
     if (location.pathname.includes("/documentos")) return "documentos";
     if (location.pathname.includes("/perfil")) return "perfil";
     return "buscar";
