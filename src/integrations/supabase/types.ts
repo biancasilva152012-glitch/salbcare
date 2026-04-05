@@ -355,6 +355,45 @@ export type Database = {
           },
         ]
       }
+      exam_requests: {
+        Row: {
+          created_at: string
+          exam_type: string
+          id: string
+          lab_name: string
+          notes: string | null
+          preferred_date: string
+          preferred_time: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exam_type: string
+          id?: string
+          lab_name: string
+          notes?: string | null
+          preferred_date: string
+          preferred_time?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exam_type?: string
+          id?: string
+          lab_name?: string
+          notes?: string | null
+          preferred_date?: string
+          preferred_time?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_transactions: {
         Row: {
           amount: number
