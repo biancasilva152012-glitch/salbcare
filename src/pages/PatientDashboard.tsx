@@ -79,6 +79,7 @@ const SearchTab = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
+  const [acessivelOnly, setAcessivelOnly] = useState(false);
 
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["patient-professionals", selectedSpecialty],
