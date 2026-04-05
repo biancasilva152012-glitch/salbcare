@@ -634,11 +634,11 @@ const PatientDashboard = () => {
       <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur-xl z-50">
         <div className="mx-auto flex max-w-lg items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
           <button onClick={() => setActiveTab("buscar")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "buscar" ? "text-primary" : "text-muted-foreground"}`}>
-            <Search className="h-5 w-5" />
+            <Search className="h-4 w-4" />
             <span className="font-medium">Buscar</span>
           </button>
           <button onClick={() => setActiveTab("consultas")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "consultas" ? "text-primary" : "text-muted-foreground"}`}>
-            <Calendar className="h-5 w-5" />
+            <Calendar className="h-4 w-4" />
             <span className="font-medium">Consultas</span>
           </button>
           <button onClick={() => setActiveTab("farmacias")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "farmacias" ? "text-primary" : "text-muted-foreground"}`}>
@@ -650,11 +650,11 @@ const PatientDashboard = () => {
             <span className="font-medium">Labs</span>
           </button>
           <button onClick={() => setActiveTab("documentos")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "documentos" ? "text-primary" : "text-muted-foreground"}`}>
-            <FileText className="h-5 w-5" />
+            <FileText className="h-4 w-4" />
             <span className="font-medium">Docs</span>
           </button>
           <button onClick={() => setActiveTab("perfil")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "perfil" ? "text-primary" : "text-muted-foreground"}`}>
-            <User className="h-5 w-5" />
+            <User className="h-4 w-4" />
             <span className="font-medium">Perfil</span>
           </button>
         </div>
