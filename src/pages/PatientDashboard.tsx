@@ -642,8 +642,12 @@ const PatientDashboard = () => {
             <span className="font-medium">Consultas</span>
           </button>
           <button onClick={() => setActiveTab("farmacias")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "farmacias" ? "text-primary" : "text-muted-foreground"}`}>
-            <Pill className="h-5 w-5" />
+            <Pill className="h-4 w-4" />
             <span className="font-medium">Farmácias</span>
+          </button>
+          <button onClick={() => setActiveTab("laboratorios")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "laboratorios" ? "text-primary" : "text-muted-foreground"}`}>
+            <FlaskConical className="h-4 w-4" />
+            <span className="font-medium">Labs</span>
           </button>
           <button onClick={() => setActiveTab("documentos")} className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 px-1 text-[10px] transition-colors ${activeTab === "documentos" ? "text-primary" : "text-muted-foreground"}`}>
             <FileText className="h-5 w-5" />
