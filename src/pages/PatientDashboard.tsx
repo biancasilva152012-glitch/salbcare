@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight, FileText, MessageCircle, Pill, FlaskConical } from "lucide-react";
+import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight, FileText, MessageCircle, Pill, FlaskConical, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
