@@ -625,6 +625,7 @@ const PatientDashboard = () => {
         {activeTab === "buscar" && <SearchTab />}
         {activeTab === "consultas" && <AppointmentsTab />}
         {activeTab === "farmacias" && <PharmacyTab />}
+        {activeTab === "laboratorios" && <LabTab />}
         {activeTab === "documentos" && <PatientDocumentsTab />}
         {activeTab === "perfil" && <ProfileTab />}
       </div>
