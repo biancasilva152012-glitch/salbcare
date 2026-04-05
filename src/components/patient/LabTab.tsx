@@ -6,6 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const EXAM_CATEGORIES = [
   { label: "Sangue e bioquímica", discount: "Até 40% off", emoji: "🩸" },
@@ -63,6 +65,7 @@ interface ScheduleForm {
 }
 
 const LabTab = () => {
+  const { user } = useAuth();
   const [scheduleDialog, setScheduleDialog] = useState(false);
   const [selectedLab, setSelectedLab] = useState<typeof MOCK_LABS[0] | null>(null);
   const [form, setForm] = useState<ScheduleForm>({
@@ -86,12 +89,29 @@ const LabTab = () => {
       toast.error("Preencha o tipo de exame e a data desejada.");
       return;
     }
+    if (!user) {
+      toast.error("Você precisa estar logado.");
+      return;
+    }
     setSubmitting(true);
-    // Simulate scheduling (in production this would save to a table)
-    await new Promise((r) => setTimeout(r, 1200));
-    setSubmitting(false);
-    setScheduleDialog(false);
-    toast.success(`Solicitação enviada para ${form.labName}! Entraremos em contato para confirmar.`);
+    try {
+      const { error } = await supabase.from("exam_requests" as any).insert({
+        user_id: user.id,
+        lab_name: form.labName,
+        exam_type: form.examType,
+        preferred_date: form.preferredDate,
+        preferred_time: form.preferredTime || null,
+        notes: form.notes || null,
+      } as any);
+      if (error) throw error;
+      toast.success(`Solicitação enviada para ${form.labName}! Entraremos em contato para confirmar.`);
+      setScheduleDialog(false);
+    } catch (err: any) {
+      toast.error("Erro ao enviar solicitação. Tente novamente.");
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

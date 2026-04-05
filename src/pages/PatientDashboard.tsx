@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight, FileText, MessageCircle, Pill, FlaskConical } from "lucide-react";
+import { Search, Calendar, Clock, Star, User, LogOut, History, AlertCircle, Phone, Mail, Shield, Download, Trash2, Lock, ChevronRight, FileText, MessageCircle, Pill, FlaskConical, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -79,6 +79,7 @@ const SearchTab = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
+  const [acessivelOnly, setAcessivelOnly] = useState(false);
 
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["patient-professionals", selectedSpecialty],
@@ -104,9 +105,11 @@ const SearchTab = () => {
     return () => { supabase.removeChannel(channel); };
   }, [queryClient]);
 
-  const filtered = professionals.filter((p: any) =>
-    p.name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = professionals.filter((p: any) => {
+    const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase());
+    const matchesPrice = !acessivelOnly || (p.consultation_price && Number(p.consultation_price) <= 80);
+    return matchesSearch && matchesPrice;
+  });
 
   return (
     <div className="space-y-4">
@@ -123,6 +126,19 @@ const SearchTab = () => {
           </button>
         ))}
       </div>
+
+      {/* SALBCARE Acessível filter */}
+      <button
+        onClick={() => setAcessivelOnly(!acessivelOnly)}
+        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${
+          acessivelOnly
+            ? "bg-primary/10 border-primary text-primary"
+            : "bg-accent border-transparent text-muted-foreground"
+        }`}
+      >
+        <span className="text-sm">💚</span>
+        SALBCARE Acessível — até R$ 80
+      </button>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -189,9 +205,16 @@ const SearchTab = () => {
                       )}
                     </div>
                   </div>
-                  {price > 0 && (
-                    <span className="text-xs font-bold text-primary">R$ {price.toFixed(0)}</span>
-                  )}
+                  <div className="flex flex-col items-end gap-0.5">
+                    {price > 0 && price <= 80 && (
+                      <span className="text-[9px] font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                        💚 Acessível
+                      </span>
+                    )}
+                    {price > 0 && (
+                      <span className="text-xs font-bold text-primary">R$ {price.toFixed(0)}</span>
+                    )}
+                  </div>
                 </div>
                 {/* Bio / summary */}
                 {prof.bio && (
