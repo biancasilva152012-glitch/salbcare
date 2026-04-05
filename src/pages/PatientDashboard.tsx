@@ -127,6 +127,19 @@ const SearchTab = () => {
         ))}
       </div>
 
+      {/* SALBCARE Acessível filter */}
+      <button
+        onClick={() => setAcessivelOnly(!acessivelOnly)}
+        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${
+          acessivelOnly
+            ? "bg-primary/10 border-primary text-primary"
+            : "bg-accent border-transparent text-muted-foreground"
+        }`}
+      >
+        <span className="text-sm">💚</span>
+        SALBCARE Acessível — até R$ 80
+      </button>
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
