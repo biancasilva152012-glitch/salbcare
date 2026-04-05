@@ -205,9 +205,16 @@ const SearchTab = () => {
                       )}
                     </div>
                   </div>
-                  {price > 0 && (
-                    <span className="text-xs font-bold text-primary">R$ {price.toFixed(0)}</span>
-                  )}
+                  <div className="flex flex-col items-end gap-0.5">
+                    {price > 0 && price <= 80 && (
+                      <span className="text-[9px] font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                        💚 Acessível
+                      </span>
+                    )}
+                    {price > 0 && (
+                      <span className="text-xs font-bold text-primary">R$ {price.toFixed(0)}</span>
+                    )}
+                  </div>
                 </div>
                 {/* Bio / summary */}
                 {prof.bio && (
