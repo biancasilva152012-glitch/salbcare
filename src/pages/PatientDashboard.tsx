@@ -105,9 +105,11 @@ const SearchTab = () => {
     return () => { supabase.removeChannel(channel); };
   }, [queryClient]);
 
-  const filtered = professionals.filter((p: any) =>
-    p.name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = professionals.filter((p: any) => {
+    const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase());
+    const matchesPrice = !acessivelOnly || (p.consultation_price && Number(p.consultation_price) <= 80);
+    return matchesSearch && matchesPrice;
+  });
 
   return (
     <div className="space-y-4">
