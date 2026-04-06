@@ -135,7 +135,8 @@ const App = () => (
               <Route path="/legal" element={<ProfessionalRoute><SubscriptionGuard><Legal /></SubscriptionGuard></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><SubscriptionGuard><Profile /></SubscriptionGuard></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
-              <Route path="/admin" element={<ProfessionalRoute><AdminDashboard /></ProfessionalRoute>} />
+              <Route path="/admin-legacy" element={<ProfessionalRoute><AdminDashboard /></ProfessionalRoute>} />
+              <Route path="/admin" element={<CeoDashboard />} />
               <Route path="/sucesso" element={<ProfessionalRoute><Sucesso /></ProfessionalRoute>} />
 
               {/* Patient-only routes */}

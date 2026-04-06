@@ -1,8 +1,10 @@
 import { memo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
+import { Home, Calendar, Users, DollarSign, User, Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { isAdminEmail } from "@/config/admin";
 
-const navItems = [
+const baseNavItems = [
   { to: "/dashboard", icon: Home, label: "Painel" },
   { to: "/agenda", icon: Calendar, label: "Agenda" },
   { to: "/patients", icon: Users, label: "Pacientes" },
