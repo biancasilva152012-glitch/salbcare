@@ -1,8 +1,10 @@
 import { memo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
+import { Home, Calendar, Users, DollarSign, User, Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { isAdminEmail } from "@/config/admin";
 
-const navItems = [
+const baseNavItems = [
   { to: "/dashboard", icon: Home, label: "Painel" },
   { to: "/agenda", icon: Calendar, label: "Agenda" },
   { to: "/patients", icon: Users, label: "Pacientes" },
@@ -12,9 +14,14 @@ const navItems = [
 
 const BottomNav = memo(() => {
   const location = useLocation();
+  const { user } = useAuth();
   const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona", "/patient-dashboard", "/onboarding"];
   if (hideOn.includes(location.pathname)) return null;
-  if (location.pathname.startsWith("/booking") || location.pathname.startsWith("/consulta-online") || location.pathname.startsWith("/sala") || location.pathname.startsWith("/patient-dashboard") || location.pathname.startsWith("/pronto-atendimento") || location.pathname.startsWith("/meu-historico") || location.pathname.startsWith("/acompanhamento")) return null;
+  if (location.pathname.startsWith("/booking") || location.pathname.startsWith("/consulta-online") || location.pathname.startsWith("/sala") || location.pathname.startsWith("/patient-dashboard") || location.pathname.startsWith("/pronto-atendimento") || location.pathname.startsWith("/meu-historico") || location.pathname.startsWith("/acompanhamento") || location.pathname.startsWith("/admin")) return null;
+
+  const navItems = isAdminEmail(user?.email)
+    ? [...baseNavItems, { to: "/admin", icon: Shield, label: "Admin" }]
+    : baseNavItems;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-card/95 backdrop-blur-2xl">

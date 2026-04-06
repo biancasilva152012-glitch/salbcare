@@ -39,6 +39,7 @@ const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const AdminDashboard = lazyWithRetry(() => import("./pages/AdminDashboard"), "AdminDashboard");
+const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
 const PatientBooking = lazyWithRetry(() => import("./pages/PatientBooking"), "PatientBooking");
 const PatientRoom = lazyWithRetry(() => import("./pages/PatientRoom"), "PatientRoom");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
@@ -134,7 +135,8 @@ const App = () => (
               <Route path="/legal" element={<ProfessionalRoute><SubscriptionGuard><Legal /></SubscriptionGuard></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><SubscriptionGuard><Profile /></SubscriptionGuard></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
-              <Route path="/admin" element={<ProfessionalRoute><AdminDashboard /></ProfessionalRoute>} />
+              <Route path="/admin-legacy" element={<ProfessionalRoute><AdminDashboard /></ProfessionalRoute>} />
+              <Route path="/admin" element={<CeoDashboard />} />
               <Route path="/sucesso" element={<ProfessionalRoute><Sucesso /></ProfessionalRoute>} />
 
               {/* Patient-only routes */}
