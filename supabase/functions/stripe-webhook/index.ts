@@ -68,6 +68,10 @@ serve(async (req) => {
         await handlePaymentFailed(stripe, supabase, event.data.object as Stripe.Invoice);
         break;
       }
+      case "payment_intent.succeeded": {
+        await handlePaymentIntentSucceeded(stripe, supabase, event.data.object as Stripe.PaymentIntent);
+        break;
+      }
       default:
         logStep("Evento ignorado", { type: event.type });
     }
@@ -83,6 +87,76 @@ serve(async (req) => {
   });
 });
 
+// ── payment_intent.succeeded (Pix auto-activation) ───────────────────
+async function handlePaymentIntentSucceeded(
+  stripe: Stripe,
+  supabase: any,
+  paymentIntent: Stripe.PaymentIntent
+) {
+  const paymentMethod = paymentIntent.payment_method_types?.[0];
+  logStep("payment_intent.succeeded", { id: paymentIntent.id, method: paymentMethod, amount: paymentIntent.amount });
+
+  // Find user by customer email
+  const customerId = typeof paymentIntent.customer === "string" ? paymentIntent.customer : null;
+  if (!customerId) {
+    logStep("payment_intent.succeeded → sem customer_id, tentando metadata");
+    // Try metadata fallback
+    const userId = paymentIntent.metadata?.user_id;
+    if (userId) {
+      await activateUserAccess(supabase, userId, paymentMethod || "pix");
+    }
+    return;
+  }
+
+  // Look up professional by stripe_customer_id
+  const { data: professional } = await supabase
+    .from("professionals")
+    .select("user_id, plan")
+    .eq("stripe_customer_id", customerId)
+    .maybeSingle();
+
+  if (professional) {
+    await activateUserAccess(supabase, professional.user_id, paymentMethod || "pix");
+    return;
+  }
+
+  // Fallback: look up by customer email
+  const customer = await stripe.customers.retrieve(customerId);
+  if (customer && !customer.deleted && customer.email) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .eq("email", customer.email)
+      .maybeSingle();
+
+    if (profile) {
+      await activateUserAccess(supabase, profile.user_id, paymentMethod || "pix");
+    } else {
+      logStep("payment_intent.succeeded → perfil não encontrado", { email: customer.email });
+    }
+  }
+}
+
+async function activateUserAccess(supabase: any, userId: string, paymentMethod: string) {
+  // Update professionals table
+  await supabase
+    .from("professionals")
+    .update({
+      subscription_status: "active",
+      plan_updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId);
+
+  // Update profiles table
+  await supabase
+    .from("profiles")
+    .update({ payment_status: "active" })
+    .eq("user_id", userId);
+
+  logStep(`✅ Acesso liberado automaticamente via ${paymentMethod} → user: ${userId}`);
+}
+
+// ── checkout.session.completed ────────────────────────────────────────
 async function handleCheckoutCompleted(
   stripe: Stripe,
   supabase: any,
@@ -96,7 +170,6 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  // Get price_id from the subscription or line items
   let priceId: string | null = null;
   let subscriptionId: string | null = null;
   let subStatus: string = "active";
@@ -106,12 +179,11 @@ async function handleCheckoutCompleted(
     subscriptionId = session.subscription;
     const sub = await stripe.subscriptions.retrieve(session.subscription);
     priceId = sub.items.data[0]?.price?.id ?? null;
-    subStatus = sub.status; // 'trialing' | 'active'
+    subStatus = sub.status;
     if (sub.trial_end) {
       trialEnd = new Date(sub.trial_end * 1000).toISOString();
     }
   } else {
-    // One-time payment (annual) — get from line items
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
     if (lineItems.data.length > 0) {
       priceId = lineItems.data[0].price?.id ?? null;
@@ -141,7 +213,6 @@ async function handleCheckoutCompleted(
     logStep("Trial registrado para user_id", { userId });
   }
 
-  // Also update profiles table for backward compatibility
   const { error: profError } = await supabase
     .from("professionals")
     .update(updateObj)
@@ -151,7 +222,6 @@ async function handleCheckoutCompleted(
     logStep("Erro ao atualizar professionals", { error: profError.message });
   }
 
-  // Update profiles payment_status for backward compat
   await supabase
     .from("profiles")
     .update({ payment_status: "active", plan: plan === "essencial" ? "basic" : plan === "pro" ? "professional" : "clinic" })
@@ -160,6 +230,7 @@ async function handleCheckoutCompleted(
   logStep(`checkout.session.completed → user: ${userId} | plano: ${plan} | billing: ${billing} | status: ${subStatus}`);
 }
 
+// ── customer.subscription.updated ─────────────────────────────────────
 async function handleSubscriptionUpdated(supabase: any, subscription: Stripe.Subscription) {
   const priceId = subscription.items.data[0]?.price?.id ?? null;
   const status = subscription.status;
@@ -167,7 +238,6 @@ async function handleSubscriptionUpdated(supabase: any, subscription: Stripe.Sub
 
   const resolved = priceId ? PLAN_MAP[priceId] : null;
 
-  // Find professional by subscription_id or stripe_customer_id
   let professional: any = null;
 
   const { data: bySub } = await supabase
@@ -211,7 +281,6 @@ async function handleSubscriptionUpdated(supabase: any, subscription: Stripe.Sub
     .update(updateObj)
     .eq("user_id", professional.user_id);
 
-  // Sync profiles
   const profilePlan = resolved ? (resolved.plan === "essencial" ? "basic" : resolved.plan === "pro" ? "professional" : "clinic") : undefined;
   const profileUpdate: Record<string, any> = {
     payment_status: status === "active" || status === "trialing" ? "active" : status === "past_due" ? "past_due" : "expired",
@@ -226,6 +295,7 @@ async function handleSubscriptionUpdated(supabase: any, subscription: Stripe.Sub
   logStep(`subscription.updated → user: ${professional.user_id} | novo plano: ${resolved?.plan ?? "unknown"} | status: ${status}`);
 }
 
+// ── customer.subscription.deleted ─────────────────────────────────────
 async function handleSubscriptionDeleted(supabase: any, subscription: Stripe.Subscription) {
   const { data: professional } = await supabase
     .from("professionals")
@@ -246,7 +316,6 @@ async function handleSubscriptionDeleted(supabase: any, subscription: Stripe.Sub
       subscription_status: "canceled",
       subscription_id: null,
       plan_updated_at: new Date().toISOString(),
-      // Do NOT reset had_trial
     })
     .eq("user_id", professional.user_id);
 
@@ -258,6 +327,7 @@ async function handleSubscriptionDeleted(supabase: any, subscription: Stripe.Sub
   logStep(`subscription.deleted → acesso removido para user: ${professional.user_id}`);
 }
 
+// ── invoice.payment_failed ────────────────────────────────────────────
 async function handlePaymentFailed(stripe: Stripe, supabase: any, invoice: Stripe.Invoice) {
   const customerId = typeof invoice.customer === "string" ? invoice.customer : null;
   const subscriptionId = typeof invoice.subscription === "string" ? invoice.subscription : null;

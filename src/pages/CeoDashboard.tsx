@@ -7,12 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   Shield, Users, Calendar, DollarSign, Loader2, Search,
   UserCheck, UserX, Eye, TrendingUp, Building2, FlaskConical,
   Bell, Settings, ArrowLeft, Stethoscope, BarChart3, Activity,
+  Plus, ExternalLink, Briefcase,
 } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
@@ -40,6 +42,14 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   pending: { label: "Pendente", cls: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" },
 };
 
+const PIPELINE_STAGES = [
+  { value: "lead", label: "🎯 Lead", cls: "bg-blue-500/10 text-blue-600" },
+  { value: "contato", label: "📞 Contato", cls: "bg-yellow-500/10 text-yellow-600" },
+  { value: "reuniao", label: "🤝 Reunião", cls: "bg-purple-500/10 text-purple-600" },
+  { value: "fechado", label: "✅ Fechado", cls: "bg-green-500/10 text-green-600" },
+  { value: "perdido", label: "❌ Perdido", cls: "bg-red-500/10 text-red-600" },
+];
+
 const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
 
 const CeoDashboard = () => {
@@ -55,6 +65,7 @@ const CeoDashboard = () => {
   const [examRequests, setExamRequests] = useState<any[]>([]);
   const [partnerInterests, setPartnerInterests] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [prospects, setProspects] = useState<any[]>([]);
 
   // Filters
   const [searchPro, setSearchPro] = useState("");
@@ -62,6 +73,8 @@ const CeoDashboard = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchPatient, setSearchPatient] = useState("");
   const [searchAppt, setSearchAppt] = useState("");
+  const [searchProspect, setSearchProspect] = useState("");
+  const [filterStage, setFilterStage] = useState("all");
 
   // Dialogs
   const [editPlanDialog, setEditPlanDialog] = useState(false);
@@ -69,6 +82,15 @@ const CeoDashboard = () => {
   const [newPlan, setNewPlan] = useState("basic");
   const [planReason, setPlanReason] = useState("");
   const [planValidUntil, setPlanValidUntil] = useState("");
+
+  // Prospect dialog
+  const [prospectDialog, setProspectDialog] = useState(false);
+  const [editingProspect, setEditingProspect] = useState<any>(null);
+  const [prospectForm, setProspectForm] = useState({
+    company_name: "", partner_type: "farmacia", contact_name: "",
+    email: "", phone: "", city: "", state: "CE", cnpj: "",
+    pipeline_stage: "lead", notes: "", next_action_date: "",
+  });
 
   // Auth check
   useEffect(() => {
@@ -86,13 +108,14 @@ const CeoDashboard = () => {
     if (!authorized) return;
     const load = async () => {
       setLoading(true);
-      const [profRes, patientsRes, apptRes, examRes, partnerRes, profilesRes] = await Promise.all([
+      const [profRes, patientsRes, apptRes, examRes, partnerRes, profilesRes, prospectsRes] = await Promise.all([
         supabase.from("professionals").select("*").order("created_at", { ascending: false }),
         supabase.from("patients").select("*").order("created_at", { ascending: false }),
         supabase.from("appointments").select("*").order("date", { ascending: false }),
         supabase.from("exam_requests").select("*").order("created_at", { ascending: false }),
         supabase.from("partner_interests").select("*").order("created_at", { ascending: false }),
         supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        (supabase as any).from("b2b_prospects").select("*").order("created_at", { ascending: false }),
       ]);
       setProfessionals(profRes.data || []);
       setPatients(patientsRes.data || []);
@@ -100,6 +123,7 @@ const CeoDashboard = () => {
       setExamRequests(examRes.data || []);
       setPartnerInterests(partnerRes.data || []);
       setProfiles(profilesRes.data || []);
+      setProspects(prospectsRes.data || []);
       setLoading(false);
     };
     load();
@@ -139,6 +163,23 @@ const CeoDashboard = () => {
       return !searchPatient || p.name?.toLowerCase().includes(searchPatient.toLowerCase()) || p.email?.toLowerCase().includes(searchPatient.toLowerCase());
     });
   }, [profiles, searchPatient]);
+
+  // Filtered prospects
+  const filteredProspects = useMemo(() => {
+    return prospects.filter(p => {
+      const matchSearch = !searchProspect || p.company_name?.toLowerCase().includes(searchProspect.toLowerCase()) || p.contact_name?.toLowerCase().includes(searchProspect.toLowerCase());
+      const matchStage = filterStage === "all" || p.pipeline_stage === filterStage;
+      return matchSearch && matchStage;
+    });
+  }, [prospects, searchProspect, filterStage]);
+
+  // Pipeline stats
+  const pipelineStats = useMemo(() => {
+    const stats: Record<string, number> = {};
+    for (const s of PIPELINE_STAGES) stats[s.value] = 0;
+    for (const p of prospects) stats[p.pipeline_stage] = (stats[p.pipeline_stage] || 0) + 1;
+    return stats;
+  }, [prospects]);
 
   // Charts data
   const monthlyRegistrations = useMemo(() => {
@@ -208,6 +249,89 @@ const CeoDashboard = () => {
     }
   };
 
+  // ── Prospect CRUD ───────────────────────────────────────────────────
+  const openNewProspect = () => {
+    setEditingProspect(null);
+    setProspectForm({
+      company_name: "", partner_type: "farmacia", contact_name: "",
+      email: "", phone: "", city: "", state: "CE", cnpj: "",
+      pipeline_stage: "lead", notes: "", next_action_date: "",
+    });
+    setProspectDialog(true);
+  };
+
+  const openEditProspect = (p: any) => {
+    setEditingProspect(p);
+    setProspectForm({
+      company_name: p.company_name || "",
+      partner_type: p.partner_type || "farmacia",
+      contact_name: p.contact_name || "",
+      email: p.email || "",
+      phone: p.phone || "",
+      city: p.city || "",
+      state: p.state || "CE",
+      cnpj: p.cnpj || "",
+      pipeline_stage: p.pipeline_stage || "lead",
+      notes: p.notes || "",
+      next_action_date: p.next_action_date || "",
+    });
+    setProspectDialog(true);
+  };
+
+  const handleSaveProspect = async () => {
+    if (!prospectForm.company_name || !prospectForm.contact_name) {
+      toast.error("Preencha nome da empresa e contato.");
+      return;
+    }
+
+    const whatsappLink = prospectForm.phone
+      ? `https://wa.me/55${prospectForm.phone.replace(/\D/g, "")}`
+      : null;
+
+    const payload = { ...prospectForm, whatsapp_link: whatsappLink };
+
+    if (editingProspect) {
+      const { error } = await (supabase as any)
+        .from("b2b_prospects")
+        .update({ ...payload, updated_at: new Date().toISOString() })
+        .eq("id", editingProspect.id);
+      if (error) { toast.error("Erro ao atualizar."); return; }
+      toast.success("Prospect atualizado!");
+      setProspects(prev => prev.map(p => p.id === editingProspect.id ? { ...p, ...payload } : p));
+    } else {
+      const { data, error } = await (supabase as any)
+        .from("b2b_prospects")
+        .insert(payload)
+        .select()
+        .single();
+      if (error) { toast.error("Erro ao criar."); return; }
+      toast.success("Novo prospect adicionado!");
+      setProspects(prev => [data, ...prev]);
+    }
+    setProspectDialog(false);
+  };
+
+  const handleUpdateProspectStage = async (id: string, stage: string) => {
+    const { error } = await (supabase as any)
+      .from("b2b_prospects")
+      .update({ pipeline_stage: stage, updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) toast.error("Erro ao atualizar estágio.");
+    else {
+      toast.success("Estágio atualizado!");
+      setProspects(prev => prev.map(p => p.id === id ? { ...p, pipeline_stage: stage } : p));
+    }
+  };
+
+  const handleDeleteProspect = async (id: string) => {
+    const { error } = await (supabase as any).from("b2b_prospects").delete().eq("id", id);
+    if (error) toast.error("Erro ao excluir.");
+    else {
+      toast.success("Prospect removido.");
+      setProspects(prev => prev.filter(p => p.id !== id));
+    }
+  };
+
   if (authLoading || authorized === null || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -257,6 +381,7 @@ const CeoDashboard = () => {
             <TabsTrigger value="appointments" className="text-xs gap-1 flex-1 min-w-fit"><Calendar className="h-3.5 w-3.5" />Consultas</TabsTrigger>
             <TabsTrigger value="exams" className="text-xs gap-1 flex-1 min-w-fit"><FlaskConical className="h-3.5 w-3.5" />Exames</TabsTrigger>
             <TabsTrigger value="partners" className="text-xs gap-1 flex-1 min-w-fit"><Building2 className="h-3.5 w-3.5" />Parceiros</TabsTrigger>
+            <TabsTrigger value="crm" className="text-xs gap-1 flex-1 min-w-fit"><Briefcase className="h-3.5 w-3.5" />CRM B2B</TabsTrigger>
             <TabsTrigger value="metrics" className="text-xs gap-1 flex-1 min-w-fit"><BarChart3 className="h-3.5 w-3.5" />Métricas</TabsTrigger>
             <TabsTrigger value="plans" className="text-xs gap-1 flex-1 min-w-fit"><Settings className="h-3.5 w-3.5" />Planos</TabsTrigger>
           </TabsList>
@@ -468,6 +593,110 @@ const CeoDashboard = () => {
             </div>
           </TabsContent>
 
+          {/* CRM B2B TAB */}
+          <TabsContent value="crm" className="space-y-4">
+            {/* Pipeline overview */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              {PIPELINE_STAGES.map(s => (
+                <div key={s.value} className="glass-card p-3 text-center">
+                  <p className="text-lg font-bold">{pipelineStats[s.value] || 0}</p>
+                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                <Input placeholder="Buscar empresa ou contato..." value={searchProspect} onChange={e => setSearchProspect(e.target.value)} className="pl-8 text-xs h-8" />
+              </div>
+              <Select value={filterStage} onValueChange={setFilterStage}>
+                <SelectTrigger className="w-36 h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos estágios</SelectItem>
+                  {PIPELINE_STAGES.map(s => (
+                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button size="sm" className="h-8 text-xs gap-1" onClick={openNewProspect}>
+                <Plus className="h-3.5 w-3.5" /> Novo prospect
+              </Button>
+            </div>
+
+            <p className="text-xs text-muted-foreground">{filteredProspects.length} prospect(s)</p>
+
+            {/* Prospects table */}
+            <div className="overflow-auto rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Empresa</TableHead>
+                    <TableHead className="text-xs">Tipo</TableHead>
+                    <TableHead className="text-xs">Contato</TableHead>
+                    <TableHead className="text-xs">Cidade</TableHead>
+                    <TableHead className="text-xs">Estágio</TableHead>
+                    <TableHead className="text-xs">Próx. ação</TableHead>
+                    <TableHead className="text-xs">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredProspects.map(p => {
+                    const stage = PIPELINE_STAGES.find(s => s.value === p.pipeline_stage) || PIPELINE_STAGES[0];
+                    return (
+                      <TableRow key={p.id}>
+                        <TableCell className="text-xs font-medium">{p.company_name}</TableCell>
+                        <TableCell className="text-xs">{p.partner_type === "farmacia" ? "🏪 Farmácia" : "🔬 Lab"}</TableCell>
+                        <TableCell>
+                          <div className="text-xs">{p.contact_name}</div>
+                          <div className="text-[10px] text-muted-foreground">{p.email}</div>
+                        </TableCell>
+                        <TableCell className="text-xs">{p.city || "—"}/{p.state || "—"}</TableCell>
+                        <TableCell>
+                          <Select value={p.pipeline_stage} onValueChange={(v) => handleUpdateProspectStage(p.id, v)}>
+                            <SelectTrigger className="h-6 text-[10px] w-28 border-0 p-1">
+                              <Badge variant="outline" className={`text-[10px] ${stage.cls}`}>{stage.label}</Badge>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {PIPELINE_STAGES.map(s => (
+                                <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {p.next_action_date ? format(new Date(p.next_action_date), "dd/MM/yy") : "—"}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            {p.whatsapp_link && (
+                              <Button size="sm" variant="ghost" className="h-6 text-[10px] px-1" asChild>
+                                <a href={p.whatsapp_link} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="h-3 w-3" />
+                                </a>
+                              </Button>
+                            )}
+                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2" onClick={() => openEditProspect(p)}>Editar</Button>
+                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-destructive" onClick={() => handleDeleteProspect(p.id)}>Excluir</Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            {filteredProspects.length === 0 && (
+              <div className="glass-card p-8 text-center space-y-2">
+                <Briefcase className="h-8 w-8 mx-auto text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Nenhum prospect cadastrado.</p>
+                <Button size="sm" className="text-xs" onClick={openNewProspect}>Adicionar primeiro prospect</Button>
+              </div>
+            )}
+          </TabsContent>
+
           {/* METRICS TAB */}
           <TabsContent value="metrics" className="space-y-6">
             <div className="glass-card p-4">
@@ -570,6 +799,90 @@ const CeoDashboard = () => {
           </div>
           <DialogFooter>
             <Button size="sm" className="w-full text-xs" onClick={handleSavePlan}>Aplicar alteração</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Prospect Dialog */}
+      <Dialog open={prospectDialog} onOpenChange={setProspectDialog}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-sm">{editingProspect ? "Editar prospect" : "Novo prospect"}</DialogTitle>
+            <DialogDescription className="text-xs">Cadastre uma farmácia ou laboratório para prospecção.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Nome da empresa *</Label>
+                <Input value={prospectForm.company_name} onChange={e => setProspectForm(f => ({ ...f, company_name: e.target.value }))} className="text-xs h-8" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Tipo</Label>
+                <Select value={prospectForm.partner_type} onValueChange={v => setProspectForm(f => ({ ...f, partner_type: v }))}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="farmacia">🏪 Farmácia</SelectItem>
+                    <SelectItem value="laboratorio">🔬 Laboratório</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Nome do contato *</Label>
+                <Input value={prospectForm.contact_name} onChange={e => setProspectForm(f => ({ ...f, contact_name: e.target.value }))} className="text-xs h-8" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">E-mail</Label>
+                <Input type="email" value={prospectForm.email} onChange={e => setProspectForm(f => ({ ...f, email: e.target.value }))} className="text-xs h-8" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Telefone/WhatsApp</Label>
+                <Input value={prospectForm.phone} onChange={e => setProspectForm(f => ({ ...f, phone: e.target.value }))} placeholder="85999999999" className="text-xs h-8" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">CNPJ</Label>
+                <Input value={prospectForm.cnpj} onChange={e => setProspectForm(f => ({ ...f, cnpj: e.target.value }))} className="text-xs h-8" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Cidade</Label>
+                <Input value={prospectForm.city} onChange={e => setProspectForm(f => ({ ...f, city: e.target.value }))} className="text-xs h-8" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Estado</Label>
+                <Input value={prospectForm.state} onChange={e => setProspectForm(f => ({ ...f, state: e.target.value }))} className="text-xs h-8" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Estágio do pipeline</Label>
+                <Select value={prospectForm.pipeline_stage} onValueChange={v => setProspectForm(f => ({ ...f, pipeline_stage: v }))}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PIPELINE_STAGES.map(s => (
+                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Próxima ação</Label>
+                <Input type="date" value={prospectForm.next_action_date} onChange={e => setProspectForm(f => ({ ...f, next_action_date: e.target.value }))} className="text-xs h-8" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Observações</Label>
+              <Textarea value={prospectForm.notes} onChange={e => setProspectForm(f => ({ ...f, notes: e.target.value }))} className="text-xs min-h-[60px]" placeholder="Notas sobre o prospect..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button size="sm" className="w-full text-xs" onClick={handleSaveProspect}>
+              {editingProspect ? "Salvar alterações" : "Adicionar prospect"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

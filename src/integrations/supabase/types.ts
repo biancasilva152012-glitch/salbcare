@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_logs: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          target_id: string | null
+          target_table: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Relationships: []
+      }
       ambassador_applications: {
         Row: {
           conversions: number
@@ -172,6 +202,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      b2b_prospects: {
+        Row: {
+          assigned_to: string | null
+          city: string | null
+          cnpj: string | null
+          company_name: string
+          contact_name: string
+          created_at: string
+          email: string | null
+          id: string
+          next_action_date: string | null
+          notes: string | null
+          partner_type: string
+          phone: string | null
+          pipeline_stage: string
+          state: string | null
+          updated_at: string
+          whatsapp_link: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          city?: string | null
+          cnpj?: string | null
+          company_name: string
+          contact_name: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          next_action_date?: string | null
+          notes?: string | null
+          partner_type?: string
+          phone?: string | null
+          pipeline_stage?: string
+          state?: string | null
+          updated_at?: string
+          whatsapp_link?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          city?: string | null
+          cnpj?: string | null
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          next_action_date?: string | null
+          notes?: string | null
+          partner_type?: string
+          phone?: string | null
+          pipeline_stage?: string
+          state?: string | null
+          updated_at?: string
+          whatsapp_link?: string | null
+        }
+        Relationships: []
       }
       chat_messages: {
         Row: {
