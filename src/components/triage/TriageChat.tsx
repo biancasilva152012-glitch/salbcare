@@ -4,16 +4,10 @@ import { Bot, Send, Loader2, AlertTriangle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { runTriage, type TriageResult } from "@/utils/triageEngine";
 
 type TriageStep = "idle" | "symptoms" | "duration" | "conditions" | "loading" | "result";
-
-interface TriageResult {
-  especialidade: string;
-  motivo: string;
-  urgencia: "normal" | "alta";
-}
 
 const SPECIALTY_LABELS: Record<string, string> = {
   medico: "Médico Clínico Geral",
