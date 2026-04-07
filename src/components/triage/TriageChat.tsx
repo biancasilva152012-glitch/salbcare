@@ -4,16 +4,10 @@ import { Bot, Send, Loader2, AlertTriangle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { runTriage, type TriageResult } from "@/utils/triageEngine";
 
 type TriageStep = "idle" | "symptoms" | "duration" | "conditions" | "loading" | "result";
-
-interface TriageResult {
-  especialidade: string;
-  motivo: string;
-  urgencia: "normal" | "alta";
-}
 
 const SPECIALTY_LABELS: Record<string, string> = {
   medico: "Médico Clínico Geral",
@@ -41,21 +35,20 @@ const TriageChat = ({ onSpecialtyRecommended, onClose }: TriageChatProps) => {
   const [conditions, setConditions] = useState("");
   const [result, setResult] = useState<TriageResult | null>(null);
 
-  const submitTriage = async (finalConditions: string) => {
+  const submitTriage = (finalConditions: string) => {
     setStep("loading");
-    try {
-      const { data, error } = await supabase.functions.invoke("ai-triage", {
-        body: { symptoms, duration, conditions: finalConditions },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      setResult(data as TriageResult);
-      setStep("result");
-    } catch (err: any) {
-      console.error("Triage error:", err);
-      toast.error("Não foi possível completar a triagem. Tente novamente.");
-      setStep("conditions");
-    }
+    // Simula um pequeno delay para UX, mas roda 100% local
+    setTimeout(() => {
+      try {
+        const triageResult = runTriage({ symptoms, duration, conditions: finalConditions });
+        setResult(triageResult);
+        setStep("result");
+      } catch (err) {
+        console.error("Triage error:", err);
+        toast.error("Não foi possível completar a triagem. Tente novamente.");
+        setStep("conditions");
+      }
+    }, 800);
   };
 
   const handleSeeResults = () => {
