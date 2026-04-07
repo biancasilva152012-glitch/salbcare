@@ -35,21 +35,20 @@ const TriageChat = ({ onSpecialtyRecommended, onClose }: TriageChatProps) => {
   const [conditions, setConditions] = useState("");
   const [result, setResult] = useState<TriageResult | null>(null);
 
-  const submitTriage = async (finalConditions: string) => {
+  const submitTriage = (finalConditions: string) => {
     setStep("loading");
-    try {
-      const { data, error } = await supabase.functions.invoke("ai-triage", {
-        body: { symptoms, duration, conditions: finalConditions },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      setResult(data as TriageResult);
-      setStep("result");
-    } catch (err: any) {
-      console.error("Triage error:", err);
-      toast.error("Não foi possível completar a triagem. Tente novamente.");
-      setStep("conditions");
-    }
+    // Simula um pequeno delay para UX, mas roda 100% local
+    setTimeout(() => {
+      try {
+        const triageResult = runTriage({ symptoms, duration, conditions: finalConditions });
+        setResult(triageResult);
+        setStep("result");
+      } catch (err) {
+        console.error("Triage error:", err);
+        toast.error("Não foi possível completar a triagem. Tente novamente.");
+        setStep("conditions");
+      }
+    }, 800);
   };
 
   const handleSeeResults = () => {
