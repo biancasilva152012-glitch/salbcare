@@ -15,7 +15,11 @@ const baseNavItems = [
 const BottomNav = memo(() => {
   const location = useLocation();
   const { user } = useAuth();
-  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona", "/patient-dashboard", "/onboarding"];
+
+  // Hide completely for unauthenticated users
+  if (!user) return null;
+
+  const hideOn = ["/", "/login", "/register", "/forgot-password", "/terms", "/privacy", "/como-funciona", "/parcerias", "/planos", "/onboarding", "/patient-dashboard"];
   if (hideOn.includes(location.pathname)) return null;
   if (location.pathname.startsWith("/booking") || location.pathname.startsWith("/consulta-online") || location.pathname.startsWith("/sala") || location.pathname.startsWith("/patient-dashboard") || location.pathname.startsWith("/pronto-atendimento") || location.pathname.startsWith("/meu-historico") || location.pathname.startsWith("/acompanhamento") || location.pathname.startsWith("/admin")) return null;
 

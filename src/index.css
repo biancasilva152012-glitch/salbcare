@@ -80,8 +80,9 @@ body[data-scroll-locked] {
     @apply bg-background text-foreground font-body antialiased;
     min-height: 100%;
     overflow-x: hidden;
-    scroll-padding-top: 4.5rem; /* height of sticky navbar */
+    scroll-padding-top: 4.5rem;
     scroll-padding-bottom: 120px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   h1, h2, h3, h4, h5, h6 {
