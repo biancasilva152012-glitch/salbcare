@@ -383,6 +383,48 @@ export type Database = {
         }
         Relationships: []
       }
+      diagnosticos: {
+        Row: {
+          aceita_dicas: boolean
+          converteu_para_trial: boolean
+          created_at: string
+          email: string
+          especialidade: string
+          faturamento: string
+          id: string
+          nome: string
+          regime_atual: string
+          resultado_gerado: Json
+          whatsapp: string
+        }
+        Insert: {
+          aceita_dicas?: boolean
+          converteu_para_trial?: boolean
+          created_at?: string
+          email: string
+          especialidade: string
+          faturamento: string
+          id?: string
+          nome: string
+          regime_atual: string
+          resultado_gerado?: Json
+          whatsapp: string
+        }
+        Update: {
+          aceita_dicas?: boolean
+          converteu_para_trial?: boolean
+          created_at?: string
+          email?: string
+          especialidade?: string
+          faturamento?: string
+          id?: string
+          nome?: string
+          regime_atual?: string
+          resultado_gerado?: Json
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       digital_documents: {
         Row: {
           council_number: string | null
@@ -607,6 +649,54 @@ export type Database = {
           rating?: number
           reviews_count?: number
           specialty?: string
+        }
+        Relationships: []
+      }
+      leads_b2b: {
+        Row: {
+          cidade: string
+          cnpj: string | null
+          created_at: string
+          email: string
+          estado: string | null
+          id: string
+          nome_empresa: string
+          nome_responsavel: string
+          quantidade_unidades: string
+          status: string
+          tipo: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          cidade: string
+          cnpj?: string | null
+          created_at?: string
+          email: string
+          estado?: string | null
+          id?: string
+          nome_empresa: string
+          nome_responsavel: string
+          quantidade_unidades?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          cidade?: string
+          cnpj?: string | null
+          created_at?: string
+          email?: string
+          estado?: string | null
+          id?: string
+          nome_empresa?: string
+          nome_responsavel?: string
+          quantidade_unidades?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+          whatsapp?: string
         }
         Relationships: []
       }

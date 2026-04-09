@@ -62,6 +62,7 @@ const AcompanhamentoSolicitacao = lazyWithRetry(() => import("./pages/Acompanham
 const CompleteProfile = lazyWithRetry(() => import("./pages/CompleteProfile"), "CompleteProfile");
 const Embaixadores = lazyWithRetry(() => import("./pages/Embaixadores"), "Embaixadores");
 const Parcerias = lazyWithRetry(() => import("./pages/Parcerias"), "Parcerias");
+const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,6 +121,7 @@ const App = () => (
               <Route path="/complete-profile" element={<CompleteProfile />} />
               <Route path="/embaixadores" element={<Embaixadores />} />
               <Route path="/parcerias" element={<Parcerias />} />
+              <Route path="/diagnostico" element={<Diagnostico />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
