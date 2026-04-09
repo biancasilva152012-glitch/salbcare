@@ -552,6 +552,8 @@ const Index = () => {
             </p>
           </div>
         </footer>
+
+        <WhatsAppFab />
       </div>
     </>
   );
