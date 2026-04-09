@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import FreedomCalculator from "@/components/financial/FreedomCalculator";
+import WhatsAppFab from "@/components/WhatsAppFab";
 import { PLANS } from "@/config/plans";
 import { useState } from "react";
 
