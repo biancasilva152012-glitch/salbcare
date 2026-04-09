@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const WHATSAPP_NUMBER = "5585999999999"; // Replace with actual number
+const WHATSAPP_NUMBER = "5588996924700";
 const WHATSAPP_MESSAGE = encodeURIComponent(
   "Olá! Vim pelo site da SALBCARE e gostaria de saber mais sobre a plataforma."
 );
