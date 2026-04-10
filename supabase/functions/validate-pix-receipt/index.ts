@@ -28,21 +28,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { file_path, expected_amount } = await req.json();
-    if (!file_path || !expected_amount) {
+    const { file_path } = await req.json();
+    if (!file_path) {
       return new Response(JSON.stringify({ error: "Dados incompletos" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Resolve plan from the user's profile server-side (NEVER trust client input)
+    // Resolve plan AND price server-side (NEVER trust client input)
+    const PLAN_PRICES: Record<string, number> = {
+      basic: 49,
+      professional: 99,
+      clinic: 189,
+    };
+
     const { data: profile } = await supabase
       .from("profiles")
       .select("plan")
       .eq("user_id", user.id)
       .single();
     const resolvedPlan = profile?.plan || "basic";
+    const expected_amount = PLAN_PRICES[resolvedPlan] ?? PLAN_PRICES.basic;
 
     // Download the receipt image from storage
     const { data: fileData, error: downloadError } = await supabase.storage

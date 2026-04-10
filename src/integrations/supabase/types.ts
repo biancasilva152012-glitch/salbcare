@@ -1354,6 +1354,19 @@ export type Database = {
         Returns: boolean
       }
       is_admin_or_contador: { Args: { _user_id: string }; Returns: boolean }
+      verify_document_by_hash: {
+        Args: { _hash: string }
+        Returns: {
+          council_number: string
+          council_state: string
+          created_at: string
+          document_type: string
+          patient_name: string
+          professional_name: string
+          professional_type: string
+          signed_icp: boolean
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "contador" | "user"
