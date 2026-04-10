@@ -63,6 +63,7 @@ const CompleteProfile = lazyWithRetry(() => import("./pages/CompleteProfile"), "
 const Embaixadores = lazyWithRetry(() => import("./pages/Embaixadores"), "Embaixadores");
 const Parcerias = lazyWithRetry(() => import("./pages/Parcerias"), "Parcerias");
 const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
+const ParaProfissionais = lazyWithRetry(() => import("./pages/ParaProfissionais"), "ParaProfissionais");
 
 const queryClient = new QueryClient({
   defaultOptions: {
