@@ -395,7 +395,7 @@ const Diagnostico = () => {
         </AnimatePresence>
       </div>
 
-      <WhatsAppFab />
+      {/* WhatsAppFab removed */}
     </div>
   );
 };
