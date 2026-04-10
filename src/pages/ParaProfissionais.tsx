@@ -57,7 +57,7 @@ const testimonials = [
   },
   {
     name: "Cinara Costa",
-    specialty: "Profissional de Saúde • HOF e Prontuários",
+    specialty: "Dentista • HOF e Prontuários",
     stars: 5,
     text: "Faço a primeira avaliação de HOF e organizo todos os prontuários dos meus pacientes pela SalbCare. Ficou tudo centralizado, seguro e fácil de acessar a qualquer momento.",
   },
