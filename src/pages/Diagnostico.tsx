@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
-import WhatsAppFab from "@/components/WhatsAppFab";
+// WhatsAppFab removed from this page
 
 const SPECIALTIES = [
   { key: "medico", emoji: "🩺", label: "Médico(a)" },
