@@ -129,7 +129,7 @@ const Diagnostico = () => {
     const result = generateResult(regime, faturamento);
     setResultado(result);
 
-    await supabase.from("diagnosticos" as any).insert({
+    await supabase.from("diagnosticos").insert({
       nome: nome.trim(),
       whatsapp: whatsapp.trim(),
       email: email.trim(),
@@ -140,7 +140,9 @@ const Diagnostico = () => {
       aceita_dicas: aceitaDicas,
     });
 
-    // Open WhatsApp with result (auto-message to lead)
+    // Open WhatsApp to send result to the lead's number
+    const cleanPhone = whatsapp.trim().replace(/\D/g, "");
+    const phoneNumber = cleanPhone.startsWith("55") ? cleanPhone : `55${cleanPhone}`;
     const waMsg = encodeURIComponent(
       `Oi ${nome.split(" ")[0]}! Aqui está seu diagnóstico financeiro da SALBCARE 👇\n\n` +
       `💰 Economia estimada: R$ ${result.economia.toLocaleString("pt-BR")}/mês\n` +
@@ -150,8 +152,7 @@ const Diagnostico = () => {
       `👉 https://salbcare.lovable.app/register\n\n` +
       `Qualquer dúvida, responde aqui 🙏\n— Bianca, Fundadora SALBCARE`
     );
-    const waNumber = "5588996924700";
-    window.open(`https://wa.me/${waNumber}?text=${waMsg}`, "_blank");
+    window.open(`https://wa.me/${phoneNumber}?text=${waMsg}`, "_blank");
 
     setLoading(false);
     setStep(5);
