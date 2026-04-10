@@ -8,10 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/SEOHead";
 
 interface DocumentResult {
-  hash_code: string;
   professional_name: string;
   professional_type: string;
   council_number: string | null;
+  council_state: string | null;
   patient_name: string;
   document_type: string;
   signed_icp: boolean;
@@ -33,11 +33,9 @@ const VerifyDocument = () => {
     setSearched(true);
     try {
       const { data } = await supabase
-        .from("digital_documents")
-        .select("hash_code, professional_name, professional_type, council_number, patient_name, document_type, signed_icp, created_at")
-        .eq("hash_code", hash.trim().toUpperCase())
-        .single();
-      setResult(data as DocumentResult | null);
+        .rpc("verify_document_by_hash", { _hash: hash.trim().toUpperCase() });
+      const row = Array.isArray(data) ? data[0] ?? null : data;
+      setResult(row as DocumentResult | null);
     } catch {
       setResult(null);
     } finally {
