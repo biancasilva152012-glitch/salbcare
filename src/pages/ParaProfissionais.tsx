@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Video, FileText, Brain, Apple, Stethoscope, Activity, Ear, ArrowRight } from "lucide-react";
+import { Calendar, Video, FileText, Brain, Apple, Stethoscope, Activity, Ear, ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import SEOHead from "@/components/SEOHead";
-import WhatsAppFab from "@/components/WhatsAppFab";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -41,6 +40,27 @@ const specialties = [
   { label: "Medicina", icon: Stethoscope },
   { label: "Fisioterapia", icon: Activity },
   { label: "Fonoaudiologia", icon: Ear },
+];
+
+const testimonials = [
+  {
+    name: "Sarah Almeida",
+    specialty: "Médica • Clínica Médica",
+    stars: 5,
+    text: "A SalbCare organizou meu consultório digital do zero. Consigo gerenciar minha agenda, emitir receituários e atender com muito mais profissionalismo — tudo em uma plataforma só.",
+  },
+  {
+    name: "Mayara Barros",
+    specialty: "Terapeuta • Atende da Espanha para o Brasil",
+    stars: 5,
+    text: "Atendo meus pacientes brasileiros morando na Espanha sem nenhuma complicação. A teleconsulta integrada tornou isso simples e legal. Não consigo imaginar trabalhar sem a plataforma.",
+  },
+  {
+    name: "Cinara Costa",
+    specialty: "Profissional de Saúde • HOF e Prontuários",
+    stars: 5,
+    text: "Faço a primeira avaliação de HOF e organizo todos os prontuários dos meus pacientes pela SalbCare. Ficou tudo centralizado, seguro e fácil de acessar a qualquer momento.",
+  },
 ];
 
 const faqItems = [
@@ -171,6 +191,46 @@ const ParaProfissionais = () => (
         </motion.div>
       </section>
 
+      {/* ── Testimonials ── */}
+      <section className="px-4 pb-16">
+        <motion.div
+          className="mx-auto max-w-4xl"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={stagger}
+        >
+          <motion.h2
+            variants={fadeUp}
+            className="text-xl sm:text-2xl font-bold mb-8 text-center"
+          >
+            O que dizem nossos profissionais
+          </motion.h2>
+          <div className="grid gap-5 sm:grid-cols-3">
+            {testimonials.map((t) => (
+              <motion.div key={t.name} variants={fadeUp}>
+                <Card className="h-full border-border/40 bg-card/60 backdrop-blur-sm">
+                  <CardContent className="p-6 flex flex-col gap-3">
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: t.stars }).map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">
+                      "{t.text}"
+                    </p>
+                    <div className="mt-auto pt-3 border-t border-border/30">
+                      <p className="text-sm font-semibold">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.specialty}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
       {/* ── FAQ ── */}
       <section className="px-4 pb-16">
         <motion.div
@@ -230,8 +290,6 @@ const ParaProfissionais = () => (
           <Link to="/register">Começar teste grátis de 7 dias</Link>
         </Button>
       </div>
-
-      <WhatsAppFab />
     </div>
   </>
 );

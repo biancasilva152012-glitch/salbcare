@@ -93,6 +93,7 @@ const Index = () => {
               <a href="#recursos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Recursos</a>
               <a href="#planos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Planos</a>
               <a href="#pacientes" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Para Pacientes</a>
+              <Link to="/para-profissionais" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Para Profissionais</Link>
             </div>
 
             {/* Desktop CTA */}
@@ -125,6 +126,7 @@ const Index = () => {
               <a href="#recursos" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Recursos</a>
               <a href="#planos" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Planos</a>
               <a href="#pacientes" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Para Pacientes</a>
+              <Link to="/para-profissionais" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Para Profissionais</Link>
               <div className="flex flex-col gap-2 pt-2">
                 <Button asChild variant="outline" className="w-full border-border/60">
                   <Link to="/login">Entrar</Link>
@@ -553,7 +555,7 @@ const Index = () => {
           </div>
         </footer>
 
-        <WhatsAppFab />
+        {/* WhatsApp fab removed */}
       </div>
     </>
   );
