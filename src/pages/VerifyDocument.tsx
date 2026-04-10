@@ -102,7 +102,7 @@ const VerifyDocument = () => {
                   />
                 </div>
                 <p className="text-[10px] text-muted-foreground">
-                  Hash: {result.hash_code}
+                  Hash: {hash}
                 </p>
               </div>
             ) : (
