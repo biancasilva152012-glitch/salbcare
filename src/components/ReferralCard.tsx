@@ -15,10 +15,10 @@ const ReferralCard = () => {
   const { data: referralCount = 0 } = useQuery({
     queryKey: ["referral-count", user?.id],
     queryFn: async () => {
-      const { count } = await supabase
+      const { count } = await (supabase
         .from("profiles")
-        .select("id", { count: "exact", head: true })
-        .eq("referral_code" as any, user!.id);
+        .select("id", { count: "exact", head: true }) as any)
+        .eq("referral_code", user!.id);
       return count || 0;
     },
     enabled: !!user,
