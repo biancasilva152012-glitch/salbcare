@@ -64,6 +64,8 @@ const Embaixadores = lazyWithRetry(() => import("./pages/Embaixadores"), "Embaix
 const Parcerias = lazyWithRetry(() => import("./pages/Parcerias"), "Parcerias");
 const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
 const ParaProfissionais = lazyWithRetry(() => import("./pages/ParaProfissionais"), "ParaProfissionais");
+const PublicProfile = lazyWithRetry(() => import("./pages/PublicProfile"), "PublicProfile");
+const SpecialtyListing = lazyWithRetry(() => import("./pages/SpecialtyListing"), "SpecialtyListing");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -124,6 +126,11 @@ const App = () => (
               <Route path="/parcerias" element={<Parcerias />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/para-profissionais" element={<ParaProfissionais />} />
+              <Route path="/p/:slug" element={<PublicProfile />} />
+              <Route path="/psicologos" element={<SpecialtyListing />} />
+              <Route path="/nutricionistas" element={<SpecialtyListing />} />
+              <Route path="/medicos" element={<SpecialtyListing />} />
+              <Route path="/fisioterapeutas" element={<SpecialtyListing />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
