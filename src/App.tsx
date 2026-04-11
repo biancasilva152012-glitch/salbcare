@@ -127,7 +127,10 @@ const App = () => (
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/para-profissionais" element={<ParaProfissionais />} />
               <Route path="/p/:slug" element={<PublicProfile />} />
-              <Route path="/:specialty" element={<SpecialtyListing />} />
+              <Route path="/psicologos" element={<SpecialtyListing />} />
+              <Route path="/nutricionistas" element={<SpecialtyListing />} />
+              <Route path="/medicos" element={<SpecialtyListing />} />
+              <Route path="/fisioterapeutas" element={<SpecialtyListing />} />
 
               {/* Professional-only routes */}
               <Route path="/onboarding" element={<ProfessionalRoute><Onboarding /></ProfessionalRoute>} />
