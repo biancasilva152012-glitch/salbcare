@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/SEOHead";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,8 +36,9 @@ const specialtyConfig: Record<string, { type: string; title: string; description
 };
 
 const SpecialtyListing = () => {
-  const { specialty } = useParams<{ specialty: string }>();
-  const config = specialtyConfig[specialty || ""] || null;
+  const location = useLocation();
+  const specialty = location.pathname.replace("/", "");
+  const config = specialtyConfig[specialty] || null;
 
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["specialty-listing", config?.type],
