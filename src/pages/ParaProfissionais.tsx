@@ -120,13 +120,12 @@ const ParaProfissionais = () => (
             variants={fadeUp}
             className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto"
           >
-            Atenda online, gerencie sua agenda e emita receituários — tudo em um lugar.
-            Sem comissão. Plano fixo.
+            Agenda, teleconsulta e receituário. Sem comissão. 7 dias grátis.
           </motion.p>
           <motion.div variants={fadeUp} className="mt-8">
             <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl">
               <Link to="/register">
-                Começar teste grátis de 7 dias
+                Começar agora
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

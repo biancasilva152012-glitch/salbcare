@@ -15,6 +15,7 @@ import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import ConnectOnboardingBanner from "@/components/ConnectOnboardingBanner";
 import PendingBookings from "@/components/PendingBookings";
+import ReferralCard from "@/components/ReferralCard";
 
 interface QuickAction {
   icon: typeof Calendar;
@@ -285,6 +286,11 @@ const Dashboard = () => {
             </button>
           </motion.div>
         )}
+
+        {/* Referral card */}
+        <motion.div variants={item}>
+          <ReferralCard />
+        </motion.div>
 
         {/* Today's appointments */}
         <motion.div variants={item}>
