@@ -1071,6 +1071,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          acquisition_source: string | null
           availability_online: boolean
           available_hours: Json | null
           avatar_url: string | null
@@ -1094,6 +1095,8 @@ export type Database = {
           pix_key: string | null
           plan: string
           professional_type: string
+          profile_slug: string | null
+          referral_code: string | null
           slot_duration: number | null
           stripe_account_id: string | null
           stripe_onboarding_complete: boolean
@@ -1105,6 +1108,7 @@ export type Database = {
           verification_status: string
         }
         Insert: {
+          acquisition_source?: string | null
           availability_online?: boolean
           available_hours?: Json | null
           avatar_url?: string | null
@@ -1128,6 +1132,8 @@ export type Database = {
           pix_key?: string | null
           plan?: string
           professional_type?: string
+          profile_slug?: string | null
+          referral_code?: string | null
           slot_duration?: number | null
           stripe_account_id?: string | null
           stripe_onboarding_complete?: boolean
@@ -1139,6 +1145,7 @@ export type Database = {
           verification_status?: string
         }
         Update: {
+          acquisition_source?: string | null
           availability_online?: boolean
           available_hours?: Json | null
           avatar_url?: string | null
@@ -1162,6 +1169,8 @@ export type Database = {
           pix_key?: string | null
           plan?: string
           professional_type?: string
+          profile_slug?: string | null
+          referral_code?: string | null
           slot_duration?: number | null
           stripe_account_id?: string | null
           stripe_onboarding_complete?: boolean
