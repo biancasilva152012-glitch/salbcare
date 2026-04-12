@@ -7,480 +7,235 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
-  Shield, Users, Calendar, DollarSign, Loader2, Search,
-  UserCheck, UserX, Eye, TrendingUp, Building2, FlaskConical,
-  Bell, Settings, ArrowLeft, Stethoscope, BarChart3, Activity,
-  Plus, ExternalLink, Briefcase,
+  Shield, Users, Loader2, Search, ArrowLeft, Stethoscope,
+  DollarSign, BarChart3, UserPlus, TrendingUp,
 } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line, Legend,
 } from "recharts";
-
-const PLAN_LABELS: Record<string, string> = {
-  basic: "Essencial",
-  professional: "Profissional",
-  clinic: "Clínica",
-};
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   active: { label: "Ativo", cls: "bg-green-500/10 text-green-600 border-green-500/20" },
   trialing: { label: "Trial", cls: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
-  canceled: { label: "Inativo", cls: "bg-red-500/10 text-red-600 border-red-500/20" },
-  past_due: { label: "Inadimplente", cls: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" },
+  canceled: { label: "Cancelado", cls: "bg-red-500/10 text-red-600 border-red-500/20" },
   none: { label: "Sem plano", cls: "bg-muted text-muted-foreground border-border" },
-  pending: { label: "Pendente", cls: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" },
 };
-
-const PIPELINE_STAGES = [
-  { value: "lead", label: "🎯 Lead", cls: "bg-blue-500/10 text-blue-600" },
-  { value: "contato", label: "📞 Contato", cls: "bg-yellow-500/10 text-yellow-600" },
-  { value: "reuniao", label: "🤝 Reunião", cls: "bg-purple-500/10 text-purple-600" },
-  { value: "fechado", label: "✅ Fechado", cls: "bg-green-500/10 text-green-600" },
-  { value: "perdido", label: "❌ Perdido", cls: "bg-red-500/10 text-red-600" },
-];
-
-const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
 
 const CeoDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // Data
-  const [professionals, setProfessionals] = useState<any[]>([]);
-  const [patients, setPatients] = useState<any[]>([]);
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [examRequests, setExamRequests] = useState<any[]>([]);
-  const [partnerInterests, setPartnerInterests] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
-  const [prospects, setProspects] = useState<any[]>([]);
-
-  // Filters
   const [searchPro, setSearchPro] = useState("");
-  const [filterPlan, setFilterPlan] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [searchPatient, setSearchPatient] = useState("");
-  const [searchAppt, setSearchAppt] = useState("");
-  const [searchProspect, setSearchProspect] = useState("");
-  const [filterStage, setFilterStage] = useState("all");
 
-  // Dialogs
-  const [editPlanDialog, setEditPlanDialog] = useState(false);
-  const [editTarget, setEditTarget] = useState<any>(null);
-  const [newPlan, setNewPlan] = useState("basic");
-  const [planReason, setPlanReason] = useState("");
-  const [planValidUntil, setPlanValidUntil] = useState("");
-
-  // Prospect dialog
-  const [prospectDialog, setProspectDialog] = useState(false);
-  const [editingProspect, setEditingProspect] = useState<any>(null);
-  const [prospectForm, setProspectForm] = useState({
-    company_name: "", partner_type: "farmacia", contact_name: "",
-    email: "", phone: "", city: "", state: "CE", cnpj: "",
-    pipeline_stage: "lead", notes: "", next_action_date: "",
-  });
-
-  // Auth check
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/login", { replace: true }); return; }
-    if (!isAdminEmail(user.email)) {
-      navigate("/dashboard", { replace: true });
-      return;
-    }
+    if (!isAdminEmail(user.email)) { navigate("/dashboard", { replace: true }); return; }
     setAuthorized(true);
   }, [user, authLoading, navigate]);
 
-  // Load all data
   useEffect(() => {
     if (!authorized) return;
     const load = async () => {
       setLoading(true);
-      const [profRes, patientsRes, apptRes, examRes, partnerRes, profilesRes, prospectsRes] = await Promise.all([
-        supabase.from("professionals").select("*").order("created_at", { ascending: false }),
-        supabase.from("patients").select("*").order("created_at", { ascending: false }),
-        supabase.from("appointments").select("*").order("date", { ascending: false }),
-        supabase.from("exam_requests").select("*").order("created_at", { ascending: false }),
-        supabase.from("partner_interests").select("*").order("created_at", { ascending: false }),
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-        (supabase as any).from("b2b_prospects").select("*").order("created_at", { ascending: false }),
-      ]);
-      setProfessionals(profRes.data || []);
-      setPatients(patientsRes.data || []);
-      setAppointments(apptRes.data || []);
-      setExamRequests(examRes.data || []);
-      setPartnerInterests(partnerRes.data || []);
-      setProfiles(profilesRes.data || []);
-      setProspects(prospectsRes.data || []);
+      const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+      setProfiles(data || []);
       setLoading(false);
     };
     load();
   }, [authorized]);
 
-  // Stats
-  const totalProfessionals = profiles.filter(p => p.user_type === "professional").length;
-  const totalPatients = profiles.filter(p => p.user_type === "patient").length;
-  const totalAppointments = appointments.length;
-  const estimatedMRR = useMemo(() => {
-    let mrr = 0;
-    for (const p of professionals) {
-      if (p.subscription_status === "active" || p.subscription_status === "trialing") {
-        if (p.plan === "clinic") mrr += 189;
-        else if (p.plan === "professional") mrr += 99;
-        else mrr += 49;
-      }
-    }
-    return mrr;
-  }, [professionals]);
+  const professionals = useMemo(() => profiles.filter(p => p.user_type === "professional"), [profiles]);
+  const totalPros = professionals.length;
+  const activePros = professionals.filter(p => p.payment_status === "active").length;
+  const trialPros = professionals.filter(p => {
+    if (!p.trial_start_date) return false;
+    const days = Math.ceil((7 * 24 * 60 * 60 * 1000 - (Date.now() - new Date(p.trial_start_date).getTime())) / (1000 * 60 * 60 * 24));
+    return days > 0 && p.payment_status !== "active";
+  }).length;
+  const churnThisMonth = professionals.filter(p => {
+    if (p.payment_status !== "canceled" && p.payment_status !== "expired") return false;
+    const d = new Date(p.updated_at);
+    const now = new Date();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
 
-  // Filtered professionals
+  const estimatedMRR = activePros * 89;
+
+  const latestRegistrations = professionals.slice(0, 10);
+
   const filteredPros = useMemo(() => {
-    const proProfiles = profiles.filter(p => p.user_type === "professional");
-    return proProfiles.filter(p => {
+    return professionals.filter(p => {
       const matchSearch = !searchPro || p.name?.toLowerCase().includes(searchPro.toLowerCase()) || p.email?.toLowerCase().includes(searchPro.toLowerCase());
-      const matchPlan = filterPlan === "all" || p.plan === filterPlan;
       const matchStatus = filterStatus === "all" || p.payment_status === filterStatus;
-      return matchSearch && matchPlan && matchStatus;
+      return matchSearch && matchStatus;
     });
-  }, [profiles, searchPro, filterPlan, filterStatus]);
+  }, [professionals, searchPro, filterStatus]);
 
-  // Filtered patients
-  const filteredPatients = useMemo(() => {
-    const patProfiles = profiles.filter(p => p.user_type === "patient");
-    return patProfiles.filter(p => {
-      return !searchPatient || p.name?.toLowerCase().includes(searchPatient.toLowerCase()) || p.email?.toLowerCase().includes(searchPatient.toLowerCase());
-    });
-  }, [profiles, searchPatient]);
-
-  // Filtered prospects
-  const filteredProspects = useMemo(() => {
-    return prospects.filter(p => {
-      const matchSearch = !searchProspect || p.company_name?.toLowerCase().includes(searchProspect.toLowerCase()) || p.contact_name?.toLowerCase().includes(searchProspect.toLowerCase());
-      const matchStage = filterStage === "all" || p.pipeline_stage === filterStage;
-      return matchSearch && matchStage;
-    });
-  }, [prospects, searchProspect, filterStage]);
-
-  // Pipeline stats
-  const pipelineStats = useMemo(() => {
-    const stats: Record<string, number> = {};
-    for (const s of PIPELINE_STAGES) stats[s.value] = 0;
-    for (const p of prospects) stats[p.pipeline_stage] = (stats[p.pipeline_stage] || 0) + 1;
-    return stats;
-  }, [prospects]);
-
-  // Charts data
-  const monthlyRegistrations = useMemo(() => {
-    const months: Record<string, { pros: number; patients: number }> = {};
-    for (const p of profiles) {
-      const month = format(new Date(p.created_at), "MMM/yy", { locale: ptBR });
-      if (!months[month]) months[month] = { pros: 0, patients: 0 };
-      if (p.user_type === "professional") months[month].pros++;
-      else months[month].patients++;
-    }
-    return Object.entries(months).slice(-6).map(([name, val]) => ({ name, ...val }));
-  }, [profiles]);
-
-  const planDistribution = useMemo(() => {
-    const dist: Record<string, number> = { basic: 0, professional: 0, clinic: 0 };
-    for (const p of profiles.filter(p => p.user_type === "professional")) {
-      dist[p.plan || "basic"] = (dist[p.plan || "basic"] || 0) + 1;
-    }
-    return Object.entries(dist).map(([name, value]) => ({ name: PLAN_LABELS[name] || name, value }));
-  }, [profiles]);
-
-  const monthlyAppointments = useMemo(() => {
+  // Monthly registrations chart data (last 6 months)
+  const monthlyData = useMemo(() => {
     const months: Record<string, number> = {};
-    for (const a of appointments) {
-      const month = format(new Date(a.date), "MMM/yy", { locale: ptBR });
+    for (const p of professionals) {
+      const month = format(new Date(p.created_at), "MMM/yy", { locale: ptBR });
       months[month] = (months[month] || 0) + 1;
     }
     return Object.entries(months).slice(-6).map(([name, value]) => ({ name, value }));
-  }, [appointments]);
+  }, [professionals]);
 
-  // Handle plan edit
-  const handleSavePlan = async () => {
-    if (!editTarget) return;
-    const { error } = await supabase
-      .from("profiles")
-      .update({ plan: newPlan })
-      .eq("user_id", editTarget.user_id);
-    if (error) {
-      toast.error("Erro ao alterar plano.");
-    } else {
-      toast.success(`Plano de ${editTarget.name} alterado para ${PLAN_LABELS[newPlan]}`);
-      setProfiles(prev => prev.map(p => p.user_id === editTarget.user_id ? { ...p, plan: newPlan } : p));
+  // Referral data
+  const referralData = useMemo(() => {
+    const refs: Record<string, { name: string; count: number; lastDate: string }> = {};
+    for (const p of professionals) {
+      if (p.referral_code) {
+        if (!refs[p.referral_code]) {
+          const referrer = professionals.find(r => r.user_id === p.referral_code);
+          refs[p.referral_code] = {
+            name: referrer?.name || p.referral_code,
+            count: 0,
+            lastDate: p.created_at,
+          };
+        }
+        refs[p.referral_code].count++;
+        if (p.created_at > refs[p.referral_code].lastDate) {
+          refs[p.referral_code].lastDate = p.created_at;
+        }
+      }
     }
-    setEditPlanDialog(false);
-    setPlanReason("");
-    setPlanValidUntil("");
-  };
+    return Object.values(refs).sort((a, b) => b.count - a.count);
+  }, [professionals]);
 
-  const handleSuspend = async (profile: any) => {
-    const { error } = await supabase
-      .from("profiles")
-      .update({ payment_status: "suspended" })
-      .eq("user_id", profile.user_id);
-    if (error) toast.error("Erro ao suspender.");
-    else {
-      toast.success(`${profile.name} suspenso.`);
-      setProfiles(prev => prev.map(p => p.user_id === profile.user_id ? { ...p, payment_status: "suspended" } : p));
-    }
-  };
+  const totalByReferral = referralData.reduce((sum, r) => sum + r.count, 0);
 
-  const handleUpdateExamStatus = async (id: string, status: string) => {
-    const { error } = await (supabase as any).from("exam_requests").update({ status }).eq("id", id);
-    if (error) toast.error("Erro ao atualizar.");
-    else {
-      toast.success("Status atualizado!");
-      setExamRequests(prev => prev.map(e => e.id === id ? { ...e, status } : e));
-    }
-  };
-
-  // ── Prospect CRUD ───────────────────────────────────────────────────
-  const openNewProspect = () => {
-    setEditingProspect(null);
-    setProspectForm({
-      company_name: "", partner_type: "farmacia", contact_name: "",
-      email: "", phone: "", city: "", state: "CE", cnpj: "",
-      pipeline_stage: "lead", notes: "", next_action_date: "",
-    });
-    setProspectDialog(true);
-  };
-
-  const openEditProspect = (p: any) => {
-    setEditingProspect(p);
-    setProspectForm({
-      company_name: p.company_name || "",
-      partner_type: p.partner_type || "farmacia",
-      contact_name: p.contact_name || "",
-      email: p.email || "",
-      phone: p.phone || "",
-      city: p.city || "",
-      state: p.state || "CE",
-      cnpj: p.cnpj || "",
-      pipeline_stage: p.pipeline_stage || "lead",
-      notes: p.notes || "",
-      next_action_date: p.next_action_date || "",
-    });
-    setProspectDialog(true);
-  };
-
-  const handleSaveProspect = async () => {
-    if (!prospectForm.company_name || !prospectForm.contact_name) {
-      toast.error("Preencha nome da empresa e contato.");
-      return;
-    }
-
-    const whatsappLink = prospectForm.phone
-      ? `https://wa.me/55${prospectForm.phone.replace(/\D/g, "")}`
-      : null;
-
-    const payload = { ...prospectForm, whatsapp_link: whatsappLink };
-
-    if (editingProspect) {
-      const { error } = await (supabase as any)
-        .from("b2b_prospects")
-        .update({ ...payload, updated_at: new Date().toISOString() })
-        .eq("id", editingProspect.id);
-      if (error) { toast.error("Erro ao atualizar."); return; }
-      toast.success("Prospect atualizado!");
-      setProspects(prev => prev.map(p => p.id === editingProspect.id ? { ...p, ...payload } : p));
-    } else {
-      const { data, error } = await (supabase as any)
-        .from("b2b_prospects")
-        .insert(payload)
-        .select()
-        .single();
-      if (error) { toast.error("Erro ao criar."); return; }
-      toast.success("Novo prospect adicionado!");
-      setProspects(prev => [data, ...prev]);
-    }
-    setProspectDialog(false);
-  };
-
-  const handleUpdateProspectStage = async (id: string, stage: string) => {
-    const { error } = await (supabase as any)
-      .from("b2b_prospects")
-      .update({ pipeline_stage: stage, updated_at: new Date().toISOString() })
-      .eq("id", id);
-    if (error) toast.error("Erro ao atualizar estágio.");
-    else {
-      toast.success("Estágio atualizado!");
-      setProspects(prev => prev.map(p => p.id === id ? { ...p, pipeline_stage: stage } : p));
-    }
-  };
-
-  const handleDeleteProspect = async (id: string) => {
-    const { error } = await (supabase as any).from("b2b_prospects").delete().eq("id", id);
-    if (error) toast.error("Erro ao excluir.");
-    else {
-      toast.success("Prospect removido.");
-      setProspects(prev => prev.filter(p => p.id !== id));
-    }
+  const getStatusBadge = (status: string) => {
+    const s = STATUS_MAP[status] || STATUS_MAP.none;
+    return <Badge variant="outline" className={s.cls}>{s.label}</Badge>;
   };
 
   if (authLoading || authorized === null || loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        {/* Header */}
+      <div className="max-w-5xl mx-auto px-4 py-6">
         <button onClick={() => navigate("/dashboard")} className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
           <ArrowLeft className="h-4 w-4" /> Voltar
         </button>
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3 mb-6">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Shield className="h-6 w-6 text-primary" />
+
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <Shield className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">SalbCare Admin</h1>
+              <p className="text-xs text-muted-foreground">{format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold">Painel CEO</h1>
-            <p className="text-xs text-muted-foreground">Visão completa da plataforma SALBCARE</p>
-          </div>
+          <Badge variant="outline" className="text-xs">{totalPros} profissionais</Badge>
         </motion.div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          {[
-            { icon: Stethoscope, label: "Profissionais", value: totalProfessionals, color: "text-blue-500" },
-            { icon: Users, label: "Pacientes", value: totalPatients, color: "text-green-500" },
-            { icon: Calendar, label: "Consultas", value: totalAppointments, color: "text-purple-500" },
-            { icon: DollarSign, label: "MRR estimado", value: `R$ ${estimatedMRR}`, color: "text-primary" },
-          ].map((kpi) => (
-            <motion.div key={kpi.label} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card p-4 text-center">
-              <kpi.icon className={`h-5 w-5 mx-auto mb-1 ${kpi.color}`} />
-              <p className="text-2xl font-bold">{kpi.value}</p>
-              <p className="text-[10px] text-muted-foreground">{kpi.label}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Tabs */}
-        <Tabs defaultValue="professionals" className="space-y-4">
-          <TabsList className="flex flex-wrap w-full bg-accent gap-1 h-auto p-1">
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList className="flex w-full bg-accent gap-1 h-auto p-1 flex-wrap">
+            <TabsTrigger value="overview" className="text-xs gap-1 flex-1 min-w-fit"><BarChart3 className="h-3.5 w-3.5" />Visão Geral</TabsTrigger>
             <TabsTrigger value="professionals" className="text-xs gap-1 flex-1 min-w-fit"><Stethoscope className="h-3.5 w-3.5" />Profissionais</TabsTrigger>
-            <TabsTrigger value="patients" className="text-xs gap-1 flex-1 min-w-fit"><Users className="h-3.5 w-3.5" />Pacientes</TabsTrigger>
-            <TabsTrigger value="appointments" className="text-xs gap-1 flex-1 min-w-fit"><Calendar className="h-3.5 w-3.5" />Consultas</TabsTrigger>
-            <TabsTrigger value="exams" className="text-xs gap-1 flex-1 min-w-fit"><FlaskConical className="h-3.5 w-3.5" />Exames</TabsTrigger>
-            <TabsTrigger value="partners" className="text-xs gap-1 flex-1 min-w-fit"><Building2 className="h-3.5 w-3.5" />Parceiros</TabsTrigger>
-            <TabsTrigger value="crm" className="text-xs gap-1 flex-1 min-w-fit"><Briefcase className="h-3.5 w-3.5" />CRM B2B</TabsTrigger>
-            <TabsTrigger value="metrics" className="text-xs gap-1 flex-1 min-w-fit"><BarChart3 className="h-3.5 w-3.5" />Métricas</TabsTrigger>
-            <TabsTrigger value="plans" className="text-xs gap-1 flex-1 min-w-fit"><Settings className="h-3.5 w-3.5" />Planos</TabsTrigger>
+            <TabsTrigger value="financial" className="text-xs gap-1 flex-1 min-w-fit"><DollarSign className="h-3.5 w-3.5" />Financeiro</TabsTrigger>
+            <TabsTrigger value="referrals" className="text-xs gap-1 flex-1 min-w-fit"><UserPlus className="h-3.5 w-3.5" />Indicações</TabsTrigger>
           </TabsList>
 
-          {/* PROFESSIONALS TAB */}
+          {/* Tab 1 — Visão Geral */}
+          <TabsContent value="overview" className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: "Total cadastradas", value: totalPros, icon: Stethoscope },
+                { label: "Plano ativo", value: activePros, icon: Users },
+                { label: "Em trial", value: trialPros, icon: TrendingUp },
+                { label: "Churn do mês", value: churnThisMonth, icon: Users },
+              ].map((kpi) => (
+                <div key={kpi.label} className="glass-card p-4 text-center">
+                  <kpi.icon className="h-5 w-5 mx-auto mb-1 text-primary" />
+                  <p className="text-2xl font-bold">{kpi.value}</p>
+                  <p className="text-[10px] text-muted-foreground">{kpi.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="glass-card p-4">
+              <p className="text-xs font-semibold mb-3 uppercase tracking-wider text-muted-foreground">Últimos cadastros</p>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Nome</TableHead>
+                      <TableHead className="text-xs">Especialidade</TableHead>
+                      <TableHead className="text-xs">Data</TableHead>
+                      <TableHead className="text-xs">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {latestRegistrations.map((p) => (
+                      <TableRow key={p.id}>
+                        <TableCell className="text-xs font-medium">{p.name}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{p.professional_type}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</TableCell>
+                        <TableCell>{getStatusBadge(p.payment_status)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Tab 2 — Profissionais */}
           <TabsContent value="professionals" className="space-y-3">
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
                 <Input placeholder="Buscar por nome ou e-mail..." value={searchPro} onChange={e => setSearchPro(e.target.value)} className="pl-8 text-xs h-8" />
               </div>
-              <Select value={filterPlan} onValueChange={setFilterPlan}>
-                <SelectTrigger className="w-32 h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos planos</SelectItem>
-                  <SelectItem value="basic">Essencial</SelectItem>
-                  <SelectItem value="professional">Profissional</SelectItem>
-                  <SelectItem value="clinic">Clínica</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-32 h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos status</SelectItem>
-                  <SelectItem value="active">Ativo</SelectItem>
-                  <SelectItem value="none">Sem pagamento</SelectItem>
-                  <SelectItem value="suspended">Suspenso</SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                value={filterStatus}
+                onChange={e => setFilterStatus(e.target.value)}
+                className="h-8 text-xs rounded-md border border-input bg-background px-2"
+              >
+                <option value="all">Todos</option>
+                <option value="active">Ativo</option>
+                <option value="trialing">Trial</option>
+                <option value="canceled">Cancelado</option>
+                <option value="none">Sem plano</option>
+              </select>
             </div>
-            <p className="text-xs text-muted-foreground">{filteredPros.length} profissional(is)</p>
-            <div className="overflow-auto rounded-lg border">
+            <div className="overflow-x-auto glass-card p-3">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs">Nome</TableHead>
-                    <TableHead className="text-xs">E-mail</TableHead>
-                    <TableHead className="text-xs">Tipo</TableHead>
-                    <TableHead className="text-xs">Conselho</TableHead>
-                    <TableHead className="text-xs">Plano</TableHead>
+                    <TableHead className="text-xs">Email</TableHead>
+                    <TableHead className="text-xs">Especialidade</TableHead>
                     <TableHead className="text-xs">Status</TableHead>
-                    <TableHead className="text-xs">Cadastro</TableHead>
-                    <TableHead className="text-xs">Ações</TableHead>
+                    <TableHead className="text-xs">Data</TableHead>
+                    <TableHead className="text-xs">Indicação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPros.map(p => {
-                    const status = STATUS_MAP[p.payment_status] || STATUS_MAP.none;
-                    return (
-                      <TableRow key={p.id}>
-                        <TableCell className="text-xs font-medium">{p.name}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{p.email}</TableCell>
-                        <TableCell className="text-xs capitalize">{p.professional_type}</TableCell>
-                        <TableCell className="text-xs">{p.council_number || "—"}{p.council_state ? `/${p.council_state}` : ""}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-[10px]">{PLAN_LABELS[p.plan] || p.plan}</Badge></TableCell>
-                        <TableCell><Badge variant="outline" className={`text-[10px] ${status.cls}`}>{status.label}</Badge></TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd/MM/yy")}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2" onClick={() => { setEditTarget(p); setNewPlan(p.plan || "basic"); setEditPlanDialog(true); }}>Editar plano</Button>
-                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-destructive" onClick={() => handleSuspend(p)}>Suspender</Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </TabsContent>
-
-          {/* PATIENTS TAB */}
-          <TabsContent value="patients" className="space-y-3">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input placeholder="Buscar paciente..." value={searchPatient} onChange={e => setSearchPatient(e.target.value)} className="pl-8 text-xs h-8" />
-            </div>
-            <p className="text-xs text-muted-foreground">{filteredPatients.length} paciente(s)</p>
-            <div className="overflow-auto rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Nome</TableHead>
-                    <TableHead className="text-xs">E-mail</TableHead>
-                    <TableHead className="text-xs">Telefone</TableHead>
-                    <TableHead className="text-xs">Cadastro</TableHead>
-                    <TableHead className="text-xs">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPatients.map(p => (
+                  {filteredPros.map((p) => (
                     <TableRow key={p.id}>
                       <TableCell className="text-xs font-medium">{p.name}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{p.email}</TableCell>
-                      <TableCell className="text-xs">{p.phone || "—"}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd/MM/yy")}</TableCell>
-                      <TableCell>
-                        <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-destructive" onClick={() => handleSuspend(p)}>Suspender</Button>
-                      </TableCell>
+                      <TableCell className="text-xs">{p.professional_type}</TableCell>
+                      <TableCell>{getStatusBadge(p.payment_status)}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{p.referral_code || "—"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -488,404 +243,73 @@ const CeoDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* APPOINTMENTS TAB */}
-          <TabsContent value="appointments" className="space-y-3">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input placeholder="Buscar consulta..." value={searchAppt} onChange={e => setSearchAppt(e.target.value)} className="pl-8 text-xs h-8" />
-            </div>
-            <p className="text-xs text-muted-foreground">{appointments.length} consulta(s)</p>
-            <div className="overflow-auto rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Data</TableHead>
-                    <TableHead className="text-xs">Horário</TableHead>
-                    <TableHead className="text-xs">Paciente</TableHead>
-                    <TableHead className="text-xs">Tipo</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {appointments
-                    .filter(a => !searchAppt || a.patient_name?.toLowerCase().includes(searchAppt.toLowerCase()))
-                    .slice(0, 100)
-                    .map(a => (
-                    <TableRow key={a.id}>
-                      <TableCell className="text-xs">{format(new Date(a.date), "dd/MM/yy")}</TableCell>
-                      <TableCell className="text-xs">{a.time}</TableCell>
-                      <TableCell className="text-xs font-medium">{a.patient_name}</TableCell>
-                      <TableCell className="text-xs capitalize">{a.appointment_type}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`text-[10px] ${a.status === "completed" ? "bg-green-500/10 text-green-600" : a.status === "cancelled" ? "bg-red-500/10 text-red-600" : "bg-blue-500/10 text-blue-600"}`}>
-                          {a.status === "completed" ? "Realizada" : a.status === "cancelled" ? "Cancelada" : a.status === "scheduled" ? "Agendada" : a.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </TabsContent>
-
-          {/* EXAMS TAB */}
-          <TabsContent value="exams" className="space-y-3">
-            <p className="text-xs text-muted-foreground">{examRequests.length} solicitação(ões) de exame</p>
-            <div className="overflow-auto rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Data</TableHead>
-                    <TableHead className="text-xs">Exame</TableHead>
-                    <TableHead className="text-xs">Laboratório</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                    <TableHead className="text-xs">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {examRequests.map(e => (
-                    <TableRow key={e.id}>
-                      <TableCell className="text-xs">{format(new Date(e.created_at), "dd/MM/yy")}</TableCell>
-                      <TableCell className="text-xs font-medium">{e.exam_type}</TableCell>
-                      <TableCell className="text-xs">{e.lab_name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`text-[10px] ${e.status === "completed" ? "bg-green-500/10 text-green-600" : e.status === "scheduled" ? "bg-blue-500/10 text-blue-600" : "bg-yellow-500/10 text-yellow-600"}`}>
-                          {e.status === "completed" ? "Realizado" : e.status === "scheduled" ? "Agendado" : "Pendente"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2" onClick={() => handleUpdateExamStatus(e.id, "scheduled")}>Agendar</Button>
-                          <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-green-600" onClick={() => handleUpdateExamStatus(e.id, "completed")}>Concluir</Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </TabsContent>
-
-          {/* PARTNERS TAB */}
-          <TabsContent value="partners" className="space-y-3">
-            <p className="text-xs text-muted-foreground">{partnerInterests.length} parceiro(s) interessado(s)</p>
-            <div className="space-y-2">
-              {partnerInterests.map(p => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-4 space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-semibold">{p.company_name}</p>
-                      <p className="text-xs text-muted-foreground">{p.contact_name} — {p.email}</p>
-                    </div>
-                    <Badge variant="outline" className="text-[10px] capitalize">{p.partner_type === "farmacia" ? "🏪 Farmácia" : "🔬 Laboratório"}</Badge>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 text-[10px] text-muted-foreground">
-                    <span>📍 {p.city}</span>
-                    <span>📞 {p.phone || "—"}</span>
-                    <span>📋 Plano: {p.plan_interest || "básico"}</span>
-                    <span>📅 {format(new Date(p.created_at), "dd/MM/yy")}</span>
-                  </div>
-                </motion.div>
-              ))}
-              {partnerInterests.length === 0 && (
-                <div className="glass-card p-6 text-center text-sm text-muted-foreground">Nenhum parceiro cadastrado ainda.</div>
-              )}
-            </div>
-          </TabsContent>
-
-          {/* CRM B2B TAB */}
-          <TabsContent value="crm" className="space-y-4">
-            {/* Pipeline overview */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-              {PIPELINE_STAGES.map(s => (
-                <div key={s.value} className="glass-card p-3 text-center">
-                  <p className="text-lg font-bold">{pipelineStats[s.value] || 0}</p>
-                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-                <Input placeholder="Buscar empresa ou contato..." value={searchProspect} onChange={e => setSearchProspect(e.target.value)} className="pl-8 text-xs h-8" />
+          {/* Tab 3 — Financeiro */}
+          <TabsContent value="financial" className="space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="glass-card p-4 text-center">
+                <p className="text-2xl font-bold text-primary">R$ {estimatedMRR}</p>
+                <p className="text-[10px] text-muted-foreground">MRR atual</p>
               </div>
-              <Select value={filterStage} onValueChange={setFilterStage}>
-                <SelectTrigger className="w-36 h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos estágios</SelectItem>
-                  {PIPELINE_STAGES.map(s => (
-                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button size="sm" className="h-8 text-xs gap-1" onClick={openNewProspect}>
-                <Plus className="h-3.5 w-3.5" /> Novo prospect
-              </Button>
-            </div>
-
-            <p className="text-xs text-muted-foreground">{filteredProspects.length} prospect(s)</p>
-
-            {/* Prospects table */}
-            <div className="overflow-auto rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Empresa</TableHead>
-                    <TableHead className="text-xs">Tipo</TableHead>
-                    <TableHead className="text-xs">Contato</TableHead>
-                    <TableHead className="text-xs">Cidade</TableHead>
-                    <TableHead className="text-xs">Estágio</TableHead>
-                    <TableHead className="text-xs">Próx. ação</TableHead>
-                    <TableHead className="text-xs">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredProspects.map(p => {
-                    const stage = PIPELINE_STAGES.find(s => s.value === p.pipeline_stage) || PIPELINE_STAGES[0];
-                    return (
-                      <TableRow key={p.id}>
-                        <TableCell className="text-xs font-medium">{p.company_name}</TableCell>
-                        <TableCell className="text-xs">{p.partner_type === "farmacia" ? "🏪 Farmácia" : "🔬 Lab"}</TableCell>
-                        <TableCell>
-                          <div className="text-xs">{p.contact_name}</div>
-                          <div className="text-[10px] text-muted-foreground">{p.email}</div>
-                        </TableCell>
-                        <TableCell className="text-xs">{p.city || "—"}/{p.state || "—"}</TableCell>
-                        <TableCell>
-                          <Select value={p.pipeline_stage} onValueChange={(v) => handleUpdateProspectStage(p.id, v)}>
-                            <SelectTrigger className="h-6 text-[10px] w-28 border-0 p-1">
-                              <Badge variant="outline" className={`text-[10px] ${stage.cls}`}>{stage.label}</Badge>
-                            </SelectTrigger>
-                            <SelectContent>
-                              {PIPELINE_STAGES.map(s => (
-                                <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {p.next_action_date ? format(new Date(p.next_action_date), "dd/MM/yy") : "—"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            {p.whatsapp_link && (
-                              <Button size="sm" variant="ghost" className="h-6 text-[10px] px-1" asChild>
-                                <a href={p.whatsapp_link} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink className="h-3 w-3" />
-                                </a>
-                              </Button>
-                            )}
-                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2" onClick={() => openEditProspect(p)}>Editar</Button>
-                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-destructive" onClick={() => handleDeleteProspect(p.id)}>Excluir</Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-
-            {filteredProspects.length === 0 && (
-              <div className="glass-card p-8 text-center space-y-2">
-                <Briefcase className="h-8 w-8 mx-auto text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Nenhum prospect cadastrado.</p>
-                <Button size="sm" className="text-xs" onClick={openNewProspect}>Adicionar primeiro prospect</Button>
+              <div className="glass-card p-4 text-center">
+                <p className="text-2xl font-bold">{activePros}</p>
+                <p className="text-[10px] text-muted-foreground">Assinantes ativos</p>
               </div>
-            )}
-          </TabsContent>
+              <div className="glass-card p-4 text-center">
+                <p className="text-2xl font-bold">{Math.round(estimatedMRR / 30 * new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate())}</p>
+                <p className="text-[10px] text-muted-foreground">Projeção do mês</p>
+              </div>
+            </div>
 
-          {/* METRICS TAB */}
-          <TabsContent value="metrics" className="space-y-6">
             <div className="glass-card p-4">
-              <h3 className="text-sm font-semibold mb-3">📈 Novos cadastros por mês</h3>
+              <p className="text-xs font-semibold mb-3 uppercase tracking-wider text-muted-foreground">Novos assinantes por mês</p>
               <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={monthlyRegistrations}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <BarChart data={monthlyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="pros" name="Profissionais" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="patients" name="Pacientes" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-
-            <div className="glass-card p-4">
-              <h3 className="text-sm font-semibold mb-3">📅 Consultas por mês</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={monthlyAppointments}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" name="Consultas" stroke="hsl(var(--primary))" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="glass-card p-4">
-              <h3 className="text-sm font-semibold mb-3">📊 Distribuição de planos</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie data={planDistribution} cx="50%" cy="50%" outerRadius={70} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                    {planDistribution.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
           </TabsContent>
 
-          {/* PLAN MANAGEMENT TAB */}
-          <TabsContent value="plans" className="space-y-3">
-            <div className="glass-card p-4 space-y-3">
-              <h3 className="text-sm font-semibold">⚙️ Gerenciar planos manualmente</h3>
-              <p className="text-xs text-muted-foreground">Busque um profissional e altere o plano. Útil para embaixadores, parceiros estratégicos ou inadimplentes.</p>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-                <Input placeholder="Buscar profissional por nome ou e-mail..." value={searchPro} onChange={e => setSearchPro(e.target.value)} className="pl-8 text-xs h-8" />
-              </div>
+          {/* Tab 4 — Indicações */}
+          <TabsContent value="referrals" className="space-y-4">
+            <div className="glass-card p-4 text-center">
+              <p className="text-2xl font-bold text-primary">{totalByReferral}</p>
+              <p className="text-xs text-muted-foreground">profissionais vieram por indicação</p>
             </div>
-            <div className="space-y-2">
-              {filteredPros.slice(0, 20).map(p => (
-                <div key={p.id} className="glass-card p-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold">{p.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{p.email} — {PLAN_LABELS[p.plan] || p.plan}</p>
-                  </div>
-                  <Button size="sm" variant="outline" className="h-7 text-[10px]" onClick={() => { setEditTarget(p); setNewPlan(p.plan || "basic"); setEditPlanDialog(true); }}>
-                    Alterar plano
-                  </Button>
-                </div>
-              ))}
+            <div className="overflow-x-auto glass-card p-3">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Quem indicou</TableHead>
+                    <TableHead className="text-xs">Indicações</TableHead>
+                    <TableHead className="text-xs">Última indicação</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {referralData.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-xs text-center text-muted-foreground py-8">
+                        Nenhuma indicação registrada ainda
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {referralData.map((r) => (
+                    <TableRow key={r.name}>
+                      <TableCell className="text-xs font-medium">{r.name}</TableCell>
+                      <TableCell className="text-xs">{r.count}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{new Date(r.lastDate).toLocaleDateString("pt-BR")}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Edit Plan Dialog */}
-      <Dialog open={editPlanDialog} onOpenChange={setEditPlanDialog}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-sm">Alterar plano</DialogTitle>
-            <DialogDescription className="text-xs">{editTarget?.name} — {editTarget?.email}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <div className="space-y-1">
-              <Label className="text-xs">Novo plano</Label>
-              <Select value={newPlan} onValueChange={setNewPlan}>
-                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">Essencial</SelectItem>
-                  <SelectItem value="professional">Profissional</SelectItem>
-                  <SelectItem value="clinic">Clínica</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Motivo da alteração</Label>
-              <Input placeholder="Ex: embaixador, parceiro, cortesia..." value={planReason} onChange={e => setPlanReason(e.target.value)} className="text-xs h-8" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Válido até (opcional)</Label>
-              <Input type="date" value={planValidUntil} onChange={e => setPlanValidUntil(e.target.value)} className="text-xs h-8" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button size="sm" className="w-full text-xs" onClick={handleSavePlan}>Aplicar alteração</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Prospect Dialog */}
-      <Dialog open={prospectDialog} onOpenChange={setProspectDialog}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-sm">{editingProspect ? "Editar prospect" : "Novo prospect"}</DialogTitle>
-            <DialogDescription className="text-xs">Cadastre uma farmácia ou laboratório para prospecção.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Nome da empresa *</Label>
-                <Input value={prospectForm.company_name} onChange={e => setProspectForm(f => ({ ...f, company_name: e.target.value }))} className="text-xs h-8" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Tipo</Label>
-                <Select value={prospectForm.partner_type} onValueChange={v => setProspectForm(f => ({ ...f, partner_type: v }))}>
-                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="farmacia">🏪 Farmácia</SelectItem>
-                    <SelectItem value="laboratorio">🔬 Laboratório</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Nome do contato *</Label>
-                <Input value={prospectForm.contact_name} onChange={e => setProspectForm(f => ({ ...f, contact_name: e.target.value }))} className="text-xs h-8" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">E-mail</Label>
-                <Input type="email" value={prospectForm.email} onChange={e => setProspectForm(f => ({ ...f, email: e.target.value }))} className="text-xs h-8" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Telefone/WhatsApp</Label>
-                <Input value={prospectForm.phone} onChange={e => setProspectForm(f => ({ ...f, phone: e.target.value }))} placeholder="85999999999" className="text-xs h-8" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">CNPJ</Label>
-                <Input value={prospectForm.cnpj} onChange={e => setProspectForm(f => ({ ...f, cnpj: e.target.value }))} className="text-xs h-8" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Cidade</Label>
-                <Input value={prospectForm.city} onChange={e => setProspectForm(f => ({ ...f, city: e.target.value }))} className="text-xs h-8" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Estado</Label>
-                <Input value={prospectForm.state} onChange={e => setProspectForm(f => ({ ...f, state: e.target.value }))} className="text-xs h-8" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Estágio do pipeline</Label>
-                <Select value={prospectForm.pipeline_stage} onValueChange={v => setProspectForm(f => ({ ...f, pipeline_stage: v }))}>
-                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {PIPELINE_STAGES.map(s => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Próxima ação</Label>
-                <Input type="date" value={prospectForm.next_action_date} onChange={e => setProspectForm(f => ({ ...f, next_action_date: e.target.value }))} className="text-xs h-8" />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Observações</Label>
-              <Textarea value={prospectForm.notes} onChange={e => setProspectForm(f => ({ ...f, notes: e.target.value }))} className="text-xs min-h-[60px]" placeholder="Notas sobre o prospect..." />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button size="sm" className="w-full text-xs" onClick={handleSaveProspect}>
-              {editingProspect ? "Salvar alterações" : "Adicionar prospect"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

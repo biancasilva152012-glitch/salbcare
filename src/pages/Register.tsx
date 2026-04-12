@@ -224,7 +224,7 @@ const Register = () => {
         >
           {loading ? (
             <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>Criando conta...</motion.span>
-          ) : "Criar conta grátis — 7 dias sem cobrar nada"}
+          ) : "Criar conta grátis — 7 dias grátis"}
         </Button>
 
         <div className="flex items-center gap-3">

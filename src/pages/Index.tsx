@@ -1,25 +1,8 @@
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Stethoscope,
-  UserRound,
-  Video,
-  FileText,
-  Calendar,
-  DollarSign,
-  Calculator,
-  UserSearch,
-  CheckCircle2,
-  ArrowRight,
-  Menu,
-  X,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Menu, X, DollarSign, Compass, Video } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
-import FreedomCalculator from "@/components/financial/FreedomCalculator";
-import WhatsAppFab from "@/components/WhatsAppFab";
-import { PLANS } from "@/config/plans";
 import { useState } from "react";
 
 const fadeUp = {
@@ -32,50 +15,24 @@ const stagger = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
-const planCards = [
-  {
-    key: "basic" as const,
-    popular: true,
-  },
-  {
-    key: "professional" as const,
-    popular: false,
-  },
-  {
-    key: "clinic" as const,
-    popular: false,
-  },
-];
-
-const annualPrices: Record<string, { monthly: number; originalMonthly: number; total: number; savings: number }> = {
-  basic: { monthly: 41, originalMonthly: 49, total: 490, savings: 98 },
-  professional: { monthly: 83, originalMonthly: 99, total: 990, savings: 198 },
-  clinic: { monthly: 158, originalMonthly: 189, total: 1890, savings: 378 },
-};
-
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAnnual, setIsAnnual] = useState(false);
 
   return (
     <>
       <SEOHead
-        title="SalbCare | Gestão e Captação para Profissionais de Saúde"
-        description="A plataforma completa para médicos, psicólogos e dentistas. Agenda, financeiro e captação por R$ 49/mês. Teste grátis!"
+        title="SalbCare | Consultório Digital para Profissionais de Saúde"
+        description="Gerencie seus recebimentos, organize suas finanças e atenda por teleconsulta. Sem comissão. 7 dias grátis."
         canonical="/"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          "name": "SalbCare",
-          "url": "https://salbcare.com.br",
-          "description": "A plataforma completa para médicos, psicólogos e dentistas. Agenda, financeiro e captação por R$ 49/mês.",
-          "applicationCategory": "HealthApplication",
-          "operatingSystem": "Web",
-          "offers": {
-            "@type": "Offer",
-            "price": "49",
-            "priceCurrency": "BRL"
-          }
+          name: "SalbCare",
+          url: "https://salbcare.com.br",
+          description: "Consultório digital para profissionais de saúde. Sem comissão.",
+          applicationCategory: "HealthApplication",
+          operatingSystem: "Web",
+          offers: { "@type": "Offer", price: "89", priceCurrency: "BRL" },
         }}
       />
 
@@ -88,51 +45,39 @@ const Index = () => {
               <span className="text-lg font-bold text-foreground">SALBCARE</span>
             </Link>
 
-            {/* Desktop nav links */}
             <div className="hidden md:flex items-center gap-6">
-              <a href="#recursos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Recursos</a>
-              <a href="#planos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Planos</a>
-              <a href="#pacientes" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Para Pacientes</a>
               <Link to="/para-profissionais" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Para Profissionais</Link>
+              <Link to="/planos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Planos</Link>
             </div>
 
-            {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-3">
               <Button asChild variant="outline" size="sm" className="border-border/60">
                 <Link to="/login">Entrar</Link>
               </Button>
               <Button asChild size="sm" className="gradient-primary font-semibold">
-                <Link to="/register">Criar Conta Grátis</Link>
+                <Link to="/cadastro">Começar grátis</Link>
               </Button>
             </div>
 
-            {/* Mobile menu toggle */}
-            <button
-              className="md:hidden p-2"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Menu"
-            >
+            <button className="md:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu">
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
 
-          {/* Mobile dropdown */}
           {mobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               className="md:hidden border-t border-border/40 bg-background px-4 py-4 space-y-3"
             >
-              <a href="#recursos" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Recursos</a>
-              <a href="#planos" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Planos</a>
-              <a href="#pacientes" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Para Pacientes</a>
               <Link to="/para-profissionais" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Para Profissionais</Link>
+              <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Planos</Link>
               <div className="flex flex-col gap-2 pt-2">
                 <Button asChild variant="outline" className="w-full border-border/60">
                   <Link to="/login">Entrar</Link>
                 </Button>
                 <Button asChild className="w-full gradient-primary font-semibold">
-                  <Link to="/register">Criar Conta Grátis</Link>
+                  <Link to="/cadastro">Começar grátis</Link>
                 </Button>
               </div>
             </motion.div>
@@ -140,422 +85,77 @@ const Index = () => {
         </nav>
 
         {/* ── Hero Section ── */}
-        <section className="mx-auto max-w-6xl px-5 sm:px-6 pt-12 pb-16 sm:pt-24 sm:pb-28">
+        <section className="mx-auto max-w-6xl px-5 sm:px-6 pt-16 pb-20 sm:pt-28 sm:pb-32">
           <motion.div
             variants={stagger}
             initial="hidden"
             animate="show"
-            className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:items-center"
+            className="text-center max-w-2xl mx-auto space-y-6"
           >
-            <div className="space-y-6 text-center lg:text-left">
-              <motion.h1
-                variants={fadeUp}
-                className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight"
-              >
-                <span className="block">Sua <span className="gradient-text">Vitrine</span> para Pacientes.</span>
-                <span className="block">Seu <span className="gradient-text">Controle</span> para Gestão.</span>
-              </motion.h1>
-              <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                O ecossistema completo para profissionais de saúde. Agenda, Prontuário, Teleconsulta, Captação e Financeiro em um só lugar. <span className="text-white font-semibold">A partir de R$ 49/mês.</span>
-              </motion.p>
-              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                <Button asChild size="lg" className="gradient-primary font-semibold gap-2 h-12 px-8 rounded-xl text-base shadow-lg shadow-primary/20">
-                  <Link to="/register">
-                    Começar 7 dias grátis
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-xl text-base border-border/60">
-                  <Link to="/como-funciona">Como funciona?</Link>
-                </Button>
-              </motion.div>
-            </div>
-
-            {/* Hero visual – overlapping cards mockup */}
-            <motion.div variants={fadeUp} className="relative hidden lg:block">
-              <div className="relative mx-auto w-full max-w-md">
-                {/* Back card – Dashboard */}
-                <div className="glass-card p-5 rounded-2xl rotate-2 translate-x-6 translate-y-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <DollarSign className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-semibold">Dashboard Financeiro</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { label: "Receita Mensal", value: "R$ 18.400" },
-                      { label: "Consultas", value: "46" },
-                      { label: "Valor/Consulta", value: "R$ 400" },
-                    ].map((m) => (
-                      <div key={m.label} className="rounded-lg bg-accent/50 p-2.5 text-center">
-                        <span className="text-[10px] text-muted-foreground">{m.label}</span>
-                        <p className="text-xs font-bold mt-1 text-foreground">{m.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Front card – Profile */}
-                <div className="glass-card p-5 rounded-2xl -rotate-1 -translate-y-12 relative z-10 ring-1 ring-primary/20">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="h-10 w-10 rounded-full gradient-primary flex items-center justify-center">
-                      <Stethoscope className="h-5 w-5 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold">Dra. Ana Costa</p>
-                      <p className="text-[10px] text-muted-foreground">Dermatologista • CRM 12345</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-medium text-primary">Online agora</span>
-                    <span className="rounded-full bg-accent px-2.5 py-1 text-[10px] text-muted-foreground">★ 4.9</span>
-                  </div>
-                </div>
-              </div>
+            <motion.div variants={fadeUp}>
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                7 dias grátis • sem cartão
+              </span>
             </motion.div>
-          </motion.div>
-        </section>
-
-        {/* ── Pilar Duplo ── */}
-        <section id="recursos" className="bg-accent/30 py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              className="text-center mb-12 space-y-3"
+            <motion.h1
+              variants={fadeUp}
+              className="text-3xl sm:text-5xl font-bold leading-tight tracking-tight"
             >
-              <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-bold">
-                Dois pilares, uma plataforma
-              </motion.h2>
-              <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
-                Tudo que o profissional de saúde precisa para crescer e se organizar.
-              </motion.p>
-            </motion.div>
+              Seu consultório digital. Simples assim.
+            </motion.h1>
+            <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
+              Gerencie seus recebimentos, organize suas finanças e atenda por teleconsulta. Tudo em um lugar. Sem comissão.
+            </motion.p>
 
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-              className="grid gap-6 md:grid-cols-2"
-            >
-              {/* Captação */}
-              <motion.div variants={fadeUp} className="glass-card p-6 sm:p-8 space-y-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10">
-                  <UserSearch className="h-6 w-6 text-secondary" />
-                </div>
-                <h3 className="text-xl font-bold">Atraia mais Pacientes</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Perfil profissional otimizado para buscas, agendamento online integrado e visibilidade no marketplace de saúde. Seus pacientes encontram você facilmente.
-                </p>
-                <ul className="space-y-2">
-                  {["Perfil público profissional", "Agendamento online 24h", "Pronto Atendimento Digital"].map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span className="shrink-0">•</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-
-              {/* Gestão */}
-              <motion.div variants={fadeUp} className="glass-card p-6 sm:p-8 space-y-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <Calculator className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold">Simplifique seu Negócio</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Prontuário digital, teleconsulta integrada e carnê-leão automático. Gerencie tudo sem sair da plataforma.
-                </p>
-                <ul className="space-y-2">
-                  {["Prontuário eletrônico completo", "Teleconsulta por vídeo", "Controle financeiro e Carnê-Leão", "Assessoria jurídica", "Assessoria contábil especializada em saúde"].map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span className="shrink-0">•</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ── Calculadora de Liberdade ── */}
-        <section className="py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <motion.div
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={stagger}
-              className="text-center mb-10 space-y-3"
-            >
-              <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-bold">
-                Descubra quanto você economiza
-              </motion.h2>
-              <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
-                Some seus gastos atuais e veja a diferença
-              </motion.p>
-            </motion.div>
-            <FreedomCalculator />
-          </div>
-        </section>
-
-        {/* ── Pricing Table ── */}
-        <section id="planos" className="bg-accent/30 py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <motion.div
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={stagger}
-              className="text-center mb-12 space-y-3"
-            >
-              <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-bold">
-                Planos simples e transparentes
-              </motion.h2>
-              <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
-                Você fica com 100% do valor das suas consultas. Sempre.
-              </motion.p>
-
-              {/* Toggle Mensal / Anual */}
-              <motion.div variants={fadeUp} className="flex items-center justify-center gap-1 mt-4">
-                <button
-                  onClick={() => setIsAnnual(false)}
-                  className={`px-4 py-2 rounded-l-xl text-sm font-semibold transition-colors ${!isAnnual ? "gradient-primary text-primary-foreground" : "bg-accent text-muted-foreground"}`}
-                >
-                  Mensal
-                </button>
-                <button
-                  onClick={() => setIsAnnual(true)}
-                  className={`px-4 py-2 rounded-r-xl text-sm font-semibold transition-colors flex items-center gap-1.5 ${isAnnual ? "gradient-primary text-primary-foreground" : "bg-accent text-muted-foreground"}`}
-                >
-                  Anual
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isAnnual ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary/10 text-primary"}`}>
-                    -20%
-                  </span>
-                </button>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.1 }}
-              className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-3 items-start"
-            >
-              {planCards.map(({ key, popular }) => {
-                const plan = PLANS[key];
-                const annual = annualPrices[key];
-                return (
-                  <motion.div
-                    key={key}
-                    variants={fadeUp}
-                    className={`glass-card p-6 sm:p-8 space-y-5 relative flex flex-col ${popular ? "ring-2 ring-primary/60 mt-3" : "mt-3"}`}
-                  >
-                    {popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="inline-flex items-center gap-1 rounded-full gradient-primary px-3 py-1 text-[11px] font-bold text-primary-foreground">
-                          <Sparkles className="h-3 w-3" />
-                          Mais Popular
-                        </span>
-                      </div>
-                    )}
-                    <div className="min-h-[68px]">
-                      <h3 className="text-lg font-bold">{plan.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">{plan.subtitle}</p>
-                    </div>
-
-                    <AnimatePresence mode="wait">
-                      <div className="min-h-[80px]">
-                      {isAnnual ? (
-                        <motion.div
-                          key="annual"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                        >
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-bold">R$ {annual.monthly}</span>
-                            <span className="text-sm text-muted-foreground">/mês</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-sm text-muted-foreground line-through">R$ {annual.originalMonthly}</span>
-                            <span className="text-xs font-semibold text-primary">Economize R$ {annual.savings}/ano</span>
-                          </div>
-                          <p className="text-[10px] text-muted-foreground mt-1">Cobrança anual</p>
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="monthly"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="flex items-baseline gap-1"
-                        >
-                          <span className="text-3xl font-bold">R$ {plan.price}</span>
-                          <span className="text-sm text-muted-foreground">/mês</span>
-                        </motion.div>
-                      )}
-                      </div>
-                    </AnimatePresence>
-
-                    <ul className="space-y-2.5 flex-1">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <span className="shrink-0 mt-0.5">•</span>
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      asChild
-                      size="lg"
-                      className={`w-full rounded-xl h-12 font-semibold ${popular ? "gradient-primary shadow-lg shadow-primary/20" : ""}`}
-                      variant={popular ? "default" : "outline"}
-                    >
-                      <Link to="/register">
-                        {(plan as any).hasTrial ? "Começar 7 dias grátis" : "Escolher plano"}
-                      </Link>
-                    </Button>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ── Ecossistema Completo ── */}
-        <section className="py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <motion.div
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={stagger}
-              className="text-center mb-12 space-y-3"
-            >
-              <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-bold">
-                De A a Z, sua saúde em um lugar
-              </motion.h2>
-              <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
-                O ecossistema completo que conecta pacientes, profissionais, farmácias e laboratórios.
-              </motion.p>
-            </motion.div>
-
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.1 }}
-              className="flex flex-wrap justify-center gap-2 sm:gap-0 sm:flex-nowrap items-center max-w-3xl mx-auto"
-            >
+            {/* Three icons */}
+            <motion.div variants={fadeUp} className="flex justify-center gap-8 sm:gap-12 pt-2">
               {[
-                { emoji: "🤖", label: "Triagem IA" },
-                { emoji: "👨‍⚕️", label: "Consulta" },
-                { emoji: "💊", label: "Receita" },
-                { emoji: "🧪", label: "Exames" },
-                { emoji: "🏥", label: "Resultado" },
-                { emoji: "🔄", label: "Retorno" },
-              ].map((step, i, arr) => (
-                <motion.div key={step.label} variants={fadeUp} className="flex items-center">
-                  <div className="flex flex-col items-center gap-1.5 w-20 sm:w-24">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-xl">
-                      {step.emoji}
-                    </div>
-                    <span className="text-[10px] sm:text-xs font-medium text-muted-foreground text-center leading-tight">{step.label}</span>
+                { icon: DollarSign, label: "Contador financeiro" },
+                { icon: Compass, label: "Mentoria financeira" },
+                { icon: Video, label: "Teleconsulta" },
+              ].map((f) => (
+                <div key={f.label} className="flex flex-col items-center gap-1.5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                    <f.icon className="h-5 w-5 text-primary" />
                   </div>
-                  {i < arr.length - 1 && (
-                    <ArrowRight className="h-4 w-4 text-muted-foreground/40 shrink-0 hidden sm:block" />
-                  )}
-                </motion.div>
+                  <span className="text-[11px] text-muted-foreground">{f.label}</span>
+                </div>
               ))}
             </motion.div>
 
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="text-center mt-10"
-            >
-              <Button asChild variant="outline" size="sm" className="rounded-xl border-primary/30 text-primary hover:bg-primary/5">
-                <Link to="/parcerias">
-                  Faça parte do ecossistema <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+            <motion.div variants={fadeUp}>
+              <Button asChild size="lg" className="gradient-primary font-bold gap-2 h-14 px-10 rounded-xl text-base shadow-lg shadow-primary/20">
+                <Link to="/cadastro">
+                  Começar grátis
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </motion.div>
-          </div>
-        </section>
-
-        {/* ── Área do Paciente ── */}
-        <section id="pacientes" className="bg-accent/30 py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <motion.div
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={stagger}
-              className="glass-card p-8 sm:p-12 text-center space-y-5 max-w-2xl mx-auto"
-            >
-              <motion.div variants={fadeUp} className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/10 mx-auto">
-                <UserRound className="h-7 w-7 text-secondary" />
-              </motion.div>
-              <motion.h2 variants={fadeUp} className="text-2xl font-bold">Você é paciente?</motion.h2>
-              <motion.p variants={fadeUp} className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                Encontre profissionais de saúde verificados, agende teleconsultas e acesse seu histórico — tudo gratuito.
-              </motion.p>
-              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button asChild size="lg" className="gradient-primary font-semibold gap-2 h-12 px-8 rounded-xl">
-                  <Link to="/pronto-atendimento">
-                    Encontre seu profissional
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-xl border-border/60">
-                  <Link to="/meu-historico">Acesse seu histórico</Link>
-                </Button>
-              </motion.div>
-            </motion.div>
-          </div>
+            <motion.p variants={fadeUp} className="text-xs text-muted-foreground">
+              R$ 89/mês após o período grátis. Sem comissão. Cancele quando quiser.
+            </motion.p>
+          </motion.div>
         </section>
 
         {/* ── Footer ── */}
-        <footer className="border-t border-border/40 py-10">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
-            <div className="flex items-center justify-center gap-2">
-              <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-6 w-6" width={24} height={24} loading="lazy" />
-              <span className="text-sm font-bold text-white">SALBCARE</span>
+        <footer className="border-t border-border/30 py-8">
+          <div className="mx-auto max-w-6xl px-4 text-center space-y-3">
+            <p className="text-sm font-bold text-foreground">SALBCARE</p>
+            <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+              <Link to="/terms" className="hover:text-foreground">Termos</Link>
+              <Link to="/privacy" className="hover:text-foreground">Privacidade</Link>
+              <Link to="/para-profissionais" className="hover:text-foreground">Para Profissionais</Link>
             </div>
-            <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-              <Link to="/como-funciona" className="hover:text-foreground transition-colors">Como Funciona</Link>
-              <a href="#planos" className="hover:text-foreground transition-colors">Planos</a>
-              <Link to="/parcerias" className="hover:text-foreground transition-colors">Parcerias</Link>
-              <Link to="/login" className="hover:text-foreground transition-colors">Login</Link>
-              <Link to="/pronto-atendimento" className="hover:text-foreground transition-colors">Para Pacientes</Link>
-              <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
-              <Link to="/privacy" className="hover:text-foreground transition-colors">Privacidade</Link>
-              <a href="mailto:contato@salbcare.com.br" className="hover:text-foreground transition-colors">Contato</a>
-            </nav>
-            <div className="flex items-center justify-center gap-3">
-              <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
-                <Link to="/login">Entrar</Link>
-              </Button>
-              <Button asChild size="sm" className="gradient-primary font-semibold text-xs">
-                <Link to="/register">Criar Conta</Link>
-              </Button>
-            </div>
-            <p className="text-center text-[10px] text-muted-foreground/60">
-              © {new Date().getFullYear()} SALBCARE. Todos os direitos reservados.
-            </p>
+            <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} SalbCare. Todos os direitos reservados.</p>
           </div>
         </footer>
 
-        {/* WhatsApp fab removed */}
+        {/* ── Sticky mobile CTA ── */}
+        <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-background/90 backdrop-blur-md border-t border-border/30 p-3 safe-area-pb">
+          <Button asChild className="w-full py-5 text-base rounded-xl font-bold gradient-primary">
+            <Link to="/cadastro">Começar grátis</Link>
+          </Button>
+        </div>
       </div>
     </>
   );
