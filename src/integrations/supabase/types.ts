@@ -837,6 +837,30 @@ export type Database = {
           },
         ]
       }
+      mentorship_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          professional_id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          professional_id: string
+          role: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          professional_id?: string
+          role?: string
+        }
+        Relationships: []
+      }
       partner_hires: {
         Row: {
           created_at: string

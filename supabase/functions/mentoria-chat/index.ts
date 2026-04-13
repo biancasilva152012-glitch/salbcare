@@ -46,54 +46,70 @@ serve(async (req) => {
 
     // Fetch financial context
     const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0];
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
+    const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0];
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split("T")[0];
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split("T")[0];
 
-    const [profileRes, transactionsRes] = await Promise.all([
-      supabase.from("profiles").select("professional_type, name").eq("user_id", user.id).single(),
+    const [profileRes, thisMonthRes, lastMonthRes] = await Promise.all([
+      supabase.from("profiles").select("professional_type, name, created_at").eq("user_id", user.id).single(),
       supabase
         .from("financial_transactions")
         .select("amount, type, category, date")
         .eq("user_id", user.id)
-        .gte("date", monthStart)
-        .lte("date", monthEnd),
+        .gte("date", thisMonthStart)
+        .lte("date", thisMonthEnd),
+      supabase
+        .from("financial_transactions")
+        .select("amount, type, category")
+        .eq("user_id", user.id)
+        .gte("date", lastMonthStart)
+        .lte("date", lastMonthEnd),
     ]);
 
-    const profile = profileRes.data;
-    const transactions = transactionsRes.data || [];
+    const profile = profileRes.data as any;
+    const thisMonthTx = thisMonthRes.data || [];
+    const lastMonthTx = lastMonthRes.data || [];
 
-    const income = transactions.filter((t: any) => t.type === "income");
-    const totalIncome = income.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
-    const categories = [...new Set(transactions.map((t: any) => t.category))].filter(Boolean);
+    const thisIncome = thisMonthTx.filter((t: any) => t.type === "income");
+    const totalThisMonth = thisIncome.reduce((s: number, t: any) => s + Number(t.amount), 0);
+    const lastIncome = lastMonthTx.filter((t: any) => t.type === "income");
+    const totalLastMonth = lastIncome.reduce((s: number, t: any) => s + Number(t.amount), 0);
+
+    const expenses = thisMonthTx.filter((t: any) => t.type === "expense");
+    const catCounts: Record<string, number> = {};
+    expenses.forEach((t: any) => { catCounts[t.category] = (catCounts[t.category] || 0) + Number(t.amount); });
+    const topCategory = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "nenhuma";
 
     const specialtyMap: Record<string, string> = {
-      psicologo: "Psicologia",
-      medico: "Medicina",
-      nutricionista: "Nutrição",
-      fisioterapeuta: "Fisioterapia",
-      fonoaudiologo: "Fonoaudiologia",
-      terapeuta_ocupacional: "Terapia Ocupacional",
-      educador_fisico: "Educação Física",
-      outro: "Outro",
+      psicologo: "Psicologia", medico: "Medicina", nutricionista: "Nutrição",
+      fisioterapeuta: "Fisioterapia", fonoaudiologo: "Fonoaudiologia",
+      terapeuta_ocupacional: "Terapia Ocupacional", educador_fisico: "Educação Física", outro: "Outro",
     };
+    const specialtyLabel = specialtyMap[profile?.professional_type] || profile?.professional_type || "não informada";
 
-    const specialtyLabel = specialtyMap[(profile as any)?.professional_type] || (profile as any)?.professional_type || "não informada";
+    const firstName = (profile?.name || "Profissional").split(" ")[0];
+    const createdAt = profile?.created_at ? new Date(profile.created_at) : now;
+    const monthsUsing = Math.max(1, Math.round((now.getTime() - createdAt.getTime()) / (30.44 * 24 * 60 * 60 * 1000)));
 
     const systemPrompt = `Você é uma mentora financeira especializada em profissionais de saúde autônomos no Brasil.
 Responda sempre em português brasileiro informal.
 Seja direta, prática e acolhedora.
 Nunca dê conselhos jurídicos ou médicos.
-Use os dados financeiros reais do profissional para personalizar suas respostas.
+Máximo 4 linhas por resposta. Seja objetiva.
 
-Dados financeiros do profissional este mês:
-- Nome: ${(profile as any)?.name || "Profissional"}
+Dados reais do profissional:
+- Nome: ${firstName}
 - Especialidade: ${specialtyLabel}
-- Total recebido no mês: R$ ${totalIncome.toFixed(2)}
-- Número de recebimentos registrados: ${income.length}
-- Categorias registradas: ${categories.length > 0 ? categories.join(", ") : "nenhuma"}
+- Total recebido este mês: R$ ${totalThisMonth.toFixed(2)}
+- Total recebido mês passado: R$ ${totalLastMonth.toFixed(2)}
+- Número de consultas registradas este mês: ${thisIncome.length}
+- Maior categoria de gasto: ${topCategory}
+- Meta mensal: não definida
+- Meses usando a plataforma: ${monthsUsing}
 
-Com base nesses dados reais, responda a pergunta do profissional de forma personalizada.
-Mantenha respostas curtas e práticas (máximo 3 parágrafos).`;
+Responda a pergunta com base nesses dados reais.
+Se não houver dados suficientes, peça pra ela registrar pelo menos um recebimento primeiro.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -114,21 +130,18 @@ Mantenha respostas curtas e práticas (máximo 3 parágrafos).`;
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Muitas requisições. Tente novamente em instantes." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "Créditos esgotados." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
       return new Response(JSON.stringify({ error: "Erro ao consultar IA" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
