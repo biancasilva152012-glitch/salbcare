@@ -257,8 +257,7 @@ const ParaProfissionais = () => {
           <motion.div
             className="mx-auto max-w-4xl"
             initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
+            animate="show"
             variants={stagger}
           >
             <motion.h2
