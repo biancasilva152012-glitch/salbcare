@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, BadgeCheck, TriangleAlert, Save, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
@@ -38,6 +38,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, signOut, subscription } = useAuth();
+  const queryClient = useQueryClient();
   const consultationRef = useRef<HTMLDivElement>(null);
   const [deleteStep, setDeleteStep] = useState(0);
   const [deleting, setDeleting] = useState(false);
@@ -98,6 +99,7 @@ const Profile = () => {
         } as any)
         .eq("user_id", user.id);
       if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
       toast.success("Registro profissional atualizado!");
     } catch {
       toast.error("Erro ao salvar registro.");
@@ -353,6 +355,7 @@ const Profile = () => {
               className="w-full gradient-primary font-semibold"
               onClick={async () => {
                 await supabase.from("profiles").update({ bio: bio.trim() || null } as any).eq("user_id", user!.id);
+                queryClient.invalidateQueries({ queryKey: ["profile", user!.id] });
                 toast.success("Bio atualizada!");
               }}
             >

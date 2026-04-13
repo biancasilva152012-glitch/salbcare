@@ -54,7 +54,7 @@ const CeoDashboard = () => {
     load();
   }, [authorized]);
 
-  const professionals = useMemo(() => profiles.filter(p => p.user_type === "professional"), [profiles]);
+  const professionals = useMemo(() => profiles.filter(p => p.user_type === "professional" && !p.name?.toLowerCase().includes("teste") && !p.name?.toLowerCase().includes("test") && !p.email?.toLowerCase().includes("teste@") && !p.email?.toLowerCase().includes("test@")), [profiles]);
   const totalPros = professionals.length;
   const activePros = professionals.filter(p => p.payment_status === "active").length;
   const trialPros = professionals.filter(p => {
