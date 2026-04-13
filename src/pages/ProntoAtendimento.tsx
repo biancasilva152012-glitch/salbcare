@@ -1,14 +1,13 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Search, Star, Clock, User, Stethoscope, FileText, FilePlus,
-  Filter, Wifi, WifiOff, Loader2, Eye, EyeOff, Bot
+  Search, Star, Clock, User, Stethoscope, FilePlus,
+  Filter, Wifi, WifiOff, Bot, ChevronDown, MessageCircle
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PROFESSION_CONFIG } from "@/config/professions";
@@ -18,7 +17,6 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import TriageChat from "@/components/triage/TriageChat";
-
 
 const DAY_MAP: Record<number, string> = { 0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat" };
 
@@ -61,7 +59,7 @@ function getNextAvailableSlot(availableHours: any): string | null {
   return null;
 }
 
-type ServiceFilter = "all" | "prescription" | "certificate" | "consultation";
+type ServiceFilter = "all" | "prescription" | "consultation";
 type AvailFilter = "all" | "available_now" | "today";
 type SpecialtyFilter = string | "all";
 
@@ -80,6 +78,8 @@ const SPECIALTIES = [
   { key: "fisioterapeuta", label: "Fisioterapeuta" },
 ];
 
+const INITIAL_VISIBLE = 4;
+
 const ProntoAtendimento = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -87,18 +87,7 @@ const ProntoAtendimento = () => {
   const [availFilter, setAvailFilter] = useState<AvailFilter>("all");
   const [specialtyFilter, setSpecialtyFilter] = useState<SpecialtyFilter>("all");
   const [triageOpen, setTriageOpen] = useState(false);
-
-  // Auth modal state
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authLoading, setAuthLoading] = useState(false);
-  const [authSuccess, setAuthSuccess] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const pendingProfRef = useRef<any>(null);
-
-  // Signup fields
-  const [signupName, setSignupName] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signupPassword, setSignupPassword] = useState("");
+  const [showAll, setShowAll] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -113,7 +102,6 @@ const ProntoAtendimento = () => {
     },
   });
 
-  // Real-time: auto-refresh when professionals update their profiles
   useEffect(() => {
     const channel = supabase
       .channel("public-professionals-changes")
@@ -148,6 +136,14 @@ const ProntoAtendimento = () => {
     return list;
   }, [professionals, search, specialtyFilter, availFilter]);
 
+  // Reset showAll when filters change
+  useEffect(() => {
+    setShowAll(false);
+  }, [search, specialtyFilter, availFilter]);
+
+  const visibleProfessionals = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
+  const hasMore = filtered.length > INITIAL_VISIBLE;
+
   const openWhatsApp = (prof: any) => {
     const phone = (prof.phone || "").replace(/\D/g, "");
     if (!phone) {
@@ -159,94 +155,6 @@ const ProntoAtendimento = () => {
       `Olá, ${prof.name}! Encontrei seu perfil na SalbCare e gostaria de solicitar ${serviceLabel}. Poderia me ajudar?`
     );
     window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
-  };
-
-  const handleSelectProfessional = (prof: any) => {
-    openWhatsApp(prof);
-  };
-
-  // Listen for auth changes to resume flow
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session?.user && pendingProfRef.current) {
-        const prof = pendingProfRef.current;
-        pendingProfRef.current = null;
-        setAuthModalOpen(false);
-        resetAuthFields();
-        navigateToFlow(prof);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [serviceFilter]);
-
-  const resetAuthFields = () => {
-    setSignupName("");
-    setSignupEmail("");
-    setSignupPassword("");
-    setShowPassword(false);
-    setAuthLoading(false);
-    setAuthSuccess(false);
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!signupName || !signupEmail || !signupPassword) {
-      toast.error("Preencha nome, e-mail e senha.");
-      return;
-    }
-    setAuthLoading(true);
-
-    // Optimistic: show success immediately
-    const prof = pendingProfRef.current;
-    setAuthSuccess(true);
-    toast.success("Cadastro realizado com sucesso!");
-
-    // Fire signup in background with timeout
-    const signupPromise = (async () => {
-      const { data: existingType } = await supabase.rpc("check_email_user_type", {
-        check_email: signupEmail,
-      });
-      if (existingType === "professional") {
-        throw new Error("Este e-mail já está cadastrado como profissional.");
-      }
-      const { error } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
-        options: {
-          data: {
-            name: signupName,
-            user_type: "patient",
-          },
-        },
-      });
-      if (error) throw error;
-    })();
-
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("timeout")), 4000)
-    );
-
-    // Close modal and redirect after 1.5s regardless
-    setTimeout(() => {
-      setAuthModalOpen(false);
-      resetAuthFields();
-      if (prof) {
-        pendingProfRef.current = null;
-        navigateToFlow(prof);
-      }
-    }, 1500);
-
-    try {
-      await Promise.race([signupPromise, timeoutPromise]);
-    } catch (err: any) {
-      if (err.message === "timeout") {
-        // Already redirecting, user will be logged in when signup completes
-        console.log("[Signup] Timeout reached, proceeding optimistically");
-      } else {
-        console.error("[Signup] Error:", err.message);
-        // Don't block — user already redirected
-      }
-    }
   };
 
   return (
@@ -296,7 +204,6 @@ const ProntoAtendimento = () => {
             </div>
           </div>
         </motion.div>
-
 
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Tipo de serviço:</p>
@@ -381,7 +288,7 @@ const ProntoAtendimento = () => {
           </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-3">
-            {filtered.map((prof: any) => {
+            {visibleProfessionals.map((prof: any) => {
               const config = PROFESSION_CONFIG[prof.professional_type as keyof typeof PROFESSION_CONFIG];
               const councilPrefix = config?.councilPrefix || "CRM";
               const availNow = isAvailableNow(prof.available_hours);
@@ -405,7 +312,6 @@ const ProntoAtendimento = () => {
                           prof.name.split(" ").map((n: string) => n[0]).slice(0, 2).join("")
                         )}
                       </div>
-                      {/* Status indicator */}
                       <div className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-card ${availNow ? "bg-green-500" : "bg-muted-foreground/40"}`} />
                     </div>
 
@@ -419,7 +325,6 @@ const ProntoAtendimento = () => {
                         </p>
                       </div>
 
-                      {/* Status badge */}
                       <div className="flex items-center gap-2 flex-wrap">
                         {availNow ? (
                           <Badge variant="default" className="text-[10px] px-2 py-0.5 bg-green-600 hover:bg-green-600">
@@ -445,12 +350,10 @@ const ProntoAtendimento = () => {
                         )}
                       </div>
 
-                      {/* Bio */}
                       {prof.bio && (
                         <p className="text-[11px] text-muted-foreground line-clamp-2">{prof.bio}</p>
                       )}
 
-                      {/* Stars */}
                       <div className="flex items-center gap-0.5 text-amber-500">
                         {[1, 2, 3, 4, 5].map((i) => (
                           <Star key={i} className="h-3 w-3 fill-current" />
@@ -458,19 +361,35 @@ const ProntoAtendimento = () => {
                       </div>
                     </div>
 
-                    {/* CTA */}
+                    {/* CTA - WhatsApp */}
                     <Button
                       size="sm"
-                      className="shrink-0 gradient-primary text-xs"
-                      onClick={() => handleSelectProfessional(prof)}
+                      className="shrink-0 gradient-primary text-xs gap-1"
+                      onClick={() => openWhatsApp(prof)}
                     >
-                      Solicitar<br />Atendimento
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      Falar no<br />WhatsApp
                     </Button>
                   </div>
                 </motion.div>
               );
             })}
           </motion.div>
+        )}
+
+        {/* Show more button */}
+        {!showAll && hasMore && !isLoading && (
+          <div className="text-center">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs gap-1.5"
+              onClick={() => setShowAll(true)}
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+              Ver mais profissionais ({filtered.length - INITIAL_VISIBLE} restantes)
+            </Button>
+          </div>
         )}
 
         {/* History link */}
@@ -488,81 +407,6 @@ const ProntoAtendimento = () => {
           <p className="text-[10px] text-muted-foreground/60">Powered by SALBCARE</p>
         </div>
       </div>
-
-      {/* Auth Modal */}
-      <Dialog open={authModalOpen} onOpenChange={(open) => {
-        setAuthModalOpen(open);
-        if (!open) {
-          pendingProfRef.current = null;
-          resetAuthFields();
-        }
-      }}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-lg">Cadastro rápido</DialogTitle>
-            <DialogDescription className="text-xs">
-              Cadastre-se rapidamente para solicitar o atendimento.
-            </DialogDescription>
-          </DialogHeader>
-
-          {authSuccess ? (
-            <div className="flex flex-col items-center gap-3 py-6">
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-2xl">✅</span>
-              </div>
-              <p className="text-sm font-medium text-foreground">Cadastro realizado com sucesso!</p>
-              <p className="text-xs text-muted-foreground">Redirecionando...</p>
-            </div>
-          ) : (
-          <form onSubmit={handleSignup} className="space-y-3 pt-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs">Nome completo *</Label>
-              <Input
-                value={signupName}
-                onChange={(e) => setSignupName(e.target.value)}
-                placeholder="Seu nome"
-                required
-                className="bg-accent border-border"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">E-mail *</Label>
-              <Input
-                type="email"
-                value={signupEmail}
-                onChange={(e) => setSignupEmail(e.target.value)}
-                placeholder="seu@email.com"
-                required
-                className="bg-accent border-border"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Senha *</Label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                  required
-                  minLength={6}
-                  className="bg-accent border-border pr-10"
-                />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-            <Button type="submit" disabled={authLoading} className="w-full gradient-primary">
-              {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Cadastrar e continuar"}
-            </Button>
-            <p className="text-[10px] text-muted-foreground text-center">
-              Ao cadastrar, você concorda com os <a href="/terms" target="_blank" className="underline">Termos de Uso</a>.
-            </p>
-          </form>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* Triage Dialog */}
       <Dialog open={triageOpen} onOpenChange={setTriageOpen}>
