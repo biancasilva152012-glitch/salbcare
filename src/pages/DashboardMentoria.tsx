@@ -41,6 +41,8 @@ Vai lá no Financeiro e volta aqui — prometo que vai valer a pena 😊`,
 const DashboardMentoria = () => {
   const { session, user } = useAuth();
   const navigate = useNavigate();
+  const { canSendMentorship, mentorshipCount, mentorshipLimit, isFree } = useFreemiumLimits();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
