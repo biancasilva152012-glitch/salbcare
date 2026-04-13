@@ -93,6 +93,19 @@ const ParaProfissionais = () => (
             Não é só para médicos. É para qualquer profissional de saúde autônomo.
           </motion.p>
 
+          {/* Mentorship differentiator */}
+          <motion.div variants={fadeUp} className="mt-8 text-center max-w-md mx-auto space-y-2">
+            <p className="text-[11px] uppercase tracking-wider text-primary font-semibold">Por que não é só uma IA comum?</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Sua mentora financeira já conhece seus dados.
+              Você pergunta — ela responde com base no que você de fato ganhou e gastou esse mês.
+              Sem precisar explicar nada do zero.
+            </p>
+            <p className="text-[11px] text-muted-foreground/70">
+              Diferente do ChatGPT, ela não responde no genérico. Ela responde sobre você.
+            </p>
+          </motion.div>
+
           <motion.div variants={fadeUp} className="mt-8">
             <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl gradient-primary font-bold">
               <Link to="/cadastro">

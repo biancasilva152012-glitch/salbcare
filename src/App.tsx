@@ -14,10 +14,10 @@ import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
-// Eager: login, register, index (entry points)
+// Eager: login, register, landing (entry points)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Index from "./pages/Index";
+import ParaProfissionais from "./pages/ParaProfissionais";
 
 // Lazy with auto-retry
 const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"), "ForgotPassword");
@@ -32,7 +32,7 @@ const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
-const ParaProfissionais = lazyWithRetry(() => import("./pages/ParaProfissionais"), "ParaProfissionais");
+const Index = lazyWithRetry(() => import("./pages/Index"), "Index");
 const PublicProfile = lazyWithRetry(() => import("./pages/PublicProfile"), "PublicProfile");
 const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
 const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
@@ -69,7 +69,7 @@ const App = () => (
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<ParaProfissionais />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cadastro" element={<Register />} />
@@ -78,6 +78,7 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/para-profissionais" element={<ParaProfissionais />} />
+              <Route path="/index" element={<Index />} />
               <Route path="/p/:slug" element={<PublicProfile />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/planos" element={<Subscription />} />

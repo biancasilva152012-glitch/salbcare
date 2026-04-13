@@ -58,18 +58,37 @@ const DashboardMentoria = () => {
       : null;
   const [showGuia, setShowGuia] = useState(false);
 
-  // Check if user has any financial entries
-  const { data: hasEntries } = useQuery({
-    queryKey: ["has-financial-entries", user?.id],
+  const [contextDismissed, setContextDismissed] = useState(false);
+
+  // Check financial entries and get context data
+  const { data: financialContext } = useQuery({
+    queryKey: ["financial-context", user?.id],
     queryFn: async () => {
-      const { count } = await supabase
-        .from("financial_transactions")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user!.id);
-      return (count || 0) > 0;
+      const now = new Date();
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
+      const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0];
+
+      const [countRes, incomeRes, profileRes] = await Promise.all([
+        supabase.from("financial_transactions").select("id", { count: "exact", head: true }).eq("user_id", user!.id),
+        supabase.from("financial_transactions").select("amount").eq("user_id", user!.id).eq("type", "income").gte("date", thisMonthStart).lte("date", thisMonthEnd),
+        supabase.from("profiles").select("professional_type").eq("user_id", user!.id).single(),
+      ]);
+
+      const count = countRes.count || 0;
+      const totalThisMonth = (incomeRes.data || []).reduce((s: number, t: any) => s + Number(t.amount), 0);
+      const specialtyMap: Record<string, string> = {
+        psicologo: "Psicologia", medico: "Medicina", nutricionista: "Nutrição",
+        fisioterapeuta: "Fisioterapia", fonoaudiologo: "Fonoaudiologia",
+        terapeuta_ocupacional: "Terapia Ocupacional", educador_fisico: "Educação Física", outro: "Outro",
+      };
+      const specialty = specialtyMap[(profileRes.data as any)?.professional_type] || "sua área";
+
+      return { hasEntries: count > 0, totalThisMonth, specialty };
     },
     enabled: !!user,
   });
+
+  const hasEntries = financialContext?.hasEntries ?? undefined;
 
   // Load chat history
   useEffect(() => {
@@ -234,10 +253,12 @@ const DashboardMentoria = () => {
         <motion.div variants={item}>
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            <h1 className="text-xl font-bold">Mentoria Financeira</h1>
+            <h1 className="text-xl font-bold">Sua Mentora Financeira</h1>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Tire dúvidas sobre suas finanças com base nos seus próprios dados.
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Diferente do ChatGPT, ela já conhece seus números.
+            <br />
+            Não precisa explicar nada — só perguntar.
           </p>
         </motion.div>
 
@@ -291,6 +312,21 @@ const DashboardMentoria = () => {
             >
               Registrar primeiro recebimento
             </Button>
+          )}
+
+          {/* Context card */}
+          {!contextDismissed && financialContext?.hasEntries && messages.length === 0 && (
+            <button
+              onClick={() => setContextDismissed(true)}
+              className="w-full text-left rounded-xl bg-primary/5 border border-primary/20 p-3 mb-3 transition-colors hover:bg-primary/10"
+            >
+              <div className="flex items-start gap-2">
+                <span className="text-lg leading-none">💡</span>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Sua mentora já sabe que você recebeu <span className="text-primary font-semibold">R$ {financialContext.totalThisMonth.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span> esse mês e que sua especialidade é <span className="text-primary font-semibold">{financialContext.specialty}</span>. Ela responde com base nos SEUS dados reais, não em exemplos genéricos.
+                </p>
+              </div>
+            </button>
           )}
 
           {/* Suggested questions */}

@@ -214,6 +214,9 @@ const Register = () => {
               {" "}e a{" "}
               <Link to="/privacy" className="text-primary hover:underline" target="_blank">Política de Privacidade</Link>.
             </p>
+            <p className="text-[11px] text-muted-foreground text-center">
+              Após o cadastro, sua mentora financeira com IA já vai conhecer seus dados e estará pronta para te ajudar.
+            </p>
           </motion.div>
         </AnimatePresence>
 
