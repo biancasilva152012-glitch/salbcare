@@ -161,23 +161,18 @@ const ParaProfissionais = () => {
 
         {/* ── Public Directory ── */}
         <section className="px-4 pb-16">
-          <motion.div
-            className="mx-auto max-w-4xl"
-            initial="hidden"
-            animate="show"
-            variants={stagger}
-          >
-            <motion.div variants={fadeUp} className="text-center mb-8 space-y-2">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center mb-8 space-y-2">
               <h2 className="text-xl sm:text-2xl font-bold">
                 Encontre seu profissional de saúde
               </h2>
               <p className="text-sm text-muted-foreground">
                 Sem cadastro. Encontre e entre em contato direto.
               </p>
-            </motion.div>
+            </div>
 
             {/* Search */}
-            <motion.div variants={fadeUp} className="relative max-w-sm mx-auto mb-6">
+            <div className="relative max-w-sm mx-auto mb-6">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Buscar por nome ou especialidade..."
@@ -185,23 +180,18 @@ const ParaProfissionais = () => {
                 onChange={(e) => setSearch(e.target.value)}
                 className="bg-accent border-border pl-9"
               />
-            </motion.div>
+            </div>
 
             {/* Professional cards */}
             {filtered.length === 0 ? (
-              <motion.div variants={fadeUp} className="text-center py-12">
+              <div className="text-center py-12">
                 <p className="text-muted-foreground text-sm">Nenhum profissional encontrado.</p>
                 <p className="text-xs text-muted-foreground mt-1">Novos profissionais são adicionados frequentemente.</p>
-              </motion.div>
+              </div>
             ) : (
-              <motion.div
-                className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-                variants={{ show: { transition: { staggerChildren: 0.06 } } }}
-              >
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {filtered.map((prof: any) => {
                   const label = professionalLabels[prof.professional_type] || "Profissional";
-                  const whatsappNumber = prof.pix_key ? null : (prof.meet_link ? null : null);
-                  // Build slug from name for profile link
                   const slug = prof.name
                     ?.toLowerCase()
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -211,10 +201,7 @@ const ParaProfissionais = () => {
                     .trim();
 
                   return (
-                    <motion.div
-                      key={prof.user_id}
-                      variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-                    >
+                    <div key={prof.user_id}>
                       <Card className="h-full border-border/40 hover:border-primary/30 transition-colors">
                         <CardContent className="p-5 flex flex-col gap-3">
                           <div className="flex items-center gap-3">
@@ -244,12 +231,12 @@ const ParaProfissionais = () => {
                           </Button>
                         </CardContent>
                       </Card>
-                    </motion.div>
+                    </div>
                   );
                 })}
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
         </section>
 
         {/* ── Testimonials ── */}
