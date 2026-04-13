@@ -354,14 +354,28 @@ const ProntoAtendimento = () => {
                     </div>
 
                     {/* CTA - WhatsApp */}
-                    <Button
-                      size="sm"
-                      className="shrink-0 gradient-primary text-xs gap-1"
-                      onClick={() => openWhatsApp(prof)}
-                    >
-                      <MessageCircle className="h-3.5 w-3.5" />
-                      Falar no<br />WhatsApp
-                    </Button>
+                    {getWhatsAppUrl(prof) ? (
+                      <Button
+                        size="sm"
+                        className="shrink-0 gradient-primary text-xs gap-1"
+                        asChild
+                      >
+                        <a href={getWhatsAppUrl(prof)!} target="_blank" rel="noopener noreferrer">
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          Falar no<br />WhatsApp
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="shrink-0 text-xs gap-1"
+                        variant="outline"
+                        disabled
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                        Sem WhatsApp
+                      </Button>
+                    )}
                   </div>
                 </motion.div>
               );
