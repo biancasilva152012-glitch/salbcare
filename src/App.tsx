@@ -47,6 +47,9 @@ const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
 const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"), "PaymentSuccess");
 const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
 const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
+const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
+const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
+const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 
 const queryClient = new QueryClient({
   defaultOptions: {
