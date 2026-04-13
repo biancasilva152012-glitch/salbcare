@@ -218,25 +218,25 @@ const ParaProfissionais = () => {
             <div className="grid gap-5 sm:grid-cols-3">
               {[
                 {
-                  initials: "ST",
-                  name: "Dra. Sarah T.",
-                  role: "Médica",
+                  initials: "SA",
+                  name: "Sarah Almeida",
+                  role: "Médica • Clínica Médica",
                   color: "bg-emerald-500",
-                  quote: "Finalmente uma plataforma que não fica com parte das minhas consultas.",
+                  quote: "A SalbCare organizou meu consultório digital do zero. Consigo gerenciar minha agenda, emitir receituários e atender com muito mais profissionalismo — tudo em uma plataforma só.",
                 },
                 {
-                  initials: "VF",
-                  name: "Vitória F.",
-                  role: "Dentista",
+                  initials: "MB",
+                  name: "Mayara Barros",
+                  role: "Terapeuta • Atende da Espanha para o Brasil",
                   color: "bg-violet-500",
-                  quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes.",
+                  quote: "Atendo meus pacientes brasileiros morando na Espanha sem nenhuma complicação. A teleconsulta integrada tornou isso simples e legal. Não consigo imaginar trabalhar sem a plataforma.",
                 },
                 {
                   initials: "CC",
-                  name: "Cinara C.",
-                  role: "Nutricionista",
+                  name: "Cinara Costa",
+                  role: "Dentista • HOF e Prontuários",
                   color: "bg-amber-500",
-                  quote: "A mentoria financeira sozinha já vale a assinatura inteira.",
+                  quote: "Faço a primeira avaliação de HOF e organizo todos os prontuários dos meus pacientes pela SalbCare. Ficou tudo centralizado, seguro e fácil de acessar a qualquer momento.",
                 },
               ].map((t) => (
                 <motion.div
