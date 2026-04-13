@@ -283,18 +283,17 @@ const Patients = () => {
                 </DialogContent>
               </Dialog>
             ) : (
-              <Button size="sm" className="gap-1 opacity-60" disabled>
+              <Button size="sm" className="gradient-primary gap-1" onClick={() => setUpgradeOpen(true)}>
                 <Plus className="h-4 w-4" /> Novo
               </Button>
             )}
           </div>
         </div>
 
-        {!canAddPatient && (
-          <div className="bg-muted/50 border border-border rounded-lg px-4 py-3 text-sm text-muted-foreground flex items-center justify-between gap-3">
-            <span>Seu período de teste expirou. Assine para cadastrar novos pacientes.</span>
-            <Button size="sm" variant="default" onClick={() => window.location.href = "/subscription"}>Ver planos</Button>
-          </div>
+        {isFree && (
+          <p className="text-xs text-center text-muted-foreground">
+            Pacientes: {patientsCount}/{patientsLimit} (plano gratuito)
+          </p>
         )}
 
         <div className="relative">
