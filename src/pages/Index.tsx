@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Menu, X, DollarSign, Compass, Video } from "lucide-react";
+import { ArrowRight, Menu, X, FileText, Search, Video, UserPlus, Globe, LayoutDashboard } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { useState } from "react";
 
@@ -85,7 +85,7 @@ const Index = () => {
         </nav>
 
         {/* ── Hero Section ── */}
-        <section className="mx-auto max-w-6xl px-5 sm:px-6 pt-16 pb-20 sm:pt-28 sm:pb-32">
+        <section className="mx-auto max-w-6xl px-5 sm:px-6 pt-16 pb-16 sm:pt-28 sm:pb-24">
           <motion.div
             variants={stagger}
             initial="hidden"
@@ -104,21 +104,21 @@ const Index = () => {
               Seu consultório digital. Simples assim.
             </motion.h1>
             <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Gerencie seus recebimentos, organize suas finanças e atenda por teleconsulta. Tudo em um lugar. Sem comissão.
+              Para profissionais de saúde autônomos.
             </motion.p>
 
-            {/* Three icons */}
-            <motion.div variants={fadeUp} className="flex justify-center gap-8 sm:gap-12 pt-2">
+            {/* Three value props */}
+            <motion.div variants={fadeUp} className="flex justify-center gap-6 sm:gap-12 pt-2">
               {[
-                { icon: DollarSign, label: "Contador financeiro" },
-                { icon: Compass, label: "Mentoria financeira" },
-                { icon: Video, label: "Teleconsulta" },
+                { icon: FileText, label: "Carnê-Leão preenchido automático" },
+                { icon: Search, label: "Pacientes te encontram sem comissão" },
+                { icon: Video, label: "Teleconsulta legal pelo Google Meet" },
               ].map((f) => (
-                <div key={f.label} className="flex flex-col items-center gap-1.5">
+                <div key={f.label} className="flex flex-col items-center gap-1.5 max-w-[120px]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                     <f.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="text-[11px] text-muted-foreground">{f.label}</span>
+                  <span className="text-[11px] text-muted-foreground text-center leading-tight">{f.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -137,6 +137,140 @@ const Index = () => {
           </motion.div>
         </section>
 
+        {/* ── Stats Bar ── */}
+        <section className="bg-[hsl(var(--primary))] py-10">
+          <div className="mx-auto max-w-4xl px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            {[
+              { value: "9+", label: "especialidades" },
+              { value: "100%", label: "das consultas pra você" },
+              { value: "7 dias", label: "grátis sem cartão" },
+            ].map((s) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="space-y-1"
+              >
+                <p className="text-3xl sm:text-4xl font-bold text-primary-foreground">{s.value}</p>
+                <p className="text-sm text-primary-foreground/80">{s.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Como Funciona ── */}
+        <section className="bg-muted/40 py-16 sm:py-24">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-2xl sm:text-3xl font-bold text-center mb-12"
+            >
+              Como funciona
+            </motion.h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {[
+                {
+                  step: "1",
+                  icon: UserPlus,
+                  title: "Crie seu perfil em 5 minutos",
+                  desc: "Cadastre sua especialidade, valores e link do Google Meet",
+                },
+                {
+                  step: "2",
+                  icon: Globe,
+                  title: "Pacientes te encontram",
+                  desc: "Seu perfil aparece no diretório público da SalbCare sem custo por lead",
+                },
+                {
+                  step: "3",
+                  icon: LayoutDashboard,
+                  title: "Gerencie tudo em um lugar",
+                  desc: "Agenda, prontuário, receitas e financeiro na mesma plataforma",
+                },
+              ].map((item) => (
+                <motion.div
+                  key={item.step}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: Number(item.step) * 0.1 }}
+                  className="bg-background rounded-2xl p-6 sm:p-8 border border-border/40 space-y-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                      {item.step}
+                    </span>
+                    <item.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Prova Social ── */}
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-2xl sm:text-3xl font-bold text-center mb-12"
+            >
+              O que dizem nossos profissionais
+            </motion.h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {[
+                {
+                  initials: "ST",
+                  name: "Dra. Sarah T.",
+                  role: "Médica",
+                  color: "bg-emerald-500",
+                  quote: "Finalmente uma plataforma que não fica com parte das minhas consultas.",
+                },
+                {
+                  initials: "VF",
+                  name: "Vitória F.",
+                  role: "Dentista",
+                  color: "bg-violet-500",
+                  quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes.",
+                },
+                {
+                  initials: "CC",
+                  name: "Cinara C.",
+                  role: "Nutricionista",
+                  color: "bg-amber-500",
+                  quote: "O Carnê-Leão sozinho já vale a assinatura inteira.",
+                },
+              ].map((t) => (
+                <motion.div
+                  key={t.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-background rounded-2xl p-6 border border-border/40 space-y-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`h-10 w-10 rounded-full ${t.color} flex items-center justify-center text-sm font-bold text-white`}>
+                      {t.initials}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.role}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground italic leading-relaxed">"{t.quote}"</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── Footer ── */}
         <footer className="border-t border-border/30 py-8">
           <div className="mx-auto max-w-6xl px-4 text-center space-y-3">
@@ -150,7 +284,6 @@ const Index = () => {
             <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} SalbCare. Todos os direitos reservados.</p>
           </div>
         </footer>
-
       </div>
     </>
   );
