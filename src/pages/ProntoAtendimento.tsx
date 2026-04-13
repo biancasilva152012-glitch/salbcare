@@ -78,7 +78,7 @@ const SPECIALTIES = [
   { key: "fisioterapeuta", label: "Fisioterapeuta" },
 ];
 
-const INITIAL_VISIBLE = 4;
+const INITIAL_VISIBLE = 3;
 
 const ProntoAtendimento = () => {
   const navigate = useNavigate();
@@ -293,7 +293,7 @@ const ProntoAtendimento = () => {
               const councilPrefix = config?.councilPrefix || "CRM";
               const availNow = isAvailableNow(prof.available_hours);
               const nextSlot = getNextAvailableSlot(prof.available_hours);
-              const price = prof.consultation_price ? Number(prof.consultation_price) : 0;
+              
 
               return (
                 <motion.div
@@ -343,11 +343,6 @@ const ProntoAtendimento = () => {
                           </Badge>
                         )}
 
-                        {price > 0 && (
-                          <span className="text-[11px] font-medium text-foreground">
-                            R$ {price.toFixed(0)}
-                          </span>
-                        )}
                       </div>
 
                       {prof.bio && (

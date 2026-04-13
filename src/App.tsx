@@ -47,6 +47,9 @@ const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
 const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"), "PaymentSuccess");
 const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
 const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
+const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
+const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
+const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +97,9 @@ const App = () => (
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
               <Route path="/consulta-online/:specialty" element={<SpecialtyListing />} />
+              <Route path="/pronto-atendimento" element={<ProntoAtendimento />} />
+              <Route path="/pronto-atendimento/servico" element={<ProntoAtendimentoFlow />} />
+              <Route path="/pronto-atendimento/historico" element={<ProntoAtendimentoHistorico />} />
 
               {/* Professional-only routes */}
               <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
