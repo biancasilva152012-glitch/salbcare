@@ -91,6 +91,10 @@ const App = () => (
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/planos" element={<Subscription />} />
 
+              {/* Public patient routes */}
+              <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
+              <Route path="/consulta-online/:specialty" element={<SpecialtyListing />} />
+
               {/* Professional-only routes */}
               <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
               <Route path="/payment-success" element={<ProfessionalRoute><PaymentSuccess /></ProfessionalRoute>} />
@@ -98,8 +102,14 @@ const App = () => (
               <Route path="/cancelado" element={<ProfessionalRoute><Cancelado /></ProfessionalRoute>} />
               <Route path="/dashboard" element={<ProfessionalRoute><Dashboard /></ProfessionalRoute>} />
               <Route path="/dashboard/financeiro" element={<ProfessionalRoute><DashboardFinanceiro /></ProfessionalRoute>} />
-              <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
+              <Route path="/dashboard/financial" element={<ProfessionalRoute><Financial /></ProfessionalRoute>} />
+              <Route path="/dashboard/contabilidade" element={<ProfessionalRoute><Accounting /></ProfessionalRoute>} />
+              <Route path="/dashboard/agenda" element={<ProfessionalRoute><Agenda /></ProfessionalRoute>} />
+              <Route path="/dashboard/pacientes" element={<ProfessionalRoute><Patients /></ProfessionalRoute>} />
+              <Route path="/dashboard/juridico" element={<ProfessionalRoute><Legal /></ProfessionalRoute>} />
               <Route path="/dashboard/teleconsulta" element={<ProfessionalRoute><DashboardTeleconsulta /></ProfessionalRoute>} />
+              <Route path="/dashboard/telehealth" element={<ProfessionalRoute><Telehealth /></ProfessionalRoute>} />
+              <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<CeoDashboard />} />
