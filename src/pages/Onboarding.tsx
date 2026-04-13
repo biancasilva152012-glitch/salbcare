@@ -10,8 +10,6 @@ import { toast } from "sonner";
 
 const planIcons: Record<PlanKey, typeof Star> = {
   basic: Star,
-  professional: Crown,
-  clinic: Sparkles,
 };
 
 const Onboarding = () => {

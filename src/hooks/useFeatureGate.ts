@@ -1,11 +1,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { PlanKey } from "@/config/plans";
 
-// Plan hierarchy: basic < professional < clinic
+// Single plan: basic (essencial)
 const PLAN_LEVEL: Record<PlanKey, number> = {
   basic: 0,
-  professional: 1,
-  clinic: 2,
 };
 
 export type Feature =
@@ -15,12 +13,13 @@ export type Feature =
   | "advanced_financial_dashboard"
   | "multi_professionals";
 
+// All features available on the single plan
 const FEATURE_MIN_PLAN: Record<Feature, PlanKey> = {
-  pdf_export: "professional",
-  accounting_marketplace: "professional",
-  legal_marketplace: "professional",
-  advanced_financial_dashboard: "clinic",
-  multi_professionals: "clinic",
+  pdf_export: "basic",
+  accounting_marketplace: "basic",
+  legal_marketplace: "basic",
+  advanced_financial_dashboard: "basic",
+  multi_professionals: "basic",
 };
 
 export function useFeatureGate() {
