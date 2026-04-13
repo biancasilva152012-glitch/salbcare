@@ -1373,6 +1373,7 @@ export type Database = {
           meet_link: string
           min_advance_hours: number
           name: string
+          phone: string
           pix_key: string
           professional_type: string
           slot_duration: number
