@@ -90,7 +90,7 @@ const Privacy = () => {
               <li><strong>Revogar</strong> seu consentimento a qualquer momento</li>
             </ul>
             <p>
-              Para exercer esses direitos, acesse <strong>Perfil → Privacidade e meus dados</strong> ou envie um e-mail para <a href="mailto:contato@salbcare.com.br" className="text-primary hover:underline">contato@salbcare.com.br</a>. Respondemos em até 15 dias úteis.
+              Para exercer esses direitos, acesse <strong>Perfil → Privacidade e meus dados</strong> ou envie um e-mail para <a href="mailto:biancadealbuquerquep@gmail.com" className="text-primary hover:underline">biancadealbuquerquep@gmail.com</a>. Respondemos em até 15 dias úteis.
             </p>
           </section>
 
@@ -107,7 +107,7 @@ const Privacy = () => {
               Se tiver dúvidas sobre esta política ou sobre seus dados:
             </p>
             <ul className="list-none space-y-1">
-              <li>📧 E-mail: <a href="mailto:contato@salbcare.com.br" className="text-primary hover:underline">contato@salbcare.com.br</a></li>
+              <li>📧 E-mail: <a href="mailto:biancadealbuquerquep@gmail.com" className="text-primary hover:underline">biancadealbuquerquep@gmail.com</a></li>
               <li>📍 Responsável: SalbCare Tecnologia LTDA</li>
             </ul>
           </section>

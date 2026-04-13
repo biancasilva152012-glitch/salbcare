@@ -581,7 +581,7 @@ const ProfileTab = () => {
           </DialogHeader>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancelar</Button>
-            <Button variant="destructive" onClick={() => { toast.info("Entre em contato com contato@salbcare.com.br para exclusão de conta."); setShowDeleteDialog(false); }}>
+            <Button variant="destructive" onClick={() => { toast.info("Entre em contato com biancadealbuquerquep@gmail.com para exclusão de conta."); setShowDeleteDialog(false); }}>
               Confirmar exclusão
             </Button>
           </DialogFooter>
