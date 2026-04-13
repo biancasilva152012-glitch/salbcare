@@ -144,17 +144,14 @@ const ProntoAtendimento = () => {
   const visibleProfessionals = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
   const hasMore = filtered.length > INITIAL_VISIBLE;
 
-  const openWhatsApp = (prof: any) => {
+  const getWhatsAppUrl = (prof: any) => {
     const phone = (prof.phone || "").replace(/\D/g, "");
-    if (!phone) {
-      toast.error("Este profissional não possui WhatsApp cadastrado.");
-      return;
-    }
+    if (!phone) return null;
     const serviceLabel = serviceFilter === "consultation" ? "consulta online" : "atendimento";
     const msg = encodeURIComponent(
       `Olá, ${prof.name}! Encontrei seu perfil na SalbCare e gostaria de solicitar ${serviceLabel}. Poderia me ajudar?`
     );
-    window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+    return `https://wa.me/55${phone}?text=${msg}`;
   };
 
   return (
