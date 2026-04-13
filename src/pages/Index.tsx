@@ -21,8 +21,8 @@ const Index = () => {
   return (
     <>
       <SEOHead
-        title="SalbCare | Consultório Digital para Profissionais de Saúde"
-        description="Gerencie seus recebimentos, organize suas finanças e atenda por teleconsulta. Sem comissão. 7 dias grátis."
+        title="SalbCare | Gestão e Saúde"
+        description="Consultório digital para profissionais de saúde autônomos. Agenda, prontuário, teleconsulta e mentoria financeira. Sem comissão. 7 dias grátis."
         canonical="/"
         jsonLd={{
           "@context": "https://schema.org",
