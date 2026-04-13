@@ -97,6 +97,9 @@ const App = () => (
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
               <Route path="/consulta-online/:specialty" element={<SpecialtyListing />} />
+              <Route path="/pronto-atendimento" element={<ProntoAtendimento />} />
+              <Route path="/pronto-atendimento/servico" element={<ProntoAtendimentoFlow />} />
+              <Route path="/pronto-atendimento/historico" element={<ProntoAtendimentoHistorico />} />
 
               {/* Professional-only routes */}
               <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
