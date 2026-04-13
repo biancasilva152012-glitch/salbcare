@@ -473,7 +473,13 @@ const Financial = () => {
             </TabsContent>
           )}
         </Tabs>
+        {isFree && (
+          <p className="text-xs text-center text-muted-foreground mt-2">
+            Lançamentos este mês: {financialCount}/{financialLimit} (plano gratuito)
+          </p>
+        )}
       </div>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="lançamentos financeiros" currentUsage={financialCount} limit={financialLimit} />
     </PageContainer>
   );
 };
