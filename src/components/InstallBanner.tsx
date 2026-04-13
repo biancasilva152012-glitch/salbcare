@@ -52,7 +52,7 @@ const InstallBanner = () => {
 
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+  }, [user]);
 
   const handleInstall = async () => {
     if (deferredPrompt) {
