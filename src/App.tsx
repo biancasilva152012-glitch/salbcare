@@ -95,7 +95,8 @@ const App = () => (
               <Route path="/p/:slug" element={<PublicProfile />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/profissionais" element={<PublicProfessionals />} />
-              <Route path="/planos" element={<Subscription />} />
+              <Route path="/planos" element={<Pricing />} />
+              <Route path="/precos" element={<Pricing />} />
 
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
