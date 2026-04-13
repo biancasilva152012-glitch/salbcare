@@ -83,16 +83,6 @@ const Dashboard = () => {
     staleTime: 10 * 60 * 1000,
   });
 
-  const profileUrl = profile?.profile_slug
-    ? `salbcare.com.br/p/${profile.profile_slug}`
-    : null;
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(`https://${text}`);
-    setCopied(true);
-    toast.success("Link copiado!");
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
 
