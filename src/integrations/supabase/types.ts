@@ -1380,6 +1380,19 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_public_profile_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          bio: string
+          council_number: string
+          council_state: string
+          email: string
+          name: string
+          phone: string
+          professional_type: string
+          profile_slug: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

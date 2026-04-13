@@ -23,14 +23,10 @@ const PublicProfile = () => {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["public-profile", slug],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("name, professional_type, bio, phone, email, profile_slug, council_number, council_state")
-        .eq("profile_slug", slug!)
-        .eq("user_type", "professional")
-        .single();
+      const { data, error } = await (supabase as any)
+        .rpc("get_public_profile_by_slug", { _slug: slug! });
       if (error) throw error;
-      return data;
+      return data?.[0] || null;
     },
     enabled: !!slug,
   });
