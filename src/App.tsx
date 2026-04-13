@@ -51,6 +51,7 @@ const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"
 const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
 const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 const PublicProfessionals = lazyWithRetry(() => import("./pages/PublicProfessionals"), "PublicProfessionals");
+const Pricing = lazyWithRetry(() => import("./pages/Pricing"), "Pricing");
 
 const queryClient = new QueryClient({
   defaultOptions: {
