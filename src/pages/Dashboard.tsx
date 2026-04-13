@@ -210,27 +210,6 @@ const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Public Profile */}
-        <motion.div variants={item}>
-          <div className="glass-card p-4 space-y-3 border-border/60">
-            <div className="flex items-center gap-2">
-              <ExternalLink className="h-4 w-4 text-muted-foreground" />
-              <p className="text-sm font-semibold">Meu perfil público</p>
-            </div>
-            {profileUrl && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground truncate flex-1">{profileUrl}</span>
-                <button
-                  onClick={() => handleCopy(profileUrl)}
-                  className="shrink-0 flex items-center gap-1 text-xs text-primary font-medium"
-                >
-                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copied ? "Copiado!" : "Copiar"}
-                </button>
-              </div>
-            )}
-          </div>
-        </motion.div>
 
         {/* Today's appointments */}
         <motion.div variants={item}>
