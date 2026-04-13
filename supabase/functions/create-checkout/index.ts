@@ -12,8 +12,12 @@ const logStep = (step: string, details?: any) => {
   console.log(`[Checkout] ${step}${detailsStr}`);
 };
 
-// Current Essencial plan price
-const ESSENCIAL_PRICE_ID = "price_1TLmdUBUEEEAHx2hR8nCDaMo"; // R$89/mês
+// Allowed price IDs — enforced server-side
+const ALLOWED_PRICES: Record<string, string> = {
+  "price_1TLmdUBUEEEAHx2hR8nCDaMo": "Essencial Mensal", // R$89/mês
+};
+
+const DEFAULT_PRICE_ID = "price_1TLmdUBUEEEAHx2hR8nCDaMo";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -26,7 +30,8 @@ serve(async (req) => {
   );
 
   try {
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("No authorization header");
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
@@ -34,8 +39,16 @@ serve(async (req) => {
 
     logStep("Iniciando checkout", { userId: user.id, email: user.email });
 
-    const { priceId: requestedPriceId, billingPeriod } = await req.json();
-    const priceId = requestedPriceId || ESSENCIAL_PRICE_ID;
+    let body: any = {};
+    try { body = await req.json(); } catch { /* empty body is ok */ }
+
+    // SECURITY: Only allow whitelisted price IDs
+    const requestedPriceId = body?.priceId;
+    const priceId = (requestedPriceId && ALLOWED_PRICES[requestedPriceId])
+      ? requestedPriceId
+      : DEFAULT_PRICE_ID;
+
+    logStep("Price validated", { priceId, planName: ALLOWED_PRICES[priceId] });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 
@@ -61,7 +74,7 @@ serve(async (req) => {
       .maybeSingle();
 
     const hadTrial = (prof as any)?.had_trial ?? false;
-    const isTrialEligible = priceId === ESSENCIAL_PRICE_ID && !hadTrial;
+    const isTrialEligible = priceId === DEFAULT_PRICE_ID && !hadTrial;
 
     logStep("Trial check", { priceId, hadTrial, isTrialEligible });
 
@@ -75,11 +88,9 @@ serve(async (req) => {
       cancel_url: `${origin}/subscription`,
       metadata: {
         user_id: user.id,
-        billing_period: billingPeriod || "monthly",
       },
     };
 
-    // Add 7-day trial if eligible
     if (isTrialEligible) {
       sessionParams.subscription_data = {
         trial_period_days: 7,
@@ -88,7 +99,6 @@ serve(async (req) => {
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
-
     logStep("Session criada", { sessionId: session.id, url: session.url });
 
     return new Response(JSON.stringify({ url: session.url }), {
