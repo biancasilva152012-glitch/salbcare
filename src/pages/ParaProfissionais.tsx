@@ -62,7 +62,9 @@ const ParaProfissionais = () => (
             variants={fadeUp}
             className="text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight"
           >
-            Seu consultório digital. Simples assim.
+            Sua <span className="text-primary">vitrine</span> para pacientes.
+            <br />
+            Seu <span className="text-primary">controle</span> para gestão.
           </motion.h1>
           <motion.p
             variants={fadeUp}
