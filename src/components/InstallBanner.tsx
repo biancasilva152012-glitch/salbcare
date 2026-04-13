@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, X, Smartphone } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -12,12 +13,16 @@ interface BeforeInstallPromptEvent extends Event {
 const DISMISSED_KEY = "salbcare_install_dismissed";
 
 const InstallBanner = () => {
+  const { user } = useAuth();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [isIos, setIsIos] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Only show for logged-in professionals
+    if (!user) return;
+
     // Don't show if already installed or dismissed recently
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches
       || ("standalone" in window.navigator && (window.navigator as any).standalone);
