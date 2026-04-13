@@ -50,6 +50,7 @@ const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
 const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
 const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
 const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
+const PublicProfessionals = lazyWithRetry(() => import("./pages/PublicProfessionals"), "PublicProfessionals");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="/index" element={<Index />} />
               <Route path="/p/:slug" element={<PublicProfile />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
+              <Route path="/profissionais" element={<PublicProfessionals />} />
               <Route path="/planos" element={<Subscription />} />
 
               {/* Public patient routes */}

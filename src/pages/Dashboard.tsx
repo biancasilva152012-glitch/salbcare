@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ConnectOnboardingBanner from "@/components/ConnectOnboardingBanner";
+import InstallBanner from "@/components/InstallBanner";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
@@ -117,6 +118,11 @@ const Dashboard = () => {
         {/* Onboarding Banner */}
         <motion.div variants={item}>
           <ConnectOnboardingBanner />
+        </motion.div>
+
+        {/* PWA Install Banner */}
+        <motion.div variants={item}>
+          <InstallBanner />
         </motion.div>
 
         {/* Stats Row */}

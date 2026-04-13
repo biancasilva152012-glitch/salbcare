@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { DollarSign, Compass, Video, ArrowRight, Star, Search, MessageCircle, Download } from "lucide-react";
+import { DollarSign, Compass, Video, ArrowRight, Star, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import SEOHead from "@/components/SEOHead";
-import InstallBanner from "@/components/InstallBanner";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -51,8 +48,9 @@ const professionalLabels: Record<string, string> = {
   outro: "Profissional de Saúde",
 };
 
+const HIGHLIGHT_TYPES = ["medico", "dentista", "psicologo"];
+
 const ParaProfissionais = () => {
-  const [search, setSearch] = useState("");
 
   const { data: professionals = [] } = useQuery({
     queryKey: ["public-professionals-landing"],
@@ -62,10 +60,10 @@ const ParaProfissionais = () => {
     },
   });
 
-  const filtered = professionals.filter((p: any) =>
-    p.name?.toLowerCase().includes(search.toLowerCase()) ||
-    (professionalLabels[p.professional_type] || "").toLowerCase().includes(search.toLowerCase())
-  );
+  // Show max 3 professionals, one per highlight type
+  const highlighted = HIGHLIGHT_TYPES.map((type) =>
+    professionals.find((p: any) => p.professional_type === type)
+  ).filter(Boolean).slice(0, 3);
 
   return (
     <>
@@ -152,10 +150,6 @@ const ParaProfissionais = () => {
               R$ 89/mês após o período grátis. Sem comissão. Cancele quando quiser.
             </motion.p>
 
-            {/* PWA Install Banner */}
-            <motion.div variants={fadeUp} className="mt-6 max-w-md mx-auto">
-              <InstallBanner />
-            </motion.div>
           </motion.div>
         </section>
 
@@ -171,70 +165,59 @@ const ParaProfissionais = () => {
               </p>
             </div>
 
-            {/* Search */}
-            <div className="relative max-w-sm mx-auto mb-6">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nome ou especialidade..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="bg-accent border-border pl-9"
-              />
-            </div>
-
-            {/* Professional cards */}
-            {filtered.length === 0 ? (
+            {/* Professional cards — max 3, no photo, no price */}
+            {highlighted.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground text-sm">Nenhum profissional encontrado.</p>
-                <p className="text-xs text-muted-foreground mt-1">Novos profissionais são adicionados frequentemente.</p>
+                <p className="text-muted-foreground text-sm">Nenhum profissional disponível no momento.</p>
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {filtered.map((prof: any) => {
-                  const label = professionalLabels[prof.professional_type] || "Profissional";
-                  const slug = prof.name
-                    ?.toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[^a-z0-9\s-]/g, "")
-                    .replace(/\s+/g, "-")
-                    .replace(/-+/g, "-")
-                    .trim();
+              <>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {highlighted.map((prof: any) => {
+                    const label = professionalLabels[prof.professional_type] || "Profissional";
+                    const slug = prof.name
+                      ?.toLowerCase()
+                      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                      .replace(/[^a-z0-9\s-]/g, "")
+                      .replace(/\s+/g, "-")
+                      .replace(/-+/g, "-")
+                      .trim();
 
-                  return (
-                    <div key={prof.user_id}>
-                      <Card className="h-full border-border/40 hover:border-primary/30 transition-colors">
-                        <CardContent className="p-5 flex flex-col gap-3">
-                          <div className="flex items-center gap-3">
-                            {prof.avatar_url ? (
-                              <img src={prof.avatar_url} alt={prof.name} className="h-12 w-12 rounded-full object-cover" />
-                            ) : (
+                    return (
+                      <div key={prof.user_id}>
+                        <Card className="h-full border-border/40 hover:border-primary/30 transition-colors">
+                          <CardContent className="p-5 flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
                               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
                                 {prof.name?.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
                               </div>
-                            )}
-                            <div>
-                              <p className="font-semibold text-sm">{prof.name}</p>
-                              <Badge variant="secondary" className="text-xs mt-0.5">{label}</Badge>
+                              <div>
+                                <p className="font-semibold text-sm">{prof.name}</p>
+                                <Badge variant="secondary" className="text-xs mt-0.5">{label}</Badge>
+                              </div>
                             </div>
-                          </div>
-                          {prof.bio && <p className="text-xs text-muted-foreground line-clamp-2">{prof.bio}</p>}
-                          {prof.consultation_price && (
-                            <p className="text-sm font-semibold text-primary">
-                              R$ {Number(prof.consultation_price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                            </p>
-                          )}
-                          <Button asChild size="sm" className="mt-auto gap-2 gradient-primary font-semibold">
-                            <Link to={`/p/${slug}`}>
-                              <MessageCircle className="h-4 w-4" />
-                              Solicitar atendimento
-                            </Link>
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  );
-                })}
-              </div>
+                            {prof.bio && <p className="text-xs text-muted-foreground line-clamp-2">{prof.bio}</p>}
+                            <Button asChild size="sm" className="mt-auto gap-2 gradient-primary font-semibold">
+                              <Link to={`/p/${slug}`}>
+                                <MessageCircle className="h-4 w-4" />
+                                Solicitar atendimento
+                              </Link>
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="text-center mt-6">
+                  <Button asChild variant="outline" className="gap-2">
+                    <Link to="/profissionais">
+                      Ver todos os profissionais
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         </section>
