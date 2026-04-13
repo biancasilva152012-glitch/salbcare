@@ -51,8 +51,8 @@ const Index = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Button asChild variant="outline" size="sm" className="border-border/60">
-                <Link to="/login">Entrar</Link>
+              <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                <Link to="/login">Já tenho conta</Link>
               </Button>
               <Button asChild size="sm" className="gradient-primary font-semibold">
                 <Link to="/cadastro">Começar grátis</Link>
@@ -74,7 +74,7 @@ const Index = () => {
               <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground">Planos</Link>
               <div className="flex flex-col gap-2 pt-2">
                 <Button asChild variant="outline" className="w-full border-border/60">
-                  <Link to="/login">Entrar</Link>
+                  <Link to="/login">Já tenho conta</Link>
                 </Button>
                 <Button asChild className="w-full gradient-primary font-semibold">
                   <Link to="/cadastro">Começar grátis</Link>
