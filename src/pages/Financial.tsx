@@ -53,7 +53,7 @@ const Financial = () => {
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
   const { canAddFinancial, financialCount, financialLimit, isFree } = useFreemiumLimits();
-  const [upgradeOpen2, setUpgradeOpen2] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
