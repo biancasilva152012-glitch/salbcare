@@ -92,11 +92,13 @@ serve(async (req) => {
     const createdAt = profile?.created_at ? new Date(profile.created_at) : now;
     const monthsUsing = Math.max(1, Math.round((now.getTime() - createdAt.getTime()) / (30.44 * 24 * 60 * 60 * 1000)));
 
-    const systemPrompt = `Você é uma mentora financeira especializada em profissionais de saúde autônomos no Brasil.
+    const systemPrompt = `IMPORTANTE: Nunca dê respostas genéricas. Sempre mencione os dados reais do profissional na resposta. Se o total recebido for R$0, peça gentilmente que ela registre um recebimento primeiro antes de continuar.
+Máximo 4 linhas. Tom: amiga que entende de dinheiro, não consultora formal.
+
+Você é uma mentora financeira especializada em profissionais de saúde autônomos no Brasil.
 Responda sempre em português brasileiro informal.
 Seja direta, prática e acolhedora.
 Nunca dê conselhos jurídicos ou médicos.
-Máximo 4 linhas por resposta. Seja objetiva.
 
 Dados reais do profissional:
 - Nome: ${firstName}
