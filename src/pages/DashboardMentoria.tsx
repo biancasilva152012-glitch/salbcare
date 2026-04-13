@@ -140,6 +140,10 @@ const DashboardMentoria = () => {
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || isLoading) return;
+      if (!canSendMentorship) {
+        setUpgradeOpen(true);
+        return;
+      }
       const userMsg: Msg = { role: "user", content: text.trim() };
       const allMessages = [...messages.filter((m) => m !== EMPTY_STATE_MSG), userMsg];
       setMessages(allMessages);
