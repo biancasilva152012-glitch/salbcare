@@ -151,12 +151,6 @@ const Index = () => {
           </div>
         </footer>
 
-        {/* ── Sticky mobile CTA ── */}
-        <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-background/90 backdrop-blur-md border-t border-border/30 p-3 safe-area-pb">
-          <Button asChild className="w-full py-5 text-base rounded-xl font-bold gradient-primary">
-            <Link to="/cadastro">Começar grátis</Link>
-          </Button>
-        </div>
       </div>
     </>
   );
