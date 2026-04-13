@@ -50,10 +50,6 @@ const Profile = () => {
   const [councilState, setCouncilState] = useState("");
   const [officeAddress, setOfficeAddress] = useState("");
   const [savingRegistration, setSavingRegistration] = useState(false);
-  const [councilNumber, setCouncilNumber] = useState("");
-  const [councilState, setCouncilState] = useState("");
-  const [officeAddress, setOfficeAddress] = useState("");
-  const [savingRegistration, setSavingRegistration] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
