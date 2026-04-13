@@ -26,7 +26,7 @@ function trackPageView(path: string) {
   }
   // GA4
   if (window.gtag) {
-    window.gtag("event", "page_view", { page_path: path });
+    window.gtag("event", "page_view", { page_path: path, send_to: "G-117MVSM8LG" });
   }
 }
 
