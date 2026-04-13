@@ -98,7 +98,7 @@ const Dashboard = () => {
 
   const quickAccess = [
     { icon: BookOpen, label: "Contabilidade", to: "/dashboard/contabilidade", color: "text-primary" },
-    { icon: DollarSign, label: "Financeiro", to: "/dashboard/financeiro", color: "text-primary" },
+    { icon: DollarSign, label: "Financeiro", to: "/dashboard/financial", color: "text-primary" },
     { icon: Calendar, label: "Agenda", to: "/dashboard/agenda", color: "text-primary" },
     { icon: Users, label: "Pacientes", to: "/dashboard/pacientes", color: "text-primary" },
     { icon: Video, label: "Teleconsulta", to: "/dashboard/teleconsulta", color: "text-primary" },
