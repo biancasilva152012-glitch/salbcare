@@ -271,11 +271,11 @@ const ParaProfissionais = () => {
         <section className="px-4 pb-16">
           <div className="mx-auto max-w-md text-center space-y-2">
             <p className="text-[11px] uppercase tracking-wider text-primary font-semibold">Por que não é só uma IA comum?</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed text-center">
               Sua mentora financeira já conhece seus dados.
-              Você pergunta — ela responde com base no que você de fato ganhou e gastou esse mês.
+              Você pergunta e ela responde com base no que você de fato ganhou e gastou esse mês.
             </p>
-            <p className="text-[11px] text-muted-foreground/70">
+            <p className="text-[11px] text-muted-foreground/70 text-center">
               Diferente do ChatGPT, ela não responde no genérico. Ela responde sobre você.
             </p>
           </div>
