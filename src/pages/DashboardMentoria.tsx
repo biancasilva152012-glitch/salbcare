@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Calculator, FileText, ArrowLeft, Send, MessageCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
@@ -24,12 +27,23 @@ const suggestedQuestions = [
   "Preciso abrir MEI?",
 ];
 
+const EMPTY_STATE_MSG: Msg = {
+  role: "assistant",
+  content: `Oi! Sou sua mentora financeira 👋
+
+Para te dar respostas personalizadas, preciso que você registre pelo menos um recebimento primeiro.
+
+Vai lá no Financeiro e volta aqui — prometo que vai valer a pena 😊`,
+};
+
 const DashboardMentoria = () => {
-  const { session } = useAuth();
+  const { session, user } = useAuth();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Calculator states
@@ -44,19 +58,74 @@ const DashboardMentoria = () => {
       : null;
   const [showGuia, setShowGuia] = useState(false);
 
+  // Check if user has any financial entries
+  const { data: hasEntries } = useQuery({
+    queryKey: ["has-financial-entries", user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("financial_transactions")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id);
+      return (count || 0) > 0;
+    },
+    enabled: !!user,
+  });
+
+  // Load chat history
+  useEffect(() => {
+    if (!user || historyLoaded) return;
+    const loadHistory = async () => {
+      const { data } = await supabase
+        .from("mentorship_messages")
+        .select("role, content")
+        .eq("professional_id", user.id)
+        .order("created_at", { ascending: true })
+        .limit(20);
+      if (data && data.length > 0) {
+        setMessages(data.map((m: any) => ({ role: m.role, content: m.content })));
+        setShowSuggestions(false);
+      }
+      setHistoryLoaded(true);
+    };
+    loadHistory();
+  }, [user, historyLoaded]);
+
+  // Show empty state when no entries and no history
+  useEffect(() => {
+    if (historyLoaded && hasEntries === false && messages.length === 0) {
+      setMessages([EMPTY_STATE_MSG]);
+      setShowSuggestions(false);
+    }
+  }, [historyLoaded, hasEntries, messages.length]);
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const saveMessage = useCallback(
+    async (msg: Msg) => {
+      if (!user) return;
+      await supabase.from("mentorship_messages").insert({
+        professional_id: user.id,
+        role: msg.role,
+        content: msg.content,
+      } as any);
+    },
+    [user]
+  );
 
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || isLoading) return;
       const userMsg: Msg = { role: "user", content: text.trim() };
-      const allMessages = [...messages, userMsg];
+      const allMessages = [...messages.filter((m) => m !== EMPTY_STATE_MSG), userMsg];
       setMessages(allMessages);
       setInput("");
       setShowSuggestions(false);
       setIsLoading(true);
+
+      // Save user message
+      saveMessage(userMsg);
 
       let assistantSoFar = "";
       const upsertAssistant = (chunk: string) => {
@@ -75,7 +144,7 @@ const DashboardMentoria = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${session?.access_token}`,
             apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
           body: JSON.stringify({
@@ -87,7 +156,6 @@ const DashboardMentoria = () => {
           const errData = await resp.json().catch(() => ({}));
           throw new Error(errData.error || "Erro na resposta");
         }
-
         if (!resp.body) throw new Error("No stream body");
 
         const reader = resp.body.getReader();
@@ -134,17 +202,20 @@ const DashboardMentoria = () => {
             } catch {}
           }
         }
+
+        // Save assistant response
+        if (assistantSoFar) {
+          saveMessage({ role: "assistant", content: assistantSoFar });
+        }
       } catch (err) {
         console.error("Mentoria chat error:", err);
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "Não consegui responder agora. Tente novamente em instantes." },
-        ]);
+        const errorMsg: Msg = { role: "assistant", content: "Não consegui responder agora. Tente novamente em instantes." };
+        setMessages((prev) => [...prev, errorMsg]);
       } finally {
         setIsLoading(false);
       }
     },
-    [messages, isLoading]
+    [messages, isLoading, session, saveMessage]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -153,6 +224,8 @@ const DashboardMentoria = () => {
       sendMessage(input);
     }
   };
+
+  const isEmptyState = hasEntries === false && messages.length <= 1 && messages[0] === EMPTY_STATE_MSG;
 
   return (
     <PageContainer backTo="/dashboard">
@@ -170,14 +243,11 @@ const DashboardMentoria = () => {
 
         {/* Chat area */}
         <motion.div variants={item} className="glass-card p-4 flex flex-col" style={{ minHeight: "360px", maxHeight: "60vh" }}>
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto space-y-3 mb-3 pr-1">
-            {messages.length === 0 && (
+            {messages.length === 0 && historyLoaded && hasEntries !== false && (
               <div className="flex flex-col items-center justify-center h-full text-center py-8">
                 <MessageCircle className="h-10 w-10 text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  Pergunte qualquer coisa sobre suas finanças
-                </p>
+                <p className="text-sm text-muted-foreground">Pergunte qualquer coisa sobre suas finanças</p>
               </div>
             )}
             {messages.map((msg, i) => (
@@ -213,8 +283,18 @@ const DashboardMentoria = () => {
             <div ref={chatEndRef} />
           </div>
 
+          {/* Empty state CTA */}
+          {isEmptyState && (
+            <Button
+              onClick={() => navigate("/dashboard/financeiro")}
+              className="w-full mb-3 gradient-primary font-semibold"
+            >
+              Registrar primeiro recebimento
+            </Button>
+          )}
+
           {/* Suggested questions */}
-          {showSuggestions && messages.length === 0 && (
+          {showSuggestions && messages.length === 0 && !isEmptyState && (
             <div className="flex flex-wrap gap-2 mb-3">
               {suggestedQuestions.map((q) => (
                 <button
@@ -229,24 +309,26 @@ const DashboardMentoria = () => {
           )}
 
           {/* Input */}
-          <div className="flex gap-2 items-end">
-            <Textarea
-              placeholder="Pergunte sobre suas finanças..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="min-h-[40px] max-h-[100px] resize-none bg-background/50 border-border/60 text-sm"
-              rows={1}
-            />
-            <Button
-              size="icon"
-              onClick={() => sendMessage(input)}
-              disabled={!input.trim() || isLoading}
-              className="shrink-0 h-10 w-10"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
+          {!isEmptyState && (
+            <div className="flex gap-2 items-end">
+              <Textarea
+                placeholder="Pergunte sobre suas finanças..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="min-h-[40px] max-h-[100px] resize-none bg-background/50 border-border/60 text-sm"
+                rows={1}
+              />
+              <Button
+                size="icon"
+                onClick={() => sendMessage(input)}
+                disabled={!input.trim() || isLoading}
+                className="shrink-0 h-10 w-10"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </motion.div>
 
         {/* Separator */}
@@ -268,9 +350,7 @@ const DashboardMentoria = () => {
           {reservaIdeal !== null && (
             <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="rounded-lg bg-primary/10 p-3 text-center">
               <p className="text-xs text-muted-foreground">Sua reserva ideal (6 meses)</p>
-              <p className="text-2xl font-bold text-primary">
-                R$ {reservaIdeal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-              </p>
+              <p className="text-2xl font-bold text-primary">R$ {reservaIdeal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
             </motion.div>
           )}
         </motion.div>
@@ -299,9 +379,7 @@ const DashboardMentoria = () => {
           {precoMinimo !== null && (
             <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="rounded-lg bg-primary/10 p-3 text-center">
               <p className="text-xs text-muted-foreground">Seu preço mínimo por consulta</p>
-              <p className="text-2xl font-bold text-primary">
-                R$ {precoMinimo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-              </p>
+              <p className="text-2xl font-bold text-primary">R$ {precoMinimo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
             </motion.div>
           )}
         </motion.div>
@@ -314,9 +392,7 @@ const DashboardMentoria = () => {
           </div>
           <p className="text-xs text-muted-foreground">Como declarar seus recebimentos.</p>
           {!showGuia ? (
-            <Button variant="outline" size="sm" onClick={() => setShowGuia(true)}>
-              Ver guia
-            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowGuia(true)}>Ver guia</Button>
           ) : (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 text-sm text-muted-foreground leading-relaxed">
               <button onClick={() => setShowGuia(false)} className="text-xs text-primary flex items-center gap-1 mb-2">

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Plus, DollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, DollarSign, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,8 +17,10 @@ import { ptBR } from "date-fns/locale";
 
 const DashboardFinanceiro = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
   const [form, setForm] = useState({ amount: "", date: format(new Date(), "yyyy-MM-dd"), description: "" });
 
   const startOfMonth = new Date();
@@ -57,9 +60,13 @@ const DashboardFinanceiro = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["income-transactions"] });
       queryClient.invalidateQueries({ queryKey: ["monthly-income"] });
+      queryClient.invalidateQueries({ queryKey: ["has-financial-entries"] });
       toast.success("Recebimento registrado!");
       setForm({ amount: "", date: format(new Date(), "yyyy-MM-dd"), description: "" });
       setOpen(false);
+      // Show mentoria banner
+      setShowBanner(true);
+      setTimeout(() => setShowBanner(false), 5000);
     },
     onError: () => toast.error("Erro ao registrar."),
   });
@@ -69,6 +76,31 @@ const DashboardFinanceiro = () => {
   return (
     <PageContainer backTo="/dashboard">
       <div className="space-y-5">
+        {/* Mentoria proactive banner */}
+        <AnimatePresence>
+          {showBanner && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="glass-card p-3 flex items-center gap-3 cursor-pointer"
+              onClick={() => { setShowBanner(false); navigate("/dashboard/mentoria"); }}
+            >
+              <span className="text-lg">💬</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-foreground leading-snug">
+                  Quer saber se você está no caminho certo esse mês? Pergunte para sua mentora.
+                </p>
+              </div>
+              <Button size="sm" variant="outline" className="shrink-0 text-xs">
+                <MessageCircle className="h-3 w-3 mr-1" />
+                Perguntar
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="text-center space-y-1">
           <p className="text-xs text-muted-foreground uppercase tracking-wide">Total recebido em {monthName}</p>
           <p className="text-4xl font-bold text-primary">
