@@ -12,11 +12,8 @@ const logStep = (step: string, details?: any) => {
   console.log(`[Checkout] ${step}${detailsStr}`);
 };
 
-// Price IDs that are eligible for 7-day free trial (Essencial plan)
-const TRIAL_ELIGIBLE_PRICES = [
-  "price_1TBcE4BUEEEAHx2hfOYZN30W", // Essencial mensal
-  "price_1TGKlBBUEEEAHx2hKvXbHuOz", // Essencial anual
-];
+// Current Essencial plan price
+const ESSENCIAL_PRICE_ID = "price_1TLmdUBUEEEAHx2hR8nCDaMo"; // R$89/mês
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,8 +34,8 @@ serve(async (req) => {
 
     logStep("Iniciando checkout", { userId: user.id, email: user.email });
 
-    const { priceId, billingPeriod } = await req.json();
-    if (!priceId) throw new Error("priceId is required");
+    const { priceId: requestedPriceId, billingPeriod } = await req.json();
+    const priceId = requestedPriceId || ESSENCIAL_PRICE_ID;
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 
@@ -64,7 +61,7 @@ serve(async (req) => {
       .maybeSingle();
 
     const hadTrial = (prof as any)?.had_trial ?? false;
-    const isTrialEligible = TRIAL_ELIGIBLE_PRICES.includes(priceId) && !hadTrial;
+    const isTrialEligible = priceId === ESSENCIAL_PRICE_ID && !hadTrial;
 
     logStep("Trial check", { priceId, hadTrial, isTrialEligible });
 
@@ -73,6 +70,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
+      payment_method_types: ["card", "boleto"],
       success_url: `${origin}/dashboard?from_checkout=true`,
       cancel_url: `${origin}/subscription`,
       metadata: {
