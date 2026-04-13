@@ -47,7 +47,7 @@ const categories = [
   { value: "outros", label: "Outros" },
 ];
 
-const emptyForm = { description: "", amount: "", type: "income" as "income" | "expense", date: "", category: "outros" };
+const emptyForm = { description: "", amount: "", type: "income" as "income" | "expense", date: format(new Date(), "yyyy-MM-dd"), category: "outros" };
 
 const Financial = () => {
   const { user } = useAuth();
@@ -71,10 +71,18 @@ const Financial = () => {
     enabled: !!user,
   });
 
+  const validateForm = () => {
+    if (!form.description.trim()) { toast.error("Preencha a descrição."); return false; }
+    if (!form.amount || Number(form.amount) <= 0) { toast.error("Informe um valor válido."); return false; }
+    if (!form.date) { toast.error("Selecione uma data."); return false; }
+    return true;
+  };
+
   const addMutation = useMutation({
     mutationFn: async () => {
+      if (!validateForm()) throw new Error("validation");
       const { error } = await supabase.from("financial_transactions").insert({
-        user_id: user!.id, description: form.description, amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
+        user_id: user!.id, description: form.description.trim(), amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
       });
       if (error) throw error;
     },
@@ -84,13 +92,17 @@ const Financial = () => {
       setOpen(false);
       toast.success("Transação adicionada!");
     },
-    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
+    onError: (err) => {
+      if (err.message === "validation") return;
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (!validateForm()) throw new Error("validation");
       const { error } = await supabase.from("financial_transactions").update({
-        description: form.description, amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
+        description: form.description.trim(), amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
       }).eq("id", editId!);
       if (error) throw error;
     },
@@ -101,7 +113,10 @@ const Financial = () => {
       setEditId(null);
       toast.success("Transação atualizada!");
     },
-    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
+    onError: (err) => {
+      if (err.message === "validation") return;
+      toast.error("Não conseguimos salvar. Tente de novo em instantes.");
+    },
   });
 
   const deleteMutation = useMutation({
