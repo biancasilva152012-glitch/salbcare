@@ -179,7 +179,7 @@ const ParaProfissionais = () => {
                   step: "3",
                   icon: LayoutDashboard,
                   title: "Gerencie tudo em um lugar",
-                  desc: "Agenda, prontuário, receitas e financeiro na mesma plataforma",
+                  desc: "Agenda, prontuário, mentoria financeira e contabilidade dos seus ganhos na mesma plataforma",
                 },
               ].map((item) => (
                 <motion.div
