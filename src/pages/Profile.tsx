@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, Banknote, Wifi, WifiOff, BadgeCheck, TriangleAlert, Save, MapPin } from "lucide-react";
+import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, BadgeCheck, TriangleAlert, Save, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
 import { getProfessionConfig } from "@/config/professions";
@@ -45,11 +45,7 @@ const Profile = () => {
   const [correctText, setCorrectText] = useState("");
   const [sendingCorrection, setSendingCorrection] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [pixKey, setPixKey] = useState("");
-  const [cardLink, setCardLink] = useState("");
   const [bio, setBio] = useState("");
-  const [savingPayment, setSavingPayment] = useState(false);
-  const [availabilityOnline, setAvailabilityOnline] = useState(false);
   const [councilNumber, setCouncilNumber] = useState("");
   const [councilState, setCouncilState] = useState("");
   const [officeAddress, setOfficeAddress] = useState("");
@@ -72,10 +68,7 @@ const Profile = () => {
   // Sync local state with profile data
   useEffect(() => {
     if (profile) {
-      setPixKey((profile as any).pix_key || "");
-      setCardLink((profile as any).card_link || "");
       setBio((profile as any).bio || "");
-      setAvailabilityOnline((profile as any).availability_online || false);
       setCouncilNumber((profile as any).council_number || "");
       setCouncilState((profile as any).council_state || "");
       setOfficeAddress((profile as any).office_address || "");
@@ -113,22 +106,6 @@ const Profile = () => {
     }
   };
 
-  const handleSavePaymentData = async () => {
-    if (!user) return;
-    setSavingPayment(true);
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ pix_key: pixKey.trim() || null, card_link: cardLink.trim() || null } as any)
-        .eq("user_id", user.id);
-      if (error) throw error;
-      toast.success("Dados de pagamento atualizados!");
-    } catch {
-      toast.error("Erro ao salvar dados de pagamento.");
-    } finally {
-      setSavingPayment(false);
-    }
-  };
 
   const handleDownloadData = async () => {
     if (!user) return;
@@ -355,22 +332,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Automatic Visibility Info */}
-        <div className="glass-card p-4 flex items-center gap-3">
-          {availabilityOnline ? (
-            <Wifi className="h-5 w-5 text-green-600 dark:text-green-400" />
-          ) : (
-            <WifiOff className="h-5 w-5 text-muted-foreground" />
-          )}
-          <div>
-            <p className="text-sm font-medium">{availabilityOnline ? "Visível para pacientes" : "Invisível na busca"}</p>
-            <p className="text-[10px] text-muted-foreground">
-              {availabilityOnline
-                ? "Você aparece no diretório porque tem horários configurados."
-                : "Configure seus horários na seção abaixo para aparecer no diretório."}
-            </p>
-          </div>
-        </div>
 
         {/* Bio / About */}
         <div className="space-y-2">
@@ -408,48 +369,6 @@ const Profile = () => {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
 
-        {/* Payment Data Section */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 px-1">
-            <Banknote className="h-4 w-4 text-primary" />
-            <h2 className="text-sm font-semibold">Dados de pagamento</h2>
-          </div>
-          <div className="glass-card p-3 space-y-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="pix-key" className="text-xs font-medium">Chave Pix</Label>
-              <input
-                id="pix-key"
-                type="text"
-                value={pixKey}
-                onChange={(e) => setPixKey(e.target.value)}
-                placeholder="CPF, e-mail, telefone ou chave aleatória"
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="card-link" className="text-xs font-medium">Link de pagamento por cartão <span className="text-muted-foreground">(opcional)</span></Label>
-              <input
-                id="card-link"
-                type="url"
-                value={cardLink}
-                onChange={(e) => setCardLink(e.target.value)}
-                placeholder="https://..."
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-            <Button
-              onClick={handleSavePaymentData}
-              disabled={savingPayment}
-              size="sm"
-              className="w-full gradient-primary font-semibold"
-            >
-              {savingPayment ? <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Salvando...</> : "Salvar dados de pagamento"}
-            </Button>
-          </div>
-          <p className="text-[10px] text-muted-foreground px-1">
-            O paciente pagará diretamente para você via Pix. Você recebe 100% do valor.
-          </p>
-        </div>
 
         {/* Consultation Settings */}
         <div ref={consultationRef}>
