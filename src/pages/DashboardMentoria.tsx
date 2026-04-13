@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import UpgradeModal from "@/components/UpgradeModal";
 import { Shield, Calculator, FileText, ArrowLeft, Send, MessageCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
