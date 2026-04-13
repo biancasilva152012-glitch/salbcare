@@ -47,3 +47,44 @@ export function trackTrial() {
     window.gtag("event", "start_trial");
   }
 }
+
+export function trackRegistration() {
+  if (window.gtag) {
+    window.gtag("event", "conversion", {
+      send_to: "AW-8171369367/register",
+      value: 1.0,
+      currency: "BRL",
+    });
+  }
+  if (window.fbq) {
+    window.fbq("track", "CompleteRegistration");
+  }
+}
+
+export function trackCheckoutStart(planName: string, value: number) {
+  if (window.gtag) {
+    window.gtag("event", "begin_checkout", {
+      send_to: "AW-8171369367/checkout",
+      value,
+      currency: "BRL",
+      items: [{ item_name: planName }],
+    });
+  }
+  if (window.fbq) {
+    window.fbq("track", "InitiateCheckout", { currency: "BRL", value });
+  }
+}
+
+export function trackPurchase(value: number) {
+  if (window.gtag) {
+    window.gtag("event", "conversion", {
+      send_to: "AW-8171369367/purchase",
+      value,
+      currency: "BRL",
+    });
+    window.gtag("event", "purchase", { value, currency: "BRL" });
+  }
+  if (window.fbq) {
+    window.fbq("track", "Purchase", { currency: "BRL", value });
+  }
+}
