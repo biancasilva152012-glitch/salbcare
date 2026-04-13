@@ -20,7 +20,7 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [copied, setCopied] = useState(false);
+  
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
