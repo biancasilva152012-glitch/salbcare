@@ -166,7 +166,7 @@ const AdminDashboard = () => {
     const days = getTrialDaysRemaining(p.trial_start_date);
     return days > 0 && p.payment_status !== "active";
   });
-  const professionalUsers = profiles.filter((p) => p.plan === "professional" || p.plan === "clinic");
+  const professionalUsers = profiles.filter((p) => p.payment_status === "active");
 
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; className: string }> = {

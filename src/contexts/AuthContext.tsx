@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (isAdminEmail(session?.user?.email)) {
         setSubscription({
           subscribed: true,
-          plan: "clinic" as PlanKey,
+          plan: "basic" as PlanKey,
           subscriptionEnd: null,
           loading: false,
           trialDaysRemaining: 0,
@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const trialStart = (profile as any).trial_start_date;
         trialDaysRemaining = getTrialDaysRemaining(trialStart);
 
-        if (!data.subscribed && profile.plan && (profile.plan === "professional" || profile.plan === "clinic")) {
+        if (!data.subscribed && profile.plan && profile.plan === "basic") {
           plan = profile.plan as PlanKey;
         }
 
