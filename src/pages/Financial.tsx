@@ -4,6 +4,8 @@ import ListPagination from "@/components/ListPagination";
 import { usePagination } from "@/hooks/usePagination";
 import { motion } from "framer-motion";
 import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter, FileDown, Crown } from "lucide-react";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import UpgradeModal from "@/components/UpgradeModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -50,6 +52,8 @@ const emptyForm = { description: "", amount: "", type: "income" as "income" | "e
 const Financial = () => {
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
+  const { canAddFinancial, financialCount, financialLimit, isFree } = useFreemiumLimits();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -216,15 +220,21 @@ const Financial = () => {
                 <FileDown className="h-4 w-4" /> PDF
               </Button>
             )}
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
-              </DialogTrigger>
-            <DialogContent className="bg-card border-border">
-              <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
-              {transactionFormJsx(false)}
-            </DialogContent>
-          </Dialog>
+            {canAddFinancial ? (
+              <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
+                  {transactionFormJsx(false)}
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Button size="sm" className="gradient-primary gap-1" onClick={() => setUpgradeOpen(true)}>
+                <Plus className="h-4 w-4" /> Novo
+              </Button>
+            )}
           </div>
         </div>
 
@@ -463,7 +473,13 @@ const Financial = () => {
             </TabsContent>
           )}
         </Tabs>
+        {isFree && (
+          <p className="text-xs text-center text-muted-foreground mt-2">
+            Lançamentos este mês: {financialCount}/{financialLimit} (plano gratuito)
+          </p>
+        )}
       </div>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="lançamentos financeiros" currentUsage={financialCount} limit={financialLimit} />
     </PageContainer>
   );
 };

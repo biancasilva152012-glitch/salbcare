@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import UpgradeModal from "@/components/UpgradeModal";
 import { motion } from "framer-motion";
 import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet, Upload, Loader2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
@@ -36,6 +38,8 @@ const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", m
 const Patients = () => {
   const { user } = useAuth();
   const sub = useSubscription();
+  const { canAddPatient: canAddPatientFreemium, patientsCount, patientsLimit, isFree } = useFreemiumLimits();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Tables<"patients"> | null>(null);
@@ -45,8 +49,8 @@ const Patients = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
 
-  // Block new patient creation only when trial expired AND no active subscription
-  const canAddPatient = sub.isAdmin || sub.isActive;
+  // Block new patient creation when trial expired AND no active subscription OR freemium limit
+  const canAddPatient = (sub.isAdmin || sub.isActive) && canAddPatientFreemium;
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
@@ -279,18 +283,17 @@ const Patients = () => {
                 </DialogContent>
               </Dialog>
             ) : (
-              <Button size="sm" className="gap-1 opacity-60" disabled>
+              <Button size="sm" className="gradient-primary gap-1" onClick={() => setUpgradeOpen(true)}>
                 <Plus className="h-4 w-4" /> Novo
               </Button>
             )}
           </div>
         </div>
 
-        {!canAddPatient && (
-          <div className="bg-muted/50 border border-border rounded-lg px-4 py-3 text-sm text-muted-foreground flex items-center justify-between gap-3">
-            <span>Seu período de teste expirou. Assine para cadastrar novos pacientes.</span>
-            <Button size="sm" variant="default" onClick={() => window.location.href = "/subscription"}>Ver planos</Button>
-          </div>
+        {isFree && (
+          <p className="text-xs text-center text-muted-foreground">
+            Pacientes: {patientsCount}/{patientsLimit} (plano gratuito)
+          </p>
         )}
 
         <div className="relative">
@@ -428,6 +431,7 @@ const Patients = () => {
           />
         </motion.div>
       </div>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="pacientes" currentUsage={patientsCount} limit={patientsLimit} />
     </PageContainer>
   );
 };

@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import UpgradeModal from "@/components/UpgradeModal";
 import { Shield, Calculator, FileText, ArrowLeft, Send, MessageCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +41,8 @@ Vai lá no Financeiro e volta aqui — prometo que vai valer a pena 😊`,
 const DashboardMentoria = () => {
   const { session, user } = useAuth();
   const navigate = useNavigate();
+  const { canSendMentorship, mentorshipCount, mentorshipLimit, isFree } = useFreemiumLimits();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -136,6 +140,10 @@ const DashboardMentoria = () => {
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || isLoading) return;
+      if (!canSendMentorship) {
+        setUpgradeOpen(true);
+        return;
+      }
       const userMsg: Msg = { role: "user", content: text.trim() };
       const allMessages = [...messages.filter((m) => m !== EMPTY_STATE_MSG), userMsg];
       setMessages(allMessages);
@@ -460,6 +468,12 @@ const DashboardMentoria = () => {
           )}
         </motion.div>
       </motion.div>
+      {isFree && (
+        <p className="text-xs text-center text-muted-foreground py-2">
+          Mensagens este mês: {mentorshipCount}/{mentorshipLimit} (plano gratuito)
+        </p>
+      )}
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="mensagens de mentoria" currentUsage={mentorshipCount} limit={mentorshipLimit} />
     </PageContainer>
   );
 };
