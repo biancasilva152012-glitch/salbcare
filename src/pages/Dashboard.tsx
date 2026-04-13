@@ -2,16 +2,16 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   DollarSign, Calendar, Users, Video, Clock, TrendingUp,
-  Sparkles, MessageCircle, ExternalLink, Copy, Check, Rocket,
+  Sparkles, MessageCircle, Rocket,
   BookOpen, Scale, Shield
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+
 import InstallBanner from "@/components/InstallBanner";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
@@ -20,7 +20,7 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [copied, setCopied] = useState(false);
+  
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
@@ -83,16 +83,6 @@ const Dashboard = () => {
     staleTime: 10 * 60 * 1000,
   });
 
-  const profileUrl = profile?.profile_slug
-    ? `salbcare.com.br/p/${profile.profile_slug}`
-    : null;
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(`https://${text}`);
-    setCopied(true);
-    toast.success("Link copiado!");
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
 
@@ -210,27 +200,6 @@ const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Public Profile */}
-        <motion.div variants={item}>
-          <div className="glass-card p-4 space-y-3 border-border/60">
-            <div className="flex items-center gap-2">
-              <ExternalLink className="h-4 w-4 text-muted-foreground" />
-              <p className="text-sm font-semibold">Meu perfil público</p>
-            </div>
-            {profileUrl && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground truncate flex-1">{profileUrl}</span>
-                <button
-                  onClick={() => handleCopy(profileUrl)}
-                  className="shrink-0 flex items-center gap-1 text-xs text-primary font-medium"
-                >
-                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copied ? "Copiado!" : "Copiar"}
-                </button>
-              </div>
-            )}
-          </div>
-        </motion.div>
 
         {/* Today's appointments */}
         <motion.div variants={item}>

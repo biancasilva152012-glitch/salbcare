@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import { Stethoscope } from "lucide-react";
 import { trackLead, trackRegistration } from "@/hooks/useTracking";
@@ -252,7 +251,12 @@ const Register = () => {
           variant="outline"
           className="w-full h-11 text-sm font-medium gap-2 border-border/60 bg-background/50 backdrop-blur-sm hover:bg-accent/80"
           onClick={async () => {
-            const { error } = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+            const { error } = await supabase.auth.signInWithOAuth({
+              provider: "google",
+              options: {
+                redirectTo: window.location.origin,
+              },
+            });
             if (error) {
               console.error("[Register] Google OAuth error:", error);
               toast.error("Erro ao cadastrar com Google. Verifique se popups estão habilitados.");
