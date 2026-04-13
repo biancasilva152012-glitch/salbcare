@@ -4,6 +4,8 @@ import ListPagination from "@/components/ListPagination";
 import { usePagination } from "@/hooks/usePagination";
 import { motion } from "framer-motion";
 import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter, FileDown, Crown } from "lucide-react";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import UpgradeModal from "@/components/UpgradeModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -50,7 +52,8 @@ const emptyForm = { description: "", amount: "", type: "income" as "income" | "e
 const Financial = () => {
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
-  const queryClient = useQueryClient();
+  const { canAddFinancial, financialCount, financialLimit, isFree } = useFreemiumLimits();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
