@@ -252,9 +252,9 @@ const Patients = () => {
   return (
     <PageContainer backTo="/dashboard" onRefresh={() => queryClient.invalidateQueries({ queryKey: ["patients"] })}>
       <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Pacientes</h1>
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold whitespace-nowrap">Pacientes</h1>
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Button
               size="sm"
               variant="outline"
@@ -329,9 +329,9 @@ const Patients = () => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div><span className="text-muted-foreground">Telefone:</span> {selected.phone || "—"}</div>
-              <div><span className="text-muted-foreground">E-mail:</span> {(selected as any).email || "—"}</div>
-              <div><span className="text-muted-foreground">Nascimento:</span> {selected.birth_date ? new Date(selected.birth_date + "T12:00:00").toLocaleDateString("pt-BR") : "—"}</div>
+              <div><span className="text-muted-foreground">Telefone:</span> {selected.phone || "Não informado"}</div>
+              <div><span className="text-muted-foreground">E-mail:</span> {(selected as any).email || "Não informado"}</div>
+              <div><span className="text-muted-foreground">Nascimento:</span> {selected.birth_date ? new Date(selected.birth_date + "T12:00:00").toLocaleDateString("pt-BR") : "Não informado"}</div>
             </div>
             {selected.notes && <div className="text-sm"><span className="text-muted-foreground">Notas:</span> {selected.notes}</div>}
             {(selected as any).initial_anamnesis && (

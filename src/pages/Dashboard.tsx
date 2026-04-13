@@ -12,7 +12,6 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import ConnectOnboardingBanner from "@/components/ConnectOnboardingBanner";
 import InstallBanner from "@/components/InstallBanner";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
@@ -113,11 +112,6 @@ const Dashboard = () => {
         <motion.div variants={item} className="space-y-0.5">
           <p className="text-xs text-muted-foreground">Bem-vindo(a) de volta</p>
           <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
-        </motion.div>
-
-        {/* Onboarding Banner */}
-        <motion.div variants={item}>
-          <ConnectOnboardingBanner />
         </motion.div>
 
         {/* PWA Install Banner */}
