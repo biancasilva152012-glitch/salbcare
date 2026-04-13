@@ -7,7 +7,7 @@ const navItems = [
   { to: "/dashboard", icon: Home, label: "Painel" },
   { to: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
   { to: "/dashboard/pacientes", icon: Users, label: "Pacientes" },
-  { to: "/dashboard/financeiro", icon: DollarSign, label: "Financeiro" },
+  { to: "/dashboard/financial", icon: DollarSign, label: "Financeiro" },
   { to: "/profile", icon: User, label: "Meu perfil" },
 ];
 

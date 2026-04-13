@@ -26,6 +26,12 @@ const Dashboard = lazyWithRetry(() => import("./pages/Dashboard"), "Dashboard");
 const DashboardFinanceiro = lazyWithRetry(() => import("./pages/DashboardFinanceiro"), "DashboardFinanceiro");
 const DashboardMentoria = lazyWithRetry(() => import("./pages/DashboardMentoria"), "DashboardMentoria");
 const DashboardTeleconsulta = lazyWithRetry(() => import("./pages/DashboardTeleconsulta"), "DashboardTeleconsulta");
+const Financial = lazyWithRetry(() => import("./pages/Financial"), "Financial");
+const Accounting = lazyWithRetry(() => import("./pages/Accounting"), "Accounting");
+const Agenda = lazyWithRetry(() => import("./pages/Agenda"), "Agenda");
+const Patients = lazyWithRetry(() => import("./pages/Patients"), "Patients");
+const Legal = lazyWithRetry(() => import("./pages/Legal"), "Legal");
+const Telehealth = lazyWithRetry(() => import("./pages/Telehealth"), "Telehealth");
 const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
@@ -34,6 +40,8 @@ const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
 const Index = lazyWithRetry(() => import("./pages/Index"), "Index");
 const PublicProfile = lazyWithRetry(() => import("./pages/PublicProfile"), "PublicProfile");
+const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
+const SpecialtyListing = lazyWithRetry(() => import("./pages/SpecialtyListing"), "SpecialtyListing");
 const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
 const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
 const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"), "PaymentSuccess");
@@ -83,6 +91,10 @@ const App = () => (
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/planos" element={<Subscription />} />
 
+              {/* Public patient routes */}
+              <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
+              <Route path="/consulta-online/:specialty" element={<SpecialtyListing />} />
+
               {/* Professional-only routes */}
               <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
               <Route path="/payment-success" element={<ProfessionalRoute><PaymentSuccess /></ProfessionalRoute>} />
@@ -90,8 +102,14 @@ const App = () => (
               <Route path="/cancelado" element={<ProfessionalRoute><Cancelado /></ProfessionalRoute>} />
               <Route path="/dashboard" element={<ProfessionalRoute><Dashboard /></ProfessionalRoute>} />
               <Route path="/dashboard/financeiro" element={<ProfessionalRoute><DashboardFinanceiro /></ProfessionalRoute>} />
-              <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
+              <Route path="/dashboard/financial" element={<ProfessionalRoute><Financial /></ProfessionalRoute>} />
+              <Route path="/dashboard/contabilidade" element={<ProfessionalRoute><Accounting /></ProfessionalRoute>} />
+              <Route path="/dashboard/agenda" element={<ProfessionalRoute><Agenda /></ProfessionalRoute>} />
+              <Route path="/dashboard/pacientes" element={<ProfessionalRoute><Patients /></ProfessionalRoute>} />
+              <Route path="/dashboard/juridico" element={<ProfessionalRoute><Legal /></ProfessionalRoute>} />
               <Route path="/dashboard/teleconsulta" element={<ProfessionalRoute><DashboardTeleconsulta /></ProfessionalRoute>} />
+              <Route path="/dashboard/telehealth" element={<ProfessionalRoute><Telehealth /></ProfessionalRoute>} />
+              <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<CeoDashboard />} />
