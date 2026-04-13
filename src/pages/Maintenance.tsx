@@ -18,8 +18,8 @@ const Maintenance = () => (
       </p>
       <div className="glass-card p-4 text-sm text-muted-foreground">
         Dúvidas? Fale com a gente:{" "}
-        <a href="mailto:contato@salbcare.com.br" className="text-primary hover:underline font-medium">
-          contato@salbcare.com.br
+        <a href="mailto:biancadealbuquerquep@gmail.com" className="text-primary hover:underline font-medium">
+          biancadealbuquerquep@gmail.com
         </a>
       </div>
     </motion.div>

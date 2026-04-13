@@ -186,7 +186,7 @@ const Profile = () => {
       toast.success("Conta e dados excluídos. Você será redirecionado.");
       navigate("/login");
     } catch {
-      toast.error("Erro ao excluir conta. Entre em contato: contato@salbcare.com.br");
+      toast.error("Erro ao excluir conta. Entre em contato: biancadealbuquerquep@gmail.com");
     } finally {
       setDeleting(false);
       setDeleteStep(0);

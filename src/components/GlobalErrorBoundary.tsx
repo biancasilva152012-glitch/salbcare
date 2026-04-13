@@ -64,7 +64,7 @@ class GlobalErrorBoundary extends Component<Props, State> {
             </Button>
 
             <a
-              href="mailto:contato@salbcare.com.br"
+              href="mailto:biancadealbuquerquep@gmail.com"
               className="block text-xs text-muted-foreground underline"
             >
               Problema persiste? Fale conosco

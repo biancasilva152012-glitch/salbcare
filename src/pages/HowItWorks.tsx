@@ -199,7 +199,7 @@ const HowItWorks = () => {
           <h2 className="text-lg font-bold">Preciso de ajuda</h2>
         </div>
         <div className="flex flex-col gap-2">
-          <a href="mailto:contato@salbcare.com.br">
+          <a href="mailto:biancadealbuquerquep@gmail.com">
             <Button className="w-full gradient-primary font-semibold">
               Falar com o suporte
             </Button>

@@ -75,7 +75,7 @@ const Subscription = () => (
 
         <motion.p variants={fadeUp} className="text-xs text-muted-foreground">
           Tem uma clínica ou grupo de profissionais?{" "}
-          <a href="mailto:bianca@salbcare.com.br" className="text-primary hover:underline">Fale com a gente</a>
+          <a href="mailto:biancadealbuquerquep@gmail.com" className="text-primary hover:underline">Fale com a gente</a>
         </motion.p>
       </motion.div>
     </div>

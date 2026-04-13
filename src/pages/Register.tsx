@@ -39,16 +39,18 @@ const Register = () => {
     email: "",
     password: "",
     professional_type: "",
+    council_number: "",
     referral_code: refCode,
   });
 
-  const canSubmit = !!form.name.trim() && !!form.email && form.password.length >= 6 && !!form.professional_type;
+  const canSubmit = !!form.name.trim() && !!form.email && form.password.length >= 6 && !!form.professional_type && !!form.council_number.trim();
 
   const handleSubmit = async () => {
     if (!form.name.trim()) { toast.error("Preencha seu nome completo."); return; }
     if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { toast.error("E-mail inválido."); return; }
     if (!form.password || form.password.length < 6) { toast.error("A senha deve ter no mínimo 6 caracteres."); return; }
     if (!form.professional_type) { toast.error("Selecione sua especialidade."); return; }
+    if (!form.council_number.trim()) { toast.error("Informe seu número de registro profissional."); return; }
 
     setLoading(true);
 
@@ -100,8 +102,8 @@ const Register = () => {
 
       const userId = signUpData.user.id;
 
-      // Set verification_status and referral
-      const profileUpdate: Record<string, string> = { verification_status: "approved" };
+      // Set verification_status, council_number and referral
+      const profileUpdate: Record<string, string> = { verification_status: "approved", council_number: form.council_number.trim() };
       if (form.referral_code) profileUpdate.referral_code = form.referral_code;
       await supabase
         .from("profiles")
@@ -189,6 +191,11 @@ const Register = () => {
                     {specialties.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Nº do registro profissional *</Label>
+                <Input placeholder="Ex: CRP 11/12345 ou CRM 12345" value={form.council_number} onChange={(e) => setForm({ ...form, council_number: e.target.value })} className="bg-background/50 border-border/60" />
+                <p className="text-[10px] text-muted-foreground">Este número aparecerá no seu perfil público</p>
               </div>
               <div className="space-y-1.5">
                 <Label>Senha *</Label>
