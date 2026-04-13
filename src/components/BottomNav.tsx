@@ -1,14 +1,14 @@
 import { memo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, DollarSign, Compass, Video, User } from "lucide-react";
+import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Painel" },
+  { to: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
+  { to: "/dashboard/pacientes", icon: Users, label: "Pacientes" },
   { to: "/dashboard/financeiro", icon: DollarSign, label: "Financeiro" },
-  { to: "/dashboard/mentoria", icon: Compass, label: "Mentoria" },
-  { to: "/dashboard/teleconsulta", icon: Video, label: "Teleconsulta" },
-  { to: "/profile", icon: User, label: "Perfil" },
+  { to: "/profile", icon: User, label: "Meu perfil" },
 ];
 
 const BottomNav = memo(() => {
@@ -28,6 +28,7 @@ const BottomNav = memo(() => {
           <NavLink
             key={to}
             to={to}
+            end={to === "/dashboard"}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-xs transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
