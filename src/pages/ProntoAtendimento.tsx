@@ -148,22 +148,21 @@ const ProntoAtendimento = () => {
     return list;
   }, [professionals, search, specialtyFilter, availFilter]);
 
-  const navigateToFlow = (prof: any) => {
-    navigate(
-      `/pronto-atendimento/servico?professional=${prof.user_id}&name=${encodeURIComponent(prof.name)}&service=${serviceFilter !== "all" ? serviceFilter : "prescription"}`
-    );
-  };
-
-  const handleSelectProfessional = async (prof: any) => {
-    // Check if already logged in
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      navigateToFlow(prof);
+  const openWhatsApp = (prof: any) => {
+    const phone = (prof.phone || "").replace(/\D/g, "");
+    if (!phone) {
+      toast.error("Este profissional não possui WhatsApp cadastrado.");
       return;
     }
-    // Not logged in — show auth modal
-    pendingProfRef.current = prof;
-    setAuthModalOpen(true);
+    const serviceLabel = serviceFilter === "consultation" ? "consulta online" : "atendimento";
+    const msg = encodeURIComponent(
+      `Olá, ${prof.name}! Encontrei seu perfil na SalbCare e gostaria de solicitar ${serviceLabel}. Poderia me ajudar?`
+    );
+    window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+  };
+
+  const handleSelectProfessional = (prof: any) => {
+    openWhatsApp(prof);
   };
 
   // Listen for auth changes to resume flow
