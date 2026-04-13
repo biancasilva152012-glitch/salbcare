@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { DollarSign, Compass, Video, ExternalLink, Copy, Check } from "lucide-react";
+import {
+  DollarSign, Calendar, Users, Video, Clock, TrendingUp,
+  Sparkles, MessageCircle, ExternalLink, Copy, Check, Rocket,
+  BookOpen, Scale, Shield
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import PageContainer from "@/components/PageContainer";
@@ -8,8 +12,9 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import ConnectOnboardingBanner from "@/components/ConnectOnboardingBanner";
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 const Dashboard = () => {
@@ -22,7 +27,7 @@ const Dashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, profile_slug, referral_code, created_at")
+        .select("name, profile_slug, referral_code, created_at, email")
         .eq("user_id", user!.id)
         .single();
       return data;
@@ -49,24 +54,38 @@ const Dashboard = () => {
     staleTime: 2 * 60 * 1000,
   });
 
-  const { data: referralCount = 0 } = useQuery({
-    queryKey: ["referral-count", user?.id],
+  const { data: todayCount = 0 } = useQuery({
+    queryKey: ["today-appointments", user?.id],
     queryFn: async () => {
+      const today = new Date().toISOString().split("T")[0];
       const { count } = await supabase
-        .from("profiles")
+        .from("appointments")
         .select("id", { count: "exact", head: true })
-        .eq("referral_code", user!.id);
+        .eq("user_id", user!.id)
+        .eq("date", today)
+        .eq("status", "scheduled");
       return count || 0;
     },
     enabled: !!user,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("has_role", {
+        _user_id: user!.id,
+        _role: "admin" as const,
+      });
+      return !!data;
+    },
+    enabled: !!user,
+    staleTime: 10 * 60 * 1000,
   });
 
   const profileUrl = profile?.profile_slug
     ? `salbcare.com.br/p/${profile.profile_slug}`
     : null;
-
-  const referralUrl = `salbcare.com.br/cadastro?ref=${user?.id}`;
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(`https://${text}`);
@@ -75,9 +94,16 @@ const Dashboard = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const monthName = new Date().toLocaleDateString("pt-BR", { month: "long" });
-
   if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
+
+  const quickAccess = [
+    { icon: BookOpen, label: "Contabilidade", to: "/dashboard/contabilidade", color: "text-primary" },
+    { icon: DollarSign, label: "Financeiro", to: "/dashboard/financeiro", color: "text-primary" },
+    { icon: Calendar, label: "Agenda", to: "/dashboard/agenda", color: "text-primary" },
+    { icon: Users, label: "Pacientes", to: "/dashboard/pacientes", color: "text-primary" },
+    { icon: Video, label: "Teleconsulta", to: "/dashboard/teleconsulta", color: "text-primary" },
+    { icon: Scale, label: "Jurídico", to: "/dashboard/juridico", color: "text-primary" },
+  ];
 
   return (
     <PageContainer>
@@ -88,66 +114,103 @@ const Dashboard = () => {
           <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
         </motion.div>
 
-        {/* Card 1 — Financeiro */}
+        {/* Onboarding Banner */}
         <motion.div variants={item}>
-          <button
-            onClick={() => navigate("/dashboard/financeiro")}
-            className="glass-card w-full p-5 text-left transition-all active:scale-[0.98] hover:border-primary/50 ring-1 ring-primary/20"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                <DollarSign className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Financeiro</p>
-                <p className="text-xs text-muted-foreground">
-                  R$ {monthlyIncome.toLocaleString("pt-BR")} recebido em {monthName}
-                </p>
-              </div>
-            </div>
-            <span className="text-xs text-primary font-medium">Abrir →</span>
-          </button>
+          <ConnectOnboardingBanner />
         </motion.div>
 
-        {/* Card 2 — Mentoria */}
+        {/* Stats Row */}
+        <motion.div variants={item} className="grid grid-cols-2 gap-3">
+          <div className="glass-card p-4 flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+              <Clock className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Hoje</p>
+              <p className="text-lg font-bold">{todayCount}</p>
+            </div>
+          </div>
+          <div className="glass-card p-4 flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+              <TrendingUp className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Saldo</p>
+              <p className="text-lg font-bold">R$ {monthlyIncome.toLocaleString("pt-BR")}</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Mentoria Card - Highlight */}
         <motion.div variants={item}>
           <button
             onClick={() => navigate("/dashboard/mentoria")}
-            className="glass-card w-full p-5 text-left transition-all active:scale-[0.98] hover:border-primary/50"
+            className="glass-card w-full p-4 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-center gap-3"
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10">
-                <Compass className="h-5 w-5 text-secondary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Mentoria</p>
-                <p className="text-xs text-muted-foreground">Veja o diagnóstico do seu mês</p>
-              </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+              <Sparkles className="h-5 w-5 text-primary" />
             </div>
-            <span className="text-xs text-primary font-medium">Abrir →</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold">Mentora Financeira com IA</p>
+              <p className="text-xs text-muted-foreground">Insights personalizados sobre seus números</p>
+            </div>
           </button>
         </motion.div>
 
-        {/* Card 3 — Teleconsulta */}
+        {/* Fale com Contador */}
         <motion.div variants={item}>
           <button
-            onClick={() => navigate("/dashboard/teleconsulta")}
-            className="glass-card w-full p-5 text-left transition-all active:scale-[0.98] hover:border-primary/50"
+            onClick={() => navigate("/dashboard/contabilidade")}
+            className="glass-card w-full p-4 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-center gap-3"
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10">
-                <Video className="h-5 w-5 text-secondary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Teleconsulta</p>
-                <p className="text-xs text-muted-foreground">Seu link de atendimento</p>
-              </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10">
+              <MessageCircle className="h-5 w-5 text-secondary" />
             </div>
-            <span className="text-xs text-primary font-medium">Abrir →</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold">Fale com um Contador</p>
+              <p className="text-xs text-muted-foreground">NF, CNPJ, IR e dúvidas contábeis</p>
+            </div>
           </button>
         </motion.div>
 
-        {/* Card 4 — Perfil público */}
+        {/* Quick Access Grid */}
+        <motion.div variants={item}>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Acesso rápido</p>
+          <div className="grid grid-cols-3 gap-3">
+            {quickAccess.map(({ icon: Icon, label, to }) => (
+              <button
+                key={to}
+                onClick={() => navigate(to)}
+                className="glass-card p-4 flex flex-col items-center gap-2 transition-all active:scale-[0.97] hover:border-primary/50"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <Icon className="h-5 w-5 text-primary" />
+                </div>
+                <span className="text-xs font-medium text-center">{label}</span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Admin Panel */}
+        {isAdmin && (
+          <motion.div variants={item}>
+            <button
+              onClick={() => navigate("/admin")}
+              className="glass-card w-full p-4 text-left transition-all active:scale-[0.98] hover:border-destructive/50 flex items-center gap-3 border-destructive/20"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
+                <Shield className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Painel Admin</p>
+                <p className="text-xs text-muted-foreground">Gerenciar assinaturas e usuários</p>
+              </div>
+            </button>
+          </motion.div>
+        )}
+
+        {/* Public Profile */}
         <motion.div variants={item}>
           <div className="glass-card p-4 space-y-3 border-border/60">
             <div className="flex items-center gap-2">
@@ -166,21 +229,18 @@ const Dashboard = () => {
                 </button>
               </div>
             )}
-            <div className="border-t border-border/40 pt-3 space-y-2">
-              <p className="text-xs text-muted-foreground">Indique um colega</p>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-muted-foreground truncate flex-1">{referralUrl}</span>
-                <button
-                  onClick={() => handleCopy(referralUrl)}
-                  className="shrink-0 flex items-center gap-1 text-xs text-primary font-medium"
-                >
-                  <Copy className="h-3.5 w-3.5" /> Copiar
-                </button>
-              </div>
-              <p className="text-[11px] text-muted-foreground">
-                {referralCount} {referralCount === 1 ? "colega indicado" : "colegas indicados"} • Cada indicação ajuda a SalbCare a crescer 🙌
-              </p>
-            </div>
+          </div>
+        </motion.div>
+
+        {/* Today's appointments */}
+        <motion.div variants={item}>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Consultas de hoje</p>
+          <div className="glass-card p-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              {todayCount === 0
+                ? "Nenhuma consulta agendada para hoje"
+                : `${todayCount} consulta${todayCount > 1 ? "s" : ""} agendada${todayCount > 1 ? "s" : ""}`}
+            </p>
           </div>
         </motion.div>
       </motion.div>
