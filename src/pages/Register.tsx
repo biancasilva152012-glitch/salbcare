@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import { Stethoscope } from "lucide-react";
+import { trackLead, trackRegistration } from "@/hooks/useTracking";
 
 const specialties = [
   { value: "psicologo", label: "Psicologia" },
@@ -132,6 +133,8 @@ const Register = () => {
         return;
       }
 
+      trackLead(form.email);
+      trackRegistration();
       toast.success("Conta criada com sucesso!");
       navigate("/dashboard");
     } catch (err) {

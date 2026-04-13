@@ -1,12 +1,18 @@
+import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackPurchase } from "@/hooks/useTracking";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const method = searchParams.get("method");
+
+  useEffect(() => {
+    trackPurchase(89);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">

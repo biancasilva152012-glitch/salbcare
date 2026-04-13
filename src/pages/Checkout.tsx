@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Loader2, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { trackCheckoutStart } from "@/hooks/useTracking";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const Checkout = () => {
       if (error) throw error;
       if (data?.url) {
         console.log(`[Checkout] Session criada: ${data.url} | redirect para Stripe`);
+        trackCheckoutStart(plan.name, displayPrice);
         sessionStorage.setItem("salbcare_from_checkout", "true");
         window.location.href = data.url;
       } else {
