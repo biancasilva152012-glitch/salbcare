@@ -123,7 +123,7 @@ const Telehealth = () => {
           </div>
           <Button onClick={openVersionedSubscriptionRoute} className="w-full max-w-xs gradient-primary font-semibold gap-2">
             <Sparkles className="h-4 w-4" />
-            Upgrade Pro — R$ {PLANS.professional.price}/mês
+            Assinar Essencial — R$ {PLANS.basic.price}/mês
           </Button>
           <Button onClick={() => window.history.back()} variant="ghost" className="text-muted-foreground">
             Agora não

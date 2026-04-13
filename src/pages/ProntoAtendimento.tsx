@@ -144,17 +144,14 @@ const ProntoAtendimento = () => {
   const visibleProfessionals = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
   const hasMore = filtered.length > INITIAL_VISIBLE;
 
-  const openWhatsApp = (prof: any) => {
+  const getWhatsAppUrl = (prof: any) => {
     const phone = (prof.phone || "").replace(/\D/g, "");
-    if (!phone) {
-      toast.error("Este profissional não possui WhatsApp cadastrado.");
-      return;
-    }
+    if (!phone) return null;
     const serviceLabel = serviceFilter === "consultation" ? "consulta online" : "atendimento";
     const msg = encodeURIComponent(
       `Olá, ${prof.name}! Encontrei seu perfil na SalbCare e gostaria de solicitar ${serviceLabel}. Poderia me ajudar?`
     );
-    window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+    return `https://wa.me/55${phone}?text=${msg}`;
   };
 
   return (
@@ -357,14 +354,28 @@ const ProntoAtendimento = () => {
                     </div>
 
                     {/* CTA - WhatsApp */}
-                    <Button
-                      size="sm"
-                      className="shrink-0 gradient-primary text-xs gap-1"
-                      onClick={() => openWhatsApp(prof)}
-                    >
-                      <MessageCircle className="h-3.5 w-3.5" />
-                      Falar no<br />WhatsApp
-                    </Button>
+                    {getWhatsAppUrl(prof) ? (
+                      <Button
+                        size="sm"
+                        className="shrink-0 gradient-primary text-xs gap-1"
+                        asChild
+                      >
+                        <a href={getWhatsAppUrl(prof)!} target="_blank" rel="noopener noreferrer">
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          Falar no<br />WhatsApp
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="shrink-0 text-xs gap-1"
+                        variant="outline"
+                        disabled
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                        Sem WhatsApp
+                      </Button>
+                    )}
                   </div>
                 </motion.div>
               );

@@ -11,30 +11,21 @@ interface FeatureGateProps {
   children: React.ReactNode;
 }
 
-const PRO_BENEFITS = [
-  "Acesso a contador especialista em saúde",
-  "Emissão de NF-e 100% legal",
-  "Declaração de Imposto de Renda",
-];
-
-const CLINIC_BENEFITS = [
-  "Gestão de múltiplos profissionais",
-  "Painel financeiro avançado",
-  "Suporte prioritário e dedicado",
+const PLAN_BENEFITS = [
+  "Agenda inteligente de consultas",
+  "Teleconsulta integrada",
+  "Controle financeiro completo",
+  "Mentoria financeira com IA",
 ];
 
 const FeatureGate = ({ feature, children }: FeatureGateProps) => {
   const { hasAccess, requiredPlan } = useFeatureGate();
   const { user } = useAuth();
 
-  // Admin bypass
   if (isAdminEmail(user?.email)) return <>{children}</>;
-
   if (hasAccess(feature)) return <>{children}</>;
 
-  const planKey = requiredPlan(feature);
-  const plan = PLANS[planKey];
-  const benefits = planKey === "clinic" ? CLINIC_BENEFITS : PRO_BENEFITS;
+  const plan = PLANS.basic;
 
   return (
     <div className="flex flex-col items-center justify-center space-y-5 px-6 py-12 text-center">
@@ -43,10 +34,10 @@ const FeatureGate = ({ feature, children }: FeatureGateProps) => {
       </div>
       <div className="max-w-xs space-y-2">
         <h2 className="text-lg font-bold">Disponível no plano {plan.name}</h2>
-        <p className="text-sm text-muted-foreground">O que você ganha ao fazer upgrade:</p>
+        <p className="text-sm text-muted-foreground">O que você ganha ao assinar:</p>
       </div>
       <ul className="w-full max-w-xs space-y-2 text-left">
-        {benefits.map((benefit) => (
+        {PLAN_BENEFITS.map((benefit) => (
           <li key={benefit} className="flex items-start gap-2 text-sm">
             <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <span>{benefit}</span>
@@ -55,7 +46,7 @@ const FeatureGate = ({ feature, children }: FeatureGateProps) => {
       </ul>
       <div className="flex w-full max-w-xs flex-col gap-2">
         <Button onClick={openVersionedSubscriptionRoute} className="w-full gradient-primary font-semibold">
-          Ver plano {plan.name} — R$ {plan.price}/mês
+          Assinar {plan.name} — R$ {plan.price}/mês
         </Button>
         <Button onClick={() => window.history.back()} variant="ghost" className="w-full text-muted-foreground">
           Agora não

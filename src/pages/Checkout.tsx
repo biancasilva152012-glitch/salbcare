@@ -12,16 +12,13 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const planKey = (searchParams.get("plan") || "basic") as PlanKey;
-  const period = searchParams.get("period") || "monthly";
   const plan = PLANS[planKey] || PLANS.basic;
   const { user } = useAuth();
 
   const [loading, setLoading] = useState(false);
 
-  const isAnnual = period === "annual";
-  const priceId = isAnnual ? plan.annual_price_id : plan.price_id;
-  const displayPrice = isAnnual ? plan.annual_price : plan.price;
-  const periodLabel = isAnnual ? "/ano" : "/mês";
+  const priceId = plan.price_id;
+  const displayPrice = plan.price;
 
   const handleCheckout = async () => {
     if (!user) {
@@ -36,7 +33,7 @@ const Checkout = () => {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: {
           priceId,
-          billingPeriod: period,
+          billingPeriod: "monthly",
         },
       });
 
@@ -67,13 +64,8 @@ const Checkout = () => {
           <h1 className="text-xl font-bold">Assinar {plan.name}</h1>
           <p className="text-2xl font-bold text-primary mt-1">
             R$ {displayPrice}
-            <span className="text-sm text-muted-foreground font-normal">{periodLabel}</span>
+            <span className="text-sm text-muted-foreground font-normal">/mês</span>
           </p>
-          {isAnnual && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Equivale a R$ {Math.round(plan.annual_price / 12)}/mês
-            </p>
-          )}
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">

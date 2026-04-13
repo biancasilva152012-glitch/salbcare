@@ -50,7 +50,7 @@ const SavingsEstimateCard = ({ monthlyIncome }: Props) => {
     { name: "SalbCare", value: pjTotal, fill: "hsl(var(--primary))" },
   ];
 
-  const canChat = subscription.plan === "professional" || subscription.plan === "clinic";
+  const canChat = subscription.plan === "basic";
 
   if (monthlyIncome <= 0) return null;
 
