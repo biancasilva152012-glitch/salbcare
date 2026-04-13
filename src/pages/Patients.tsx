@@ -431,6 +431,7 @@ const Patients = () => {
           />
         </motion.div>
       </div>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="pacientes" currentUsage={patientsCount} limit={patientsLimit} />
     </PageContainer>
   );
 };
