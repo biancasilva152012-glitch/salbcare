@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { DollarSign, Compass, Video, ArrowRight, Star, MessageCircle, X, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { FileText, Search, Video, ArrowRight, MessageCircle, UserPlus, Globe, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import SEOHead from "@/components/SEOHead";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -17,27 +16,6 @@ const fadeUp = {
 const stagger = {
   show: { transition: { staggerChildren: 0.12 } },
 };
-
-const testimonials = [
-  {
-    name: "Sarah Almeida",
-    specialty: "Médica — Clínica Médica",
-    stars: 5,
-    text: "A SalbCare organizou meu consultório digital do zero. Consigo gerenciar minha agenda, emitir receituários e atender com muito mais profissionalismo.",
-  },
-  {
-    name: "Mayara Barros",
-    specialty: "Terapeuta — Atende da Espanha para o Brasil",
-    stars: 5,
-    text: "Atendo meus pacientes brasileiros morando na Espanha sem nenhuma complicação. A teleconsulta integrada tornou isso simples e legal.",
-  },
-  {
-    name: "Cinara Costa",
-    specialty: "Dentista — HOF e Prontuários",
-    stars: 5,
-    text: "Faço a primeira avaliação de HOF e organizo todos os prontuários dos meus pacientes pela SalbCare. Ficou tudo centralizado e seguro.",
-  },
-];
 
 const professionalLabels: Record<string, string> = {
   medico: "Médico(a)",
@@ -52,25 +30,6 @@ const professionalLabels: Record<string, string> = {
 const HIGHLIGHT_TYPES = ["medico", "dentista", "psicologo"];
 
 const ParaProfissionais = () => {
-  const [bannerVisible, setBannerVisible] = useState(true);
-  const [showFloatingCta, setShowFloatingCta] = useState(false);
-
-  // Show floating CTA after 5 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => setShowFloatingCta(true), 5000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Hide banner on 80% scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-      if (scrollPercent > 0.8) setBannerVisible(false);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const { data: professionals = [] } = useQuery({
     queryKey: ["public-professionals-landing"],
     queryFn: async () => {
@@ -101,27 +60,6 @@ const ParaProfissionais = () => {
       />
 
       <div className="min-h-screen bg-background text-foreground font-['Plus_Jakarta_Sans',sans-serif]">
-        {/* ── Promo Banner ── */}
-        <AnimatePresence>
-          {bannerVisible && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 44, opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="bg-[hsl(222,47%,11%)] text-[hsl(210,40%,98%)] flex items-center justify-center text-xs sm:text-sm font-medium relative z-50"
-            >
-              <span>🎉 7 dias grátis para novos profissionais — sem cartão de crédito</span>
-              <button
-                onClick={() => setBannerVisible(false)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:opacity-70"
-                aria-label="Fechar"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* ── Hero ── */}
         <section className="relative overflow-hidden px-4 pt-20 pb-16 text-center">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
@@ -154,21 +92,21 @@ const ParaProfissionais = () => {
               variants={fadeUp}
               className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto text-center"
             >
-              Para psicólogos, terapeutas, nutricionistas, fisioterapeutas, médicos e todos os profissionais de saúde autônomos.
+              Para profissionais de saúde autônomos.
             </motion.p>
 
-            {/* Three icons */}
-            <motion.div variants={fadeUp} className="mt-8 flex justify-center gap-8 sm:gap-12">
+            {/* Three value props */}
+            <motion.div variants={fadeUp} className="mt-8 flex justify-center gap-6 sm:gap-12">
               {[
-                { icon: DollarSign, label: "Contador financeiro" },
-                { icon: Compass, label: "Mentoria de organização" },
-                { icon: Video, label: "Teleconsulta via Google Meet" },
+                { icon: FileText, label: "Carnê-Leão preenchido automático" },
+                { icon: Search, label: "Pacientes te encontram sem comissão" },
+                { icon: Video, label: "Teleconsulta legal pelo Google Meet" },
               ].map((f) => (
-                <div key={f.label} className="flex flex-col items-center gap-1.5">
+                <div key={f.label} className="flex flex-col items-center gap-1.5 max-w-[120px]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                     <f.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="text-[11px] text-muted-foreground text-center leading-tight max-w-[90px]">{f.label}</span>
+                  <span className="text-[11px] text-muted-foreground text-center leading-tight">{f.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -190,48 +128,143 @@ const ParaProfissionais = () => {
           </motion.div>
         </section>
 
-        {/* ── Social Proof ── */}
-        <section className="px-4 pb-16">
-          <motion.div
-            className="mx-auto max-w-4xl"
-            initial="hidden"
-            animate="show"
-            variants={stagger}
-          >
+        {/* ── Stats Bar ── */}
+        <section className="bg-[hsl(var(--primary))] py-10">
+          <div className="mx-auto max-w-4xl px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            {[
+              { value: "9+", label: "especialidades" },
+              { value: "100%", label: "das consultas pra você" },
+              { value: "7 dias", label: "grátis sem cartão" },
+            ].map((s) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="space-y-1"
+              >
+                <p className="text-3xl sm:text-4xl font-bold text-primary-foreground">{s.value}</p>
+                <p className="text-sm text-primary-foreground/80">{s.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Como Funciona ── */}
+        <section className="bg-muted/40 py-16 sm:py-24">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
             <motion.h2
-              variants={fadeUp}
-              className="text-xl sm:text-2xl font-bold mb-8 text-center"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-2xl sm:text-3xl font-bold text-center mb-12"
+            >
+              Como funciona
+            </motion.h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {[
+                {
+                  step: "1",
+                  icon: UserPlus,
+                  title: "Crie seu perfil em 5 minutos",
+                  desc: "Cadastre sua especialidade, valores e link do Google Meet",
+                },
+                {
+                  step: "2",
+                  icon: Globe,
+                  title: "Pacientes te encontram",
+                  desc: "Seu perfil aparece no diretório público da SalbCare sem custo por lead",
+                },
+                {
+                  step: "3",
+                  icon: LayoutDashboard,
+                  title: "Gerencie tudo em um lugar",
+                  desc: "Agenda, prontuário, receitas e financeiro na mesma plataforma",
+                },
+              ].map((item) => (
+                <motion.div
+                  key={item.step}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: Number(item.step) * 0.1 }}
+                  className="bg-background rounded-2xl p-6 sm:p-8 border border-border/40 space-y-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                      {item.step}
+                    </span>
+                    <item.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Prova Social ── */}
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-2xl sm:text-3xl font-bold text-center mb-12"
             >
               O que dizem nossos profissionais
             </motion.h2>
             <div className="grid gap-5 sm:grid-cols-3">
-              {testimonials.map((t) => (
-                <motion.div key={t.name} variants={fadeUp}>
+              {[
+                {
+                  initials: "ST",
+                  name: "Dra. Sarah T.",
+                  role: "Médica",
+                  color: "bg-emerald-500",
+                  quote: "Finalmente uma plataforma que não fica com parte das minhas consultas.",
+                },
+                {
+                  initials: "VF",
+                  name: "Vitória F.",
+                  role: "Dentista",
+                  color: "bg-violet-500",
+                  quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes.",
+                },
+                {
+                  initials: "CC",
+                  name: "Cinara C.",
+                  role: "Nutricionista",
+                  color: "bg-amber-500",
+                  quote: "O Carnê-Leão sozinho já vale a assinatura inteira.",
+                },
+              ].map((t) => (
+                <motion.div
+                  key={t.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
                   <Card className="h-full border-border/40 bg-card/60 backdrop-blur-sm">
                     <CardContent className="p-6 flex flex-col gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary shrink-0">
-                          {t.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                        <div className={`h-10 w-10 rounded-full ${t.color} flex items-center justify-center text-sm font-bold text-white shrink-0`}>
+                          {t.initials}
                         </div>
                         <div>
                           <p className="text-sm font-semibold">{t.name}</p>
-                          <p className="text-xs text-muted-foreground">{t.specialty}</p>
+                          <p className="text-xs text-muted-foreground">{t.role}</p>
                         </div>
                       </div>
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: t.stars }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                        ))}
-                      </div>
                       <p className="text-sm text-muted-foreground leading-relaxed italic">
-                        "{t.text}"
+                        "{t.quote}"
                       </p>
                     </CardContent>
                   </Card>
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </section>
 
         {/* ── Mentorship differentiator ── */}
@@ -329,32 +362,6 @@ const ParaProfissionais = () => {
             <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} SalbCare. Todos os direitos reservados.</p>
           </div>
         </footer>
-
-        {/* ── Sticky mobile CTA ── */}
-        <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-background/90 backdrop-blur-md border-t border-border/30 p-3 safe-area-pb">
-          <Button asChild className="w-full py-5 text-base rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)]">
-            <Link to="/cadastro">Começar grátis por 7 dias</Link>
-          </Button>
-        </div>
-
-        {/* ── Floating CTA (mobile, after 5s) ── */}
-        <AnimatePresence>
-          {showFloatingCta && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="fixed bottom-20 right-4 z-50 sm:hidden"
-            >
-              <Button asChild size="sm" className="rounded-full shadow-lg gap-2 bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] px-4 py-5">
-                <Link to="/cadastro">
-                  <Sparkles className="h-4 w-4" />
-                  Criar conta grátis
-                </Link>
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </>
   );
