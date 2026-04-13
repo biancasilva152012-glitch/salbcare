@@ -68,6 +68,7 @@ const Register = () => {
         name: form.name,
         user_type: "professional",
         professional_type: form.professional_type,
+        council_number: form.council_number.trim(),
       };
 
       const { data: signUpData, error } = await supabase.auth.signUp({
