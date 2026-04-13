@@ -468,6 +468,12 @@ const DashboardMentoria = () => {
           )}
         </motion.div>
       </motion.div>
+      {isFree && (
+        <p className="text-xs text-center text-muted-foreground py-2">
+          Mensagens este mês: {mentorshipCount}/{mentorshipLimit} (plano gratuito)
+        </p>
+      )}
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="mensagens de mentoria" currentUsage={mentorshipCount} limit={mentorshipLimit} />
     </PageContainer>
   );
 };
