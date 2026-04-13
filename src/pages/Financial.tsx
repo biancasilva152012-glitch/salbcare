@@ -220,15 +220,21 @@ const Financial = () => {
                 <FileDown className="h-4 w-4" /> PDF
               </Button>
             )}
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
-              </DialogTrigger>
-            <DialogContent className="bg-card border-border">
-              <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
-              {transactionFormJsx(false)}
-            </DialogContent>
-          </Dialog>
+            {canAddFinancial ? (
+              <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader><DialogTitle>Nova Transação</DialogTitle></DialogHeader>
+                  {transactionFormJsx(false)}
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Button size="sm" className="gradient-primary gap-1" onClick={() => setUpgradeOpen(true)}>
+                <Plus className="h-4 w-4" /> Novo
+              </Button>
+            )}
           </div>
         </div>
 
