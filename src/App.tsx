@@ -51,6 +51,7 @@ const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"
 const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
 const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 const PublicProfessionals = lazyWithRetry(() => import("./pages/PublicProfessionals"), "PublicProfessionals");
+const Pricing = lazyWithRetry(() => import("./pages/Pricing"), "Pricing");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,7 +95,8 @@ const App = () => (
               <Route path="/p/:slug" element={<PublicProfile />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/profissionais" element={<PublicProfessionals />} />
-              <Route path="/planos" element={<Subscription />} />
+              <Route path="/planos" element={<Pricing />} />
+              <Route path="/precos" element={<Pricing />} />
 
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
