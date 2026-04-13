@@ -13,6 +13,9 @@ import PageContainer from "@/components/PageContainer";
 import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
+import { useTracking } from "@/hooks/useTracking";
+
+const TrackingProvider = () => { useTracking(); return null; };
 
 // Eager: login, register, landing (entry points)
 import Login from "./pages/Login";
@@ -79,6 +82,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <ScrollToTop />
+          <TrackingProvider />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
