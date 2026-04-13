@@ -16,7 +16,8 @@ const specialties = [
   { value: "nutricionista", label: "Nutrição" },
   { value: "fisioterapeuta", label: "Fisioterapia" },
   { value: "fonoaudiologo", label: "Fonoaudiologia" },
-  { value: "dentista", label: "Odontologia" },
+  { value: "terapeuta_ocupacional", label: "Terapia Ocupacional" },
+  { value: "educador_fisico", label: "Educação Física" },
   { value: "outro", label: "Outro" },
 ];
 

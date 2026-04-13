@@ -70,7 +70,7 @@ const ParaProfissionais = () => (
             variants={fadeUp}
             className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto"
           >
-            Gerencie seus recebimentos, organize suas finanças e atenda por teleconsulta. Tudo em um lugar. Sem comissão.
+            Para psicólogos, terapeutas, nutricionistas, fisioterapeutas, médicos e todos os profissionais de saúde autônomos. Sem CNPJ, sem comissão.
           </motion.p>
 
           {/* Three icons */}
@@ -88,6 +88,10 @@ const ParaProfissionais = () => (
               </div>
             ))}
           </motion.div>
+
+          <motion.p variants={fadeUp} className="mt-4 text-xs text-muted-foreground text-center">
+            Não é só para médicos. É para qualquer profissional de saúde autônomo.
+          </motion.p>
 
           <motion.div variants={fadeUp} className="mt-8">
             <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl gradient-primary font-bold">
