@@ -20,6 +20,7 @@ const BottomNav = memo(() => {
   const hideOn = ["/", "/login", "/register", "/cadastro", "/forgot-password", "/terms", "/privacy", "/para-profissionais", "/planos", "/diagnostico", "/admin", "/profissionais", "/consulta-online", "/especialidades"];
   if (hideOn.includes(location.pathname)) return null;
   if (location.pathname.startsWith("/p/")) return null;
+  if (location.pathname.startsWith("/consulta-online/")) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-card/95 backdrop-blur-2xl">
