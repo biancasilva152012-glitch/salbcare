@@ -2,12 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   DollarSign, Calendar, Users, Video, Clock, TrendingUp,
-  Sparkles, MessageCircle, ExternalLink, Copy, Check, Rocket,
+  Sparkles, MessageCircle, Rocket,
   BookOpen, Scale, Shield
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
