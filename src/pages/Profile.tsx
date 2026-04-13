@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, Banknote, Wifi, WifiOff, BadgeCheck, TriangleAlert, Save, MapPin } from "lucide-react";
+import { LogOut, User, CreditCard, ChevronRight, Clock, CheckCircle, AlertCircle, Shield, Download, Pencil, Trash2, Loader2, BadgeCheck, TriangleAlert, Save, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { PLANS } from "@/config/plans";
 import { getProfessionConfig } from "@/config/professions";
@@ -45,11 +45,11 @@ const Profile = () => {
   const [correctText, setCorrectText] = useState("");
   const [sendingCorrection, setSendingCorrection] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [pixKey, setPixKey] = useState("");
-  const [cardLink, setCardLink] = useState("");
   const [bio, setBio] = useState("");
-  const [savingPayment, setSavingPayment] = useState(false);
-  const [availabilityOnline, setAvailabilityOnline] = useState(false);
+  const [councilNumber, setCouncilNumber] = useState("");
+  const [councilState, setCouncilState] = useState("");
+  const [officeAddress, setOfficeAddress] = useState("");
+  const [savingRegistration, setSavingRegistration] = useState(false);
   const [councilNumber, setCouncilNumber] = useState("");
   const [councilState, setCouncilState] = useState("");
   const [officeAddress, setOfficeAddress] = useState("");
@@ -72,10 +72,7 @@ const Profile = () => {
   // Sync local state with profile data
   useEffect(() => {
     if (profile) {
-      setPixKey((profile as any).pix_key || "");
-      setCardLink((profile as any).card_link || "");
       setBio((profile as any).bio || "");
-      setAvailabilityOnline((profile as any).availability_online || false);
       setCouncilNumber((profile as any).council_number || "");
       setCouncilState((profile as any).council_state || "");
       setOfficeAddress((profile as any).office_address || "");
