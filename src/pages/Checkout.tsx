@@ -41,7 +41,7 @@ const Checkout = () => {
       if (data?.url) {
         console.log(`[Checkout] Session criada: ${data.url} | redirect para Stripe`);
         sessionStorage.setItem("salbcare_from_checkout", "true");
-        window.open(data.url, "_blank");
+        window.location.href = data.url;
       } else {
         throw new Error("URL de checkout não retornada");
       }
