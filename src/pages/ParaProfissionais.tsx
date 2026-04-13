@@ -98,7 +98,7 @@ const ParaProfissionais = () => {
             {/* Three value props */}
             <motion.div variants={fadeUp} className="mt-8 flex justify-center gap-6 sm:gap-12">
               {[
-                { icon: FileText, label: "Carnê-Leão preenchido automático" },
+                { icon: FileText, label: "Mentoria financeira e contabilidade dos seus ganhos automáticos" },
                 { icon: Search, label: "Pacientes te encontram sem comissão" },
                 { icon: Video, label: "Teleconsulta legal pelo Google Meet" },
               ].map((f) => (
