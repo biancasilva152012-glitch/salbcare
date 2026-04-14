@@ -43,6 +43,7 @@ const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOvervie
 const AdminUsersPage = lazyWithRetry(() => import("./pages/admin/AdminUsersPage"), "AdminUsersPage");
 const AdminPlaceholder = lazyWithRetry(() => import("./pages/admin/AdminPlaceholder"), "AdminPlaceholder");
 const AdminDatabasePage = lazyWithRetry(() => import("./pages/admin/AdminDatabasePage"), "AdminDatabasePage");
+const AdminLogsPage = lazyWithRetry(() => import("./pages/admin/AdminLogsPage"), "AdminLogsPage");
 const AdminFinancePage = lazyWithRetry(() => import("./pages/admin/AdminFinancePage"), "AdminFinancePage");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
@@ -155,7 +156,7 @@ const App = () => (
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/finance" element={<AdminFinancePage />} />
               <Route path="/admin/database" element={<AdminDatabasePage />} />
-              <Route path="/admin/logs" element={<AdminPlaceholder title="Logs e Auditoria" />} />
+              <Route path="/admin/logs" element={<AdminLogsPage />} />
               <Route path="/admin/settings" element={<AdminPlaceholder title="Configurações do Sistema" />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />
 
