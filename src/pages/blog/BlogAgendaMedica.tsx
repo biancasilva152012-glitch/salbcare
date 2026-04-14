@@ -1,4 +1,5 @@
 import SEOHead from "@/components/SEOHead";
+import blogImage from "@/assets/blog/agenda-medica.jpg";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ const BlogAgendaMedica = () => (
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
         <BlogBreadcrumb articleTitle="Agenda Médica Digital" />
         <header className="space-y-3">
+          <img src={blogImage} alt="Agenda médica digital em tablet e celular" width={1200} height={672} className="rounded-xl w-full object-cover mb-4" loading="eager" />
           <p className="text-xs text-primary font-semibold uppercase tracking-wider">Gestão</p>
           <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight">
             Agenda Médica Digital: Como Organizar seu Consultório e Reduzir Faltas

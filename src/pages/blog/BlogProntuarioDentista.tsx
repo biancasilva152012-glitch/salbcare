@@ -1,4 +1,5 @@
 import SEOHead from "@/components/SEOHead";
+import blogImage from "@/assets/blog/prontuario-dentista.jpg";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,8 @@ const BlogProntuarioDentista = () => (
           </p>
           <time className="text-xs text-muted-foreground" dateTime="2026-04-14">14 de abril de 2026</time>
         </header>
+
+        <img src={blogImage} alt="Prontuário digital odontológico em tablet" width={1200} height={672} className="rounded-xl w-full object-cover" loading="eager" />
 
         <div className="prose prose-invert max-w-none space-y-6 text-muted-foreground">
           <h2 className="text-xl font-semibold text-foreground">O que é o prontuário digital odontológico?</h2>
