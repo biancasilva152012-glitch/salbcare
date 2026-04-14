@@ -17,6 +17,14 @@ const professionalLabels: Record<string, string> = {
   outro: "Profissional de Saúde",
 };
 
+const DR_TYPES = new Set(["medico", "dentista"]);
+const displayName = (name: string, type: string) => {
+  if (!DR_TYPES.has(type)) return name;
+  const lower = name.toLowerCase();
+  if (lower.startsWith("dr.") || lower.startsWith("dra.") || lower.startsWith("dr(a)")) return name;
+  return `Dr(a). ${name}`;
+};
+
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
 
@@ -65,7 +73,7 @@ const PublicProfile = () => {
               {profile.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">{profile.name}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">{displayName(profile.name, profile.professional_type)}</h1>
               <Badge variant="secondary" className="mt-2">{specialtyLabel}</Badge>
             </div>
             {profile.bio && (

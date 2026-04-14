@@ -42,6 +42,7 @@ const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDas
 const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"), "AdminOverviewPage");
 const AdminUsersPage = lazyWithRetry(() => import("./pages/admin/AdminUsersPage"), "AdminUsersPage");
 const AdminPlaceholder = lazyWithRetry(() => import("./pages/admin/AdminPlaceholder"), "AdminPlaceholder");
+const AdminDatabasePage = lazyWithRetry(() => import("./pages/admin/AdminDatabasePage"), "AdminDatabasePage");
 const AdminFinancePage = lazyWithRetry(() => import("./pages/admin/AdminFinancePage"), "AdminFinancePage");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
@@ -153,7 +154,7 @@ const App = () => (
               <Route path="/admin" element={<AdminOverviewPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/finance" element={<AdminFinancePage />} />
-              <Route path="/admin/database" element={<AdminPlaceholder title="Gerenciador de Banco de Dados" />} />
+              <Route path="/admin/database" element={<AdminDatabasePage />} />
               <Route path="/admin/logs" element={<AdminPlaceholder title="Logs e Auditoria" />} />
               <Route path="/admin/settings" element={<AdminPlaceholder title="Configurações do Sistema" />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />

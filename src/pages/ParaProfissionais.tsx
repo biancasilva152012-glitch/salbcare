@@ -28,6 +28,13 @@ const professionalLabels: Record<string, string> = {
 };
 
 const HIGHLIGHT_TYPES = ["medico", "dentista", "psicologo"];
+const DR_TYPES = new Set(["medico", "dentista"]);
+const displayName = (name: string, type: string) => {
+  if (!DR_TYPES.has(type)) return name;
+  const lower = name.toLowerCase();
+  if (lower.startsWith("dr.") || lower.startsWith("dra.") || lower.startsWith("dr(a)")) return name;
+  return `Dr(a). ${name}`;
+};
 
 const ParaProfissionais = () => {
   const { data: professionals = [] } = useQuery({
@@ -338,7 +345,7 @@ const ParaProfissionais = () => {
                                 {prof.name?.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
                               </div>
                               <div>
-                                <p className="font-semibold text-sm">{prof.name}</p>
+                                <p className="font-semibold text-sm">{displayName(prof.name, prof.professional_type)}</p>
                                 <Badge variant="secondary" className="text-xs mt-0.5">{label}</Badge>
                               </div>
                             </div>
