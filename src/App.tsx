@@ -149,7 +149,13 @@ const App = () => (
               <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
-              <Route path="/admin" element={<CeoDashboard />} />
+              <Route path="/admin" element={<AdminOverviewPage />} />
+              <Route path="/admin/users" element={<AdminUsersPage />} />
+              <Route path="/admin/finance" element={<AdminPlaceholder title="Painel Financeiro" />} />
+              <Route path="/admin/database" element={<AdminPlaceholder title="Gerenciador de Banco de Dados" />} />
+              <Route path="/admin/logs" element={<AdminPlaceholder title="Logs e Auditoria" />} />
+              <Route path="/admin/settings" element={<AdminPlaceholder title="Configurações do Sistema" />} />
+              <Route path="/admin-legacy" element={<CeoDashboard />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
