@@ -280,6 +280,7 @@ const Index = () => {
               <Link to="/privacy" className="hover:text-foreground">Privacidade</Link>
               <Link to="/planos" className="hover:text-foreground">Planos</Link>
               <Link to="/para-profissionais" className="hover:text-foreground">Para Profissionais</Link>
+              <Link to="/blog" className="hover:text-foreground">Blog</Link>
             </div>
             <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} SalbCare. Todos os direitos reservados.</p>
           </div>
