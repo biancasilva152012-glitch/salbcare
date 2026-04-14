@@ -1,0 +1,92 @@
+import SEOHead from "@/components/SEOHead";
+import { Link } from "react-router-dom";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const BlogConsultaPsicologo = () => (
+  <>
+    <SEOHead
+      title="Consulta Online com Psicólogo: Como Funciona"
+      description="Saiba como funciona a consulta online com psicólogo. Entenda os benefícios da terapia virtual, o que diz o CFP e como agendar pelo celular de qualquer lugar do Brasil."
+      canonical="/blog/consulta-online-psicologo"
+      ogType="article"
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "Consulta Online com Psicólogo: Como Funciona, Benefícios e Como Agendar",
+        description: "Guia completo sobre terapia online: regulamentação do CFP, benefícios, como funciona na prática e como agendar pelo SalbCare.",
+        author: { "@type": "Organization", name: "SalbCare" },
+        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
+        datePublished: "2026-04-14",
+        mainEntityOfPage: "https://salbcare.com.br/blog/consulta-online-psicologo",
+      }}
+    />
+    <article className="min-h-screen bg-background">
+      <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
+        <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Blog
+        </Link>
+
+        <header className="space-y-3">
+          <p className="text-xs text-primary font-semibold uppercase tracking-wider">Saúde Mental</p>
+          <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight">
+            Consulta Online com Psicólogo: Como Funciona, Benefícios e Como Agendar
+          </h1>
+          <p className="text-muted-foreground text-base">
+            A terapia online é regulamentada pelo Conselho Federal de Psicologia (CFP) e oferece praticidade, sigilo e acesso a profissionais de qualquer lugar do Brasil.
+          </p>
+          <time className="text-xs text-muted-foreground" dateTime="2026-04-14">14 de abril de 2026</time>
+        </header>
+
+        <div className="prose prose-invert max-w-none space-y-6 text-muted-foreground">
+          <h2 className="text-xl font-semibold text-foreground">O que é a consulta online com psicólogo?</h2>
+          <p>
+            A consulta online com psicólogo é um atendimento terapêutico realizado por videochamada, com a mesma validade clínica de uma sessão presencial. O psicólogo utiliza plataformas seguras para manter o sigilo da conversa, e o paciente pode participar do conforto de sua casa.
+          </p>
+
+          <h2 className="text-xl font-semibold text-foreground">A terapia online é regulamentada?</h2>
+          <p>
+            Sim. O Conselho Federal de Psicologia (CFP) autoriza o atendimento psicológico online por meio da <strong>Resolução CFP 11/2018</strong>. O profissional precisa estar registrado no CRP e cadastrado na plataforma e-Psi para atender virtualmente.
+          </p>
+
+          <h2 className="text-xl font-semibold text-foreground">Benefícios da terapia online</h2>
+          <ul className="list-disc pl-5 space-y-2">
+            <li><strong>Acessibilidade:</strong> atendimento de qualquer cidade do Brasil, sem deslocamento.</li>
+            <li><strong>Flexibilidade de horário:</strong> sessões nos horários mais convenientes para você.</li>
+            <li><strong>Privacidade:</strong> sem sala de espera, sem cruzar com outras pessoas.</li>
+            <li><strong>Continuidade:</strong> ideal para quem viaja ou mora no exterior.</li>
+            <li><strong>Economia:</strong> sem custos de transporte e estacionamento.</li>
+          </ul>
+
+          <h2 className="text-xl font-semibold text-foreground">Como agendar pelo SalbCare?</h2>
+          <p>
+            Na plataforma SalbCare, você encontra psicólogos habilitados prontos para atender. O processo é simples:
+          </p>
+          <ol className="list-decimal pl-5 space-y-2">
+            <li>Acesse o <Link to="/consulta-online/psicologo" className="text-primary hover:underline">diretório de psicólogos</Link></li>
+            <li>Escolha o profissional e horário disponível</li>
+            <li>Confirme o agendamento — tudo online, sem downloads</li>
+          </ol>
+
+          <h2 className="text-xl font-semibold text-foreground">Em caso de crise</h2>
+          <p>
+            A consulta online não substitui atendimento emergencial. Em situações de risco, ligue para o <strong>CVV: 188</strong> (24 horas, gratuito).
+          </p>
+        </div>
+
+        <div className="border-t border-border pt-8 flex flex-col sm:flex-row gap-3">
+          <Button asChild className="gradient-primary font-semibold gap-2">
+            <Link to="/consulta-online/psicologo">
+              Encontrar psicólogos disponíveis <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/cadastro">Sou profissional — quero me cadastrar</Link>
+          </Button>
+        </div>
+      </div>
+    </article>
+  </>
+);
+
+export default BlogConsultaPsicologo;
