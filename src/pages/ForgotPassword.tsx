@@ -64,6 +64,7 @@ const ForgotPassword = () => {
         </Link>
       </motion.div>
     </div>
+    </>
   );
 };
 

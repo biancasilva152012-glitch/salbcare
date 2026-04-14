@@ -27,6 +27,7 @@ const NotFound = () => (
       </Link>
     </motion.div>
   </div>
+  </>
 );
 
 export default NotFound;
