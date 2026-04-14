@@ -3,6 +3,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import ListPagination from "@/components/ListPagination";
 import { usePagination } from "@/hooks/usePagination";
 import { motion } from "framer-motion";
+import { parseBRL, maskCurrency } from "@/utils/currencyMask";
 import { Plus, TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Pencil, Trash2, ChevronLeft, ChevronRight, Filter, FileDown, Crown } from "lucide-react";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -73,7 +74,7 @@ const Financial = () => {
 
   const validateForm = () => {
     if (!form.description.trim()) { toast.error("Preencha a descrição."); return false; }
-    if (!form.amount || Number(form.amount) <= 0) { toast.error("Informe um valor válido."); return false; }
+    if (!form.amount || parseBRL(form.amount) <= 0) { toast.error("Informe um valor válido."); return false; }
     if (!form.date) { toast.error("Selecione uma data."); return false; }
     return true;
   };
@@ -82,7 +83,7 @@ const Financial = () => {
     mutationFn: async () => {
       if (!validateForm()) throw new Error("validation");
       const { error } = await supabase.from("financial_transactions").insert({
-        user_id: user!.id, description: form.description.trim(), amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
+        user_id: user!.id, description: form.description.trim(), amount: parseBRL(form.amount), type: form.type, date: form.date, category: form.category,
       });
       if (error) throw error;
     },
@@ -102,7 +103,7 @@ const Financial = () => {
     mutationFn: async () => {
       if (!validateForm()) throw new Error("validation");
       const { error } = await supabase.from("financial_transactions").update({
-        description: form.description.trim(), amount: Number(form.amount), type: form.type, date: form.date, category: form.category,
+        description: form.description.trim(), amount: parseBRL(form.amount), type: form.type, date: form.date, category: form.category,
       }).eq("id", editId!);
       if (error) throw error;
     },
@@ -190,7 +191,7 @@ const Financial = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5"><Label>Descrição</Label><Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" /></div>
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="number" placeholder="0,00" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="bg-accent border-border" /></div>
+        <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="text" inputMode="numeric" placeholder="Ex: 1.500" value={form.amount} onChange={(e) => setForm({ ...form, amount: maskCurrency(e.target.value) })} className="bg-accent border-border" /></div>
         <div className="space-y-1.5">
           <Label>Tipo</Label>
           <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as "income" | "expense" })}>
