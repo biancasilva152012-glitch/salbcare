@@ -55,6 +55,11 @@ const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendime
 const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 const PublicProfessionals = lazyWithRetry(() => import("./pages/PublicProfessionals"), "PublicProfessionals");
 const Pricing = lazyWithRetry(() => import("./pages/Pricing"), "Pricing");
+const BlogIndex = lazyWithRetry(() => import("./pages/blog/BlogIndex"), "BlogIndex");
+const BlogConsultaPsicologo = lazyWithRetry(() => import("./pages/blog/BlogConsultaPsicologo"), "BlogConsultaPsicologo");
+const BlogProntuarioDentista = lazyWithRetry(() => import("./pages/blog/BlogProntuarioDentista"), "BlogProntuarioDentista");
+const BlogTeleconsultaMedica = lazyWithRetry(() => import("./pages/blog/BlogTeleconsultaMedica"), "BlogTeleconsultaMedica");
+const BlogGestaoFinanceira = lazyWithRetry(() => import("./pages/blog/BlogGestaoFinanceira"), "BlogGestaoFinanceira");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -101,6 +106,13 @@ const App = () => (
               <Route path="/profissionais" element={<PublicProfessionals />} />
               <Route path="/planos" element={<Pricing />} />
               <Route path="/precos" element={<Pricing />} />
+
+              {/* Blog SEO */}
+              <Route path="/blog" element={<BlogIndex />} />
+              <Route path="/blog/consulta-online-psicologo" element={<BlogConsultaPsicologo />} />
+              <Route path="/blog/prontuario-digital-dentista" element={<BlogProntuarioDentista />} />
+              <Route path="/blog/teleconsulta-medica" element={<BlogTeleconsultaMedica />} />
+              <Route path="/blog/gestao-financeira-profissional-saude" element={<BlogGestaoFinanceira />} />
 
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
