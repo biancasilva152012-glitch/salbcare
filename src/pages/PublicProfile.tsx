@@ -18,11 +18,20 @@ const professionalLabels: Record<string, string> = {
 };
 
 const DR_TYPES = new Set(["medico", "dentista"]);
+const KNOWN_FEMALE = new Set(["sarah", "raquel", "mabel", "ingrid", "ruth", "miriam", "suelen", "gisele", "michele", "rachel", "deborah", "elizabeth", "karen", "megan", "jaqueline", "vivian", "lilian", "suzan"]);
+const MALE_EXCEPTIONS = new Set(["luca", "josua", "nikita", "andrea"]);
+const isFeminineName = (name: string) => {
+  const first = name.split(" ")[0]?.toLowerCase() || "";
+  if (MALE_EXCEPTIONS.has(first)) return false;
+  if (KNOWN_FEMALE.has(first)) return true;
+  return first.endsWith("a") || first.endsWith("e") || first.endsWith("ane") || first.endsWith("ene") || first.endsWith("ice") || first.endsWith("ilde") || first.endsWith("is");
+};
 const displayName = (name: string, type: string) => {
   if (!DR_TYPES.has(type)) return name;
   const lower = name.toLowerCase();
   if (lower.startsWith("dr.") || lower.startsWith("dra.") || lower.startsWith("dr(a)")) return name;
-  return `Dr(a). ${name}`;
+  const prefix = isFeminineName(name) ? "Dra." : "Dr.";
+  return `${prefix} ${name}`;
 };
 
 const PublicProfile = () => {
