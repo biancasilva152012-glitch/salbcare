@@ -60,6 +60,10 @@ const BlogConsultaPsicologo = lazyWithRetry(() => import("./pages/blog/BlogConsu
 const BlogProntuarioDentista = lazyWithRetry(() => import("./pages/blog/BlogProntuarioDentista"), "BlogProntuarioDentista");
 const BlogTeleconsultaMedica = lazyWithRetry(() => import("./pages/blog/BlogTeleconsultaMedica"), "BlogTeleconsultaMedica");
 const BlogGestaoFinanceira = lazyWithRetry(() => import("./pages/blog/BlogGestaoFinanceira"), "BlogGestaoFinanceira");
+const BlogNutricionistaOnline = lazyWithRetry(() => import("./pages/blog/BlogNutricionistaOnline"), "BlogNutricionistaOnline");
+const BlogAgendaMedica = lazyWithRetry(() => import("./pages/blog/BlogAgendaMedica"), "BlogAgendaMedica");
+const BlogReceituarioDigital = lazyWithRetry(() => import("./pages/blog/BlogReceituarioDigital"), "BlogReceituarioDigital");
+const BlogCnpjMedico = lazyWithRetry(() => import("./pages/blog/BlogCnpjMedico"), "BlogCnpjMedico");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -113,6 +117,10 @@ const App = () => (
               <Route path="/blog/prontuario-digital-dentista" element={<BlogProntuarioDentista />} />
               <Route path="/blog/teleconsulta-medica" element={<BlogTeleconsultaMedica />} />
               <Route path="/blog/gestao-financeira-profissional-saude" element={<BlogGestaoFinanceira />} />
+              <Route path="/blog/nutricionista-online" element={<BlogNutricionistaOnline />} />
+              <Route path="/blog/agenda-medica-digital" element={<BlogAgendaMedica />} />
+              <Route path="/blog/receituario-digital" element={<BlogReceituarioDigital />} />
+              <Route path="/blog/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
 
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />

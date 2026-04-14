@@ -32,6 +32,34 @@ const POSTS = [
     excerpt: "Organizar finanças é tão importante quanto cuidar de pacientes. Carnê-Leão, preço mínimo e reserva de emergência.",
     date: "14 de abril de 2026",
   },
+  {
+    slug: "nutricionista-online",
+    category: "Nutrição",
+    title: "Nutricionista Online: Como Funciona a Consulta por Vídeo e Como Agendar",
+    excerpt: "A consulta nutricional online é autorizada pelo CFN e permite acompanhamento personalizado de qualquer lugar.",
+    date: "14 de abril de 2026",
+  },
+  {
+    slug: "agenda-medica-digital",
+    category: "Gestão",
+    title: "Agenda Médica Digital: Como Organizar seu Consultório e Reduzir Faltas",
+    excerpt: "Uma agenda digital inteligente é a base de um consultório organizado. Saiba como implementar.",
+    date: "14 de abril de 2026",
+  },
+  {
+    slug: "receituario-digital",
+    category: "Documentos Clínicos",
+    title: "Receituário Digital: Como Emitir Prescrição Eletrônica com Validade Legal",
+    excerpt: "A prescrição eletrônica já é realidade no Brasil. Entenda como funciona e o que diz a lei.",
+    date: "14 de abril de 2026",
+  },
+  {
+    slug: "como-abrir-cnpj-medico",
+    category: "Contabilidade",
+    title: "Como Abrir CNPJ Médico: Guia Completo para Profissionais de Saúde em 2026",
+    excerpt: "Atender como pessoa jurídica pode reduzir seus impostos em até 70%. Entenda quando vale a pena.",
+    date: "14 de abril de 2026",
+  },
 ];
 
 const BlogIndex = () => (
