@@ -33,6 +33,10 @@ const categoryOrder = [
   "outro",
 ];
 
+const DR_TYPES = new Set(["medico", "dentista"]);
+const displayName = (name: string, type: string) =>
+  DR_TYPES.has(type) ? `Dr(a). ${name}` : name;
+
 const PublicProfessionals = () => {
   const [search, setSearch] = useState("");
 
@@ -167,7 +171,7 @@ const PublicProfessionals = () => {
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{prof.name}</p>
+                          <p className="text-sm font-medium truncate">{displayName(prof.name, prof.professional_type)}</p>
                           {prof.bio && (
                             <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{prof.bio}</p>
                           )}
