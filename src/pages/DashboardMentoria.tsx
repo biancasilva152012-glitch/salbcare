@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import UpgradeModal from "@/components/UpgradeModal";
-import { ArrowLeft, Send, MessageCircle, Sparkles, TrendingDown, TrendingUp, Target, Zap } from "lucide-react";
+import { Shield, ArrowLeft, Send, MessageCircle, Sparkles, TrendingDown, TrendingUp, Target, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
