@@ -15,6 +15,7 @@ const logStep = (step: string, details?: any) => {
 // Allowed price IDs — enforced server-side
 const ALLOWED_PRICES: Record<string, string> = {
   "price_1TLmdUBUEEEAHx2hR8nCDaMo": "Essencial Mensal", // R$89/mês
+  "price_1TMBzjBUEEEAHx2h0517AGyu": "Essencial Anual",  // R$69/mês (R$828/ano)
 };
 
 const DEFAULT_PRICE_ID = "price_1TLmdUBUEEEAHx2hR8nCDaMo";
