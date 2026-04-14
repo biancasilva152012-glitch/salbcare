@@ -60,8 +60,22 @@ const ParaProfissionais = () => {
       />
 
       <div className="min-h-screen bg-background text-foreground font-['Plus_Jakarta_Sans',sans-serif]">
+        {/* ── Navbar ── */}
+        <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+          <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="text-base font-bold text-foreground">SALBCARE</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <Link to="/planos" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Planos</Link>
+              <Link to="/blog" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+              <Link to="/login" className="text-xs text-primary hover:text-primary/80 font-semibold transition-colors">Entrar</Link>
+            </div>
+          </div>
+        </nav>
+
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden px-4 pt-20 pb-16 text-center">
+        <section className="relative overflow-hidden px-4 pt-16 pb-16 text-center">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
           <motion.div
             className="relative mx-auto max-w-2xl"
@@ -124,6 +138,11 @@ const ParaProfissionais = () => {
             </motion.div>
             <motion.p variants={fadeUp} className="mt-3 text-xs text-muted-foreground text-center">
               R$ 89/mês após o período grátis. Cancele quando quiser.
+            </motion.p>
+            <motion.p variants={fadeUp} className="mt-2 text-center">
+              <Link to="/login" className="text-xs text-primary/80 hover:text-primary transition-colors">
+                Já é cadastrado? Faça login
+              </Link>
             </motion.p>
           </motion.div>
         </section>
