@@ -30,8 +30,8 @@ const PageContainer = memo(({ children, className = "", onRefresh, backTo, backL
     <div className={`flex flex-col min-h-[100dvh] ${className}`} style={{ WebkitOverflowScrolling: "touch" as any }}>
       <main
         ref={setRef}
-        className="flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-20 scroll-smooth"
-        style={{ WebkitOverflowScrolling: "touch" as any, scrollbarGutter: "stable" as any }}
+        className="flex-1 overflow-y-auto overscroll-y-contain px-4 pt-5 pb-20 scroll-smooth will-change-scroll"
+        style={{ WebkitOverflowScrolling: "touch" as any, scrollbarGutter: "stable" as any, scrollBehavior: "smooth" }}
       >
         {/* Pull-to-refresh indicator */}
         {showIndicator && (
