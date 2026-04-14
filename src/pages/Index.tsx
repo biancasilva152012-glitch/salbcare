@@ -134,6 +134,26 @@ const Index = () => {
             <motion.p variants={fadeUp} className="text-xs text-muted-foreground">
               R$ 89/mês após o período grátis. Sem comissão. Cancele quando quiser.
             </motion.p>
+
+            {/* IA Mentora Preview */}
+            <motion.div variants={fadeUp} className="pt-6 max-w-xs mx-auto">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-3">IA Mentora em ação</p>
+              <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm p-4 space-y-3 text-left">
+                <div className="flex gap-2 items-start">
+                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <span className="text-[10px] text-primary font-bold">IA</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground bg-muted/50 rounded-xl rounded-tl-none px-3 py-2 leading-relaxed">
+                    Sua receita cresceu 12% este mês. Quer ver como otimizar seus impostos?
+                  </p>
+                </div>
+                <div className="flex justify-end">
+                  <p className="text-xs text-foreground bg-primary/10 rounded-xl rounded-tr-none px-3 py-2">
+                    Sim, me mostre
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </section>
 
