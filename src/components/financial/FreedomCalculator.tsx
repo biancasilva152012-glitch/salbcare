@@ -11,7 +11,7 @@ const fields = [
   { key: "gestao", label: "Gasto atual com Gestão/Contador", placeholder: "300", icon: Calculator },
 ] as const;
 
-const SALBCARE_PRICE = 49;
+const SALBCARE_PRICE = 89;
 
 /** Animated counter hook */
 function useAnimatedNumber(target: number, duration = 600) {
@@ -135,7 +135,7 @@ const FreedomCalculator = () => {
                   </motion.p>
                   <p className="text-center text-xs text-muted-foreground leading-relaxed">
                     Com a SalbCare, o seu custo fixo cai para{" "}
-                    <span className="font-semibold text-primary">R$ 49/mês</span>.
+                    <span className="font-semibold text-primary">R$ 89/mês</span>.
                   </p>
                   <p className="text-center text-[10px] text-muted-foreground/70">
                     Economia anual de{" "}
