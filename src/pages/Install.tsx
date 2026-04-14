@@ -146,6 +146,7 @@ const Install = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
