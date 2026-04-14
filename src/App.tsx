@@ -39,6 +39,9 @@ const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
+const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"), "AdminOverviewPage");
+const AdminUsersPage = lazyWithRetry(() => import("./pages/admin/AdminUsersPage"), "AdminUsersPage");
+const AdminPlaceholder = lazyWithRetry(() => import("./pages/admin/AdminPlaceholder"), "AdminPlaceholder");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
 const Index = lazyWithRetry(() => import("./pages/Index"), "Index");
@@ -146,7 +149,13 @@ const App = () => (
               <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
-              <Route path="/admin" element={<CeoDashboard />} />
+              <Route path="/admin" element={<AdminOverviewPage />} />
+              <Route path="/admin/users" element={<AdminUsersPage />} />
+              <Route path="/admin/finance" element={<AdminPlaceholder title="Painel Financeiro" />} />
+              <Route path="/admin/database" element={<AdminPlaceholder title="Gerenciador de Banco de Dados" />} />
+              <Route path="/admin/logs" element={<AdminPlaceholder title="Logs e Auditoria" />} />
+              <Route path="/admin/settings" element={<AdminPlaceholder title="Configurações do Sistema" />} />
+              <Route path="/admin-legacy" element={<CeoDashboard />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
