@@ -134,7 +134,7 @@ const Financial = () => {
 
   const openEdit = (t: typeof transactions[0]) => {
     setEditId(t.id);
-    setForm({ description: t.description, amount: String(t.amount), type: t.type as "income" | "expense", date: t.date, category: t.category || "outros" });
+    setForm({ description: t.description, amount: Number(t.amount).toLocaleString("pt-BR"), type: t.type as "income" | "expense", date: t.date, category: t.category || "outros" });
     setEditOpen(true);
   };
 
