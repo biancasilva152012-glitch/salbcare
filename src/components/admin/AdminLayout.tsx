@@ -34,12 +34,19 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       navigate("/login", { replace: true });
       return;
     }
-    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data, error }) => {
-      if (error || !data) {
-        navigate("/dashboard", { replace: true });
+    // Ensure session token is available before RPC call
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/login", { replace: true });
         return;
       }
-      setIsAdmin(true);
+      supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data, error }) => {
+        if (error || !data) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+        setIsAdmin(true);
+      });
     });
   }, [user, authLoading, navigate]);
 
