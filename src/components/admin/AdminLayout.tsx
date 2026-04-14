@@ -30,7 +30,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   useEffect(() => {
     if (authLoading || !user) return;
-    supabase.rpc("is_admin_or_contador", { _user_id: user.id }).then(({ data }) => {
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
       if (!data) {
         navigate("/dashboard", { replace: true });
         return;
