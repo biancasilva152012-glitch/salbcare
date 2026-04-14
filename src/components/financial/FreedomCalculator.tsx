@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Video, Calculator, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { parseBRL, maskCurrency } from "@/utils/currencyMask";
 
 const fields = [
   { key: "agenda", label: "Gasto atual com Software de Agenda", placeholder: "150", icon: Calendar },
@@ -54,7 +55,7 @@ const FreedomCalculator = () => {
     setValues((prev) => ({ ...prev, [key]: val }));
 
   const { total, savings, hasSavings, hasInput } = useMemo(() => {
-    const t = Object.values(values).reduce((s, v) => s + (parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0), 0);
+    const t = Object.values(values).reduce((s, v) => s + parseBRL(v), 0);
     const sav = t - SALBCARE_PRICE;
     return { total: t, savings: sav, hasSavings: sav > 0, hasInput: t > 0 };
   }, [values]);
@@ -95,11 +96,11 @@ const FreedomCalculator = () => {
                 R$
               </div>
               <input
-                type="number"
-                inputMode="decimal"
+                type="text"
+                inputMode="numeric"
                 placeholder={placeholder}
                 value={values[key]}
-                onChange={(e) => update(key, e.target.value)}
+                onChange={(e) => update(key, maskCurrency(e.target.value))}
                 className="h-11 w-full rounded-xl border border-border/50 bg-accent/30 pl-16 pr-4 text-sm font-medium text-foreground placeholder:text-muted-foreground/40 outline-none transition-all duration-200 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
               />
             </div>
