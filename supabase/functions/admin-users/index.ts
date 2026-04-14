@@ -122,7 +122,7 @@ serve(async (req) => {
       case "get_mrr": {
         if (!stripe) {
           return new Response(
-            JSON.stringify({ mrr: 0, active_subs: 0, churn_rate: 0, recent_charges: [] }),
+            JSON.stringify({ mrr: 0, active_subs: 0, churn_rate: 0, recent_charges: [], monthly_revenue: [] }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
@@ -137,7 +137,7 @@ serve(async (req) => {
         const total = subs.data.length + canceled.data.length;
         const churnRate = total > 0 ? (canceled.data.length / total) * 100 : 0;
 
-        const charges = await stripe.charges.list({ limit: 10 });
+        const charges = await stripe.charges.list({ limit: 30 });
         const recentCharges = charges.data.map((c) => ({
           id: c.id,
           amount: c.amount / 100,
@@ -146,7 +146,24 @@ serve(async (req) => {
           created: c.created,
           customer_email: c.billing_details?.email,
           description: c.description,
+          refunded: c.refunded,
+          paid: c.paid,
         }));
+
+        // Monthly revenue (last 6 months)
+        const now = new Date();
+        const monthlyRevenue: { month: string; revenue: number }[] = [];
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          const label = d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
+          const start = Math.floor(d.getTime() / 1000);
+          const end = Math.floor(new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime() / 1000);
+          const monthCharges = charges.data.filter(
+            (c) => c.created >= start && c.created < end && c.paid && !c.refunded
+          );
+          const rev = monthCharges.reduce((sum, c) => sum + c.amount / 100, 0);
+          monthlyRevenue.push({ month: label, revenue: rev });
+        }
 
         return new Response(
           JSON.stringify({
@@ -154,9 +171,29 @@ serve(async (req) => {
             active_subs: subs.data.length,
             churn_rate: Math.round(churnRate * 10) / 10,
             recent_charges: recentCharges,
+            monthly_revenue: monthlyRevenue,
+            total_canceled: canceled.data.length,
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
+      }
+
+      case "refund_charge": {
+        if (!stripe) throw new Error("Stripe not configured");
+        const { charge_id } = params;
+        if (!charge_id) throw new Error("charge_id required");
+        const refund = await stripe.refunds.create({ charge: charge_id as string });
+        // Log it
+        await supabase.from("admin_logs").insert({
+          admin_user_id: userData.user.id,
+          action: "refund",
+          target_id: charge_id as string,
+          target_table: "stripe_charges",
+          details: { refund_id: refund.id, amount: refund.amount },
+        });
+        return new Response(JSON.stringify({ ok: true, refund_id: refund.id }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       default:
