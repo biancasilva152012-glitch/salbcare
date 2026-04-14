@@ -68,9 +68,10 @@ const DashboardMentoria = () => {
   const [custos, setCustos] = useState("");
   const [rendaDesejada, setRendaDesejada] = useState("");
   const [consultas, setConsultas] = useState("");
+  const consultasNum = parseInt(consultas, 10);
   const precoMinimo =
-    custos && rendaDesejada && consultas && parseBRL(consultas) > 0
-      ? (parseBRL(custos) + parseBRL(rendaDesejada)) / parseBRL(consultas)
+    custos && rendaDesejada && consultas && consultasNum > 0
+      ? (parseBRL(custos) + parseBRL(rendaDesejada)) / consultasNum
       : null;
   const [showGuia, setShowGuia] = useState(false);
 

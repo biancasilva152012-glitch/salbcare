@@ -29,9 +29,13 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    if (authLoading || !user) return;
-    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
-      if (!data) {
+    if (authLoading) return;
+    if (!user) {
+      navigate("/login", { replace: true });
+      return;
+    }
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data, error }) => {
+      if (error || !data) {
         navigate("/dashboard", { replace: true });
         return;
       }

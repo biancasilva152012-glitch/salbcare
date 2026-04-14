@@ -95,6 +95,24 @@ const Dashboard = () => {
     }
   };
 
+  // Daily AI insight
+  const { data: dailyInsight } = useQuery({
+    queryKey: ["daily-insight", user?.id],
+    queryFn: async () => {
+      const insights = [
+        { text: "Registre seus recebimentos de hoje para manter seu diagnóstico financeiro atualizado.", icon: "📊" },
+        { text: "Profissionais que registram receitas semanalmente economizam até 30% em impostos.", icon: "💡" },
+        { text: "Seu perfil público ajuda pacientes a te encontrarem. Mantenha-o atualizado!", icon: "🔍" },
+        { text: "Agende consultas pela plataforma e tenha controle total do seu faturamento.", icon: "📅" },
+        { text: "Use a mentora financeira para entender para onde vai seu dinheiro este mês.", icon: "🤖" },
+      ];
+      const dayIndex = new Date().getDate() % insights.length;
+      return insights[dayIndex];
+    },
+    enabled: !!user,
+    staleTime: 60 * 60 * 1000,
+  });
+
   if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
 
   const quickAccess = [
@@ -109,6 +127,22 @@ const Dashboard = () => {
   return (
     <PageContainer>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
+        {/* Daily Insight */}
+        {dailyInsight && (
+          <motion.div variants={item}>
+            <button
+              onClick={() => navigate("/dashboard/mentoria")}
+              className="glass-card w-full p-3 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-center gap-3 border-primary/20 bg-primary/5"
+            >
+              <span className="text-xl">{dailyInsight.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-semibold text-primary uppercase tracking-wider">Insight do dia</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{dailyInsight.text}</p>
+              </div>
+            </button>
+          </motion.div>
+        )}
+
         {/* Greeting */}
         <motion.div variants={item} className="space-y-0.5">
           <p className="text-xs text-muted-foreground">Bem-vindo(a) de volta</p>
