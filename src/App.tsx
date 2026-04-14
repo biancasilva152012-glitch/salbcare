@@ -71,6 +71,7 @@ const BlogNutricionistaOnline = lazyWithRetry(() => import("./pages/blog/BlogNut
 const BlogAgendaMedica = lazyWithRetry(() => import("./pages/blog/BlogAgendaMedica"), "BlogAgendaMedica");
 const BlogReceituarioDigital = lazyWithRetry(() => import("./pages/blog/BlogReceituarioDigital"), "BlogReceituarioDigital");
 const BlogCnpjMedico = lazyWithRetry(() => import("./pages/blog/BlogCnpjMedico"), "BlogCnpjMedico");
+const BlogPrecoMinimoConsulta = lazyWithRetry(() => import("./pages/blog/BlogPrecoMinimoConsulta"), "BlogPrecoMinimoConsulta");
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -128,6 +129,7 @@ const App = () => (
               <Route path="/blog/agenda-medica-digital" element={<BlogAgendaMedica />} />
               <Route path="/blog/receituario-digital" element={<BlogReceituarioDigital />} />
               <Route path="/blog/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
+              <Route path="/blog/preco-minimo-consulta" element={<BlogPrecoMinimoConsulta />} />
 
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
