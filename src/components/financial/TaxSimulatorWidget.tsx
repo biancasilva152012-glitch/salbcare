@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from "recharts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { parseBRL, maskCurrency } from "@/utils/currencyMask";
 
 function calculateSavings(monthlyIncome: number) {
   let pfTax = 0;
@@ -31,7 +32,7 @@ const TaxSimulatorWidget = () => {
   const navigate = useNavigate();
   const [income, setIncome] = useState("");
 
-  const monthlyIncome = parseFloat(income.replace(/\./g, '').replace(',', '.')) || 0;
+  const monthlyIncome = parseBRL(income);
   const { pfTotal, pjTotal, savings, savingsPercent } = useMemo(
     () => calculateSavings(monthlyIncome),
     [monthlyIncome]
@@ -63,10 +64,11 @@ const TaxSimulatorWidget = () => {
       <div className="space-y-1.5">
         <Label className="text-xs">Seu faturamento mensal (R$)</Label>
         <Input
-          type="number"
-          placeholder="Ex: 15000"
+          type="text"
+          inputMode="numeric"
+          placeholder="Ex: 15.000"
           value={income}
-          onChange={(e) => setIncome(e.target.value)}
+          onChange={(e) => setIncome(maskCurrency(e.target.value))}
           className="bg-accent border-border"
         />
       </div>
