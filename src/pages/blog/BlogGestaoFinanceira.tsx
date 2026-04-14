@@ -1,7 +1,8 @@
 import SEOHead from "@/components/SEOHead";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BlogBreadcrumb from "@/components/blog/BlogBreadcrumb";
 
 const BlogGestaoFinanceira = () => (
   <>
@@ -23,9 +24,7 @@ const BlogGestaoFinanceira = () => (
     />
     <article className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
-        <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Blog
-        </Link>
+        <BlogBreadcrumb articleTitle="Gestão Financeira" />
 
         <header className="space-y-3">
           <p className="text-xs text-primary font-semibold uppercase tracking-wider">Finanças</p>
