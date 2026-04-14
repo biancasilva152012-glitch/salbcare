@@ -63,8 +63,27 @@ export function useAdminUsers() {
   });
 }
 
+export interface AdminFinancialData {
+  mrr: number;
+  active_subs: number;
+  churn_rate: number;
+  total_canceled: number;
+  recent_charges: {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    created: number;
+    customer_email: string | null;
+    description: string | null;
+    refunded: boolean;
+    paid: boolean;
+  }[];
+  monthly_revenue: { month: string; revenue: number }[];
+}
+
 export function useAdminMRR() {
-  return useQuery({
+  return useQuery<AdminFinancialData>({
     queryKey: ["admin-mrr"],
     queryFn: () => adminAction("get_mrr"),
     staleTime: 60_000,
