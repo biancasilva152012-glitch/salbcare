@@ -18,8 +18,12 @@ const professionalLabels: Record<string, string> = {
 };
 
 const DR_TYPES = new Set(["medico", "dentista"]);
-const displayName = (name: string, type: string) =>
-  DR_TYPES.has(type) ? `Dr(a). ${name}` : name;
+const displayName = (name: string, type: string) => {
+  if (!DR_TYPES.has(type)) return name;
+  const lower = name.toLowerCase();
+  if (lower.startsWith("dr.") || lower.startsWith("dra.") || lower.startsWith("dr(a)")) return name;
+  return `Dr(a). ${name}`;
+};
 
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
