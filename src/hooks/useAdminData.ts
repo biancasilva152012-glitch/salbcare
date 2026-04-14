@@ -126,3 +126,15 @@ export function useChangePlan() {
     onError: (e: Error) => toast.error(e.message),
   });
 }
+
+export function useRefundCharge() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (charge_id: string) => adminAction("refund_charge", { charge_id }),
+    onSuccess: () => {
+      toast.success("Reembolso processado");
+      qc.invalidateQueries({ queryKey: ["admin-mrr"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
