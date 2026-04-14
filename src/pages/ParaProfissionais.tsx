@@ -185,8 +185,8 @@ const ParaProfissionais = () => {
                 {
                   step: "1",
                   icon: UserPlus,
-                  title: "Crie seu perfil em 5 minutos",
-                  desc: "Cadastre sua especialidade, valores e link do Google Meet",
+                  title: "Cadastre seus dados de forma prática",
+                  desc: "Tenha todo o seu diagnóstico financeiro na palma da mão",
                 },
                 {
                   step: "2",

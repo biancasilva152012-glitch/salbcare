@@ -264,9 +264,9 @@ const Financial = () => {
 
         <Tabs defaultValue="consultas" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="consultas">💰 Consultas</TabsTrigger>
-            <TabsTrigger value="geral">📊 Geral</TabsTrigger>
-            {hasAccess("advanced_financial_dashboard") && <TabsTrigger value="avancado"><Crown className="h-3 w-3 mr-1" /> Avançado</TabsTrigger>}
+            <TabsTrigger value="consultas">Consultas</TabsTrigger>
+            <TabsTrigger value="geral">Geral</TabsTrigger>
+            {hasAccess("advanced_financial_dashboard") && <TabsTrigger value="avancado">Avançado</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="consultas" className="mt-4">
@@ -329,9 +329,7 @@ const Financial = () => {
             <TabsTrigger value="bar" className="flex-1 text-xs">Barras</TabsTrigger>
             <TabsTrigger value="line" className="flex-1 text-xs">Evolução</TabsTrigger>
             <TabsTrigger value="pie" className="flex-1 text-xs">Categorias</TabsTrigger>
-            <TabsTrigger value="advanced" className="flex-1 text-xs gap-1">
-              <Crown className="h-3 w-3" /> Avançado
-            </TabsTrigger>
+            <TabsTrigger value="advanced" className="flex-1 text-xs">Avançado</TabsTrigger>
           </TabsList>
           <TabsContent value="bar">
             <div className="glass-card p-3">

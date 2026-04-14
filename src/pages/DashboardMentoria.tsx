@@ -494,29 +494,24 @@ const DashboardMentoria = () => {
 
         {/* Card 1 — Reserva de emergência */}
         <motion.div variants={item} className="glass-card p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-primary" />
-            <h2 className="text-sm font-semibold">Reserva de emergência</h2>
-          </div>
-          <p className="text-xs text-muted-foreground">Quanto você precisa guardar?</p>
+          <h2 className="text-sm font-semibold">Reserva de emergência</h2>
+          <p className="text-xs text-muted-foreground">Quanto você precisa guardar para se proteger?</p>
           <div className="space-y-1.5">
             <Label className="text-xs">Receita média mensal (R$)</Label>
             <CurrencyInput placeholder="Ex: 8.000" value={receitaMedia} onChange={setReceitaMedia} />
           </div>
           {reservaIdeal !== null && (
-            <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="rounded-lg bg-primary/10 p-3 text-center">
-              <p className="text-xs text-muted-foreground">Sua reserva ideal (6 meses)</p>
-              <p className="text-2xl font-bold text-primary">R$ {formatBRL(reservaIdeal)}</p>
+            <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl bg-primary/10 p-4 text-center space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">Sua meta de segurança (6 meses)</p>
+              <p className="text-3xl font-bold text-primary">R$ {formatBRL(reservaIdeal)}</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">Este valor garante que você mantenha seu padrão de vida por 6 meses em caso de imprevistos.</p>
             </motion.div>
           )}
         </motion.div>
 
         {/* Card 2 — Preço mínimo por consulta */}
         <motion.div variants={item} className="glass-card p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-primary" />
-            <h2 className="text-sm font-semibold">Preço mínimo por consulta</h2>
-          </div>
+          <h2 className="text-sm font-semibold">Preço mínimo por consulta</h2>
           <p className="text-xs text-muted-foreground">Você está cobrando o valor certo?</p>
           <div className="space-y-2">
             <div className="space-y-1">
@@ -542,10 +537,7 @@ const DashboardMentoria = () => {
 
         {/* Card 3 — Carnê-Leão */}
         <motion.div variants={item} className="glass-card p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
-            <h2 className="text-sm font-semibold">Carnê-Leão</h2>
-          </div>
+          <h2 className="text-sm font-semibold">Carnê-Leão</h2>
           <p className="text-xs text-muted-foreground">Como declarar seus recebimentos.</p>
           {!showGuia ? (
             <Button variant="outline" size="sm" onClick={() => setShowGuia(true)}>Ver guia</Button>
