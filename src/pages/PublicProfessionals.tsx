@@ -34,12 +34,13 @@ const categoryOrder = [
 ];
 
 const DR_TYPES = new Set(["medico", "dentista"]);
-const FEMALE_ENDINGS = ["a", "e", "ane", "ene", "ice", "ilde", "is"];
-const MALE_EXCEPTIONS = new Set(["luca", "josua", "nikita"]);
+const KNOWN_FEMALE = new Set(["sarah", "raquel", "mabel", "ingrid", "ruth", "miriam", "suelen", "gisele", "michele", "rachel", "deborah", "elizabeth", "karen", "megan", "jaqueline", "vivian", "lilian", "suzan"]);
+const MALE_EXCEPTIONS = new Set(["luca", "josua", "nikita", "andrea"]);
 const isFeminineName = (name: string) => {
   const first = name.split(" ")[0]?.toLowerCase() || "";
   if (MALE_EXCEPTIONS.has(first)) return false;
-  return FEMALE_ENDINGS.some((e) => first.endsWith(e));
+  if (KNOWN_FEMALE.has(first)) return true;
+  return first.endsWith("a") || first.endsWith("e") || first.endsWith("ane") || first.endsWith("ene") || first.endsWith("ice") || first.endsWith("ilde") || first.endsWith("is");
 };
 const displayName = (name: string, type: string) => {
   if (!DR_TYPES.has(type)) return name;
