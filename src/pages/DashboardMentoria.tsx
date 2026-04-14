@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import UpgradeModal from "@/components/UpgradeModal";
-import { Shield, Calculator, FileText, ArrowLeft, Send, MessageCircle, Sparkles } from "lucide-react";
+import { Shield, Calculator, FileText, ArrowLeft, Send, MessageCircle, Sparkles, TrendingDown, TrendingUp, Target, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import { parseBRL, maskCurrency, formatBRL } from "@/utils/currencyMask";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
@@ -20,14 +21,6 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mentoria-chat`;
-
-const suggestedQuestions = [
-  "Estou guardando o suficiente?",
-  "Quanto cobrar por consulta?",
-  "Como declarar meus recebimentos?",
-  "O que é o Carnê-Leão?",
-  "Preciso abrir MEI?",
-];
 
 const EMPTY_STATE_MSG: Msg = {
   role: "assistant",
@@ -37,6 +30,25 @@ Para te dar respostas personalizadas, preciso que você registre pelo menos um r
 
 Vai lá no Financeiro e volta aqui — prometo que vai valer a pena 😊`,
 };
+
+/** Highlight R$ values in markdown content */
+function highlightFinancialValues(content: string): string {
+  return content.replace(
+    /R\$\s?[\d.,]+/g,
+    (match) => `**${match}**`
+  );
+}
+
+const CurrencyInput = ({ value, onChange, placeholder, ...props }: { value: string; onChange: (v: string) => void; placeholder?: string; [key: string]: any }) => (
+  <Input
+    type="text"
+    inputMode="numeric"
+    placeholder={placeholder}
+    value={value}
+    onChange={(e) => onChange(maskCurrency(e.target.value))}
+    {...props}
+  />
+);
 
 const DashboardMentoria = () => {
   const { session, user } = useAuth();
@@ -52,48 +64,118 @@ const DashboardMentoria = () => {
 
   // Calculator states
   const [receitaMedia, setReceitaMedia] = useState("");
-  const parseBR = (v: string) => parseFloat(v.replace(/\./g, '').replace(',', '.'));
-  const reservaIdeal = receitaMedia ? parseBR(receitaMedia) * 6 : null;
+  const reservaIdeal = receitaMedia ? parseBRL(receitaMedia) * 6 : null;
   const [custos, setCustos] = useState("");
   const [rendaDesejada, setRendaDesejada] = useState("");
   const [consultas, setConsultas] = useState("");
   const precoMinimo =
-    custos && rendaDesejada && consultas && parseBR(consultas) > 0
-      ? (parseBR(custos) + parseBR(rendaDesejada)) / parseBR(consultas)
+    custos && rendaDesejada && consultas && parseBRL(consultas) > 0
+      ? (parseBRL(custos) + parseBRL(rendaDesejada)) / parseBRL(consultas)
       : null;
   const [showGuia, setShowGuia] = useState(false);
 
   const [contextDismissed, setContextDismissed] = useState(false);
 
-  // Check financial entries and get context data
+  // Check financial entries and get rich context data
   const { data: financialContext } = useQuery({
     queryKey: ["financial-context", user?.id],
     queryFn: async () => {
       const now = new Date();
       const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
       const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0];
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split("T")[0];
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split("T")[0];
+      const twoMonthsAgoStart = new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString().split("T")[0];
+      const twoMonthsAgoEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0).toISOString().split("T")[0];
 
-      const [countRes, incomeRes, profileRes] = await Promise.all([
+      const [countRes, thisMonthRes, lastMonthRes, twoMonthsRes, expenseRes, profileRes] = await Promise.all([
         supabase.from("financial_transactions").select("id", { count: "exact", head: true }).eq("user_id", user!.id),
-        supabase.from("financial_transactions").select("amount").eq("user_id", user!.id).eq("type", "income").gte("date", thisMonthStart).lte("date", thisMonthEnd),
-        supabase.from("profiles").select("professional_type").eq("user_id", user!.id).single(),
+        supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).eq("type", "income").gte("date", thisMonthStart).lte("date", thisMonthEnd),
+        supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).eq("type", "income").gte("date", lastMonthStart).lte("date", lastMonthEnd),
+        supabase.from("financial_transactions").select("amount, type").eq("user_id", user!.id).eq("type", "income").gte("date", twoMonthsAgoStart).lte("date", twoMonthsAgoEnd),
+        supabase.from("financial_transactions").select("amount, category").eq("user_id", user!.id).eq("type", "expense").gte("date", thisMonthStart).lte("date", thisMonthEnd),
+        supabase.from("profiles").select("professional_type, name, plan").eq("user_id", user!.id).single(),
       ]);
 
       const count = countRes.count || 0;
-      const totalThisMonth = (incomeRes.data || []).reduce((s: number, t: any) => s + Number(t.amount), 0);
+      const thisMonthIncome = (thisMonthRes.data || []).reduce((s: number, t: any) => s + Number(t.amount), 0);
+      const thisMonthConsultas = (thisMonthRes.data || []).length;
+      const lastMonthIncome = (lastMonthRes.data || []).reduce((s: number, t: any) => s + Number(t.amount), 0);
+      const twoMonthsIncome = (twoMonthsRes.data || []).reduce((s: number, t: any) => s + Number(t.amount), 0);
+      const thisMonthExpenses = (expenseRes.data || []).reduce((s: number, t: any) => s + Number(t.amount), 0);
+      const ticketMedio = thisMonthConsultas > 0 ? thisMonthIncome / thisMonthConsultas : 0;
+      const faturamentoCaiu = lastMonthIncome > 0 && thisMonthIncome < lastMonthIncome;
+      const faturamentoSubiu = lastMonthIncome > 0 && thisMonthIncome > lastMonthIncome;
+
       const specialtyMap: Record<string, string> = {
         psicologo: "Psicologia", medico: "Medicina", nutricionista: "Nutrição",
         fisioterapeuta: "Fisioterapia", fonoaudiologo: "Fonoaudiologia",
         terapeuta_ocupacional: "Terapia Ocupacional", educador_fisico: "Educação Física", outro: "Outro",
       };
       const specialty = specialtyMap[(profileRes.data as any)?.professional_type] || "sua área";
+      const userName = ((profileRes.data as any)?.name || "").split(" ")[0] || "Profissional";
+      const plan = (profileRes.data as any)?.plan || "free";
 
-      return { hasEntries: count > 0, totalThisMonth, specialty };
+      return {
+        hasEntries: count > 0,
+        totalThisMonth: thisMonthIncome,
+        totalLastMonth: lastMonthIncome,
+        totalTwoMonthsAgo: twoMonthsIncome,
+        thisMonthConsultas,
+        thisMonthExpenses,
+        ticketMedio,
+        faturamentoCaiu,
+        faturamentoSubiu,
+        specialty,
+        userName,
+        plan,
+      };
     },
     enabled: !!user,
   });
 
   const hasEntries = financialContext?.hasEntries ?? undefined;
+
+  // Dynamic suggestion chips based on user data
+  const dynamicSuggestions = useMemo(() => {
+    if (!financialContext?.hasEntries) return [];
+    const chips: { label: string; icon: any; message: string }[] = [];
+    
+    if (financialContext.faturamentoCaiu) {
+      chips.push({
+        label: "Por que meu faturamento caiu?",
+        icon: TrendingDown,
+        message: `Meu faturamento caiu de R$ ${formatBRL(financialContext.totalLastMonth)} para R$ ${formatBRL(financialContext.totalThisMonth)}. O que pode ter acontecido e como reverter?`,
+      });
+    }
+    if (financialContext.faturamentoSubiu) {
+      chips.push({
+        label: "Como manter esse crescimento?",
+        icon: TrendingUp,
+        message: `Meu faturamento subiu de R$ ${formatBRL(financialContext.totalLastMonth)} para R$ ${formatBRL(financialContext.totalThisMonth)}! Como posso manter esse ritmo?`,
+      });
+    }
+    chips.push({
+      label: "Quanto guardar de imposto?",
+      icon: Shield,
+      message: "Quanto devo separar de imposto esse mês com base no que recebi?",
+    });
+    if (financialContext.totalThisMonth > 0) {
+      chips.push({
+        label: `Quantas consultas para R$ ${(financialContext.totalThisMonth * 2).toLocaleString("pt-BR")}?`,
+        icon: Target,
+        message: `Quantas consultas a mais preciso fazer para dobrar meu faturamento atual de R$ ${formatBRL(financialContext.totalThisMonth)}?`,
+      });
+    }
+    if (financialContext.thisMonthExpenses === 0) {
+      chips.push({
+        label: "Registrar meus gastos importa?",
+        icon: Zap,
+        message: "Não tenho despesas registradas esse mês. Por que é importante registrar?",
+      });
+    }
+    return chips.slice(0, 4);
+  }, [financialContext]);
 
   // Load chat history
   useEffect(() => {
@@ -104,7 +186,7 @@ const DashboardMentoria = () => {
         .select("role, content")
         .eq("professional_id", user.id)
         .order("created_at", { ascending: true })
-        .limit(20);
+        .limit(30);
       if (data && data.length > 0) {
         setMessages(data.map((m: any) => ({ role: m.role, content: m.content })));
         setShowSuggestions(false);
@@ -243,7 +325,7 @@ const DashboardMentoria = () => {
         setIsLoading(false);
       }
     },
-    [messages, isLoading, session, saveMessage]
+    [messages, isLoading, session, saveMessage, canSendMentorship]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -261,23 +343,32 @@ const DashboardMentoria = () => {
         {/* Header */}
         <motion.div variants={item}>
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <h1 className="text-xl font-bold">Sua Mentora Financeira</h1>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+              <Sparkles className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Sua Mentora Financeira</h1>
+              <p className="text-[11px] text-muted-foreground">
+                Ela já conhece seus números. Só pergunte.
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Diferente do ChatGPT, ela já conhece seus números.
-            <br />
-            Não precisa explicar nada — só perguntar.
-          </p>
         </motion.div>
 
         {/* Chat area */}
-        <motion.div variants={item} className="glass-card p-4 flex flex-col" style={{ minHeight: "360px", maxHeight: "60vh" }}>
+        <motion.div variants={item} className="glass-card p-4 flex flex-col" style={{ minHeight: "400px", maxHeight: "65vh" }}>
           <div className="flex-1 overflow-y-auto space-y-3 mb-3 pr-1">
             {messages.length === 0 && historyLoaded && hasEntries !== false && (
               <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                <MessageCircle className="h-10 w-10 text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">Pergunte qualquer coisa sobre suas finanças</p>
+                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                  <Sparkles className="h-7 w-7 text-primary" />
+                </div>
+                <p className="text-sm font-medium text-foreground mb-1">
+                  {financialContext?.userName ? `${financialContext.userName}, ` : ""}o que quer saber hoje?
+                </p>
+                <p className="text-xs text-muted-foreground max-w-[260px]">
+                  Pergunte qualquer coisa sobre suas finanças — eu já tenho seus dados aqui.
+                </p>
               </div>
             )}
             {messages.map((msg, i) => (
@@ -290,8 +381,8 @@ const DashboardMentoria = () => {
                   }`}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="prose prose-sm prose-invert max-w-none">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <div className="prose prose-sm prose-invert max-w-none [&_strong]:text-primary [&_strong]:font-bold">
+                      <ReactMarkdown>{highlightFinancialValues(msg.content)}</ReactMarkdown>
                     </div>
                   ) : (
                     msg.content
@@ -302,11 +393,15 @@ const DashboardMentoria = () => {
             {isLoading && messages[messages.length - 1]?.role === "user" && (
               <div className="flex justify-start">
                 <div className="bg-card border border-border/40 rounded-2xl rounded-bl-md px-4 py-3">
-                  <motion.div className="flex gap-1.5" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity }}>
-                    <span className="h-2 w-2 rounded-full bg-primary" />
-                    <span className="h-2 w-2 rounded-full bg-primary" />
-                    <span className="h-2 w-2 rounded-full bg-primary" />
-                  </motion.div>
+                  <div className="flex items-center gap-2">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    </motion.div>
+                    <span className="text-xs text-muted-foreground">Analisando seus dados...</span>
+                  </div>
                 </div>
               </div>
             )}
@@ -330,26 +425,42 @@ const DashboardMentoria = () => {
               className="w-full text-left rounded-xl bg-primary/5 border border-primary/20 p-3 mb-3 transition-colors hover:bg-primary/10"
             >
               <div className="flex items-start gap-2">
-                <span className="text-lg leading-none">💡</span>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Sua mentora já sabe que você recebeu <span className="text-primary font-semibold">R$ {financialContext.totalThisMonth.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span> esse mês e que sua especialidade é <span className="text-primary font-semibold">{financialContext.specialty}</span>. Ela responde com base nos SEUS dados reais, não em exemplos genéricos.
-                </p>
+                <span className="text-lg leading-none">🧠</span>
+                <div className="text-xs text-muted-foreground leading-relaxed space-y-0.5">
+                  <p>
+                    Faturamento: <span className="text-primary font-semibold">R$ {formatBRL(financialContext.totalThisMonth)}</span>
+                    {financialContext.totalLastMonth > 0 && (
+                      <> (mês passado: R$ {formatBRL(financialContext.totalLastMonth)})</>
+                    )}
+                  </p>
+                  <p>
+                    Consultas: <span className="text-primary font-semibold">{financialContext.thisMonthConsultas}</span>
+                    {financialContext.ticketMedio > 0 && (
+                      <> · Ticket médio: <span className="text-primary font-semibold">R$ {formatBRL(financialContext.ticketMedio)}</span></>
+                    )}
+                  </p>
+                  <p className="text-muted-foreground/60 text-[10px]">Dados que a mentora usa para responder ↑</p>
+                </div>
               </div>
             </button>
           )}
 
-          {/* Suggested questions */}
+          {/* Dynamic suggestion chips */}
           {showSuggestions && messages.length === 0 && !isEmptyState && (
             <div className="flex flex-wrap gap-2 mb-3">
-              {suggestedQuestions.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => sendMessage(q)}
-                  className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors"
-                >
-                  {q}
-                </button>
-              ))}
+              {dynamicSuggestions.map((chip) => {
+                const Icon = chip.icon;
+                return (
+                  <button
+                    key={chip.label}
+                    onClick={() => sendMessage(chip.message)}
+                    className="flex items-center gap-1.5 text-xs bg-primary/10 text-primary px-3 py-2 rounded-full hover:bg-primary/20 transition-colors"
+                  >
+                    <Icon className="h-3 w-3" />
+                    {chip.label}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -390,12 +501,12 @@ const DashboardMentoria = () => {
           <p className="text-xs text-muted-foreground">Quanto você precisa guardar?</p>
           <div className="space-y-1.5">
             <Label className="text-xs">Receita média mensal (R$)</Label>
-            <Input type="number" placeholder="Ex: 8000" value={receitaMedia} onChange={(e) => setReceitaMedia(e.target.value)} min="0" />
+            <CurrencyInput placeholder="Ex: 8.000" value={receitaMedia} onChange={setReceitaMedia} />
           </div>
           {reservaIdeal !== null && (
             <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="rounded-lg bg-primary/10 p-3 text-center">
               <p className="text-xs text-muted-foreground">Sua reserva ideal (6 meses)</p>
-              <p className="text-2xl font-bold text-primary">R$ {reservaIdeal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+              <p className="text-2xl font-bold text-primary">R$ {formatBRL(reservaIdeal)}</p>
             </motion.div>
           )}
         </motion.div>
@@ -410,11 +521,11 @@ const DashboardMentoria = () => {
           <div className="space-y-2">
             <div className="space-y-1">
               <Label className="text-xs">Custos fixos mensais (R$)</Label>
-              <Input type="number" placeholder="Ex: 3000" value={custos} onChange={(e) => setCustos(e.target.value)} min="0" />
+              <CurrencyInput placeholder="Ex: 3.000" value={custos} onChange={setCustos} />
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Renda desejada (R$)</Label>
-              <Input type="number" placeholder="Ex: 10000" value={rendaDesejada} onChange={(e) => setRendaDesejada(e.target.value)} min="0" />
+              <CurrencyInput placeholder="Ex: 10.000" value={rendaDesejada} onChange={setRendaDesejada} />
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Consultas por mês</Label>
@@ -424,7 +535,7 @@ const DashboardMentoria = () => {
           {precoMinimo !== null && (
             <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="rounded-lg bg-primary/10 p-3 text-center">
               <p className="text-xs text-muted-foreground">Seu preço mínimo por consulta</p>
-              <p className="text-2xl font-bold text-primary">R$ {precoMinimo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+              <p className="text-2xl font-bold text-primary">R$ {formatBRL(precoMinimo)}</p>
             </motion.div>
           )}
         </motion.div>

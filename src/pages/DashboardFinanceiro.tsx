@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { parseBRL, maskCurrency } from "@/utils/currencyMask";
 
 const DashboardFinanceiro = () => {
   const { user } = useAuth();
@@ -49,7 +50,7 @@ const DashboardFinanceiro = () => {
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").insert({
         user_id: user!.id,
-        amount: parseFloat(form.amount.replace(/\./g, '').replace(',', '.')),
+        amount: parseBRL(form.amount),
         type: "income",
         date: form.date,
         description: form.description || "Recebimento",
@@ -122,12 +123,12 @@ const DashboardFinanceiro = () => {
               <div className="space-y-1.5">
                 <Label>Valor (R$) *</Label>
                 <Input
-                  type="number"
-                  placeholder="0,00"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Ex: 1.500"
                   value={form.amount}
-                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                  onChange={(e) => setForm({ ...form, amount: maskCurrency(e.target.value) })}
                   min="0"
-                  step="0.01"
                 />
               </div>
               <div className="space-y-1.5">
@@ -149,7 +150,7 @@ const DashboardFinanceiro = () => {
               </div>
               <Button
                 onClick={() => addMutation.mutate()}
-                disabled={!form.amount || parseFloat(form.amount.replace(/\./g, '').replace(',', '.')) <= 0 || addMutation.isPending}
+                disabled={!form.amount || parseBRL(form.amount) <= 0 || addMutation.isPending}
                 className="w-full gradient-primary font-semibold"
               >
                 {addMutation.isPending ? "Salvando..." : "Salvar"}
