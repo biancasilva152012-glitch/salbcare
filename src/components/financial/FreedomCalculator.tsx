@@ -54,7 +54,7 @@ const FreedomCalculator = () => {
     setValues((prev) => ({ ...prev, [key]: val }));
 
   const { total, savings, hasSavings, hasInput } = useMemo(() => {
-    const t = Object.values(values).reduce((s, v) => s + (parseFloat(v) || 0), 0);
+    const t = Object.values(values).reduce((s, v) => s + (parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0), 0);
     const sav = t - SALBCARE_PRICE;
     return { total: t, savings: sav, hasSavings: sav > 0, hasInput: t > 0 };
   }, [values]);

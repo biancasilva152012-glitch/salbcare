@@ -49,7 +49,7 @@ const DashboardFinanceiro = () => {
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").insert({
         user_id: user!.id,
-        amount: parseFloat(form.amount),
+        amount: parseFloat(form.amount.replace(/\./g, '').replace(',', '.')),
         type: "income",
         date: form.date,
         description: form.description || "Recebimento",

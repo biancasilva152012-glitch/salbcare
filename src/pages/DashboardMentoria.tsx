@@ -52,13 +52,14 @@ const DashboardMentoria = () => {
 
   // Calculator states
   const [receitaMedia, setReceitaMedia] = useState("");
-  const reservaIdeal = receitaMedia ? parseFloat(receitaMedia) * 6 : null;
+  const parseBR = (v: string) => parseFloat(v.replace(/\./g, '').replace(',', '.'));
+  const reservaIdeal = receitaMedia ? parseBR(receitaMedia) * 6 : null;
   const [custos, setCustos] = useState("");
   const [rendaDesejada, setRendaDesejada] = useState("");
   const [consultas, setConsultas] = useState("");
   const precoMinimo =
-    custos && rendaDesejada && consultas && parseFloat(consultas) > 0
-      ? (parseFloat(custos) + parseFloat(rendaDesejada)) / parseFloat(consultas)
+    custos && rendaDesejada && consultas && parseBR(consultas) > 0
+      ? (parseBR(custos) + parseBR(rendaDesejada)) / parseBR(consultas)
       : null;
   const [showGuia, setShowGuia] = useState(false);
 
