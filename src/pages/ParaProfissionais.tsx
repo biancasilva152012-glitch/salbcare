@@ -29,11 +29,19 @@ const professionalLabels: Record<string, string> = {
 
 const HIGHLIGHT_TYPES = ["medico", "dentista", "psicologo"];
 const DR_TYPES = new Set(["medico", "dentista"]);
+const FEMALE_ENDINGS = ["a", "e", "ane", "ene", "ice", "ilde", "is"];
+const MALE_EXCEPTIONS = new Set(["luca", "josua", "nikita"]);
+const isFeminineName = (name: string) => {
+  const first = name.split(" ")[0]?.toLowerCase() || "";
+  if (MALE_EXCEPTIONS.has(first)) return false;
+  return FEMALE_ENDINGS.some((e) => first.endsWith(e));
+};
 const displayName = (name: string, type: string) => {
   if (!DR_TYPES.has(type)) return name;
   const lower = name.toLowerCase();
   if (lower.startsWith("dr.") || lower.startsWith("dra.") || lower.startsWith("dr(a)")) return name;
-  return `Dr(a). ${name}`;
+  const prefix = isFeminineName(name) ? "Dra." : "Dr.";
+  return `${prefix} ${name}`;
 };
 
 const ParaProfissionais = () => {
