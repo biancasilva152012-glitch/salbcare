@@ -1,4 +1,5 @@
 import SEOHead from "@/components/SEOHead";
+import blogImage from "@/assets/blog/receituario-digital.jpg";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ const BlogReceituarioDigital = () => (
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
         <BlogBreadcrumb articleTitle="Receituário Digital" />
         <header className="space-y-3">
+          <img src={blogImage} alt="Receituário digital sendo preenchido em tablet" width={1200} height={672} className="rounded-xl w-full object-cover mb-4" loading="eager" />
           <p className="text-xs text-primary font-semibold uppercase tracking-wider">Documentos Clínicos</p>
           <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight">
             Receituário Digital: Como Emitir Prescrição Eletrônica com Validade Legal
