@@ -357,6 +357,7 @@ const ParaProfissionais = () => {
               <Link to="/terms" className="hover:text-foreground">Termos</Link>
               <Link to="/privacy" className="hover:text-foreground">Privacidade</Link>
               <Link to="/planos" className="hover:text-foreground">Planos</Link>
+              <Link to="/blog" className="hover:text-foreground">Blog</Link>
               <a href="mailto:biancadealbuquerquep@gmail.com" className="hover:text-foreground">Fale com a gente</a>
             </div>
             <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} SalbCare. Todos os direitos reservados.</p>
