@@ -1,32 +1,37 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarCheck, BarChart3, UserCheck } from "lucide-react";
+import { UserCheck, DollarSign, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const slides = [
   {
-    icon: CalendarCheck,
-    title: "Bem-vindo à SalbCare",
-    text: "Sua Secretária Digital: a SalbCare capta pacientes para você sem sair de casa, organiza sua agenda pelo celular e elimina toda a papelada. Mais consultas, zero burocracia.",
-    button: "Próximo",
-  },
-  {
-    icon: BarChart3,
-    title: "Consultório no Bolso",
-    text: "Atenda por vídeo de qualquer lugar, com segurança e praticidade. E o melhor: você fica com 100% do valor das consultas pagando apenas uma mensalidade fixa — sem surpresas, sem taxas por atendimento.",
-    button: "Próximo",
-  },
-  {
     icon: UserCheck,
-    title: "Seu Contador Automático",
-    text: "Suas finanças organizadas sem esforço: controle de receitas, alertas de impostos e simulador tributário para nunca pagar imposto errado. Nos planos Pro e Clínica, um contador especializado em saúde te orienta pessoalmente.",
+    title: "1. Complete seu perfil",
+    text: "Preencha suas informações profissionais para que pacientes possam te encontrar no diretório público da SalbCare.",
+    button: "Próximo",
+    action: null,
+  },
+  {
+    icon: DollarSign,
+    title: "2. Registre seu primeiro recebimento",
+    text: "Adicione um lançamento financeiro para que sua mentora com IA possa analisar seus dados e oferecer insights personalizados.",
+    button: "Próximo",
+    action: null,
+  },
+  {
+    icon: Sparkles,
+    title: "3. Conheça sua Mentora Financeira",
+    text: "Sua IA mentora já conhece seus dados. Pergunte sobre impostos, preço de consulta ou reserva de emergência — ela responde sobre você, não no genérico.",
     button: "Começar agora",
+    action: "/dashboard/mentoria",
   },
 ];
 
 const WelcomeOnboarding = () => {
   const [step, setStep] = useState(0);
   const [dismissed, setDismissed] = useState(() => localStorage.getItem("salbcare_onboarding_done") === "true");
+  const navigate = useNavigate();
 
   if (dismissed) return null;
 
@@ -36,6 +41,9 @@ const WelcomeOnboarding = () => {
     } else {
       localStorage.setItem("salbcare_onboarding_done", "true");
       setDismissed(true);
+      if (slides[step].action) {
+        navigate(slides[step].action!);
+      }
     }
   };
 
