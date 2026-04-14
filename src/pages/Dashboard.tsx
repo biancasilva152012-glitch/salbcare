@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   DollarSign, Calendar, Users, Video, Clock, TrendingUp,
   Sparkles, MessageCircle, Rocket,
-  BookOpen, Scale, Shield
+  BookOpen, Scale, Shield, Bell
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,6 +13,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 import InstallBanner from "@/components/InstallBanner";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
@@ -20,7 +23,7 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+  const { isSupported, isSubscribed, isLoading: pushLoading, subscribe } = usePushNotifications();
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
@@ -83,6 +86,14 @@ const Dashboard = () => {
     staleTime: 10 * 60 * 1000,
   });
 
+  const handleEnablePush = async () => {
+    const ok = await subscribe();
+    if (ok) {
+      toast.success("Notificações ativadas! Você será lembrado semanalmente.");
+    } else {
+      toast.error("Não foi possível ativar as notificações. Verifique as permissões do navegador.");
+    }
+  };
 
   if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
 
@@ -108,6 +119,30 @@ const Dashboard = () => {
         <motion.div variants={item}>
           <InstallBanner />
         </motion.div>
+
+        {/* Push Notification Banner */}
+        {isSupported && !isSubscribed && (
+          <motion.div variants={item}>
+            <div className="glass-card p-3 flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+                <Bell className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium">Ative lembretes semanais</p>
+                <p className="text-[10px] text-muted-foreground">Receba um lembrete para registrar seus recebimentos</p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0 text-xs"
+                onClick={handleEnablePush}
+                disabled={pushLoading}
+              >
+                Ativar
+              </Button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Stats Row */}
         <motion.div variants={item} className="grid grid-cols-2 gap-3">
@@ -199,7 +234,6 @@ const Dashboard = () => {
             </button>
           </motion.div>
         )}
-
 
         {/* Today's appointments */}
         <motion.div variants={item}>
