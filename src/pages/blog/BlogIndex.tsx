@@ -11,8 +11,18 @@ import imgNutricionista from "@/assets/blog/nutricionista-online.jpg";
 import imgAgenda from "@/assets/blog/agenda-medica.jpg";
 import imgReceituario from "@/assets/blog/receituario-digital.jpg";
 import imgCnpj from "@/assets/blog/cnpj-medico.jpg";
+import imgPrecoMinimo from "@/assets/blog/preco-minimo-consulta.jpg";
 
 const POSTS = [
+  {
+    slug: "preco-minimo-consulta",
+    category: "Finanças",
+    title: "Como Calcular o Preço Mínimo da Sua Consulta",
+    excerpt: "Descubra o valor mínimo sustentável por consulta com nossa calculadora gratuita. Custos fixos, variáveis e margem de lucro.",
+    date: "14 de abril de 2026",
+    image: imgPrecoMinimo,
+    alt: "Calculando preço mínimo da consulta",
+  },
   {
     slug: "consulta-online-psicologo",
     category: "Saúde Mental",
