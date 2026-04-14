@@ -115,7 +115,10 @@ export default function Pricing() {
                       <span className="text-lg text-muted-foreground line-through mr-2">R$89</span>
                       <span className="text-4xl font-bold text-foreground">R$69</span>
                       <span className="text-muted-foreground">/mês</span>
-                      <p className="text-xs text-primary font-semibold mt-1">R$828/ano • Economia de R$240</p>
+                      <p className="text-xs text-muted-foreground mt-1">No plano de assinatura anual</p>
+                      <Badge variant="secondary" className="mt-2 bg-primary/10 text-primary border-0 text-xs">
+                        Economia de R$240
+                      </Badge>
                     </>
                   ) : (
                     <>
@@ -145,7 +148,7 @@ export default function Pricing() {
                   className="w-full"
                   onClick={() => navigate("/register")}
                 >
-                  Começar agora <ArrowRight className="h-4 w-4 ml-1" />
+                  {annual ? "Assinar plano anual" : "Assinar plano mensal"} <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>
               </CardContent>
             </Card>
