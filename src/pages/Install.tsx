@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import SEOHead from "@/components/SEOHead";
 import { Download, Smartphone, Share, MoreVertical, CheckCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +43,8 @@ const Install = () => {
   };
 
   return (
+    <>
+    <SEOHead title="Instalar SALBCARE | App para Profissionais de Saúde" description="Instale o app SALBCARE na tela inicial do seu celular para acesso rápido à sua agenda, teleconsulta e financeiro." canonical="/instalar" />
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-md space-y-8 text-center">
         {/* Back button */}
@@ -143,6 +146,7 @@ const Install = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
