@@ -49,7 +49,7 @@ const DashboardFinanceiro = () => {
     mutationFn: async () => {
       const { error } = await supabase.from("financial_transactions").insert({
         user_id: user!.id,
-        amount: parseFloat(form.amount),
+        amount: parseFloat(form.amount.replace(/\./g, '').replace(',', '.')),
         type: "income",
         date: form.date,
         description: form.description || "Recebimento",
@@ -149,7 +149,7 @@ const DashboardFinanceiro = () => {
               </div>
               <Button
                 onClick={() => addMutation.mutate()}
-                disabled={!form.amount || parseFloat(form.amount) <= 0 || addMutation.isPending}
+                disabled={!form.amount || parseFloat(form.amount.replace(/\./g, '').replace(',', '.')) <= 0 || addMutation.isPending}
                 className="w-full gradient-primary font-semibold"
               >
                 {addMutation.isPending ? "Salvando..." : "Salvar"}

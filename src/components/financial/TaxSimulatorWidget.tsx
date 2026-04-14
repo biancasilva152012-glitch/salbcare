@@ -31,7 +31,7 @@ const TaxSimulatorWidget = () => {
   const navigate = useNavigate();
   const [income, setIncome] = useState("");
 
-  const monthlyIncome = parseFloat(income) || 0;
+  const monthlyIncome = parseFloat(income.replace(/\./g, '').replace(',', '.')) || 0;
   const { pfTotal, pjTotal, savings, savingsPercent } = useMemo(
     () => calculateSavings(monthlyIncome),
     [monthlyIncome]
