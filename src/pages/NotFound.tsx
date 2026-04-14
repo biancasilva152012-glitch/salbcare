@@ -5,6 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const NotFound = () => (
+  <>
+  <SEOHead title="Página Não Encontrada | SalbCare" description="A página que você procura não existe ou foi movida." />
   <div className="flex min-h-screen flex-col items-center justify-center px-6">
     <motion.div
       initial={{ opacity: 0, y: 20 }}

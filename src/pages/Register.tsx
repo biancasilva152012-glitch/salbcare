@@ -145,6 +145,12 @@ const Register = () => {
   };
 
   return (
+    <>
+    <SEOHead
+      title="Cadastro | SalbCare — Plataforma para Profissionais de Saúde"
+      description="Crie sua conta gratuita na SalbCare. Agenda, teleconsulta, prontuário, financeiro e mentoria com IA — tudo em um só lugar para profissionais de saúde."
+      canonical="/cadastro"
+    />
     <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-10 overflow-hidden">
       {floatingOrbs.map((orb, i) => (
         <motion.div
