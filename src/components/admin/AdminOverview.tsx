@@ -77,7 +77,7 @@ const AdminOverview = () => {
     if (!users.length) return [];
     const now = new Date();
     const weeks: { label: string; count: number }[] = [];
-    for (let i = 11; i >= 0; i--) {
+    for (let i = chartWeeks - 1; i >= 0; i--) {
       const weekStart = new Date(now);
       weekStart.setDate(now.getDate() - i * 7 - now.getDay());
       weekStart.setHours(0, 0, 0, 0);
@@ -85,6 +85,7 @@ const AdminOverview = () => {
       weekEnd.setDate(weekStart.getDate() + 7);
       const count = users.filter((u) => {
         if (u.user_type !== "professional") return false;
+        if (chartType !== "all" && u.professional_type !== chartType) return false;
         const d = new Date(u.created_at);
         return d >= weekStart && d < weekEnd;
       }).length;
@@ -92,7 +93,7 @@ const AdminOverview = () => {
       weeks.push({ label, count });
     }
     return weeks;
-  }, [users]);
+  }, [users, chartWeeks, chartType]);
 
   const professionals = users.filter(
     (u) =>
