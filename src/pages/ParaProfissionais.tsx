@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FileText, Search, Video, ArrowRight, MessageCircle, UserPlus, Globe, LayoutDashboard } from "lucide-react";
+import { trackCtaClick } from "@/hooks/useTracking";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -149,7 +150,7 @@ const ParaProfissionais = () => {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 rounded-xl font-semibold">
-                <Link to="/planos">Ver planos</Link>
+                <Link to="/planos" onClick={() => trackCtaClick("ver_planos", "hero")}>Ver planos</Link>
               </Button>
             </motion.div>
             <motion.p variants={fadeUp} className="mt-3 text-xs text-muted-foreground text-center">
@@ -421,7 +422,7 @@ const ParaProfissionais = () => {
               viewport={{ once: true }}
             >
               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
-                <Link to="/planos">
+                <Link to="/planos" onClick={() => trackCtaClick("comecar_gratis_7dias", "cta_final")}>
                   Começar grátis por 7 dias
                   <ArrowRight className="h-4 w-4" />
                 </Link>
