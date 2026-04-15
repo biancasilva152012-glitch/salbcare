@@ -123,12 +123,15 @@ const Index = () => {
               ))}
             </motion.div>
 
-            <motion.div variants={fadeUp}>
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="gradient-primary font-bold gap-2 h-14 px-10 rounded-xl text-base shadow-lg shadow-primary/20">
                 <Link to="/cadastro">
                   Começar grátis
                   <ArrowRight className="h-4 w-4" />
                 </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-14 px-8 rounded-xl text-base font-semibold border-primary text-primary hover:bg-primary/10">
+                <Link to="/planos">Ver planos e preços</Link>
               </Button>
             </motion.div>
             <motion.p variants={fadeUp} className="text-xs text-muted-foreground">
@@ -288,6 +291,32 @@ const Index = () => {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── Prova Social Final ── */}
+        <section className="bg-muted/40 py-16 sm:py-24">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center space-y-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-xl sm:text-2xl font-bold leading-snug"
+            >
+              Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
+            </motion.h2>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <Button asChild size="lg" className="gradient-primary font-bold gap-2 h-14 px-10 rounded-xl text-base shadow-lg shadow-primary/20">
+                <Link to="/planos">
+                  Começar grátis por 7 dias
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </motion.div>
           </div>
         </section>
 
