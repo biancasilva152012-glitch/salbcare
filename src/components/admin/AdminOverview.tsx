@@ -55,6 +55,8 @@ const AdminOverview = () => {
   const activateUser = useActivateUser();
   const changePlan = useChangePlan();
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+  const [chartWeeks, setChartWeeks] = useState(12);
+  const [chartType, setChartType] = useState("all");
 
   const { data: recentSignups = [] } = useQuery({
     queryKey: ["admin-recent-signups-overview"],
