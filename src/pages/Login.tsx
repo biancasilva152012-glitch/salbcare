@@ -162,6 +162,21 @@ const Login = () => {
           ))}
         </motion.div>
 
+        {/* Plans banner */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.55 }}
+          className="text-center rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5"
+        >
+          <p className="text-sm text-muted-foreground">
+            Ainda não tem conta?{" "}
+            <Link to="/planos" className="text-primary font-semibold hover:underline">
+              Conheça os planos →
+            </Link>
+          </p>
+        </motion.div>
+
         {/* Login form card */}
         <motion.div
           className="glass-card p-5 space-y-4"
