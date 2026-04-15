@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getPlanByProductId, PlanKey, getTrialDaysRemaining } from "@/config/plans";
@@ -53,7 +53,6 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [userType, setUserType] = useState<UserType>(null);
@@ -61,6 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscription, setSubscription] = useState<SubscriptionState>(defaultSub);
   const subCheckInFlight = useRef(false);
   const lastCheckTime = useRef(0);
+  const sessionRef = useRef<Session | null>(null);
 
   const fetchUserType = useCallback(async (userId: string) => {
     setUserTypeLoading(true);
@@ -84,9 +84,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     subCheckInFlight.current = true;
     lastCheckTime.current = now;
 
+    const currentSession = sessionRef.current;
+
     try {
       // Admin bypass — always return full access
-      if (isAdminEmail(session?.user?.email)) {
+      if (isAdminEmail(currentSession?.user?.email)) {
         setSubscription({
           subscribed: true,
           plan: "basic" as PlanKey,
@@ -99,8 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // Run edge function and profile query in parallel instead of sequentially
-      const userId = session?.user?.id;
+      const userId = currentSession?.user?.id;
       if (!userId) {
         setSubscription((s) => ({ ...s, loading: false }));
         return;
@@ -152,28 +153,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       subCheckInFlight.current = false;
     }
-  }, [session?.user?.id]);
+  }, []);
 
   useEffect(() => {
     let initialCheckDone = false;
 
-    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      sessionRef.current = newSession;
+      setSession(newSession);
       setLoading(false);
-      if (session?.user) {
-        // Fetch user type; for SIGNED_IN also check incomplete profiles
-        fetchUserType(session.user.id).then(() => {
+      if (newSession?.user) {
+        fetchUserType(newSession.user.id).then(() => {
           if (_event === "SIGNED_IN") {
             supabase
               .from("profiles")
               .select("user_type, council_number")
-              .eq("user_id", session.user.id)
+              .eq("user_id", newSession.user.id)
               .single()
               .then(({ data: profile }) => {
                 if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
                   const currentPath = window.location.pathname;
-                  // Only redirect to complete-profile from dashboard/professional routes
-                  // Never redirect from public pages like /, /pronto-atendimento, /login, /register
                   const publicPaths = ["/", "/pronto-atendimento", "/login", "/register", "/complete-profile", "/como-funciona", "/terms", "/privacy", "/consulta-online", "/especialidades", "/patient-dashboard"];
                   const isPublicPath = publicPaths.some(p => currentPath === p || currentPath.startsWith("/pronto-atendimento") || currentPath.startsWith("/patient-dashboard") || currentPath.startsWith("/acompanhamento"));
                   if (!isPublicPath) {
@@ -191,12 +190,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    supabase.auth.getSession().then(({ data: { session: initSession } }) => {
+      sessionRef.current = initSession;
+      setSession(initSession);
       setLoading(false);
       initialCheckDone = true;
-      if (session?.user) {
-        fetchUserType(session.user.id);
+      if (initSession?.user) {
+        fetchUserType(initSession.user.id);
         checkSubscription();
       } else {
         setUserTypeLoading(false);
@@ -205,7 +205,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => sub.unsubscribe();
-  }, [checkSubscription, fetchUserType]);
+  }, []);
 
   useEffect(() => {
     if (!session) return;
