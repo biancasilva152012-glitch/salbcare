@@ -53,7 +53,6 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [userType, setUserType] = useState<UserType>(null);
@@ -61,6 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscription, setSubscription] = useState<SubscriptionState>(defaultSub);
   const subCheckInFlight = useRef(false);
   const lastCheckTime = useRef(0);
+  const sessionRef = useRef<Session | null>(null);
 
   const fetchUserType = useCallback(async (userId: string) => {
     setUserTypeLoading(true);
