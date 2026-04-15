@@ -268,6 +268,49 @@ const AdminOverview = () => {
         </div>
       </div>
 
+      {/* MRR Evolution Chart */}
+      {mrr?.monthly_revenue && mrr.monthly_revenue.length > 0 && (
+        <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-violet-400" />
+            Evolução do MRR
+          </h3>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={mrr.monthly_revenue} barCategoryGap="20%">
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                  axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={50}
+                  tickFormatter={(v: number) => `R$${v}`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(220,20%,12%)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 12,
+                    color: "#fff",
+                    fontSize: 12,
+                  }}
+                  labelStyle={{ color: "rgba(255,255,255,0.5)" }}
+                  cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                  formatter={(value: number) => [`R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, "Receita"]}
+                />
+                <Bar dataKey="revenue" fill="hsl(263,70%,58%)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent signups with quick actions */}
         <div className="space-y-4">
