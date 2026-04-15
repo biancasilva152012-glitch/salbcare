@@ -84,9 +84,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     subCheckInFlight.current = true;
     lastCheckTime.current = now;
 
+    const currentSession = sessionRef.current;
+
     try {
       // Admin bypass — always return full access
-      if (isAdminEmail(session?.user?.email)) {
+      if (isAdminEmail(currentSession?.user?.email)) {
         setSubscription({
           subscribed: true,
           plan: "basic" as PlanKey,
@@ -99,8 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // Run edge function and profile query in parallel instead of sequentially
-      const userId = session?.user?.id;
+      const userId = currentSession?.user?.id;
       if (!userId) {
         setSubscription((s) => ({ ...s, loading: false }));
         return;
@@ -152,7 +153,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       subCheckInFlight.current = false;
     }
-  }, [session?.user?.id]);
+  }, []);
 
   useEffect(() => {
     let initialCheckDone = false;
