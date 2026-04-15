@@ -70,6 +70,28 @@ const AdminOverview = () => {
     refetchInterval: 15_000,
   });
 
+  // Weekly signups for chart (last 12 weeks)
+  const weeklyData = useMemo(() => {
+    if (!users.length) return [];
+    const now = new Date();
+    const weeks: { label: string; count: number }[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - i * 7 - now.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 7);
+      const count = users.filter((u) => {
+        if (u.user_type !== "professional") return false;
+        const d = new Date(u.created_at);
+        return d >= weekStart && d < weekEnd;
+      }).length;
+      const label = `${weekStart.getDate().toString().padStart(2, "0")}/${(weekStart.getMonth() + 1).toString().padStart(2, "0")}`;
+      weeks.push({ label, count });
+    }
+    return weeks;
+  }, [users]);
+
   const professionals = users.filter(
     (u) =>
       u.user_type === "professional" &&
