@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAdminUsers, useAdminMRR, useSuspendUser, useActivateUser, useChangePlan } from "@/hooks/useAdminData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 interface ConfirmAction {
   type: "suspend" | "activate" | "upgrade" | "downgrade";
@@ -68,6 +69,28 @@ const AdminOverview = () => {
     },
     refetchInterval: 15_000,
   });
+
+  // Weekly signups for chart (last 12 weeks)
+  const weeklyData = useMemo(() => {
+    if (!users.length) return [];
+    const now = new Date();
+    const weeks: { label: string; count: number }[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - i * 7 - now.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 7);
+      const count = users.filter((u) => {
+        if (u.user_type !== "professional") return false;
+        const d = new Date(u.created_at);
+        return d >= weekStart && d < weekEnd;
+      }).length;
+      const label = `${weekStart.getDate().toString().padStart(2, "0")}/${(weekStart.getMonth() + 1).toString().padStart(2, "0")}`;
+      weeks.push({ label, count });
+    }
+    return weeks;
+  }, [users]);
 
   const professionals = users.filter(
     (u) =>
@@ -161,6 +184,47 @@ const AdminOverview = () => {
           accent={mrr?.churn_rate && mrr.churn_rate > 5 ? "text-red-400" : "text-emerald-400"}
           bgAccent={mrr?.churn_rate && mrr.churn_rate > 5 ? "bg-red-500/10" : "bg-emerald-500/10"}
         />
+      </div>
+
+      {/* Weekly Signups Chart */}
+      <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-5 space-y-4">
+        <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-blue-400" />
+          Evolução de Cadastros (últimas 12 semanas)
+        </h3>
+        <div className="h-56">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weeklyData} barCategoryGap="20%">
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                tickLine={false}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={28}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "hsl(220,20%,12%)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 12,
+                  color: "#fff",
+                  fontSize: 12,
+                }}
+                labelStyle={{ color: "rgba(255,255,255,0.5)" }}
+                cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                formatter={(value: number) => [`${value} cadastros`, "Semana"]}
+              />
+              <Bar dataKey="count" fill="hsl(217,91%,60%)" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

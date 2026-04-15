@@ -125,6 +125,15 @@ const Register = () => {
 
       if (profError) console.error("[Register] Error inserting into professionals:", profError);
 
+      // Notify admin about new signup (fire-and-forget)
+      supabase.functions.invoke("notify-admin-signup", {
+        body: {
+          name: form.name,
+          email: form.email,
+          professional_type: form.professional_type,
+        },
+      }).catch((err) => console.error("[Register] Admin notification error:", err));
+
       setLoading(false);
 
       if (!signUpData.session) {
