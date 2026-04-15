@@ -186,6 +186,47 @@ const AdminOverview = () => {
         />
       </div>
 
+      {/* Weekly Signups Chart */}
+      <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-5 space-y-4">
+        <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-blue-400" />
+          Evolução de Cadastros (últimas 12 semanas)
+        </h3>
+        <div className="h-56">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weeklyData} barCategoryGap="20%">
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                tickLine={false}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={28}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "hsl(220,20%,12%)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 12,
+                  color: "#fff",
+                  fontSize: 12,
+                }}
+                labelStyle={{ color: "rgba(255,255,255,0.5)" }}
+                cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                formatter={(value: number) => [`${value} cadastros`, "Semana"]}
+              />
+              <Bar dataKey="count" fill="hsl(217,91%,60%)" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent signups with quick actions */}
         <div className="space-y-4">
