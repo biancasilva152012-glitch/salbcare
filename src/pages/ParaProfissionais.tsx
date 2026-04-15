@@ -404,6 +404,32 @@ const ParaProfissionais = () => {
           </div>
         </section>
 
+        {/* ── CTA Final ── */}
+        <section className="bg-muted/40 py-16 sm:py-24">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center space-y-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-xl sm:text-2xl font-bold leading-snug"
+            >
+              Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
+            </motion.h2>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
+                <Link to="/planos">
+                  Começar grátis por 7 dias
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ── Footer ── */}
         <footer className="border-t border-border/30 py-8">
           <div className="mx-auto max-w-6xl px-4 text-center space-y-3">
