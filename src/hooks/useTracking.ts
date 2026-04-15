@@ -88,3 +88,16 @@ export function trackPurchase(value: number) {
     window.fbq("track", "Purchase", { currency: "BRL", value });
   }
 }
+
+export function trackCtaClick(ctaName: string, location: string) {
+  if (window.gtag) {
+    window.gtag("event", "cta_click", {
+      cta_name: ctaName,
+      cta_location: location,
+      send_to: "G-117MVSM8LG",
+    });
+  }
+  if (window.fbq) {
+    window.fbq("trackCustom", "CtaClick", { cta_name: ctaName, cta_location: location });
+  }
+}
