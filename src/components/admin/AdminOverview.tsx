@@ -191,10 +191,48 @@ const AdminOverview = () => {
 
       {/* Weekly Signups Chart */}
       <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-5 space-y-4">
-        <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-blue-400" />
-          Evolução de Cadastros (últimas 12 semanas)
-        </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-blue-400" />
+            Evolução de Cadastros
+          </h3>
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Period filter */}
+            <div className="flex rounded-lg border border-white/[0.08] overflow-hidden">
+              {[
+                { label: "4 sem", value: 4 },
+                { label: "12 sem", value: 12 },
+                { label: "24 sem", value: 24 },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setChartWeeks(opt.value)}
+                  className={`px-3 py-1.5 text-[11px] font-medium transition-colors ${
+                    chartWeeks === opt.value
+                      ? "bg-blue-600 text-white"
+                      : "text-white/40 hover:text-white/60 hover:bg-white/[0.04]"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            {/* Type filter */}
+            <select
+              value={chartType}
+              onChange={(e) => setChartType(e.target.value)}
+              className="rounded-lg border border-white/[0.08] bg-transparent text-[11px] text-white/60 px-3 py-1.5 focus:outline-none focus:border-blue-500/40"
+            >
+              <option value="all" className="bg-[hsl(220,20%,10%)]">Todos os tipos</option>
+              <option value="medico" className="bg-[hsl(220,20%,10%)]">Médico</option>
+              <option value="dentista" className="bg-[hsl(220,20%,10%)]">Dentista</option>
+              <option value="psicologo" className="bg-[hsl(220,20%,10%)]">Psicólogo</option>
+              <option value="nutricionista" className="bg-[hsl(220,20%,10%)]">Nutricionista</option>
+              <option value="fisioterapeuta" className="bg-[hsl(220,20%,10%)]">Fisioterapeuta</option>
+              <option value="outro" className="bg-[hsl(220,20%,10%)]">Outro</option>
+            </select>
+          </div>
+        </div>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weeklyData} barCategoryGap="20%">
