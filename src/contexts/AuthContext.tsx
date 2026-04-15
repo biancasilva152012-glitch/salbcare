@@ -158,23 +158,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let initialCheckDone = false;
 
-    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      sessionRef.current = newSession;
+      setSession(newSession);
       setLoading(false);
-      if (session?.user) {
-        // Fetch user type; for SIGNED_IN also check incomplete profiles
-        fetchUserType(session.user.id).then(() => {
+      if (newSession?.user) {
+        fetchUserType(newSession.user.id).then(() => {
           if (_event === "SIGNED_IN") {
             supabase
               .from("profiles")
               .select("user_type, council_number")
-              .eq("user_id", session.user.id)
+              .eq("user_id", newSession.user.id)
               .single()
               .then(({ data: profile }) => {
                 if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
                   const currentPath = window.location.pathname;
-                  // Only redirect to complete-profile from dashboard/professional routes
-                  // Never redirect from public pages like /, /pronto-atendimento, /login, /register
                   const publicPaths = ["/", "/pronto-atendimento", "/login", "/register", "/complete-profile", "/como-funciona", "/terms", "/privacy", "/consulta-online", "/especialidades", "/patient-dashboard"];
                   const isPublicPath = publicPaths.some(p => currentPath === p || currentPath.startsWith("/pronto-atendimento") || currentPath.startsWith("/patient-dashboard") || currentPath.startsWith("/acompanhamento"));
                   if (!isPublicPath) {
@@ -192,12 +190,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    supabase.auth.getSession().then(({ data: { session: initSession } }) => {
+      sessionRef.current = initSession;
+      setSession(initSession);
       setLoading(false);
       initialCheckDone = true;
-      if (session?.user) {
-        fetchUserType(session.user.id);
+      if (initSession?.user) {
+        fetchUserType(initSession.user.id);
         checkSubscription();
       } else {
         setUserTypeLoading(false);
@@ -206,7 +205,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => sub.unsubscribe();
-  }, [checkSubscription, fetchUserType]);
+  }, []);
 
   useEffect(() => {
     if (!session) return;
