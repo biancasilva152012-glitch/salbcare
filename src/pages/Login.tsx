@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
+import { trackCtaClick } from "@/hooks/useTracking";
 
 const bullets = [
   { icon: Zap, text: "Agenda, prontuário e teleconsulta" },
@@ -171,7 +172,7 @@ const Login = () => {
         >
           <p className="text-sm text-muted-foreground">
             Ainda não tem conta?{" "}
-            <Link to="/planos" className="text-primary font-semibold hover:underline">
+            <Link to="/planos" onClick={() => trackCtaClick("conheca_planos", "login_banner")} className="text-primary font-semibold hover:underline">
               Conheça os planos →
             </Link>
           </p>
