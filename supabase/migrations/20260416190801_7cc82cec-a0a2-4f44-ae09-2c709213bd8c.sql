@@ -1,0 +1,25 @@
+
+DELETE FROM public.user_roles WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.appointments WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.medical_records WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.patient_documents WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.patients WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.financial_transactions WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.invoices WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.teleconsultations WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.digital_documents WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.mentorship_messages WHERE professional_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.chat_messages WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.cnpj_requests WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.exam_requests WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.legal_consultations WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.partner_hires WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.consultation_payments WHERE doctor_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.service_requests WHERE professional_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.push_subscriptions WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.ambassador_applications WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.professionals WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM public.profiles WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM auth.identities WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM auth.sessions WHERE user_id = 'ff657032-11c4-455a-b782-a54929f7c268';
+DELETE FROM auth.users WHERE id = 'ff657032-11c4-455a-b782-a54929f7c268';
