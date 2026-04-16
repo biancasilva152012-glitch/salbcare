@@ -19,10 +19,13 @@ const Checkout = () => {
 
   const [loading, setLoading] = useState(false);
   const [annual, setAnnual] = useState(periodParam === "annual");
+  const { partner, applyDiscount } = usePartnerDiscount();
 
   const priceId = annual ? plan.annual_price_id : plan.price_id;
-  const displayPrice = annual ? plan.annualPrice : plan.price;
+  const baseDisplayPrice = annual ? plan.annualPrice : plan.price;
+  const displayPrice = applyDiscount(baseDisplayPrice);
   const periodLabel = annual ? "ano" : "mês";
+  const hasDiscount = !!partner;
 
   const handleCheckout = async () => {
     if (!user) {
@@ -33,7 +36,7 @@ const Checkout = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { priceId },
+        body: { priceId, skipTrial: hasDiscount },
       });
 
       if (error) throw error;
