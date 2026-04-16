@@ -100,7 +100,8 @@ const ParaProfissionais = () => {
             animate="show"
             variants={stagger}
           >
-            <motion.div variants={fadeUp} className="mb-4">
+            <motion.div variants={fadeUp} className="mb-4 flex flex-col items-center gap-3">
+              <img src="/pwa-icon-512.png" alt="SalbCare" className="h-14 w-14 object-contain" />
               <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                 7 dias grátis • sem cartão
               </span>
