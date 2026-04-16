@@ -13,7 +13,6 @@ import ActivationOnboarding from "@/components/ActivationOnboarding";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
-import InstallBanner from "@/components/InstallBanner";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -170,11 +169,6 @@ const Dashboard = () => {
         <motion.div variants={item} className="space-y-0.5">
           <p className="text-xs text-muted-foreground">Bem-vindo(a) de volta</p>
           <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
-        </motion.div>
-
-        {/* PWA Install Banner */}
-        <motion.div variants={item}>
-          <InstallBanner />
         </motion.div>
 
         {/* Push Notification Banner */}
