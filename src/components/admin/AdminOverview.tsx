@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { BarChart, Bar, LineChart, Line, Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 interface ConfirmAction {
   type: "suspend" | "activate" | "upgrade" | "downgrade";
@@ -277,8 +277,14 @@ const AdminOverview = () => {
           </h3>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mrr.monthly_revenue} barCategoryGap="20%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <AreaChart data={mrr.monthly_revenue} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="mrrGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(263,70%,58%)" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="hsl(263,70%,58%)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis
                   dataKey="month"
                   tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
@@ -301,11 +307,19 @@ const AdminOverview = () => {
                     fontSize: 12,
                   }}
                   labelStyle={{ color: "rgba(255,255,255,0.5)" }}
-                  cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                  cursor={{ stroke: "rgba(255,255,255,0.15)", strokeWidth: 1 }}
                   formatter={(value: number) => [`R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, "Receita"]}
                 />
-                <Bar dataKey="revenue" fill="hsl(263,70%,58%)" radius={[6, 6, 0, 0]} />
-              </BarChart>
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="hsl(263,70%,65%)"
+                  strokeWidth={2.5}
+                  fill="url(#mrrGradient)"
+                  dot={{ fill: "hsl(263,70%,65%)", strokeWidth: 0, r: 3 }}
+                  activeDot={{ r: 5, fill: "hsl(263,70%,70%)", stroke: "hsl(220,20%,8%)", strokeWidth: 2 }}
+                />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
