@@ -109,29 +109,23 @@ const ParaProfissionais = () => {
               variants={fadeUp}
               className="text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight"
             >
-              Sua <span className="text-primary">vitrine</span> para pacientes.
+              Organize seus <span className="text-primary">pacientes</span> em minutos.
               <br />
-              Seu <span className="text-primary">controle</span> para gestão.
+              <span className="text-primary">Comece</span> grátis.
             </motion.h1>
             <motion.p
               variants={fadeUp}
               className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto text-center"
             >
-              100% das consultas para você. Zero comissão.
-            </motion.p>
-            <motion.p
-              variants={fadeUp}
-              className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto text-center"
-            >
-              Para profissionais de saúde autônomos.
+              Cadastre até 10 pacientes gratuitamente. Sem cartão.
             </motion.p>
 
             {/* Three value props */}
             <motion.div variants={fadeUp} className="mt-8 flex justify-center gap-6 sm:gap-12">
               {[
-                { icon: FileText, label: "Mentoria financeira e contabilidade dos seus ganhos" },
-                { icon: Search, label: "Pacientes te encontram sem comissão" },
-                { icon: Video, label: "Teleconsulta legal pelo Google Meet" },
+                { icon: UserPlus, label: "Cadastre seu primeiro paciente" },
+                { icon: LayoutDashboard, label: "Organize sua agenda" },
+                { icon: FileText, label: "Registre atendimentos" },
               ].map((f) => (
                 <div key={f.label} className="flex flex-col items-center gap-1.5 max-w-[120px]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
@@ -145,7 +139,7 @@ const ParaProfissionais = () => {
             <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)]">
                 <Link to="/cadastro">
-                  Começar grátis por 7 dias
+                  Começar grátis
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -161,7 +155,10 @@ const ParaProfissionais = () => {
                 Como funciona?
               </Button>
             </motion.div>
-            <motion.p variants={fadeUp} className="mt-2 text-center">
+            <motion.p variants={fadeUp} className="mt-2 text-[11px] text-muted-foreground text-center">
+              Sem cartão • Leva menos de 1 minuto • Cancele quando quiser
+            </motion.p>
+            <motion.p variants={fadeUp} className="mt-1 text-center">
               <Link to="/login" className="text-xs text-primary/80 hover:text-primary transition-colors">
                 Já é cadastrado? Faça login
               </Link>
@@ -419,20 +416,28 @@ const ParaProfissionais = () => {
               viewport={{ once: true }}
               className="text-xl sm:text-2xl font-bold leading-snug"
             >
-              Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
-            </motion.h2>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
-                <Link to="/planos" onClick={() => trackCtaClick("comecar_gratis_7dias", "cta_final")}>
-                  Começar grátis por 7 dias
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </motion.div>
+               Profissionais de saúde autônomos já organizam seus pacientes com a SalbCare
+             </motion.h2>
+             <motion.p
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               viewport={{ once: true }}
+               className="text-sm text-muted-foreground"
+             >
+               Comece grátis. Veja o valor. Decida depois.
+             </motion.p>
+             <motion.div
+               initial={{ opacity: 0, y: 12 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+             >
+               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
+                 <Link to="/cadastro" onClick={() => trackCtaClick("comecar_gratis", "cta_final")}>
+                   Começar grátis
+                   <ArrowRight className="h-4 w-4" />
+                 </Link>
+               </Button>
+             </motion.div>
           </div>
         </section>
 
