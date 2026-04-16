@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
+import ChangePasswordButton from "./ChangePasswordButton";
 
 const NAV_ITEMS = [
   { label: "Visão Geral", icon: LayoutDashboard, path: "/admin" },
@@ -203,6 +204,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 </div>
               </PopoverContent>
             </Popover>
+
+            <ChangePasswordButton />
 
             {/* Admin avatar */}
             <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center">
