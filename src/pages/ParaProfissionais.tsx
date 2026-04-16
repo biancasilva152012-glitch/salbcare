@@ -416,20 +416,28 @@ const ParaProfissionais = () => {
               viewport={{ once: true }}
               className="text-xl sm:text-2xl font-bold leading-snug"
             >
-              Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
-            </motion.h2>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
-                <Link to="/planos" onClick={() => trackCtaClick("comecar_gratis_7dias", "cta_final")}>
-                  Começar grátis por 7 dias
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </motion.div>
+               Profissionais de saúde autônomos já organizam seus pacientes com a SalbCare
+             </motion.h2>
+             <motion.p
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               viewport={{ once: true }}
+               className="text-sm text-muted-foreground"
+             >
+               Comece grátis. Veja o valor. Decida depois.
+             </motion.p>
+             <motion.div
+               initial={{ opacity: 0, y: 12 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+             >
+               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
+                 <Link to="/cadastro" onClick={() => trackCtaClick("comecar_gratis", "cta_final")}>
+                   Começar grátis
+                   <ArrowRight className="h-4 w-4" />
+                 </Link>
+               </Button>
+             </motion.div>
           </div>
         </section>
 
