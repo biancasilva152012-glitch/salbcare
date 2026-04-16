@@ -65,6 +65,12 @@ const Checkout = () => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-6">
           <h1 className="text-xl font-bold">Assinar {plan.name}</h1>
 
+          {partner && (
+            <div className="flex justify-center mt-3">
+              <PartnerDiscountBadge partner={partner} />
+            </div>
+          )}
+
           {/* Period toggle */}
           <div className="flex justify-center mt-4 mb-3">
             <div className="inline-flex items-center gap-2 rounded-full bg-muted/50 p-1 border border-border/40">
@@ -84,12 +90,20 @@ const Checkout = () => {
           </div>
 
           <p className="text-2xl font-bold text-primary mt-1">
+            {hasDiscount && (
+              <span className="text-base text-muted-foreground line-through font-normal mr-2">R$ {baseDisplayPrice}</span>
+            )}
             R$ {displayPrice}
-            <span className="text-sm text-muted-foreground font-normal">/{annual ? "mês" : "mês"}</span>
+            <span className="text-sm text-muted-foreground font-normal">/mês</span>
           </p>
-          {annual && (
+          {annual && !hasDiscount && (
             <p className="text-xs text-primary font-semibold mt-1">
               R$ 828/ano • Economia de R$ 240
+            </p>
+          )}
+          {hasDiscount && (
+            <p className="text-xs text-primary font-semibold mt-1">
+              Cobrança imediata, sem período de teste
             </p>
           )}
         </motion.div>
