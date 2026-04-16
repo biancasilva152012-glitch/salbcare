@@ -109,29 +109,23 @@ const ParaProfissionais = () => {
               variants={fadeUp}
               className="text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight"
             >
-              Sua <span className="text-primary">vitrine</span> para pacientes.
+              Organize seus <span className="text-primary">pacientes</span> em minutos.
               <br />
-              Seu <span className="text-primary">controle</span> para gestão.
+              <span className="text-primary">Comece</span> grátis.
             </motion.h1>
             <motion.p
               variants={fadeUp}
               className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto text-center"
             >
-              100% das consultas para você. Zero comissão.
-            </motion.p>
-            <motion.p
-              variants={fadeUp}
-              className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto text-center"
-            >
-              Para profissionais de saúde autônomos.
+              Cadastre até 10 pacientes gratuitamente. Sem cartão.
             </motion.p>
 
             {/* Three value props */}
             <motion.div variants={fadeUp} className="mt-8 flex justify-center gap-6 sm:gap-12">
               {[
-                { icon: FileText, label: "Mentoria financeira e contabilidade dos seus ganhos" },
-                { icon: Search, label: "Pacientes te encontram sem comissão" },
-                { icon: Video, label: "Teleconsulta legal pelo Google Meet" },
+                { icon: UserPlus, label: "Cadastre seu primeiro paciente" },
+                { icon: LayoutDashboard, label: "Organize sua agenda" },
+                { icon: FileText, label: "Registre atendimentos" },
               ].map((f) => (
                 <div key={f.label} className="flex flex-col items-center gap-1.5 max-w-[120px]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
@@ -145,7 +139,7 @@ const ParaProfissionais = () => {
             <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)]">
                 <Link to="/cadastro">
-                  Começar grátis por 7 dias
+                  Começar grátis
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
