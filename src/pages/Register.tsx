@@ -135,16 +135,47 @@ const Register = () => {
         },
       }).catch((err) => console.error("[Register] Admin notification error:", err));
 
-      setLoading(false);
+      // If user came via partner referral, skip trial and go straight to Stripe checkout
+      const hasReferral = !!form.referral_code?.trim();
 
       if (!signUpData.session) {
-        toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.", { duration: 6000 });
+        if (hasReferral) {
+          toast.success("Conta criada! Verifique seu e-mail e faça login para finalizar a assinatura.", { duration: 6000 });
+        } else {
+          toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.", { duration: 6000 });
+        }
+        setLoading(false);
         navigate("/login");
         return;
       }
 
       trackLead(form.email);
       trackRegistration();
+
+      if (hasReferral) {
+        // Partner referral → checkout direto sem trial
+        toast.success("Conta criada! Redirecionando para o pagamento...");
+        try {
+          const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke("create-checkout", {
+            body: { skipTrial: true },
+          });
+          if (checkoutError) throw checkoutError;
+          if (checkoutData?.url) {
+            sessionStorage.setItem("salbcare_from_checkout", "true");
+            window.location.href = checkoutData.url;
+            return;
+          }
+          throw new Error("URL de checkout não retornada");
+        } catch (err) {
+          console.error("[Register] Checkout error:", err);
+          toast.error("Conta criada, mas houve um erro ao iniciar o pagamento. Acesse a página de assinatura.");
+          setLoading(false);
+          navigate("/subscription");
+          return;
+        }
+      }
+
+      setLoading(false);
       toast.success("Conta criada com sucesso!");
       navigate("/dashboard");
     } catch (err) {
