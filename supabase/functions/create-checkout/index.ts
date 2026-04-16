@@ -49,7 +49,10 @@ serve(async (req) => {
       ? requestedPriceId
       : DEFAULT_PRICE_ID;
 
-    logStep("Price validated", { priceId, planName: ALLOWED_PRICES[priceId] });
+    // Force-disable trial when user came via partner referral
+    const skipTrial = body?.skipTrial === true;
+
+    logStep("Price validated", { priceId, planName: ALLOWED_PRICES[priceId], skipTrial });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 
@@ -75,9 +78,9 @@ serve(async (req) => {
       .maybeSingle();
 
     const hadTrial = (prof as any)?.had_trial ?? false;
-    const isTrialEligible = priceId === DEFAULT_PRICE_ID && !hadTrial;
+    const isTrialEligible = !skipTrial && priceId === DEFAULT_PRICE_ID && !hadTrial;
 
-    logStep("Trial check", { priceId, hadTrial, isTrialEligible });
+    logStep("Trial check", { priceId, hadTrial, skipTrial, isTrialEligible });
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
@@ -85,6 +88,7 @@ serve(async (req) => {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       payment_method_types: ["card", "boleto"],
+      payment_method_collection: "always",
       success_url: `${origin}/dashboard?from_checkout=true`,
       cancel_url: `${origin}/subscription`,
       metadata: {
@@ -97,6 +101,8 @@ serve(async (req) => {
         trial_period_days: 7,
       };
       logStep("Trial de 7 dias adicionado ao checkout");
+    } else {
+      logStep("Sem trial — cobrança imediata", { reason: skipTrial ? "partner referral" : (hadTrial ? "had_trial" : "non-default price") });
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
