@@ -104,7 +104,10 @@ const Register = () => {
 
       // Set verification_status, council_number and referral
       const profileUpdate: Record<string, string> = { verification_status: "approved" };
-      if (form.referral_code) profileUpdate.referral_code = form.referral_code;
+      if (form.referral_code) {
+        profileUpdate.referral_code = form.referral_code;
+        profileUpdate.referred_by = form.referral_code.toLowerCase().trim();
+      }
       await supabase
         .from("profiles")
         .update(profileUpdate as any)
