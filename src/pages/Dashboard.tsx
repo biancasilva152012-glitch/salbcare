@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
+import ActivationOnboarding from "@/components/ActivationOnboarding";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -86,6 +87,19 @@ const Dashboard = () => {
     staleTime: 10 * 60 * 1000,
   });
 
+  const { data: patientCount = -1 } = useQuery({
+    queryKey: ["patient-count", user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("patients")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id);
+      return count ?? 0;
+    },
+    enabled: !!user,
+    staleTime: 2 * 60 * 1000,
+  });
+
   const handleEnablePush = async () => {
     const ok = await subscribe();
     if (ok) {
@@ -113,7 +127,16 @@ const Dashboard = () => {
     staleTime: 60 * 60 * 1000,
   });
 
-  if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
+  if (isLoading || patientCount === -1) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
+
+  // Show activation onboarding for users with 0 patients
+  if (patientCount === 0) {
+    return (
+      <PageContainer>
+        <ActivationOnboarding userName={profile?.name || ""} />
+      </PageContainer>
+    );
+  }
 
   const quickAccess = [
     { icon: BookOpen, label: "Contabilidade", to: "/dashboard/contabilidade", color: "text-primary" },

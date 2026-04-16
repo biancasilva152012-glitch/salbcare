@@ -3,6 +3,7 @@ import { maskPhone } from "@/utils/masks";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import UpgradeModal from "@/components/UpgradeModal";
 import PatientLimitWarning from "@/components/patients/PatientLimitWarning";
+import { usePatientProgressMessages } from "@/hooks/usePatientProgressMessages";
 import { motion } from "framer-motion";
 import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet, Upload, Loader2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
@@ -50,6 +51,9 @@ const Patients = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+
+  // Progress celebration messages
+  usePatientProgressMessages(patientsCount, isFree);
 
   // Block new patient creation when trial expired AND no active subscription OR freemium limit
   const canAddPatient = (sub.isAdmin || sub.isActive) && canAddPatientFreemium;
