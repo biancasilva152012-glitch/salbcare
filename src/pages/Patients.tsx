@@ -2,6 +2,7 @@ import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import UpgradeModal from "@/components/UpgradeModal";
+import PatientLimitWarning from "@/components/patients/PatientLimitWarning";
 import { motion } from "framer-motion";
 import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet, Upload, Loader2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
@@ -40,6 +41,7 @@ const Patients = () => {
   const sub = useSubscription();
   const { canAddPatient: canAddPatientFreemium, patientsCount, patientsLimit, isFree } = useFreemiumLimits();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [blockModalOpen, setBlockModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Tables<"patients"> | null>(null);
@@ -283,18 +285,23 @@ const Patients = () => {
                 </DialogContent>
               </Dialog>
             ) : (
-              <Button size="sm" className="gradient-primary gap-1" onClick={() => setUpgradeOpen(true)}>
+              <Button size="sm" className="gradient-primary gap-1" onClick={() => {
+                setBlockModalOpen(true);
+                setUpgradeOpen(true);
+              }}>
                 <Plus className="h-4 w-4" /> Novo
               </Button>
             )}
           </div>
         </div>
 
-        {isFree && (
-          <p className="text-xs text-center text-muted-foreground">
-            Pacientes: {patientsCount}/{patientsLimit} (plano gratuito)
-          </p>
-        )}
+        <PatientLimitWarning
+          count={patientsCount}
+          limit={patientsLimit}
+          isFree={isFree}
+          blockOpen={blockModalOpen}
+          onBlockClose={() => setBlockModalOpen(false)}
+        />
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
