@@ -149,13 +149,18 @@ const ParaProfissionais = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 rounded-xl font-semibold">
-                <Link to="/planos" onClick={() => trackCtaClick("ver_planos", "hero")}>Ver planos</Link>
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-base px-8 py-6 rounded-xl font-semibold"
+                onClick={() => {
+                  document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
+                  trackCtaClick("como_funciona", "hero");
+                }}
+              >
+                Como funciona?
               </Button>
             </motion.div>
-            <motion.p variants={fadeUp} className="mt-3 text-xs text-muted-foreground text-center">
-              R$ 89/mês após o período grátis. Cancele quando quiser.
-            </motion.p>
             <motion.p variants={fadeUp} className="mt-2 text-center">
               <Link to="/login" className="text-xs text-primary/80 hover:text-primary transition-colors">
                 Já é cadastrado? Faça login
@@ -207,7 +212,7 @@ const ParaProfissionais = () => {
         </section>
 
         {/* ── Como Funciona ── */}
-        <section className="bg-muted/40 py-16 sm:py-24">
+        <section id="como-funciona" className="bg-muted/40 py-16 sm:py-24">
           <div className="mx-auto max-w-5xl px-5 sm:px-6">
             <motion.h2
               initial={{ opacity: 0, y: 16 }}
