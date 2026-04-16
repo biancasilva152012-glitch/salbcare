@@ -87,6 +87,19 @@ const Dashboard = () => {
     staleTime: 10 * 60 * 1000,
   });
 
+  const { data: patientCount = -1 } = useQuery({
+    queryKey: ["patient-count", user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("patients")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id);
+      return count ?? 0;
+    },
+    enabled: !!user,
+    staleTime: 2 * 60 * 1000,
+  });
+
   const handleEnablePush = async () => {
     const ok = await subscribe();
     if (ok) {
