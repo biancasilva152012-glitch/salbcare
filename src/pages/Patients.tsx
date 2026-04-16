@@ -52,6 +52,9 @@ const Patients = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
 
+  // Progress celebration messages
+  usePatientProgressMessages(patientsCount, isFree);
+
   // Block new patient creation when trial expired AND no active subscription OR freemium limit
   const canAddPatient = (sub.isAdmin || sub.isActive) && canAddPatientFreemium;
 
