@@ -105,7 +105,7 @@ const Index = () => {
               Seu <span className="text-primary">controle</span> para gestão.
             </motion.h1>
             <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Comece grátis e organize até 10 pacientes sem pagar nada, tenha uma mentoria financeira dos seus ganhos e gastos, e apareça no nosso diretório para pacientes.
+              Organize seus primeiros 10 pacientes sem custo. Gestão completa, mentoria financeira e visibilidade para pacientes.
             </motion.p>
 
             {/* Three value props */}
