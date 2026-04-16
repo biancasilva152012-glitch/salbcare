@@ -155,7 +155,10 @@ const ParaProfissionais = () => {
                 Como funciona?
               </Button>
             </motion.div>
-            <motion.p variants={fadeUp} className="mt-2 text-center">
+            <motion.p variants={fadeUp} className="mt-2 text-[11px] text-muted-foreground text-center">
+              Sem cartão • Leva menos de 1 minuto • Cancele quando quiser
+            </motion.p>
+            <motion.p variants={fadeUp} className="mt-1 text-center">
               <Link to="/login" className="text-xs text-primary/80 hover:text-primary transition-colors">
                 Já é cadastrado? Faça login
               </Link>
