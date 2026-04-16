@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
+import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
+import { PartnerDiscountBadge } from "@/components/PartnerDiscountBadge";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
