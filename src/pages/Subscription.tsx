@@ -23,6 +23,12 @@ const features = [
 
 const Subscription = () => {
   const [annual, setAnnual] = useState(false);
+  const { partner, applyDiscount } = usePartnerDiscount();
+  const monthlyBase = 89;
+  const annualBase = 69;
+  const monthlyPrice = applyDiscount(monthlyBase);
+  const annualPrice = applyDiscount(annualBase);
+  const hasDiscount = !!partner;
 
   return (
     <>
