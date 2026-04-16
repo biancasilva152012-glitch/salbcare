@@ -92,19 +92,22 @@ const Index = () => {
             animate="show"
             className="text-center max-w-2xl mx-auto space-y-6"
           >
-            <motion.div variants={fadeUp}>
+            <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
+              <img src="/pwa-icon-512.png" alt="SalbCare" className="h-14 w-14 object-contain" />
               <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                7 dias grátis • sem cartão
+                Grátis para começar • Upgrade só quando precisar
               </span>
             </motion.div>
             <motion.h1
               variants={fadeUp}
               className="text-3xl sm:text-5xl font-bold leading-tight tracking-tight"
             >
-              Seu consultório digital. Simples assim.
+              Sua <span className="text-primary">vitrine</span> para pacientes.
+              <br />
+              Seu <span className="text-primary">controle</span> para gestão.
             </motion.h1>
             <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Para profissionais de saúde autônomos.
+              Comece grátis e organize até 10 pacientes sem pagar nada.
             </motion.p>
 
             {/* Three value props */}
@@ -126,16 +129,23 @@ const Index = () => {
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="gradient-primary font-bold gap-2 h-14 px-10 rounded-xl text-base shadow-lg shadow-primary/20">
                 <Link to="/cadastro">
-                  Começar grátis
+                  Criar conta grátis
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="h-14 px-8 rounded-xl text-base font-semibold border-primary text-primary hover:bg-primary/10">
-                <Link to="/planos">Ver planos e preços</Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-sm text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Como funciona?
               </Button>
             </motion.div>
             <motion.p variants={fadeUp} className="text-xs text-muted-foreground">
-              R$ 89/mês após o período grátis. Sem comissão. Cancele quando quiser.
+              Sem cartão • Comece em menos de 1 minuto
             </motion.p>
 
             {/* IA Mentora Preview */}
@@ -165,8 +175,8 @@ const Index = () => {
           <div className="mx-auto max-w-4xl px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             {[
               { value: "9+", label: "especialidades" },
-              { value: "100%", label: "das consultas pra você" },
-              { value: "7 dias", label: "grátis sem cartão" },
+              { value: "100%", label: "Você fica com 100% do valor. Sem comissão." },
+              { value: "Grátis", label: "para começar, sem cartão" },
             ].map((s) => (
               <motion.div
                 key={s.label}
@@ -183,7 +193,7 @@ const Index = () => {
         </section>
 
         {/* ── Como Funciona ── */}
-        <section className="bg-muted/40 py-16 sm:py-24">
+        <section id="como-funciona" className="bg-muted/40 py-16 sm:py-24">
           <div className="mx-auto max-w-5xl px-5 sm:px-6">
             <motion.h2
               initial={{ opacity: 0, y: 16 }}
