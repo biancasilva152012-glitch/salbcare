@@ -49,7 +49,10 @@ serve(async (req) => {
       ? requestedPriceId
       : DEFAULT_PRICE_ID;
 
-    logStep("Price validated", { priceId, planName: ALLOWED_PRICES[priceId] });
+    // Force-disable trial when user came via partner referral
+    const skipTrial = body?.skipTrial === true;
+
+    logStep("Price validated", { priceId, planName: ALLOWED_PRICES[priceId], skipTrial });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 
