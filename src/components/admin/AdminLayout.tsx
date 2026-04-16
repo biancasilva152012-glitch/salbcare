@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users, BarChart3, Database, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight,
-  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck,
+  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import {
 
 const NAV_ITEMS = [
   { label: "Visão Geral", icon: LayoutDashboard, path: "/admin" },
+  { label: "Adesões", icon: CreditCard, path: "/admin/subscriptions" },
   { label: "Usuários", icon: Users, path: "/admin/users" },
   { label: "Permissões", icon: ShieldCheck, path: "/admin/roles" },
   { label: "Financeiro", icon: BarChart3, path: "/admin/finance" },

@@ -41,6 +41,7 @@ const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
 const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"), "AdminOverviewPage");
 const AdminUsersPage = lazyWithRetry(() => import("./pages/admin/AdminUsersPage"), "AdminUsersPage");
+const AdminSubscriptionsPage = lazyWithRetry(() => import("./pages/admin/AdminSubscriptionsPage"), "AdminSubscriptionsPage");
 const AdminPlaceholder = lazyWithRetry(() => import("./pages/admin/AdminPlaceholder"), "AdminPlaceholder");
 const AdminDatabasePage = lazyWithRetry(() => import("./pages/admin/AdminDatabasePage"), "AdminDatabasePage");
 const AdminLogsPage = lazyWithRetry(() => import("./pages/admin/AdminLogsPage"), "AdminLogsPage");
@@ -159,6 +160,7 @@ const App = () => (
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<AdminOverviewPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
+              <Route path="/admin/subscriptions" element={<AdminSubscriptionsPage />} />
               <Route path="/admin/finance" element={<AdminFinancePage />} />
               <Route path="/admin/database" element={<AdminDatabasePage />} />
               <Route path="/admin/logs" element={<AdminLogsPage />} />
