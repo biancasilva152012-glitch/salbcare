@@ -138,15 +138,18 @@ const Register = () => {
       // If user came via partner referral, skip trial and go straight to Stripe checkout
       const hasReferral = !!form.referral_code?.trim();
 
+      // Auto-confirm está habilitado: se a sessão não vier, fazemos login imediatamente
       if (!signUpData.session) {
-        if (hasReferral) {
-          toast.success("Conta criada! Verifique seu e-mail e faça login para finalizar a assinatura.", { duration: 6000 });
-        } else {
-          toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.", { duration: 6000 });
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: form.email,
+          password: form.password,
+        });
+        if (signInError) {
+          toast.success("Conta criada! Faça login para continuar.");
+          setLoading(false);
+          navigate("/login");
+          return;
         }
-        setLoading(false);
-        navigate("/login");
-        return;
       }
 
       trackLead(form.email);
