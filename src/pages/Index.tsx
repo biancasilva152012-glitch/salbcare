@@ -94,9 +94,6 @@ const Index = () => {
           >
             <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
               <img src="/pwa-icon-512.png" alt="SalbCare" className="h-14 w-14 object-contain" />
-              <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                Grátis para começar • Upgrade só quando precisar
-              </span>
             </motion.div>
             <motion.h1
               variants={fadeUp}
@@ -107,7 +104,7 @@ const Index = () => {
               Seu <span className="text-primary">controle</span> para gestão.
             </motion.h1>
             <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Comece grátis e organize até 10 pacientes sem pagar nada.
+              Comece grátis e organize até 10 pacientes sem pagar nada, tenha uma mentoria financeira dos seus ganhos e gastos, e apareça no nosso diretório para pacientes.
             </motion.p>
 
             {/* Three value props */}
