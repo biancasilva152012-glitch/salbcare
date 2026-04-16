@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users, BarChart3, Database, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight,
-  LayoutDashboard, Bell, Loader2,
+  LayoutDashboard, Bell, Loader2, Handshake,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { label: "Visão Geral", icon: LayoutDashboard, path: "/admin" },
   { label: "Usuários", icon: Users, path: "/admin/users" },
   { label: "Financeiro", icon: BarChart3, path: "/admin/finance" },
+  { label: "Parcerias", icon: Handshake, path: "/admin/partners" },
   { label: "Banco de Dados", icon: Database, path: "/admin/database" },
   { label: "Logs", icon: ScrollText, path: "/admin/logs" },
   { label: "Configurações", icon: Settings, path: "/admin/settings" },
