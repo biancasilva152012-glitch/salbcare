@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Menu, X, FileText, Search, Video, UserPlus, Globe, LayoutDashboard } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import SEOHead from "@/components/SEOHead";
 import { useState } from "react";
 
@@ -324,6 +325,53 @@ const Index = () => {
                 </Link>
               </Button>
             </motion.div>
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-2xl px-5 sm:px-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-2xl sm:text-3xl font-bold text-center mb-10"
+            >
+              Perguntas frequentes
+            </motion.h2>
+            <Accordion type="single" collapsible className="space-y-3">
+              {[
+                {
+                  q: "O que é a SalbCare?",
+                  a: "A SalbCare é uma plataforma de gestão integrada para profissionais de saúde autônomos, unindo prontuário digital, teleconsulta via Google Meet e mentoria financeira.",
+                },
+                {
+                  q: "Preciso pagar para começar?",
+                  a: "Não. Você pode cadastrar até 10 pacientes gratuitamente, sem cartão de crédito. O upgrade é opcional e só acontece quando você precisar.",
+                },
+                {
+                  q: "A plataforma cobra comissão por consulta?",
+                  a: "Não. Cobramos apenas uma assinatura mensal fixa. 100% do valor das suas consultas vai direto para você.",
+                },
+                {
+                  q: "Preciso instalar algum software?",
+                  a: "Não, a SalbCare é 100% baseada na nuvem e pode ser acessada de qualquer navegador ou dispositivo móvel.",
+                },
+                {
+                  q: "Meus dados e dos meus pacientes estão seguros?",
+                  a: "Sim, utilizamos criptografia e seguimos rigorosamente as normas da LGPD para garantir a segurança total das informações.",
+                },
+              ].map((item, i) => (
+                <AccordionItem key={i} value={`faq-${i}`} className="border border-border/40 rounded-xl px-4 data-[state=open]:bg-muted/30">
+                  <AccordionTrigger className="text-sm font-semibold text-left hover:no-underline py-4">
+                    {item.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
+                    {item.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </section>
 
