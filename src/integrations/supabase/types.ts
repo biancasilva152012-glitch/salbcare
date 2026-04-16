@@ -929,6 +929,45 @@ export type Database = {
         }
         Relationships: []
       }
+      partners: {
+        Row: {
+          commission_percent: number
+          contact_email: string
+          contact_name: string
+          created_at: string
+          discount_percent: number
+          id: string
+          name: string
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          commission_percent?: number
+          contact_email: string
+          contact_name: string
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          name: string
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          commission_percent?: number
+          contact_email?: string
+          contact_name?: string
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          name?: string
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       patient_documents: {
         Row: {
           created_at: string
@@ -1145,6 +1184,7 @@ export type Database = {
           professional_type: string
           profile_slug: string | null
           referral_code: string | null
+          referred_by: string | null
           slot_duration: number | null
           stripe_account_id: string | null
           stripe_onboarding_complete: boolean
@@ -1182,6 +1222,7 @@ export type Database = {
           professional_type?: string
           profile_slug?: string | null
           referral_code?: string | null
+          referred_by?: string | null
           slot_duration?: number | null
           stripe_account_id?: string | null
           stripe_onboarding_complete?: boolean
@@ -1219,6 +1260,7 @@ export type Database = {
           professional_type?: string
           profile_slug?: string | null
           referral_code?: string | null
+          referred_by?: string | null
           slot_duration?: number | null
           stripe_account_id?: string | null
           stripe_onboarding_complete?: boolean
@@ -1409,6 +1451,43 @@ export type Database = {
       }
       check_email_user_type: { Args: { check_email: string }; Returns: string }
       get_ambassador_spots_taken: { Args: never; Returns: number }
+      get_partner_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          discount_percent: number
+          name: string
+          slug: string
+          status: string
+        }[]
+      }
+      get_partner_referrals: {
+        Args: { _slug: string }
+        Returns: {
+          created_at: string
+          email: string
+          name: string
+          payment_status: string
+          plan: string
+          professional_type: string
+          user_id: string
+        }[]
+      }
+      get_partners_with_stats: {
+        Args: never
+        Returns: {
+          active_subscribers: number
+          commission_percent: number
+          contact_email: string
+          contact_name: string
+          created_at: string
+          discount_percent: number
+          id: string
+          name: string
+          slug: string
+          status: string
+          total_referrals: number
+        }[]
+      }
       get_public_professionals: {
         Args: { specialty_filter?: string }
         Returns: {
