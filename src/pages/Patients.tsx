@@ -3,6 +3,7 @@ import { maskPhone } from "@/utils/masks";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import UpgradeModal from "@/components/UpgradeModal";
 import PatientLimitWarning from "@/components/patients/PatientLimitWarning";
+import { usePatientProgressMessages } from "@/hooks/usePatientProgressMessages";
 import { motion } from "framer-motion";
 import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet, Upload, Loader2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
