@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
+import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
+import { PartnerDiscountBadge } from "@/components/PartnerDiscountBadge";
 
 const FREE_FEATURES = [
   { text: "Até 3 pacientes cadastrados", included: true },
@@ -31,6 +33,13 @@ const ESSENTIAL_FEATURES = [
 export default function Pricing() {
   const navigate = useNavigate();
   const [annual, setAnnual] = useState(false);
+  const { partner, applyDiscount } = usePartnerDiscount();
+
+  const monthlyBase = 89;
+  const annualBase = 69;
+  const monthlyPrice = applyDiscount(monthlyBase);
+  const annualPrice = applyDiscount(annualBase);
+  const hasDiscount = !!partner;
 
   return (
     <>
@@ -48,6 +57,12 @@ export default function Pricing() {
             <p className="text-muted-foreground text-lg mb-6">
               Comece grátis e faça upgrade quando quiser.
             </p>
+
+            {partner && (
+              <div className="flex justify-center mb-4">
+                <PartnerDiscountBadge partner={partner} />
+              </div>
+            )}
 
             {/* Annual toggle */}
             <div className="inline-flex items-center gap-3 rounded-full bg-muted/50 p-1 border border-border/40">
@@ -112,17 +127,22 @@ export default function Pricing() {
                 <div className="mt-2">
                   {annual ? (
                     <>
-                      <span className="text-lg text-muted-foreground line-through mr-2">R$89</span>
-                      <span className="text-4xl font-bold text-foreground">R$69</span>
+                      <span className="text-lg text-muted-foreground line-through mr-2">R${hasDiscount ? annualBase : 89}</span>
+                      <span className="text-4xl font-bold text-foreground">R${hasDiscount ? annualPrice : 69}</span>
                       <span className="text-muted-foreground">/mês</span>
                       <p className="text-xs text-muted-foreground mt-1">No plano de assinatura anual</p>
-                      <Badge variant="secondary" className="mt-2 bg-primary/10 text-primary border-0 text-xs">
-                        Economia de R$240
-                      </Badge>
+                      {!hasDiscount && (
+                        <Badge variant="secondary" className="mt-2 bg-primary/10 text-primary border-0 text-xs">
+                          Economia de R$240
+                        </Badge>
+                      )}
                     </>
                   ) : (
                     <>
-                      <span className="text-4xl font-bold text-foreground">R$89</span>
+                      {hasDiscount && (
+                        <span className="text-lg text-muted-foreground line-through mr-2">R$89</span>
+                      )}
+                      <span className="text-4xl font-bold text-foreground">R${monthlyPrice}</span>
                       <span className="text-muted-foreground">/mês</span>
                     </>
                   )}
