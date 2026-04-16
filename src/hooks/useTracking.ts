@@ -101,3 +101,15 @@ export function trackCtaClick(ctaName: string, location: string) {
     window.fbq("trackCustom", "CtaClick", { cta_name: ctaName, cta_location: location });
   }
 }
+
+export function trackLimitWarning(eventName: string, count: number) {
+  if (window.gtag) {
+    window.gtag("event", eventName, {
+      patient_count: count,
+      send_to: "G-117MVSM8LG",
+    });
+  }
+  if (window.fbq) {
+    window.fbq("trackCustom", "LimitWarning", { event: eventName, patient_count: count });
+  }
+}

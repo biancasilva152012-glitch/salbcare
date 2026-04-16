@@ -5,7 +5,7 @@ import { isAdminEmail } from "@/config/admin";
 
 export const FREE_LIMITS = {
   financialTransactions: 10,
-  patients: 3,
+  patients: 10,
   mentorshipMessages: 5,
 } as const;
 
