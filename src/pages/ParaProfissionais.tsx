@@ -103,22 +103,22 @@ const ParaProfissionais = () => {
             <motion.div variants={fadeUp} className="mb-4 flex flex-col items-center gap-3">
               <img src="/pwa-icon-512.png" alt="SalbCare" className="h-14 w-14 object-contain" />
               <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                7 dias grátis • sem cartão
+                Grátis para começar • Upgrade só quando precisar
               </span>
             </motion.div>
             <motion.h1
               variants={fadeUp}
               className="text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight"
             >
-              Organize seus <span className="text-primary">pacientes</span> em minutos.
+              Sua <span className="text-primary">vitrine</span> para pacientes.
               <br />
-              <span className="text-primary">Comece</span> grátis.
+              Seu <span className="text-primary">controle</span> para gestão.
             </motion.h1>
             <motion.p
               variants={fadeUp}
               className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto text-center"
             >
-              Cadastre até 10 pacientes gratuitamente. Sem cartão.
+              Comece grátis e organize até 10 pacientes sem pagar nada.
             </motion.p>
 
             {/* Three value props */}
@@ -139,15 +139,15 @@ const ParaProfissionais = () => {
 
             <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)]">
-                <Link to="/cadastro">
-                  Começar grátis
+                <Link to="/cadastro" onClick={() => trackCtaClick("criar_conta_gratis", "hero")}>
+                  Criar conta grátis
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button
-                variant="outline"
-                size="lg"
-                className="text-base px-8 py-6 rounded-xl font-semibold"
+                variant="ghost"
+                size="sm"
+                className="text-sm text-muted-foreground hover:text-foreground"
                 onClick={() => {
                   document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
                   trackCtaClick("como_funciona", "hero");
@@ -157,7 +157,7 @@ const ParaProfissionais = () => {
               </Button>
             </motion.div>
             <motion.p variants={fadeUp} className="mt-2 text-[11px] text-muted-foreground text-center">
-              Sem cartão • Leva menos de 1 minuto • Cancele quando quiser
+              Sem cartão • Comece em menos de 1 minuto
             </motion.p>
             <motion.p variants={fadeUp} className="mt-1 text-center">
               <Link to="/login" className="text-xs text-primary/80 hover:text-primary transition-colors">
@@ -192,8 +192,8 @@ const ParaProfissionais = () => {
           <div className="mx-auto max-w-4xl px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             {[
               { value: "9+", label: "especialidades" },
-              { value: "100%", label: "das consultas pra você" },
-              { value: "7 dias", label: "grátis sem cartão" },
+              { value: "100%", label: "Você fica com 100% do valor. Sem comissão." },
+              { value: "Grátis", label: "para começar, sem cartão" },
             ].map((s) => (
               <motion.div
                 key={s.label}
