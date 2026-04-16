@@ -3,6 +3,15 @@ import { NavLink, useLocation } from "react-router-dom";
 import { Home, Calendar, Users, DollarSign, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Prefetch loaders — start downloading the chunk on hover/touch
+const prefetchers: Record<string, () => Promise<unknown>> = {
+  "/dashboard": () => import("@/pages/Dashboard"),
+  "/dashboard/agenda": () => import("@/pages/Agenda"),
+  "/dashboard/pacientes": () => import("@/pages/Patients"),
+  "/dashboard/financial": () => import("@/pages/Financial"),
+  "/profile": () => import("@/pages/Profile"),
+};
+
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Painel" },
   { to: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
@@ -10,6 +19,13 @@ const navItems = [
   { to: "/dashboard/financial", icon: DollarSign, label: "Financeiro" },
   { to: "/profile", icon: User, label: "Meu perfil" },
 ];
+
+const prefetched = new Set<string>();
+const prefetch = (to: string) => {
+  if (prefetched.has(to)) return;
+  prefetched.add(to);
+  prefetchers[to]?.().catch(() => prefetched.delete(to));
+};
 
 const BottomNav = memo(() => {
   const location = useLocation();
@@ -32,6 +48,8 @@ const BottomNav = memo(() => {
             key={to}
             to={to}
             end={to === "/dashboard"}
+            onMouseEnter={() => prefetch(to)}
+            onTouchStart={() => prefetch(to)}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-xs transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
