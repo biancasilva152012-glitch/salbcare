@@ -126,16 +126,7 @@ const Dashboard = () => {
     staleTime: 60 * 60 * 1000,
   });
 
-  if (isLoading || patientCount === -1) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
-
-  // Show activation onboarding for users with 0 patients
-  if (patientCount === 0) {
-    return (
-      <PageContainer>
-        <ActivationOnboarding userName={profile?.name || ""} />
-      </PageContainer>
-    );
-  }
+  if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
 
   const quickAccess = [
     { icon: BookOpen, label: "Contabilidade", to: "/dashboard/contabilidade", color: "text-primary" },
