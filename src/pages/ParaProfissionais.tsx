@@ -116,7 +116,7 @@ const ParaProfissionais = () => {
               variants={fadeUp}
               className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto text-center"
             >
-              Comece grátis e organize até 10 pacientes sem pagar nada, tenha uma mentoria financeira dos seus ganhos e gastos, e apareça no nosso diretório para pacientes.
+              Organize seus primeiros 10 pacientes sem custo. Gestão completa, mentoria financeira e visibilidade para pacientes.
             </motion.p>
 
             {/* Three value props */}
