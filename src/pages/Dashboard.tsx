@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
+import ActivationOnboarding from "@/components/ActivationOnboarding";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
