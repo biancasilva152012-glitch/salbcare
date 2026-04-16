@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
+import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
+import { PartnerDiscountBadge } from "@/components/PartnerDiscountBadge";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -21,6 +23,12 @@ const features = [
 
 const Subscription = () => {
   const [annual, setAnnual] = useState(false);
+  const { partner, applyDiscount } = usePartnerDiscount();
+  const monthlyBase = 89;
+  const annualBase = 69;
+  const monthlyPrice = applyDiscount(monthlyBase);
+  const annualPrice = applyDiscount(annualBase);
+  const hasDiscount = !!partner;
 
   return (
     <>
@@ -64,22 +72,32 @@ const Subscription = () => {
           <motion.div variants={fadeUp} className="glass-card p-6 sm:p-8 space-y-5 ring-1 ring-primary/30">
             <div>
               <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
-                7 dias grátis
+                {hasDiscount ? "Cobrança imediata" : "7 dias grátis"}
               </span>
               <h2 className="text-lg font-bold">SalbCare Essencial</h2>
+              {partner && (
+                <div className="mt-3 flex justify-center">
+                  <PartnerDiscountBadge partner={partner} />
+                </div>
+              )}
             </div>
 
             <div>
               {annual ? (
                 <>
-                  <span className="text-lg text-muted-foreground line-through mr-2">R$ 89</span>
-                  <span className="text-4xl font-bold text-primary">R$ 69</span>
+                  <span className="text-lg text-muted-foreground line-through mr-2">R$ {hasDiscount ? annualBase : 89}</span>
+                  <span className="text-4xl font-bold text-primary">R$ {hasDiscount ? annualPrice : 69}</span>
                   <span className="text-muted-foreground">/mês</span>
-                  <p className="text-xs text-primary font-semibold mt-1">R$ 828/ano • Economia de R$ 240</p>
+                  {!hasDiscount && (
+                    <p className="text-xs text-primary font-semibold mt-1">R$ 828/ano • Economia de R$ 240</p>
+                  )}
                 </>
               ) : (
                 <>
-                  <span className="text-4xl font-bold text-primary">R$ 89</span>
+                  {hasDiscount && (
+                    <span className="text-lg text-muted-foreground line-through mr-2">R$ 89</span>
+                  )}
+                  <span className="text-4xl font-bold text-primary">R$ {monthlyPrice}</span>
                   <span className="text-muted-foreground">/mês</span>
                   <p className="text-xs text-muted-foreground mt-1">cobrado mensalmente</p>
                 </>
@@ -101,12 +119,14 @@ const Subscription = () => {
 
             <Button asChild size="lg" className="w-full text-base py-6 rounded-xl font-bold gradient-primary">
               <Link to="/cadastro">
-                Começar 7 dias grátis
+                {hasDiscount ? "Assinar com desconto" : "Começar 7 dias grátis"}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <p className="text-xs text-muted-foreground">
-              Sem cartão de crédito para começar. Cancele quando quiser.
+              {hasDiscount
+                ? "Cobrança imediata via Stripe. Cancele quando quiser."
+                : "Sem cartão de crédito para começar. Cancele quando quiser."}
             </p>
           </motion.div>
 
