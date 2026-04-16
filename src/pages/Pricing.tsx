@@ -9,7 +9,7 @@ import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
 import { PartnerDiscountBadge } from "@/components/PartnerDiscountBadge";
 
 const FREE_FEATURES = [
-  { text: "Até 3 pacientes cadastrados", included: true },
+  { text: "Até 10 pacientes cadastrados", included: true },
   { text: "Até 10 lançamentos financeiros/mês", included: true },
   { text: "5 mensagens de mentoria IA/mês", included: true },
   { text: "Perfil público no diretório", included: true },
