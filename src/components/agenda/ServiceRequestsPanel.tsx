@@ -226,11 +226,11 @@ const ServiceRequestsPanel = () => {
       {filteredRequests.length === 0 && (
         <EmptyState
           icon={FilePlus}
-          title="Nenhuma solicitação"
+          title="Tudo em dia por aqui"
           description={
             filterStatus === "actionable"
-              ? "Você não tem solicitações pendentes no momento."
-              : "Nenhuma solicitação encontrada com este filtro."
+              ? "Nenhuma solicitação esperando você agora — aproveita pra respirar."
+              : "Nada encontrado com esse filtro. Tenta mudar o status."
           }
         />
       )}

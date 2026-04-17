@@ -105,8 +105,8 @@ const ConsultationPayments = () => {
       ) : payments.length === 0 ? (
         <EmptyState
           icon={DollarSign}
-          title="Nenhuma consulta paga"
-          description="As consultas pagas via SalbCare aparecerão aqui."
+          title="Ainda sem pagamentos por aqui"
+          description="Quando seus pacientes pagarem pela SalbCare, cada recebimento aparece nessa lista — direto, sem letrinha miúda."
         />
       ) : (
         <div className="space-y-2">

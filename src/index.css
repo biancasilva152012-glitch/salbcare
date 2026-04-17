@@ -228,4 +228,33 @@ body[data-scroll-locked] {
   .section-divider {
     @apply border-t border-border/30 my-5;
   }
+
+  /* Divisor "assinatura": linha leve com inclinação orgânica de 2deg.
+     Usado em hero sections para parecer decisão humana, não régua de IA. */
+  .signature-divider {
+    height: 1px;
+    width: 64px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.6), transparent);
+    transform: skewX(-3deg);
+    transform-origin: left center;
+  }
+
+  /* Espaçamentos verticais "humanos" — alternam 40/48/56px em vez de grid rígido */
+  .stack-snug { @apply space-y-10; }   /* 40px */
+  .stack-cozy { @apply space-y-12; }   /* 48px */
+  .stack-roomy { @apply space-y-14; }  /* 56px */
+
+  /* Badge tracejado para destaque de plano — quebra a monotonia de bordas sólidas */
+  .badge-dashed {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+    border: 1.5px dashed hsl(var(--primary) / 0.55);
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.06);
+  }
+
+  /* Transição orgânica reutilizável */
+  .transition-organic {
+    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition-duration: 320ms;
+  }
 }

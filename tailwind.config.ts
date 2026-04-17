@@ -88,12 +88,27 @@ export default {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "soft-rise": {
+          from: { opacity: "0", transform: "translateY(12px) scale(0.985)" },
+          to: { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "slide-up": "slide-up 0.3s ease-out",
-        "fade-in": "fade-in 0.4s ease-out",
+        // Durações irregulares e easings orgânicos — evitamos múltiplos redondos de 100ms
+        "accordion-down": "accordion-down 220ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "accordion-up": "accordion-up 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "slide-up": "slide-up 320ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "fade-in": "fade-in 440ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "soft-rise": "soft-rise 380ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+      },
+      transitionTimingFunction: {
+        spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        organic: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
+      transitionDuration: {
+        "280": "280ms",
+        "320": "320ms",
+        "440": "440ms",
       },
     },
   },
