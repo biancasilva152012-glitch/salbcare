@@ -608,12 +608,12 @@ const Agenda = () => {
           {Object.keys(grouped).length === 0 && !search && (
             <EmptyState
               icon={CalendarX}
-              title="Nenhuma consulta agendada"
-              description="Toque em + Nova para adicionar sua primeira consulta."
+              title="Sua agenda está respirando"
+              description="Toque em + Nova para marcar a primeira consulta — o resto a gente organiza pra você."
             />
           )}
           {Object.keys(grouped).length === 0 && search && (
-            <p className="text-sm text-muted-foreground text-center py-8">Nenhuma consulta encontrada</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Nada bateu com sua busca. Tenta outro nome?</p>
           )}
           {paginatedGroupKeys.map((date) => {
             const apts = grouped[date];

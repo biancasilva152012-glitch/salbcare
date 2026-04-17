@@ -390,8 +390,8 @@ const Patients = () => {
           {filtered.length === 0 && !search && (
             <EmptyState
               icon={Users}
-              title="Nenhum paciente cadastrado"
-              description="Cadastre manualmente, ou importe uma planilha CSV com seus pacientes."
+              title="Sua lista está limpinha por aqui"
+              description="Cadastre o primeiro paciente à mão ou suba uma planilha CSV — em poucos minutos seu prontuário começa a tomar forma."
               actionLabel={canAddPatient ? "Cadastrar paciente" : undefined}
               onAction={canAddPatient ? () => { setForm(emptyForm); setOpen(true); } : undefined}
               extra={

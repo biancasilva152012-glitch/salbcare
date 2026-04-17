@@ -423,14 +423,14 @@ const Financial = () => {
           {filteredTransactions.length === 0 && transactions.length === 0 && (
             <EmptyState
               icon={DollarSign}
-              title="Nenhum lançamento ainda"
-              description="Seus lançamentos aparecerão aqui. Registre sua primeira receita para começar a ver seu lucro real."
-              actionLabel="Registrar receita"
+              title="Seu caixa está zerado — por enquanto"
+              description="Registre a primeira consulta recebida e comece a enxergar quanto fica de verdade no seu bolso, sem surpresa no fim do mês."
+              actionLabel="Lançar primeira receita"
               onAction={() => { setForm({ ...emptyForm, type: "income" }); setOpen(true); }}
             />
           )}
           {filteredTransactions.length === 0 && transactions.length > 0 && (
-            <p className="text-sm text-muted-foreground text-center py-8">Nenhuma transação neste mês</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Nada por aqui neste mês — tente outro filtro.</p>
           )}
           {txPagination.paginatedItems.map((t) => (
             <div key={t.id} className="glass-card flex items-center justify-between p-3">
