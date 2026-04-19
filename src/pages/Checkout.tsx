@@ -8,6 +8,8 @@ import { ArrowLeft, Loader2, CreditCard, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { trackCheckoutStart } from "@/hooks/useTracking";
+import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
+import PartnerDiscountBadge from "@/components/PartnerDiscountBadge";
 
 const Checkout = () => {
   const navigate = useNavigate();
