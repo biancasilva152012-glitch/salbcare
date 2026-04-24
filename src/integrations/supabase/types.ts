@@ -383,6 +383,45 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_usage_counters: {
+        Row: {
+          appointments_created: number
+          created_at: string
+          guest_id: string | null
+          id: string
+          last_synced_at: string
+          patients_created: number
+          telehealth_attempts: number
+          telehealth_views: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          appointments_created?: number
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          last_synced_at?: string
+          patients_created?: number
+          telehealth_attempts?: number
+          telehealth_views?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          appointments_created?: number
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          last_synced_at?: string
+          patients_created?: number
+          telehealth_attempts?: number
+          telehealth_views?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       diagnosticos: {
         Row: {
           aceita_dicas: boolean
@@ -1531,6 +1570,27 @@ export type Database = {
         Returns: boolean
       }
       is_admin_or_contador: { Args: { _user_id: string }; Returns: boolean }
+      merge_demo_counters: {
+        Args: { _guest_id: string }
+        Returns: {
+          appointments_created: number
+          created_at: string
+          guest_id: string | null
+          id: string
+          last_synced_at: string
+          patients_created: number
+          telehealth_attempts: number
+          telehealth_views: number
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "demo_usage_counters"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       verify_document_by_hash: {
         Args: { _hash: string }
         Returns: {
