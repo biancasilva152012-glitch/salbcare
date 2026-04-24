@@ -28,6 +28,45 @@ export const DEMO_LIMITS = {
   telehealthAttempts: 1,
 } as const;
 
+export type DemoModule = "patients" | "appointments" | "telehealth";
+
+/**
+ * Single source of truth mapping each module to its counter keys + limits.
+ * Used by the unified `getModuleUsage` API so meters, Progress bars and the
+ * contextual paywall always read from the same place.
+ *
+ * - `attempts` is the counter that drives the contextual block (premium action)
+ * - `views` is informative only and NEVER blocks navigation
+ */
+export const DEMO_MODULE_CONFIG: Record<
+  DemoModule,
+  {
+    attemptsKey: keyof DemoUsageCounters;
+    attemptsLimit: number;
+    viewsKey?: keyof DemoUsageCounters;
+    viewsLimit?: number;
+    label: string;
+  }
+> = {
+  patients: {
+    attemptsKey: "patientsCreated",
+    attemptsLimit: DEMO_LIMITS.patients,
+    label: "Pacientes",
+  },
+  appointments: {
+    attemptsKey: "appointmentsCreated",
+    attemptsLimit: DEMO_LIMITS.appointments,
+    label: "Consultas",
+  },
+  telehealth: {
+    attemptsKey: "telehealthAttempts",
+    attemptsLimit: DEMO_LIMITS.telehealthAttempts,
+    viewsKey: "telehealthViews",
+    viewsLimit: DEMO_LIMITS.telehealthViews,
+    label: "Teleconsulta",
+  },
+};
+
 export const DEMO_STORAGE = {
   patients: "salbcare_demo_patients",
   appointments: "salbcare_demo_appointments",
@@ -70,6 +109,95 @@ export function incrementUsageCounter(key: keyof DemoUsageCounters): DemoUsageCo
     }
   }
   return next;
+}
+
+/**
+ * Force a counter to a specific value. Used to keep list-based counters
+ * (patients/appointments) in sync with the actual list length so the meter
+ * stays consistent after edits/deletes.
+ */
+export function setUsageCounter(
+  key: keyof DemoUsageCounters,
+  value: number,
+): DemoUsageCounters {
+  const current = readUsageCounters();
+  const next = { ...current, [key]: Math.max(0, value) };
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(DEMO_STORAGE.usageCounters, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  }
+  return next;
+}
+
+export type ModuleUsage = {
+  module: DemoModule;
+  label: string;
+  used: number;
+  limit: number;
+  remaining: number;
+  percent: number;
+  /** True only when the premium *create* action is locked. Navigation/edit stays open. */
+  blocked: boolean;
+  /** Optional informative views counter (e.g. telehealth tab opens). Never blocks. */
+  views?: { used: number; limit: number; remaining: number; percent: number };
+};
+
+/**
+ * Unified read API for any module's usage. Reads counters + list lengths and
+ * returns everything the UI (meter, Progress, contextual paywall) needs.
+ *
+ * IMPORTANT: only `attempts` (the create action) drives `blocked`. Views are
+ * informative only — navigation in Patients, Agenda and Telehealth is always
+ * open even after limits are reached.
+ */
+export function getModuleUsage(module: DemoModule): ModuleUsage {
+  const cfg = DEMO_MODULE_CONFIG[module];
+  const counters = readUsageCounters();
+
+  // Patients/Appointments: the *current list length* is the source of truth
+  // for "how many you have right now". This stays in sync even if the user
+  // deletes records, while the counter store mirrors creation events.
+  let used: number;
+  if (module === "patients") used = readDemoPatients().length;
+  else if (module === "appointments") used = readDemoAppointments().length;
+  else used = counters[cfg.attemptsKey];
+
+  const limit = cfg.attemptsLimit;
+  const remaining = Math.max(0, limit - used);
+  const percent = Math.min(100, (used / limit) * 100);
+
+  let views: ModuleUsage["views"];
+  if (cfg.viewsKey && cfg.viewsLimit) {
+    const v = counters[cfg.viewsKey];
+    views = {
+      used: v,
+      limit: cfg.viewsLimit,
+      remaining: Math.max(0, cfg.viewsLimit - v),
+      percent: Math.min(100, (v / cfg.viewsLimit) * 100),
+    };
+  }
+
+  return {
+    module,
+    label: cfg.label,
+    used,
+    limit,
+    remaining,
+    percent,
+    blocked: remaining === 0,
+    views,
+  };
+}
+
+export function getAllModuleUsage(): Record<DemoModule, ModuleUsage> {
+  return {
+    patients: getModuleUsage("patients"),
+    appointments: getModuleUsage("appointments"),
+    telehealth: getModuleUsage("telehealth"),
+  };
 }
 
 function safeParse<T>(key: string): T | null {

@@ -21,6 +21,7 @@ import {
   DEMO_STORAGE as DEMO_STORAGE_KEYS,
   incrementUsageCounter,
   readUsageCounters,
+  getAllModuleUsage,
 } from "@/lib/demoStorage";
 
 // ============= Types =============
@@ -96,6 +97,15 @@ const Experimente = () => {
   const [signupOpen, setSignupOpen] = useState(false);
   const [signupReason, setSignupReason] = useState<string>("");
   const [usage, setUsage] = useState(() => readUsageCounters());
+
+  // Unified usage source for all modules — keeps top meter, per-module
+  // counters and Progress bars perfectly in sync. Recomputed whenever the
+  // underlying lists or counters change.
+  const moduleUsage = useMemo(
+    () => getAllModuleUsage(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [patients.length, appointments.length, usage],
+  );
 
   // Forms
   const [newPatient, setNewPatient] = useState({ name: "", phone: "", notes: "" });
@@ -280,38 +290,34 @@ const Experimente = () => {
           </p>
         </div>
 
-        {/* Usage meter — quanto resta antes do bloqueio em cada módulo */}
+        {/* Usage meter — quanto resta antes do bloqueio em cada módulo.
+            Apenas a ação premium (criar) bloqueia; navegação fica sempre liberada. */}
         <div className="mx-auto max-w-2xl px-4 pb-3">
           <div className="glass-card p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             {[
+              { ...moduleUsage.patients, icon: Users, label: "Pacientes", isPremium: true },
+              { ...moduleUsage.appointments, icon: Calendar, label: "Consultas", isPremium: true },
               {
-                label: "Pacientes",
-                used: patients.length,
-                limit: DEMO_LIMITS.patients,
-                icon: Users,
-              },
-              {
-                label: "Consultas",
-                used: appointments.length,
-                limit: DEMO_LIMITS.appointments,
-                icon: Calendar,
-              },
-              {
-                label: "Telehealth views",
-                used: usage.telehealthViews,
-                limit: DEMO_LIMITS.telehealthViews,
+                used: moduleUsage.telehealth.views?.used ?? 0,
+                limit: moduleUsage.telehealth.views?.limit ?? 0,
+                remaining: moduleUsage.telehealth.views?.remaining ?? 0,
+                blocked: false, // views never block navigation
                 icon: Video,
+                label: "Telehealth views",
+                isPremium: false,
               },
               {
-                label: "Teleconsultas",
-                used: usage.telehealthAttempts,
-                limit: DEMO_LIMITS.telehealthAttempts,
+                used: moduleUsage.telehealth.used,
+                limit: moduleUsage.telehealth.limit,
+                remaining: moduleUsage.telehealth.remaining,
+                blocked: moduleUsage.telehealth.blocked,
                 icon: Lock,
+                label: "Teleconsultas",
+                isPremium: true,
               },
             ].map((m) => {
               const Icon = m.icon;
-              const remaining = Math.max(0, m.limit - m.used);
-              const blocked = remaining === 0;
+              const blocked = m.blocked;
               return (
                 <div key={m.label} className="space-y-1">
                   <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
@@ -322,7 +328,11 @@ const Experimente = () => {
                     {m.used}/{m.limit}
                   </p>
                   <p className="text-[10px] text-muted-foreground">
-                    {blocked ? "bloqueado" : `${remaining} restante${remaining === 1 ? "" : "s"}`}
+                    {blocked
+                      ? m.isPremium
+                        ? "criar bloqueado"
+                        : "limite informativo"
+                      : `${m.remaining} restante${m.remaining === 1 ? "" : "s"}`}
                   </p>
                 </div>
               );
@@ -372,15 +382,15 @@ const Experimente = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <p className="text-xs font-medium">
-                          {patients.length}/{DEMO_LIMITS.patients} pacientes na demo
+                          {moduleUsage.patients.used}/{moduleUsage.patients.limit} pacientes na demo
                         </p>
                         <span className="text-[10px] text-muted-foreground">
-                          {Math.max(0, DEMO_LIMITS.patients - patients.length)} restantes
+                          {moduleUsage.patients.remaining} restantes
                         </span>
                       </div>
-                      <Progress value={(patients.length / DEMO_LIMITS.patients) * 100} className="h-1.5" />
+                      <Progress value={moduleUsage.patients.percent} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={startNewPatient} disabled={patients.length >= DEMO_LIMITS.patients && !editingPatientId}>
+                    <Button size="sm" variant="outline" onClick={startNewPatient} disabled={moduleUsage.patients.blocked && !editingPatientId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Adicionar
                     </Button>
@@ -509,15 +519,15 @@ const Experimente = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <p className="text-xs font-medium">
-                          {appointments.length}/{DEMO_LIMITS.appointments} consultas na demo
+                          {moduleUsage.appointments.used}/{moduleUsage.appointments.limit} consultas na demo
                         </p>
                         <span className="text-[10px] text-muted-foreground">
-                          {Math.max(0, DEMO_LIMITS.appointments - appointments.length)} restantes
+                          {moduleUsage.appointments.remaining} restantes
                         </span>
                       </div>
-                      <Progress value={(appointments.length / DEMO_LIMITS.appointments) * 100} className="h-1.5" />
+                      <Progress value={moduleUsage.appointments.percent} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={startNewAppt} disabled={appointments.length >= DEMO_LIMITS.appointments && !editingApptId}>
+                    <Button size="sm" variant="outline" onClick={startNewAppt} disabled={moduleUsage.appointments.blocked && !editingApptId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Nova consulta
                     </Button>
@@ -649,33 +659,34 @@ const Experimente = () => {
                 exit={{ opacity: 0, y: -8 }}
                 className="space-y-3"
               >
-                {/* Per-module counters */}
+                {/* Per-module counters — fonte única (getModuleUsage) */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2 text-xs">
                     <p className="font-medium">
-                      {usage.telehealthViews}/{DEMO_LIMITS.telehealthViews} visualizações
+                      {moduleUsage.telehealth.views?.used ?? 0}/
+                      {moduleUsage.telehealth.views?.limit ?? 0} visualizações
                     </p>
                     <span className="text-[10px] text-muted-foreground">
-                      {Math.max(0, DEMO_LIMITS.telehealthViews - usage.telehealthViews)} restantes
+                      {moduleUsage.telehealth.views?.remaining ?? 0} restantes
                     </span>
                   </div>
                   <Progress
-                    value={(usage.telehealthViews / DEMO_LIMITS.telehealthViews) * 100}
+                    value={moduleUsage.telehealth.views?.percent ?? 0}
                     className="h-1.5"
                   />
                   <div className="flex items-center justify-between gap-2 text-xs pt-1">
                     <p className="font-medium">
-                      {usage.telehealthAttempts}/{DEMO_LIMITS.telehealthAttempts} teleconsultas (demo)
+                      {moduleUsage.telehealth.used}/{moduleUsage.telehealth.limit} teleconsultas (demo)
                     </p>
                     <span className="text-[10px] text-muted-foreground">
-                      {Math.max(0, DEMO_LIMITS.telehealthAttempts - usage.telehealthAttempts)} restantes
+                      {moduleUsage.telehealth.remaining} restantes
                     </span>
                   </div>
                   <Progress
-                    value={(usage.telehealthAttempts / DEMO_LIMITS.telehealthAttempts) * 100}
+                    value={moduleUsage.telehealth.percent}
                     className="h-1.5"
                   />
-                  {usage.telehealthAttempts >= DEMO_LIMITS.telehealthAttempts && (
+                  {moduleUsage.telehealth.blocked && (
                     <Alert className="py-2 border-primary/40 bg-primary/5">
                       <Lock className="h-3.5 w-3.5 !text-primary" />
                       <AlertDescription className="text-xs ml-1">
