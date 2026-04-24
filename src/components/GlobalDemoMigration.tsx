@@ -4,6 +4,8 @@ import {
   hasMigratableDemoData,
   readDemoPatients,
   readDemoAppointments,
+  mergeGuestCountersIntoAccount,
+  syncDemoCounters,
 } from "@/lib/demoStorage";
 import ImportDemoDataModal from "@/components/ImportDemoDataModal";
 
@@ -12,8 +14,8 @@ import ImportDemoDataModal from "@/components/ImportDemoDataModal";
  * authenticated user that still has /experimente data sitting in localStorage,
  * we open the import modal — regardless of which route they landed on.
  *
- * This guarantees data captured in the guest session is never lost: it is
- * either migrated to the new account or explicitly discarded by the user.
+ * Also runs the backend counter merge so the anonymous demo usage is carried
+ * over to the user's account (preventing limit reset by simply signing up).
  */
 export default function GlobalDemoMigration() {
   const { user, loading } = useAuth();
@@ -23,17 +25,20 @@ export default function GlobalDemoMigration() {
   useEffect(() => {
     if (loading || !user) return;
     if (handledFor.current === user.id) return;
-    if (!hasMigratableDemoData()) {
-      handledFor.current = user.id;
-      return;
-    }
-    // Avoid empty migrations (no real entries beyond the seeds removed).
-    const totals = readDemoPatients().length + readDemoAppointments().length;
-    if (totals === 0) {
-      handledFor.current = user.id;
-      return;
-    }
     handledFor.current = user.id;
+
+    // Best-effort: merge guest counters into the new user's row, then re-sync
+    // the local copy with the merged remote total. Failures are silent.
+    (async () => {
+      const merged = await mergeGuestCountersIntoAccount();
+      if (!merged) {
+        await syncDemoCounters(user.id);
+      }
+    })();
+
+    if (!hasMigratableDemoData()) return;
+    const totals = readDemoPatients().length + readDemoAppointments().length;
+    if (totals === 0) return;
     setActive(true);
   }, [user, loading]);
 
