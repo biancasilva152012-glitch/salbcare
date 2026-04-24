@@ -382,15 +382,15 @@ const Experimente = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <p className="text-xs font-medium">
-                          {patients.length}/{DEMO_LIMITS.patients} pacientes na demo
+                          {moduleUsage.patients.used}/{moduleUsage.patients.limit} pacientes na demo
                         </p>
                         <span className="text-[10px] text-muted-foreground">
-                          {Math.max(0, DEMO_LIMITS.patients - patients.length)} restantes
+                          {moduleUsage.patients.remaining} restantes
                         </span>
                       </div>
-                      <Progress value={(patients.length / DEMO_LIMITS.patients) * 100} className="h-1.5" />
+                      <Progress value={moduleUsage.patients.percent} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={startNewPatient} disabled={patients.length >= DEMO_LIMITS.patients && !editingPatientId}>
+                    <Button size="sm" variant="outline" onClick={startNewPatient} disabled={moduleUsage.patients.blocked && !editingPatientId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Adicionar
                     </Button>
