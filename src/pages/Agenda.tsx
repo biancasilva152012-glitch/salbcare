@@ -39,6 +39,11 @@ const blockForm = { date: "", time: "", reason: "" };
 const Agenda = () => {
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
+  const {
+    isFree,
+    canAddAppointment,
+    usageByModule,
+  } = useFreemiumLimits();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -52,6 +57,7 @@ const Agenda = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"appointments" | "requests">("appointments");
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   // Fetch service requests count for badge
   const { data: requestsCount = 0 } = useQuery({
