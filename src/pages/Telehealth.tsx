@@ -326,6 +326,13 @@ const Telehealth = () => {
         doctorPhone={(profile as any)?.phone || ""}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["teleconsultations"] })}
       />
+      <UpgradeModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        feature="teleconsultas"
+        currentUsage={usageByModule.telehealth.used}
+        limit={usageByModule.telehealth.limit}
+      />
     </PageContainer>
   );
 };
