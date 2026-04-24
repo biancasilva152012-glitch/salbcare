@@ -119,12 +119,17 @@ const Experimente = () => {
   const [editingPatientId, setEditingPatientId] = useState<string | null>(null);
   const [editingApptId, setEditingApptId] = useState<string | null>(null);
 
-  // Track first visit
+  // Track first visit + reconcile counters with backend on mount
   useEffect(() => {
     if (!localStorage.getItem(STORAGE.visited)) {
       localStorage.setItem(STORAGE.visited, "1");
       trackCtaClick("demo_started", "experimente_page");
     }
+    // Pull the latest counters from the backend (guest row) and reconcile
+    // with localStorage. Prevents abuse via cache clearing and keeps usage
+    // consistent across devices that share the same guest_id (rare) or
+    // when the user later logs in and counters are merged.
+    syncDemoCounters(null).then((merged) => setUsage(merged)).catch(() => {});
   }, []);
 
   const askSignup = (reason: string) => {
