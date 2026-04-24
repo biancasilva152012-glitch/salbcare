@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle, Search, Pencil, Ban,
+  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle, Search, Pencil, Ban, Download, FileText, FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,10 @@ import {
   incrementUsageCounter,
   readUsageCounters,
   getAllModuleUsage,
+  syncDemoCounters,
+  pushCounterToBackend,
+  exportDemoAsCsv,
+  exportDemoAsPdf,
 } from "@/lib/demoStorage";
 
 // ============= Types =============
