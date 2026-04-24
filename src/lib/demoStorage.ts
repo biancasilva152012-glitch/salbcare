@@ -301,6 +301,15 @@ export async function migrateDemoToAccount(userId: string): Promise<MigrationRes
 
   if (demoPatients.length === 0 && demoAppts.length === 0) return result;
 
+  // Normalize names for robust matching: strip diacritics, collapse spaces, lowercase
+  const normalizeName = (s: string) =>
+    s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
   // ---- Pre-fetch existing rows to detect conflicts ----
   const [existingPatientsRes, existingApptsRes] = await Promise.all([
     supabase.from("patients").select("id, name").eq("user_id", userId),
@@ -309,11 +318,7 @@ export async function migrateDemoToAccount(userId: string): Promise<MigrationRes
 
   const existingPatientByName = new Map<string, string>();
   (existingPatientsRes.data ?? []).forEach((row: { id: string; name: string }) => {
-    existingPatientByName.set(row.name.trim().toLowerCase(), row.id);
-  });
-  const existingApptKeys = new Set<string>();
-  (existingApptsRes.data ?? []).forEach((row: { date: string; time: string }) => {
-    existingApptKeys.add(`${row.date}|${row.time}`);
+    existingPatientByName.set(normalizeName(row.name), row.id);
   });
 
   // ---- Patients ----
@@ -321,7 +326,7 @@ export async function migrateDemoToAccount(userId: string): Promise<MigrationRes
   const patientsToInsert: typeof demoPatients = [];
 
   for (const p of demoPatients) {
-    const key = p.name.trim().toLowerCase();
+    const key = normalizeName(p.name);
     const existingId = existingPatientByName.get(key);
     if (existingId) {
       // Reuse the existing patient — counts as a conflict, but we still link
@@ -330,7 +335,7 @@ export async function migrateDemoToAccount(userId: string): Promise<MigrationRes
       result.skippedPatients += 1;
       result.conflicts.push({
         kind: "patient",
-        reason: "Já existia na sua conta",
+        reason: `Paciente "${p.name}" já existia na sua conta — vinculei as consultas dele à ficha existente`,
         label: p.name,
       });
     } else {
@@ -354,21 +359,13 @@ export async function migrateDemoToAccount(userId: string): Promise<MigrationRes
     } else if (data) {
       result.patients = data.length;
       data.forEach((row) => {
-        insertedPatientByName[row.name.trim().toLowerCase()] = row.id;
+        insertedPatientByName[normalizeName(row.name)] = row.id;
         result.importedPatientNames.push(row.name);
       });
     }
   }
 
   // ---- Appointments — robust conflict key: patient (normalized) + date + time ----
-  const normalizeName = (s: string) =>
-    s
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .toLowerCase();
-
   const existingApptByKey = new Map<
     string,
     { date: string; time: string; patient_name: string }
