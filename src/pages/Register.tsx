@@ -261,7 +261,7 @@ const Register = () => {
               <Link to="/privacy" className="text-primary hover:underline" target="_blank">Política de Privacidade</Link>.
             </p>
             <p className="text-[11px] text-muted-foreground text-center">
-              Após o cadastro, sua mentora financeira com IA já vai conhecer seus dados e estará pronta para te ajudar.
+              CRM/CRP, especialidade e dados de cobrança você completa depois — leva 30 segundos.
             </p>
           </motion.div>
         </AnimatePresence>
@@ -273,8 +273,8 @@ const Register = () => {
           disabled={!canSubmit || loading}
         >
           {loading ? (
-            <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>Criando conta...</motion.span>
-          ) : "Criar conta grátis"}
+            <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>Abrindo seu consultório...</motion.span>
+          ) : "Entrar no SalbCare em 20s"}
         </Button>
 
 
