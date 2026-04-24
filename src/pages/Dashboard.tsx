@@ -140,6 +140,7 @@ const Dashboard = () => {
 
   return (
     <PageContainer>
+      <ImportDemoDataModal userId={user?.id ?? null} />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
         {/* Daily Insight */}
         {dailyInsight && (
