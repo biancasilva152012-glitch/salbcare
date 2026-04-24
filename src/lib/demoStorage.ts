@@ -78,7 +78,26 @@ export const DEMO_STORAGE = {
   appointmentsFilter: "salbcare_demo_appts_filter",
   usageCounters: "salbcare_demo_usage_counters",
   lastMigration: "salbcare_demo_last_migration",
+  guestId: "salbcare_demo_guest_id",
 } as const;
+
+/**
+ * Stable opaque id for the anonymous demo session — created once per browser
+ * and reused across visits so the backend can sync usage counters with the
+ * eventual user account when the visitor signs up.
+ */
+export function getOrCreateGuestId(): string {
+  if (typeof window === "undefined") return "ssr-guest";
+  try {
+    const existing = window.localStorage.getItem(DEMO_STORAGE.guestId);
+    if (existing) return existing;
+    const fresh = `guest_${crypto.randomUUID()}`;
+    window.localStorage.setItem(DEMO_STORAGE.guestId, fresh);
+    return fresh;
+  } catch {
+    return "fallback-guest";
+  }
+}
 
 export type DemoUsageCounters = {
   patientsCreated: number;
