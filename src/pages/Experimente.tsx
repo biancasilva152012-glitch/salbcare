@@ -16,6 +16,12 @@ import {
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
+import {
+  DEMO_LIMITS,
+  DEMO_STORAGE as DEMO_STORAGE_KEYS,
+  incrementUsageCounter,
+  readUsageCounters,
+} from "@/lib/demoStorage";
 
 // ============= Types =============
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
@@ -24,18 +30,8 @@ type DemoTab = "pacientes" | "agenda" | "telehealth";
 type PatientFilter = "all" | "with-phone" | "no-phone";
 type AppointmentFilter = "all" | "presencial" | "online" | "today" | "upcoming";
 
-// ============= Demo limits =============
-const DEMO_LIMITS = { patients: 3, appointments: 5 };
-const STORAGE = {
-  patients: "salbcare_demo_patients",
-  appointments: "salbcare_demo_appointments",
-  visited: "salbcare_demo_visited",
-  activeTab: "salbcare_demo_active_tab",
-  patientsSearch: "salbcare_demo_patients_search",
-  patientsFilter: "salbcare_demo_patients_filter",
-  appointmentsSearch: "salbcare_demo_appts_search",
-  appointmentsFilter: "salbcare_demo_appts_filter",
-};
+// ============= Demo limits (re-export aliases for legacy local refs) =============
+const STORAGE = DEMO_STORAGE_KEYS;
 
 // ============= Seeds (consistent: appointments reference real patients & coherent dates) =============
 const isoDateOffset = (days: number) => {
@@ -84,6 +80,9 @@ const Experimente = () => {
   const setTab = (t: DemoTab) => {
     setTabRaw(t);
     try { window.localStorage.setItem(STORAGE.activeTab, t); } catch {/* ignore */}
+    if (t === "telehealth") {
+      setUsage(incrementUsageCounter("telehealthViews"));
+    }
   };
   const [patients, setPatients] = useLocalState<DemoPatient[]>(STORAGE.patients, seedPatients);
   const [appointments, setAppointments] = useLocalState<DemoAppointment[]>(STORAGE.appointments, seedAppointments);
@@ -96,6 +95,7 @@ const Experimente = () => {
 
   const [signupOpen, setSignupOpen] = useState(false);
   const [signupReason, setSignupReason] = useState<string>("");
+  const [usage, setUsage] = useState(() => readUsageCounters());
 
   // Forms
   const [newPatient, setNewPatient] = useState({ name: "", phone: "", notes: "" });
@@ -165,6 +165,7 @@ const Experimente = () => {
         return;
       }
       setPatients([{ id: crypto.randomUUID(), ...newPatient }, ...patients]);
+      setUsage(incrementUsageCounter("patientsCreated"));
       toast.success("Paciente adicionado (demo)");
     }
     setNewPatient({ name: "", phone: "", notes: "" });
@@ -201,6 +202,7 @@ const Experimente = () => {
         return;
       }
       setAppointments([{ id: crypto.randomUUID(), ...newAppt }, ...appointments]);
+      setUsage(incrementUsageCounter("appointmentsCreated"));
       toast.success("Consulta agendada (demo)");
     }
     setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
@@ -278,7 +280,50 @@ const Experimente = () => {
           </p>
         </div>
 
-        {/* Tabs */}
+        {/* Usage meter — quanto resta antes do bloqueio em cada módulo */}
+        <div className="mx-auto max-w-2xl px-4 pb-3">
+          <div className="glass-card p-3 grid grid-cols-3 gap-2 text-center">
+            {[
+              {
+                label: "Pacientes",
+                used: patients.length,
+                limit: DEMO_LIMITS.patients,
+                icon: Users,
+              },
+              {
+                label: "Consultas",
+                used: appointments.length,
+                limit: DEMO_LIMITS.appointments,
+                icon: Calendar,
+              },
+              {
+                label: "Telehealth",
+                used: usage.telehealthViews,
+                limit: DEMO_LIMITS.telehealthViews,
+                icon: Video,
+              },
+            ].map((m) => {
+              const Icon = m.icon;
+              const remaining = Math.max(0, m.limit - m.used);
+              const blocked = remaining === 0;
+              return (
+                <div key={m.label} className="space-y-1">
+                  <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <Icon className="h-3 w-3" />
+                    {m.label}
+                  </div>
+                  <p className={`text-sm font-bold ${blocked ? "text-destructive" : "text-foreground"}`}>
+                    {m.used}/{m.limit}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {blocked ? "bloqueado" : `${remaining} restante${remaining === 1 ? "" : "s"}`}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="mx-auto max-w-2xl px-4">
           <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted/50 p-1 border border-border/40">
             {[

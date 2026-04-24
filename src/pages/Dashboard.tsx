@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import ActivationOnboarding from "@/components/ActivationOnboarding";
-import ImportDemoDataModal from "@/components/ImportDemoDataModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -140,7 +139,6 @@ const Dashboard = () => {
 
   return (
     <PageContainer>
-      <ImportDemoDataModal userId={user?.id ?? null} />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
         {/* Daily Insight */}
         {dailyInsight && (

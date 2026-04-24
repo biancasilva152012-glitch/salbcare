@@ -21,7 +21,11 @@ export type DemoAppointment = {
   type: "presencial" | "online";
 };
 
-export const DEMO_LIMITS = { patients: 3, appointments: 5 } as const;
+export const DEMO_LIMITS = {
+  patients: 5,
+  appointments: 5,
+  telehealthViews: 3,
+} as const;
 
 export const DEMO_STORAGE = {
   patients: "salbcare_demo_patients",
@@ -32,7 +36,37 @@ export const DEMO_STORAGE = {
   patientsFilter: "salbcare_demo_patients_filter",
   appointmentsSearch: "salbcare_demo_appts_search",
   appointmentsFilter: "salbcare_demo_appts_filter",
+  usageCounters: "salbcare_demo_usage_counters",
 } as const;
+
+export type DemoUsageCounters = {
+  patientsCreated: number;
+  appointmentsCreated: number;
+  telehealthViews: number;
+};
+
+const EMPTY_COUNTERS: DemoUsageCounters = {
+  patientsCreated: 0,
+  appointmentsCreated: 0,
+  telehealthViews: 0,
+};
+
+export function readUsageCounters(): DemoUsageCounters {
+  return safeParse<DemoUsageCounters>(DEMO_STORAGE.usageCounters) ?? { ...EMPTY_COUNTERS };
+}
+
+export function incrementUsageCounter(key: keyof DemoUsageCounters): DemoUsageCounters {
+  const current = readUsageCounters();
+  const next = { ...current, [key]: current[key] + 1 };
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(DEMO_STORAGE.usageCounters, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  }
+  return next;
+}
 
 function safeParse<T>(key: string): T | null {
   if (typeof window === "undefined") return null;
