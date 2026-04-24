@@ -39,17 +39,16 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    professional_type: "",
+    professional_type: "medico", // default — usuário troca depois no perfil
     referral_code: refCode,
   });
 
-  const canSubmit = !!form.name.trim() && !!form.email && form.password.length >= 6 && !!form.professional_type;
+  const canSubmit = !!form.name.trim() && !!form.email && form.password.length >= 6;
 
   const handleSubmit = async () => {
-    if (!form.name.trim()) { toast.error("Preencha seu nome completo."); return; }
-    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { toast.error("E-mail inválido."); return; }
-    if (!form.password || form.password.length < 6) { toast.error("A senha deve ter no mínimo 6 caracteres."); return; }
-    if (!form.professional_type) { toast.error("Selecione sua especialidade."); return; }
+    if (!form.name.trim()) { toast.error("Falta só o seu nome — qual é?"); return; }
+    if (!form.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) === false) { toast.error("Esse e-mail não tá certinho. Confere?"); return; }
+    if (!form.password || form.password.length < 6) { toast.error("A senha precisa ter pelo menos 6 caracteres."); return; }
     
 
     setLoading(true);
