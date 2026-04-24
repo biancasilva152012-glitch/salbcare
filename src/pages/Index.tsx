@@ -78,7 +78,7 @@ const Index = () => {
                   <Link to="/login">Já tenho conta</Link>
                 </Button>
                 <Button asChild className="w-full gradient-primary font-semibold">
-                  <Link to="/cadastro">Começar grátis</Link>
+                  <Link to="/cadastro">Entrar em 20s</Link>
                 </Button>
               </div>
             </motion.div>
