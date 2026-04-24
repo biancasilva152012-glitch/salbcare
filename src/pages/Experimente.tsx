@@ -16,6 +16,12 @@ import {
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
+import {
+  DEMO_LIMITS,
+  DEMO_STORAGE as DEMO_STORAGE_KEYS,
+  incrementUsageCounter,
+  readUsageCounters,
+} from "@/lib/demoStorage";
 
 // ============= Types =============
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
