@@ -20,11 +20,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { isAdminEmail } from "@/config/admin";
 import {
   DEMO_LIMITS,
-  getAllModuleUsage,
+  getModuleUsage,
   readUsageCounters,
   syncDemoCounters,
   type DemoUsageCounters,
+  type ModuleUsage,
 } from "@/lib/demoStorage";
+import { useFreemiumLimits, FREE_LIMITS } from "@/hooks/useFreemiumLimits";
 import { Bug, RefreshCw, X, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
