@@ -78,6 +78,7 @@ const buildSnapshot = (
 
 export default function FreemiumDebugPanel() {
   const { user } = useAuth();
+  const { usageByModule, isFree } = useFreemiumLimits();
   const isDev = import.meta.env.DEV;
   const isAdmin = isAdminEmail(user?.email);
   const enabled = isDev || isAdmin;
