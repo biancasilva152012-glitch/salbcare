@@ -242,8 +242,9 @@ const Experimente = () => {
   }, [appointments, apptsSearch, apptsFilter]);
 
   const goToSignup = () => {
-    trackCtaClick("demo_to_register", signupReason || "header_cta");
-    navigate("/cadastro");
+    trackCtaClick("demo_to_pro_landing", signupReason || "header_cta");
+    // Leva para a landing profissional para conhecer planos antes de cadastrar
+    navigate("/para-profissionais");
   };
 
   return (
