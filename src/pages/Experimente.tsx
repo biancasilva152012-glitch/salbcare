@@ -27,6 +27,7 @@ import {
   exportDemoAsCsv,
   exportDemoAsPdf,
 } from "@/lib/demoStorage";
+import { useFreemiumConsistencyCheck } from "@/hooks/useFreemiumConsistencyCheck";
 
 // ============= Types =============
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
