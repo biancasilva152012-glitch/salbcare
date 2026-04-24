@@ -30,5 +30,5 @@ test("freemium debug panel shows per-module counters with origin label", async (
   await expect(page.getByTestId("debug-panel-origin")).toBeVisible();
   await expect(page.getByTestId("debug-module-patients")).toContainText("Pacientes");
   await expect(page.getByTestId("debug-module-appointments")).toContainText("Consultas");
-  await expect(page.getByTestId("debug-module-telehealth")).toContainText("Teleconsulta");
+  await expect(page.getByTestId("debug-module-mentorship")).toContainText("Mentoria IA");
 });
