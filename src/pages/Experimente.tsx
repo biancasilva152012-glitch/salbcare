@@ -290,38 +290,34 @@ const Experimente = () => {
           </p>
         </div>
 
-        {/* Usage meter — quanto resta antes do bloqueio em cada módulo */}
+        {/* Usage meter — quanto resta antes do bloqueio em cada módulo.
+            Apenas a ação premium (criar) bloqueia; navegação fica sempre liberada. */}
         <div className="mx-auto max-w-2xl px-4 pb-3">
           <div className="glass-card p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             {[
+              { ...moduleUsage.patients, icon: Users, label: "Pacientes", isPremium: true },
+              { ...moduleUsage.appointments, icon: Calendar, label: "Consultas", isPremium: true },
               {
-                label: "Pacientes",
-                used: patients.length,
-                limit: DEMO_LIMITS.patients,
-                icon: Users,
-              },
-              {
-                label: "Consultas",
-                used: appointments.length,
-                limit: DEMO_LIMITS.appointments,
-                icon: Calendar,
-              },
-              {
-                label: "Telehealth views",
-                used: usage.telehealthViews,
-                limit: DEMO_LIMITS.telehealthViews,
+                used: moduleUsage.telehealth.views?.used ?? 0,
+                limit: moduleUsage.telehealth.views?.limit ?? 0,
+                remaining: moduleUsage.telehealth.views?.remaining ?? 0,
+                blocked: false, // views never block navigation
                 icon: Video,
+                label: "Telehealth views",
+                isPremium: false,
               },
               {
-                label: "Teleconsultas",
-                used: usage.telehealthAttempts,
-                limit: DEMO_LIMITS.telehealthAttempts,
+                used: moduleUsage.telehealth.used,
+                limit: moduleUsage.telehealth.limit,
+                remaining: moduleUsage.telehealth.remaining,
+                blocked: moduleUsage.telehealth.blocked,
                 icon: Lock,
+                label: "Teleconsultas",
+                isPremium: true,
               },
             ].map((m) => {
               const Icon = m.icon;
-              const remaining = Math.max(0, m.limit - m.used);
-              const blocked = remaining === 0;
+              const blocked = m.blocked;
               return (
                 <div key={m.label} className="space-y-1">
                   <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
@@ -332,7 +328,11 @@ const Experimente = () => {
                     {m.used}/{m.limit}
                   </p>
                   <p className="text-[10px] text-muted-foreground">
-                    {blocked ? "bloqueado" : `${remaining} restante${remaining === 1 ? "" : "s"}`}
+                    {blocked
+                      ? m.isPremium
+                        ? "criar bloqueado"
+                        : "limite informativo"
+                      : `${m.remaining} restante${m.remaining === 1 ? "" : "s"}`}
                   </p>
                 </div>
               );
