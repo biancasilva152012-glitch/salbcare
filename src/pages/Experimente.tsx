@@ -659,33 +659,34 @@ const Experimente = () => {
                 exit={{ opacity: 0, y: -8 }}
                 className="space-y-3"
               >
-                {/* Per-module counters */}
+                {/* Per-module counters — fonte única (getModuleUsage) */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2 text-xs">
                     <p className="font-medium">
-                      {usage.telehealthViews}/{DEMO_LIMITS.telehealthViews} visualizações
+                      {moduleUsage.telehealth.views?.used ?? 0}/
+                      {moduleUsage.telehealth.views?.limit ?? 0} visualizações
                     </p>
                     <span className="text-[10px] text-muted-foreground">
-                      {Math.max(0, DEMO_LIMITS.telehealthViews - usage.telehealthViews)} restantes
+                      {moduleUsage.telehealth.views?.remaining ?? 0} restantes
                     </span>
                   </div>
                   <Progress
-                    value={(usage.telehealthViews / DEMO_LIMITS.telehealthViews) * 100}
+                    value={moduleUsage.telehealth.views?.percent ?? 0}
                     className="h-1.5"
                   />
                   <div className="flex items-center justify-between gap-2 text-xs pt-1">
                     <p className="font-medium">
-                      {usage.telehealthAttempts}/{DEMO_LIMITS.telehealthAttempts} teleconsultas (demo)
+                      {moduleUsage.telehealth.used}/{moduleUsage.telehealth.limit} teleconsultas (demo)
                     </p>
                     <span className="text-[10px] text-muted-foreground">
-                      {Math.max(0, DEMO_LIMITS.telehealthAttempts - usage.telehealthAttempts)} restantes
+                      {moduleUsage.telehealth.remaining} restantes
                     </span>
                   </div>
                   <Progress
-                    value={(usage.telehealthAttempts / DEMO_LIMITS.telehealthAttempts) * 100}
+                    value={moduleUsage.telehealth.percent}
                     className="h-1.5"
                   />
-                  {usage.telehealthAttempts >= DEMO_LIMITS.telehealthAttempts && (
+                  {moduleUsage.telehealth.blocked && (
                     <Alert className="py-2 border-primary/40 bg-primary/5">
                       <Lock className="h-3.5 w-3.5 !text-primary" />
                       <AlertDescription className="text-xs ml-1">
