@@ -88,6 +88,12 @@ const Experimente = () => {
   const [patients, setPatients] = useLocalState<DemoPatient[]>(STORAGE.patients, seedPatients);
   const [appointments, setAppointments] = useLocalState<DemoAppointment[]>(STORAGE.appointments, seedAppointments);
 
+  // Persisted filters / search
+  const [patientsSearch, setPatientsSearch] = useLocalState<string>(STORAGE.patientsSearch, "");
+  const [patientsFilter, setPatientsFilter] = useLocalState<PatientFilter>(STORAGE.patientsFilter, "all");
+  const [apptsSearch, setApptsSearch] = useLocalState<string>(STORAGE.appointmentsSearch, "");
+  const [apptsFilter, setApptsFilter] = useLocalState<AppointmentFilter>(STORAGE.appointmentsFilter, "all");
+
   const [signupOpen, setSignupOpen] = useState(false);
   const [signupReason, setSignupReason] = useState<string>("");
 
@@ -96,6 +102,8 @@ const Experimente = () => {
   const [newAppt, setNewAppt] = useState({ patient: "", date: "", time: "", type: "presencial" as const });
   const [showPatientForm, setShowPatientForm] = useState(false);
   const [showApptForm, setShowApptForm] = useState(false);
+  const [editingPatientId, setEditingPatientId] = useState<string | null>(null);
+  const [editingApptId, setEditingApptId] = useState<string | null>(null);
 
   // Track first visit
   useEffect(() => {
@@ -113,27 +121,55 @@ const Experimente = () => {
 
   const resetDemoData = () => {
     if (!confirm("Apagar todos os dados da demo e voltar ao estado inicial?")) return;
-    setPatients(seedPatients);
-    setAppointments(seedAppointments);
+    // Re-seed with fresh, consistent data (today/tomorrow dates + matching patients)
+    const freshPatients = buildSeedPatients();
+    const freshAppointments = buildSeedAppointments();
+    setPatients(freshPatients);
+    setAppointments(freshAppointments);
     setShowPatientForm(false);
     setShowApptForm(false);
+    setEditingPatientId(null);
+    setEditingApptId(null);
     setNewPatient({ name: "", phone: "", notes: "" });
     setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
-    toast.success("Dados da demo limpos e re-semeados");
+    setPatientsSearch("");
+    setPatientsFilter("all");
+    setApptsSearch("");
+    setApptsFilter("all");
+    toast.success("Dados re-semeados com pacientes e consultas iniciais");
     trackCtaClick("demo_reset", "experimente_page");
   };
 
   // Patient handlers
-  const addPatient = () => {
-    if (patients.length >= DEMO_LIMITS.patients) {
-      askSignup(`Você atingiu ${DEMO_LIMITS.patients} pacientes na demo`);
-      return;
-    }
-    if (!newPatient.name.trim()) { toast.error("Informe o nome"); return; }
-    setPatients([{ id: crypto.randomUUID(), ...newPatient }, ...patients]);
+  const startNewPatient = () => {
+    if (patients.length >= DEMO_LIMITS.patients) return; // blocked, alert handles UX
+    setEditingPatientId(null);
     setNewPatient({ name: "", phone: "", notes: "" });
+    setShowPatientForm((v) => !v);
+  };
+
+  const startEditPatient = (p: DemoPatient) => {
+    setEditingPatientId(p.id);
+    setNewPatient({ name: p.name, phone: p.phone, notes: p.notes ?? "" });
+    setShowPatientForm(true);
+  };
+
+  const savePatient = () => {
+    if (!newPatient.name.trim()) { toast.error("Informe o nome"); return; }
+    if (editingPatientId) {
+      setPatients(patients.map((p) => (p.id === editingPatientId ? { ...p, ...newPatient } : p)));
+      toast.success("Paciente atualizado (demo)");
+    } else {
+      if (patients.length >= DEMO_LIMITS.patients) {
+        askSignup(`Você atingiu ${DEMO_LIMITS.patients} pacientes na demo`);
+        return;
+      }
+      setPatients([{ id: crypto.randomUUID(), ...newPatient }, ...patients]);
+      toast.success("Paciente adicionado (demo)");
+    }
+    setNewPatient({ name: "", phone: "", notes: "" });
+    setEditingPatientId(null);
     setShowPatientForm(false);
-    toast.success("Paciente adicionado (demo)");
   };
 
   const removePatient = (id: string) => {
@@ -141,17 +177,69 @@ const Experimente = () => {
   };
 
   // Appointment handlers
-  const addAppointment = () => {
-    if (appointments.length >= DEMO_LIMITS.appointments) {
-      askSignup(`Você criou ${DEMO_LIMITS.appointments} consultas na demo`);
-      return;
-    }
-    if (!newAppt.patient || !newAppt.date || !newAppt.time) { toast.error("Preencha todos os campos"); return; }
-    setAppointments([{ id: crypto.randomUUID(), ...newAppt }, ...appointments]);
+  const startNewAppt = () => {
+    if (appointments.length >= DEMO_LIMITS.appointments) return;
+    setEditingApptId(null);
     setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
-    setShowApptForm(false);
-    toast.success("Consulta agendada (demo)");
+    setShowApptForm((v) => !v);
   };
+
+  const startEditAppt = (a: DemoAppointment) => {
+    setEditingApptId(a.id);
+    setNewAppt({ patient: a.patient, date: a.date, time: a.time, type: a.type as "presencial" });
+    setShowApptForm(true);
+  };
+
+  const saveAppointment = () => {
+    if (!newAppt.patient || !newAppt.date || !newAppt.time) { toast.error("Preencha todos os campos"); return; }
+    if (editingApptId) {
+      setAppointments(appointments.map((a) => (a.id === editingApptId ? { ...a, ...newAppt } : a)));
+      toast.success("Consulta atualizada (demo)");
+    } else {
+      if (appointments.length >= DEMO_LIMITS.appointments) {
+        askSignup(`Você criou ${DEMO_LIMITS.appointments} consultas na demo`);
+        return;
+      }
+      setAppointments([{ id: crypto.randomUUID(), ...newAppt }, ...appointments]);
+      toast.success("Consulta agendada (demo)");
+    }
+    setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
+    setEditingApptId(null);
+    setShowApptForm(false);
+  };
+
+  const cancelAppointment = (id: string) => {
+    setAppointments(appointments.filter((a) => a.id !== id));
+    toast.success("Consulta cancelada");
+  };
+
+  // Derived: filtered lists
+  const filteredPatients = useMemo(() => {
+    const q = patientsSearch.trim().toLowerCase();
+    return patients.filter((p) => {
+      if (patientsFilter === "with-phone" && !p.phone) return false;
+      if (patientsFilter === "no-phone" && !!p.phone) return false;
+      if (!q) return true;
+      return (
+        p.name.toLowerCase().includes(q) ||
+        p.phone.toLowerCase().includes(q) ||
+        (p.notes ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [patients, patientsSearch, patientsFilter]);
+
+  const filteredAppointments = useMemo(() => {
+    const q = apptsSearch.trim().toLowerCase();
+    const today = isoDateOffset(0);
+    return appointments.filter((a) => {
+      if (apptsFilter === "presencial" && a.type !== "presencial") return false;
+      if (apptsFilter === "online" && a.type !== "online") return false;
+      if (apptsFilter === "today" && a.date !== today) return false;
+      if (apptsFilter === "upcoming" && a.date < today) return false;
+      if (!q) return true;
+      return a.patient.toLowerCase().includes(q) || a.date.includes(q) || a.time.includes(q);
+    });
+  }, [appointments, apptsSearch, apptsFilter]);
 
   const goToSignup = () => {
     trackCtaClick("demo_to_register", signupReason || "header_cta");
