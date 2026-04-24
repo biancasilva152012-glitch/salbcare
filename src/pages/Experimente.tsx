@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle,
+  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle, Search, Pencil, Ban,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
@@ -18,6 +21,8 @@ import { trackCtaClick } from "@/hooks/useTracking";
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
 type DemoAppointment = { id: string; patient: string; date: string; time: string; type: "presencial" | "online" };
 type DemoTab = "pacientes" | "agenda" | "telehealth";
+type PatientFilter = "all" | "with-phone" | "no-phone";
+type AppointmentFilter = "all" | "presencial" | "online" | "today" | "upcoming";
 
 // ============= Demo limits =============
 const DEMO_LIMITS = { patients: 3, appointments: 5 };
@@ -26,16 +31,32 @@ const STORAGE = {
   appointments: "salbcare_demo_appointments",
   visited: "salbcare_demo_visited",
   activeTab: "salbcare_demo_active_tab",
+  patientsSearch: "salbcare_demo_patients_search",
+  patientsFilter: "salbcare_demo_patients_filter",
+  appointmentsSearch: "salbcare_demo_appts_search",
+  appointmentsFilter: "salbcare_demo_appts_filter",
 };
 
-const seedPatients: DemoPatient[] = [
+// ============= Seeds (consistent: appointments reference real patients & coherent dates) =============
+const isoDateOffset = (days: number) => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split("T")[0];
+};
+
+const buildSeedPatients = (): DemoPatient[] => [
   { id: "demo-1", name: "Maria Silva", phone: "(11) 98888-1234", notes: "Acompanhamento mensal" },
   { id: "demo-2", name: "João Santos", phone: "(11) 97777-5678", notes: "Primeira consulta" },
 ];
-const seedAppointments: DemoAppointment[] = [
-  { id: "ap-1", patient: "Maria Silva", date: new Date().toISOString().split("T")[0], time: "14:00", type: "presencial" },
-  { id: "ap-2", patient: "João Santos", date: new Date(Date.now() + 86400000).toISOString().split("T")[0], time: "10:30", type: "online" },
+
+const buildSeedAppointments = (): DemoAppointment[] => [
+  { id: "ap-1", patient: "Maria Silva", date: isoDateOffset(0), time: "14:00", type: "presencial" },
+  { id: "ap-2", patient: "João Santos", date: isoDateOffset(1), time: "10:30", type: "online" },
 ];
+
+const seedPatients = buildSeedPatients();
+const seedAppointments = buildSeedAppointments();
 
 // ============= Hooks =============
 function useLocalState<T>(key: string, initial: T): [T, (v: T) => void] {
