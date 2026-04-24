@@ -116,8 +116,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .single(),
       ]);
 
-      if (subResult.error) throw subResult.error;
-      const data = subResult.data;
+      // Tolerate transient edge-function errors (e.g. 503 cold-start) — fall
+      // back to the profile row so the UI never blank-screens just because
+      // Stripe verification was momentarily unreachable.
+      if (subResult.error) {
+        console.warn("[check-subscription] transient error, using profile fallback", subResult.error);
+      }
+      const data = subResult.data ?? { subscribed: false, product_id: null, subscription_end: null };
 
       let plan: PlanKey = getPlanByProductId(data.product_id);
       let trialDaysRemaining = 0;
