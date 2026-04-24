@@ -138,6 +138,9 @@ const Experimente = () => {
     syncDemoCounters(null).then((merged) => setUsage(merged)).catch(() => {});
   }, []);
 
+  // Runtime consistency check: surface mismatches between UI and backend
+  useFreemiumConsistencyCheck(null);
+
   const askSignup = (reason: string) => {
     setSignupReason(reason);
     setSignupOpen(true);
