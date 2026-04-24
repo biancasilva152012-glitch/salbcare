@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone,
+  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
@@ -15,6 +17,7 @@ import { trackCtaClick } from "@/hooks/useTracking";
 // ============= Types =============
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
 type DemoAppointment = { id: string; patient: string; date: string; time: string; type: "presencial" | "online" };
+type DemoTab = "pacientes" | "agenda" | "telehealth";
 
 // ============= Demo limits =============
 const DEMO_LIMITS = { patients: 3, appointments: 5 };
@@ -22,6 +25,7 @@ const STORAGE = {
   patients: "salbcare_demo_patients",
   appointments: "salbcare_demo_appointments",
   visited: "salbcare_demo_visited",
+  activeTab: "salbcare_demo_active_tab",
 };
 
 const seedPatients: DemoPatient[] = [
@@ -51,7 +55,15 @@ function useLocalState<T>(key: string, initial: T): [T, (v: T) => void] {
 // ============= Page =============
 const Experimente = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"pacientes" | "agenda" | "telehealth">("pacientes");
+  const [tab, setTabRaw] = useState<DemoTab>(() => {
+    if (typeof window === "undefined") return "pacientes";
+    const saved = window.localStorage.getItem(STORAGE.activeTab) as DemoTab | null;
+    return saved === "pacientes" || saved === "agenda" || saved === "telehealth" ? saved : "pacientes";
+  });
+  const setTab = (t: DemoTab) => {
+    setTabRaw(t);
+    try { window.localStorage.setItem(STORAGE.activeTab, t); } catch {/* ignore */}
+  };
   const [patients, setPatients] = useLocalState<DemoPatient[]>(STORAGE.patients, seedPatients);
   const [appointments, setAppointments] = useLocalState<DemoAppointment[]>(STORAGE.appointments, seedAppointments);
 
@@ -76,6 +88,18 @@ const Experimente = () => {
     setSignupReason(reason);
     setSignupOpen(true);
     trackCtaClick("demo_signup_prompt", reason);
+  };
+
+  const resetDemoData = () => {
+    if (!confirm("Apagar todos os dados da demo e voltar ao estado inicial?")) return;
+    setPatients(seedPatients);
+    setAppointments(seedAppointments);
+    setShowPatientForm(false);
+    setShowApptForm(false);
+    setNewPatient({ name: "", phone: "", notes: "" });
+    setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
+    toast.success("Dados da demo limpos e re-semeados");
+    trackCtaClick("demo_reset", "experimente_page");
   };
 
   // Patient handlers
@@ -182,15 +206,42 @@ const Experimente = () => {
                 exit={{ opacity: 0, y: -8 }}
                 className="space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {patients.length}/{DEMO_LIMITS.patients} pacientes na demo
-                  </p>
-                  <Button size="sm" variant="outline" onClick={() => setShowPatientForm((v) => !v)}>
-                    <Plus className="h-3.5 w-3.5 mr-1" />
-                    Adicionar
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-medium">
+                          {patients.length}/{DEMO_LIMITS.patients} pacientes na demo
+                        </p>
+                        <span className="text-[10px] text-muted-foreground">
+                          {Math.max(0, DEMO_LIMITS.patients - patients.length)} restantes
+                        </span>
+                      </div>
+                      <Progress value={(patients.length / DEMO_LIMITS.patients) * 100} className="h-1.5" />
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => setShowPatientForm((v) => !v)} disabled={patients.length >= DEMO_LIMITS.patients}>
+                      <Plus className="h-3.5 w-3.5 mr-1" />
+                      Adicionar
+                    </Button>
+                  </div>
+                  {patients.length === DEMO_LIMITS.patients - 1 && (
+                    <Alert className="py-2 border-amber-500/40 bg-amber-500/5">
+                      <AlertCircle className="h-3.5 w-3.5 !text-amber-600" />
+                      <AlertDescription className="text-xs ml-1">
+                        Falta só 1 vaga. Próximo paciente vai pedir cadastro.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {patients.length >= DEMO_LIMITS.patients && (
+                    <Alert className="py-2 border-primary/40 bg-primary/5">
+                      <Lock className="h-3.5 w-3.5 !text-primary" />
+                      <AlertDescription className="text-xs ml-1">
+                        Limite atingido. Crie conta grátis para pacientes ilimitados.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
+
 
                 {showPatientForm && (
                   <div className="glass-card p-4 space-y-3">
@@ -259,15 +310,42 @@ const Experimente = () => {
                 exit={{ opacity: 0, y: -8 }}
                 className="space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {appointments.length}/{DEMO_LIMITS.appointments} consultas na demo
-                  </p>
-                  <Button size="sm" variant="outline" onClick={() => setShowApptForm((v) => !v)}>
-                    <Plus className="h-3.5 w-3.5 mr-1" />
-                    Nova consulta
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-medium">
+                          {appointments.length}/{DEMO_LIMITS.appointments} consultas na demo
+                        </p>
+                        <span className="text-[10px] text-muted-foreground">
+                          {Math.max(0, DEMO_LIMITS.appointments - appointments.length)} restantes
+                        </span>
+                      </div>
+                      <Progress value={(appointments.length / DEMO_LIMITS.appointments) * 100} className="h-1.5" />
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => setShowApptForm((v) => !v)} disabled={appointments.length >= DEMO_LIMITS.appointments}>
+                      <Plus className="h-3.5 w-3.5 mr-1" />
+                      Nova consulta
+                    </Button>
+                  </div>
+                  {appointments.length === DEMO_LIMITS.appointments - 1 && (
+                    <Alert className="py-2 border-amber-500/40 bg-amber-500/5">
+                      <AlertCircle className="h-3.5 w-3.5 !text-amber-600" />
+                      <AlertDescription className="text-xs ml-1">
+                        Falta só 1 vaga. Próxima consulta vai pedir cadastro.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {appointments.length >= DEMO_LIMITS.appointments && (
+                    <Alert className="py-2 border-primary/40 bg-primary/5">
+                      <Lock className="h-3.5 w-3.5 !text-primary" />
+                      <AlertDescription className="text-xs ml-1">
+                        Limite atingido. Crie conta grátis para agenda ilimitada.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
+
 
                 {showApptForm && (
                   <div className="glass-card p-4 space-y-3">
@@ -387,7 +465,21 @@ const Experimente = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Reset demo data */}
+          <div className="pt-2 flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetDemoData}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+              Limpar meus dados da demo
+            </Button>
+          </div>
         </div>
+
 
         {/* Sticky bottom CTA */}
         <div className="fixed bottom-0 inset-x-0 z-30 bg-background/90 backdrop-blur-md border-t border-border/40 p-3">
