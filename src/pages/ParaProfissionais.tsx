@@ -138,7 +138,7 @@ const ParaProfissionais = () => {
             <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)]">
                 <Link to="/cadastro" onClick={() => trackCtaClick("criar_conta_gratis", "hero")}>
-                  Criar conta grátis
+                  Entrar em 20 segundos
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -432,7 +432,7 @@ const ParaProfissionais = () => {
              >
                <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
                  <Link to="/cadastro" onClick={() => trackCtaClick("comecar_gratis", "cta_final")}>
-                   Começar grátis
+                   Entrar em 20 segundos
                    <ArrowRight className="h-4 w-4" />
                  </Link>
                </Button>

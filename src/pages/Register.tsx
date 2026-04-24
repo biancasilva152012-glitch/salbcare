@@ -5,22 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Stethoscope } from "lucide-react";
 import { trackLead, trackRegistration } from "@/hooks/useTracking";
-
-const specialties = [
-  { value: "psicologo", label: "Psicologia" },
-  { value: "medico", label: "Medicina" },
-  { value: "nutricionista", label: "Nutrição" },
-  { value: "fisioterapeuta", label: "Fisioterapia" },
-  { value: "fonoaudiologo", label: "Fonoaudiologia" },
-  { value: "terapeuta_ocupacional", label: "Terapia Ocupacional" },
-  { value: "educador_fisico", label: "Educação Física" },
-  { value: "outro", label: "Outro" },
-];
 
 const floatingOrbs = [
   { size: 150, x: "5%", y: "15%", delay: 0.5 },
@@ -39,17 +27,16 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    professional_type: "",
+    professional_type: "medico", // default — usuário troca depois no perfil
     referral_code: refCode,
   });
 
-  const canSubmit = !!form.name.trim() && !!form.email && form.password.length >= 6 && !!form.professional_type;
+  const canSubmit = !!form.name.trim() && !!form.email && form.password.length >= 6;
 
   const handleSubmit = async () => {
-    if (!form.name.trim()) { toast.error("Preencha seu nome completo."); return; }
-    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { toast.error("E-mail inválido."); return; }
-    if (!form.password || form.password.length < 6) { toast.error("A senha deve ter no mínimo 6 caracteres."); return; }
-    if (!form.professional_type) { toast.error("Selecione sua especialidade."); return; }
+    if (!form.name.trim()) { toast.error("Falta só o seu nome — qual é?"); return; }
+    if (!form.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) === false) { toast.error("Esse e-mail não tá certinho. Confere?"); return; }
+    if (!form.password || form.password.length < 6) { toast.error("A senha precisa ter pelo menos 6 caracteres."); return; }
     
 
     setLoading(true);
@@ -238,16 +225,6 @@ const Register = () => {
                 <Input type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-background/50 border-border/60" />
               </div>
               <div className="space-y-1.5">
-                <Label>Especialidade *</Label>
-                <Select onValueChange={(v) => setForm({ ...form, professional_type: v })} value={form.professional_type}>
-                  <SelectTrigger className="bg-background/50 border-border/60"><SelectValue placeholder="Selecione sua especialidade" /></SelectTrigger>
-                  <SelectContent>
-                    {specialties.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-1.5">
                 <Label>Senha *</Label>
                 <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" minLength={6} />
                 <p className="text-[10px] text-muted-foreground">Mínimo 6 caracteres</p>
@@ -272,7 +249,7 @@ const Register = () => {
               <Link to="/privacy" className="text-primary hover:underline" target="_blank">Política de Privacidade</Link>.
             </p>
             <p className="text-[11px] text-muted-foreground text-center">
-              Após o cadastro, sua mentora financeira com IA já vai conhecer seus dados e estará pronta para te ajudar.
+              CRM/CRP, especialidade e dados de cobrança você completa depois — leva 30 segundos.
             </p>
           </motion.div>
         </AnimatePresence>
@@ -284,8 +261,8 @@ const Register = () => {
           disabled={!canSubmit || loading}
         >
           {loading ? (
-            <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>Criando conta...</motion.span>
-          ) : "Criar conta grátis"}
+            <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>Abrindo seu consultório...</motion.span>
+          ) : "Entrar no SalbCare em 20s"}
         </Button>
 
 
