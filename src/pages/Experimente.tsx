@@ -206,15 +206,42 @@ const Experimente = () => {
                 exit={{ opacity: 0, y: -8 }}
                 className="space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {patients.length}/{DEMO_LIMITS.patients} pacientes na demo
-                  </p>
-                  <Button size="sm" variant="outline" onClick={() => setShowPatientForm((v) => !v)}>
-                    <Plus className="h-3.5 w-3.5 mr-1" />
-                    Adicionar
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-medium">
+                          {patients.length}/{DEMO_LIMITS.patients} pacientes na demo
+                        </p>
+                        <span className="text-[10px] text-muted-foreground">
+                          {Math.max(0, DEMO_LIMITS.patients - patients.length)} restantes
+                        </span>
+                      </div>
+                      <Progress value={(patients.length / DEMO_LIMITS.patients) * 100} className="h-1.5" />
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => setShowPatientForm((v) => !v)} disabled={patients.length >= DEMO_LIMITS.patients}>
+                      <Plus className="h-3.5 w-3.5 mr-1" />
+                      Adicionar
+                    </Button>
+                  </div>
+                  {patients.length === DEMO_LIMITS.patients - 1 && (
+                    <Alert className="py-2 border-amber-500/40 bg-amber-500/5">
+                      <AlertCircle className="h-3.5 w-3.5 !text-amber-600" />
+                      <AlertDescription className="text-xs ml-1">
+                        Falta só 1 vaga. Próximo paciente vai pedir cadastro.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {patients.length >= DEMO_LIMITS.patients && (
+                    <Alert className="py-2 border-primary/40 bg-primary/5">
+                      <Lock className="h-3.5 w-3.5 !text-primary" />
+                      <AlertDescription className="text-xs ml-1">
+                        Limite atingido. Crie conta grátis para pacientes ilimitados.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
+
 
                 {showPatientForm && (
                   <div className="glass-card p-4 space-y-3">
