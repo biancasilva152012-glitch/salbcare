@@ -157,6 +157,15 @@ const ParaProfissionais = () => {
             <motion.p variants={fadeUp} className="mt-2 text-[11px] text-muted-foreground text-center">
               Sem cartão • Comece em menos de 1 minuto
             </motion.p>
+            <motion.p variants={fadeUp} className="mt-2 text-center">
+              <Link
+                to="/experimente"
+                onClick={() => trackCtaClick("experimente_demo", "hero")}
+                className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
+              >
+                Ou experimente sem cadastrar →
+              </Link>
+            </motion.p>
             <motion.p variants={fadeUp} className="mt-1 text-center">
               <Link to="/login" className="text-xs text-primary/80 hover:text-primary transition-colors">
                 Já é cadastrado? Faça login
