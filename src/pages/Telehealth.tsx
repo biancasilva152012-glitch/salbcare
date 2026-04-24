@@ -29,12 +29,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string 
 const Telehealth = () => {
   const { user, subscription } = useAuth();
   const { hasAccess } = useFeatureGate();
+  const { isFree, canCreateTelehealth, usageByModule } = useFreemiumLimits();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
