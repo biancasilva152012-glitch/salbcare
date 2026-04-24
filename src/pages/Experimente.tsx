@@ -92,6 +92,7 @@ const Experimente = () => {
 
   const [signupOpen, setSignupOpen] = useState(false);
   const [signupReason, setSignupReason] = useState<string>("");
+  const [usage, setUsage] = useState(() => readUsageCounters());
 
   // Forms
   const [newPatient, setNewPatient] = useState({ name: "", phone: "", notes: "" });
