@@ -505,17 +505,37 @@ const Agenda = () => {
                 </div>
               </DialogContent>
             </Dialog>
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Nova</Button>
-              </DialogTrigger>
-              <DialogContent className="bg-card border-border">
-                <DialogHeader><DialogTitle>Nova Consulta</DialogTitle></DialogHeader>
-                {renderAppointmentForm(false)}
-              </DialogContent>
-            </Dialog>
+            {canAddAppointment ? (
+              <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gradient-primary gap-1" data-testid="agenda-new-btn">
+                    <Plus className="h-4 w-4" /> Nova
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader><DialogTitle>Nova Consulta</DialogTitle></DialogHeader>
+                  {renderAppointmentForm(false)}
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Button
+                size="sm"
+                className="gradient-primary gap-1"
+                data-testid="agenda-new-btn-blocked"
+                onClick={() => setUpgradeOpen(true)}
+              >
+                <Plus className="h-4 w-4" /> Nova
+              </Button>
+            )}
           </div>
         </div>
+
+        <FreemiumQuotaBanner
+          label="Consultas"
+          usage={usageByModule.appointments}
+          isFree={isFree}
+          trackingKey="appointments"
+        />
 
         {/* Tab toggle */}
         <div className="flex rounded-lg bg-muted p-1">
