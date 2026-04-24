@@ -111,6 +111,12 @@ const Experimente = () => {
     [patients.length, appointments.length, usage],
   );
 
+  // Best-effort backend push whenever counters change locally. Keeps the
+  // demo_usage_counters table in sync so the limit can't be reset by clearing
+  // localStorage. Failures are silent.
+  useEffect(() => {
+    pushCounterToBackend(null, usage).catch(() => {});
+  }, [usage]);
   // Forms
   const [newPatient, setNewPatient] = useState({ name: "", phone: "", notes: "" });
   const [newAppt, setNewAppt] = useState({ patient: "", date: "", time: "", type: "presencial" as const });
