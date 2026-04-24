@@ -310,15 +310,42 @@ const Experimente = () => {
                 exit={{ opacity: 0, y: -8 }}
                 className="space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {appointments.length}/{DEMO_LIMITS.appointments} consultas na demo
-                  </p>
-                  <Button size="sm" variant="outline" onClick={() => setShowApptForm((v) => !v)}>
-                    <Plus className="h-3.5 w-3.5 mr-1" />
-                    Nova consulta
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-medium">
+                          {appointments.length}/{DEMO_LIMITS.appointments} consultas na demo
+                        </p>
+                        <span className="text-[10px] text-muted-foreground">
+                          {Math.max(0, DEMO_LIMITS.appointments - appointments.length)} restantes
+                        </span>
+                      </div>
+                      <Progress value={(appointments.length / DEMO_LIMITS.appointments) * 100} className="h-1.5" />
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => setShowApptForm((v) => !v)} disabled={appointments.length >= DEMO_LIMITS.appointments}>
+                      <Plus className="h-3.5 w-3.5 mr-1" />
+                      Nova consulta
+                    </Button>
+                  </div>
+                  {appointments.length === DEMO_LIMITS.appointments - 1 && (
+                    <Alert className="py-2 border-amber-500/40 bg-amber-500/5">
+                      <AlertCircle className="h-3.5 w-3.5 !text-amber-600" />
+                      <AlertDescription className="text-xs ml-1">
+                        Falta só 1 vaga. Próxima consulta vai pedir cadastro.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {appointments.length >= DEMO_LIMITS.appointments && (
+                    <Alert className="py-2 border-primary/40 bg-primary/5">
+                      <Lock className="h-3.5 w-3.5 !text-primary" />
+                      <AlertDescription className="text-xs ml-1">
+                        Limite atingido. Crie conta grátis para agenda ilimitada.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
+
 
                 {showApptForm && (
                   <div className="glass-card p-4 space-y-3">
