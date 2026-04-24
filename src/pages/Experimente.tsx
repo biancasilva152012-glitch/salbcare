@@ -465,7 +465,21 @@ const Experimente = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Reset demo data */}
+          <div className="pt-2 flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetDemoData}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+              Limpar meus dados da demo
+            </Button>
+          </div>
         </div>
+
 
         {/* Sticky bottom CTA */}
         <div className="fixed bottom-0 inset-x-0 z-30 bg-background/90 backdrop-blur-md border-t border-border/40 p-3">
