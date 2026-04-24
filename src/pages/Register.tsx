@@ -5,22 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Stethoscope } from "lucide-react";
 import { trackLead, trackRegistration } from "@/hooks/useTracking";
-
-const specialties = [
-  { value: "psicologo", label: "Psicologia" },
-  { value: "medico", label: "Medicina" },
-  { value: "nutricionista", label: "Nutrição" },
-  { value: "fisioterapeuta", label: "Fisioterapia" },
-  { value: "fonoaudiologo", label: "Fonoaudiologia" },
-  { value: "terapeuta_ocupacional", label: "Terapia Ocupacional" },
-  { value: "educador_fisico", label: "Educação Física" },
-  { value: "outro", label: "Outro" },
-];
 
 const floatingOrbs = [
   { size: 150, x: "5%", y: "15%", delay: 0.5 },
