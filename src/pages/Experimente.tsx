@@ -465,7 +465,7 @@ const Experimente = () => {
                       </div>
                       <Progress value={(appointments.length / DEMO_LIMITS.appointments) * 100} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={() => setShowApptForm((v) => !v)} disabled={appointments.length >= DEMO_LIMITS.appointments}>
+                    <Button size="sm" variant="outline" onClick={startNewAppt} disabled={appointments.length >= DEMO_LIMITS.appointments && !editingApptId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Nova consulta
                     </Button>
@@ -482,15 +482,40 @@ const Experimente = () => {
                     <Alert className="py-2 border-primary/40 bg-primary/5">
                       <Lock className="h-3.5 w-3.5 !text-primary" />
                       <AlertDescription className="text-xs ml-1">
-                        Limite atingido. Crie conta grátis para agenda ilimitada.
+                        <strong>Criar nova consulta bloqueado.</strong> Editar e cancelar continuam liberados — crie conta para agenda ilimitada.
                       </AlertDescription>
                     </Alert>
                   )}
                 </div>
 
+                {/* Search + filter (persisted) */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={apptsSearch}
+                      onChange={(e) => setApptsSearch(e.target.value)}
+                      placeholder="Buscar consultas…"
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                  <Select value={apptsFilter} onValueChange={(v) => setApptsFilter(v as AppointmentFilter)}>
+                    <SelectTrigger className="w-[140px] h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="today">Hoje</SelectItem>
+                      <SelectItem value="upcoming">Próximas</SelectItem>
+                      <SelectItem value="presencial">Presencial</SelectItem>
+                      <SelectItem value="online">Online</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {showApptForm && (
                   <div className="glass-card p-4 space-y-3">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {editingApptId ? "Editando consulta" : "Nova consulta"}
+                    </p>
                     <div className="space-y-1.5">
                       <Label className="text-xs">Paciente *</Label>
                       <Input value={newAppt.patient} onChange={(e) => setNewAppt({ ...newAppt, patient: e.target.value })} placeholder="Nome do paciente" />
@@ -506,19 +531,21 @@ const Experimente = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" onClick={addAppointment} className="flex-1 gradient-primary">Agendar</Button>
-                      <Button size="sm" variant="ghost" onClick={() => setShowApptForm(false)}>Cancelar</Button>
+                      <Button size="sm" onClick={saveAppointment} className="flex-1 gradient-primary">
+                        {editingApptId ? "Atualizar" : "Agendar"}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setShowApptForm(false); setEditingApptId(null); }}>Cancelar</Button>
                     </div>
                   </div>
                 )}
 
-                {appointments.length === 0 && (
+                {filteredAppointments.length === 0 && (
                   <div className="glass-card p-8 text-center text-sm text-muted-foreground">
-                    Nenhuma consulta agendada.
+                    {appointments.length === 0 ? "Nenhuma consulta agendada." : "Nenhum resultado para a busca/filtro."}
                   </div>
                 )}
 
-                {appointments.map((a) => (
+                {filteredAppointments.map((a) => (
                   <div key={a.id} className="glass-card p-4 flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
                       {a.type === "online" ? <Video className="h-4 w-4 text-primary" /> : <Calendar className="h-4 w-4 text-primary" />}
@@ -530,7 +557,21 @@ const Experimente = () => {
                         {new Date(a.date + "T00:00").toLocaleDateString("pt-BR")} às {a.time}
                       </p>
                     </div>
-                    <span className="text-[10px] uppercase font-semibold text-muted-foreground">{a.type}</span>
+                    <span className="text-[10px] uppercase font-semibold text-muted-foreground mr-1">{a.type}</span>
+                    <button
+                      onClick={() => startEditAppt(a)}
+                      className="text-muted-foreground hover:text-primary p-1.5"
+                      aria-label="Editar"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => cancelAppointment(a.id)}
+                      className="text-muted-foreground hover:text-destructive p-1.5"
+                      aria-label="Cancelar consulta"
+                    >
+                      <Ban className="h-4 w-4" />
+                    </button>
                   </div>
                 ))}
 
@@ -543,6 +584,7 @@ const Experimente = () => {
                     Limite da demo — crie conta para agenda ilimitada
                   </button>
                 )}
+
               </motion.div>
             )}
 
