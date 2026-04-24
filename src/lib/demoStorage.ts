@@ -518,6 +518,11 @@ export async function syncDemoCounters(
 
     const { data: remote } = await query;
 
+    // Reconciliation strategy:
+    //  - For *attempts* (create actions) we keep the MAX so the user can never
+    //    bypass the freemium ceiling by clearing localStorage.
+    //  - We then push the merged value back to the backend so both sides
+    //    converge. Backend wins on disagreements because it's authoritative.
     const merged: DemoUsageCounters = remote
       ? {
           patientsCreated: Math.max(local.patientsCreated, remote.patients_created),
@@ -528,6 +533,16 @@ export async function syncDemoCounters(
       : local;
 
     writeLocalCounters(merged);
+
+    // Surface the freshly-fetched backend snapshot to the debug panel so
+    // developers/admin can spot mismatches without opening DevTools.
+    if (typeof window !== "undefined" && remote && window.__salbcareDebug) {
+      try {
+        window.__salbcareDebug.pushBackend(toLocalCounters(remote));
+      } catch {
+        /* ignore — debug panel is best-effort */
+      }
+    }
 
     // Push merged values back so the remote stays in sync.
     const payload = {
