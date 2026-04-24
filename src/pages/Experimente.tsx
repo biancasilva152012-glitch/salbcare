@@ -328,7 +328,7 @@ const Experimente = () => {
                       </div>
                       <Progress value={(patients.length / DEMO_LIMITS.patients) * 100} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={() => setShowPatientForm((v) => !v)} disabled={patients.length >= DEMO_LIMITS.patients}>
+                    <Button size="sm" variant="outline" onClick={startNewPatient} disabled={patients.length >= DEMO_LIMITS.patients && !editingPatientId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Adicionar
                     </Button>
@@ -345,15 +345,38 @@ const Experimente = () => {
                     <Alert className="py-2 border-primary/40 bg-primary/5">
                       <Lock className="h-3.5 w-3.5 !text-primary" />
                       <AlertDescription className="text-xs ml-1">
-                        Limite atingido. Crie conta grátis para pacientes ilimitados.
+                        <strong>Criar bloqueado.</strong> Editar e remover continuam liberados — crie conta para pacientes ilimitados.
                       </AlertDescription>
                     </Alert>
                   )}
                 </div>
 
+                {/* Search + filter (persisted) */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={patientsSearch}
+                      onChange={(e) => setPatientsSearch(e.target.value)}
+                      placeholder="Buscar pacientes…"
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                  <Select value={patientsFilter} onValueChange={(v) => setPatientsFilter(v as PatientFilter)}>
+                    <SelectTrigger className="w-[140px] h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="with-phone">Com telefone</SelectItem>
+                      <SelectItem value="no-phone">Sem telefone</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {showPatientForm && (
                   <div className="glass-card p-4 space-y-3">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {editingPatientId ? "Editando paciente" : "Novo paciente"}
+                    </p>
                     <div className="space-y-1.5">
                       <Label className="text-xs">Nome *</Label>
                       <Input value={newPatient.name} onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })} placeholder="Ex: Ana Costa" />
@@ -367,19 +390,21 @@ const Experimente = () => {
                       <Input value={newPatient.notes} onChange={(e) => setNewPatient({ ...newPatient, notes: e.target.value })} placeholder="Opcional" />
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" onClick={addPatient} className="flex-1 gradient-primary">Salvar</Button>
-                      <Button size="sm" variant="ghost" onClick={() => setShowPatientForm(false)}>Cancelar</Button>
+                      <Button size="sm" onClick={savePatient} className="flex-1 gradient-primary">
+                        {editingPatientId ? "Atualizar" : "Salvar"}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setShowPatientForm(false); setEditingPatientId(null); }}>Cancelar</Button>
                     </div>
                   </div>
                 )}
 
-                {patients.length === 0 && (
+                {filteredPatients.length === 0 && (
                   <div className="glass-card p-8 text-center text-sm text-muted-foreground">
-                    Nenhum paciente cadastrado.
+                    {patients.length === 0 ? "Nenhum paciente cadastrado." : "Nenhum resultado para a busca/filtro."}
                   </div>
                 )}
 
-                {patients.map((p) => (
+                {filteredPatients.map((p) => (
                   <div key={p.id} className="glass-card p-4 flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
                       {p.name.charAt(0).toUpperCase()}
@@ -388,6 +413,13 @@ const Experimente = () => {
                       <p className="font-medium text-sm truncate">{p.name}</p>
                       <p className="text-xs text-muted-foreground truncate">{p.phone || "Sem telefone"}</p>
                     </div>
+                    <button
+                      onClick={() => startEditPatient(p)}
+                      className="text-muted-foreground hover:text-primary p-1.5"
+                      aria-label="Editar"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => removePatient(p.id)}
                       className="text-muted-foreground hover:text-destructive p-1.5"
@@ -409,6 +441,7 @@ const Experimente = () => {
                 )}
               </motion.div>
             )}
+
 
             {/* Agenda */}
             {tab === "agenda" && (
