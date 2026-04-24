@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone,
+  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
@@ -15,6 +17,7 @@ import { trackCtaClick } from "@/hooks/useTracking";
 // ============= Types =============
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
 type DemoAppointment = { id: string; patient: string; date: string; time: string; type: "presencial" | "online" };
+type DemoTab = "pacientes" | "agenda" | "telehealth";
 
 // ============= Demo limits =============
 const DEMO_LIMITS = { patients: 3, appointments: 5 };
@@ -22,6 +25,7 @@ const STORAGE = {
   patients: "salbcare_demo_patients",
   appointments: "salbcare_demo_appointments",
   visited: "salbcare_demo_visited",
+  activeTab: "salbcare_demo_active_tab",
 };
 
 const seedPatients: DemoPatient[] = [
