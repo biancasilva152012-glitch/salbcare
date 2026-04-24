@@ -25,6 +25,7 @@ export const DEMO_LIMITS = {
   patients: 5,
   appointments: 5,
   telehealthViews: 3,
+  telehealthAttempts: 1,
 } as const;
 
 export const DEMO_STORAGE = {
@@ -37,18 +38,21 @@ export const DEMO_STORAGE = {
   appointmentsSearch: "salbcare_demo_appts_search",
   appointmentsFilter: "salbcare_demo_appts_filter",
   usageCounters: "salbcare_demo_usage_counters",
+  lastMigration: "salbcare_demo_last_migration",
 } as const;
 
 export type DemoUsageCounters = {
   patientsCreated: number;
   appointmentsCreated: number;
   telehealthViews: number;
+  telehealthAttempts: number;
 };
 
 const EMPTY_COUNTERS: DemoUsageCounters = {
   patientsCreated: 0,
   appointmentsCreated: 0,
   telehealthViews: 0,
+  telehealthAttempts: 0,
 };
 
 export function readUsageCounters(): DemoUsageCounters {
@@ -107,28 +111,88 @@ export function clearDemoStorage() {
   });
 }
 
+export type MigrationConflict = {
+  kind: "patient" | "appointment";
+  reason: string;
+  label: string;
+};
+
 export type MigrationResult = {
   patients: number;
   appointments: number;
+  skippedPatients: number;
+  skippedAppointments: number;
+  conflicts: MigrationConflict[];
   errors: string[];
+  importedPatientNames: string[];
+  importedAppointmentLabels: string[];
 };
+
+const emptyResult = (): MigrationResult => ({
+  patients: 0,
+  appointments: 0,
+  skippedPatients: 0,
+  skippedAppointments: 0,
+  conflicts: [],
+  errors: [],
+  importedPatientNames: [],
+  importedAppointmentLabels: [],
+});
 
 /**
  * Migrates the demo data stored in localStorage to the authenticated user's
- * Supabase tables. Safe to call multiple times — clears local data on success.
+ * Supabase tables. Detects conflicts against existing rows (same patient name
+ * or same appointment date+time) and reports them in the result so the UI can
+ * show a clear summary after the user confirms.
+ *
+ * Safe to call multiple times — clears local demo data on success.
  */
 export async function migrateDemoToAccount(userId: string): Promise<MigrationResult> {
-  const result: MigrationResult = { patients: 0, appointments: 0, errors: [] };
+  const result = emptyResult();
   const demoPatients = readDemoPatients();
   const demoAppts = readDemoAppointments();
 
   if (demoPatients.length === 0 && demoAppts.length === 0) return result;
 
-  // Insert patients first so we can link appointments by name → patient_id
-  const insertedPatients: Record<string, string> = {}; // name (lowercased) → patient.id
+  // ---- Pre-fetch existing rows to detect conflicts ----
+  const [existingPatientsRes, existingApptsRes] = await Promise.all([
+    supabase.from("patients").select("id, name").eq("user_id", userId),
+    supabase.from("appointments").select("id, date, time, patient_name").eq("user_id", userId),
+  ]);
 
-  if (demoPatients.length > 0) {
-    const rows = demoPatients.map((p) => ({
+  const existingPatientByName = new Map<string, string>();
+  (existingPatientsRes.data ?? []).forEach((row: { id: string; name: string }) => {
+    existingPatientByName.set(row.name.trim().toLowerCase(), row.id);
+  });
+  const existingApptKeys = new Set<string>();
+  (existingApptsRes.data ?? []).forEach((row: { date: string; time: string }) => {
+    existingApptKeys.add(`${row.date}|${row.time}`);
+  });
+
+  // ---- Patients ----
+  const insertedPatientByName: Record<string, string> = {};
+  const patientsToInsert: typeof demoPatients = [];
+
+  for (const p of demoPatients) {
+    const key = p.name.trim().toLowerCase();
+    const existingId = existingPatientByName.get(key);
+    if (existingId) {
+      // Reuse the existing patient — counts as a conflict, but we still link
+      // their appointments so nothing is lost.
+      insertedPatientByName[key] = existingId;
+      result.skippedPatients += 1;
+      result.conflicts.push({
+        kind: "patient",
+        reason: "Já existia na sua conta",
+        label: p.name,
+      });
+    } else {
+      patientsToInsert.push(p);
+    }
+  }
+
+  if (patientsToInsert.length > 0) {
+    const rows = patientsToInsert.map((p) => ({
       user_id: userId,
       name: p.name,
       phone: p.phone || null,
@@ -143,28 +207,63 @@ export async function migrateDemoToAccount(userId: string): Promise<MigrationRes
     } else if (data) {
       result.patients = data.length;
       data.forEach((row) => {
-        insertedPatients[row.name.toLowerCase()] = row.id;
+        insertedPatientByName[row.name.trim().toLowerCase()] = row.id;
+        result.importedPatientNames.push(row.name);
       });
     }
   }
 
-  if (demoAppts.length > 0) {
-    const rows = demoAppts.map((a) => ({
+  // ---- Appointments ----
+  const apptsToInsert: typeof demoAppts = [];
+  for (const a of demoAppts) {
+    const key = `${a.date}|${a.time}`;
+    if (existingApptKeys.has(key)) {
+      result.skippedAppointments += 1;
+      result.conflicts.push({
+        kind: "appointment",
+        reason: "Horário já ocupado na sua agenda",
+        label: `${a.patient} — ${a.date} ${a.time}`,
+      });
+      continue;
+    }
+    apptsToInsert.push(a);
+  }
+
+  if (apptsToInsert.length > 0) {
+    const rows = apptsToInsert.map((a) => ({
       user_id: userId,
       patient_name: a.patient,
-      patient_id: insertedPatients[a.patient.toLowerCase()] ?? null,
+      patient_id: insertedPatientByName[a.patient.trim().toLowerCase()] ?? null,
       date: a.date,
       time: a.time,
       appointment_type: a.type,
       status: "scheduled",
     }));
-    const { error, count } = await supabase
+    const { data, error } = await supabase
       .from("appointments")
-      .insert(rows, { count: "exact" });
+      .insert(rows)
+      .select("id, date, time, patient_name");
     if (error) {
       result.errors.push(`Consultas: ${error.message}`);
-    } else {
-      result.appointments = count ?? rows.length;
+    } else if (data) {
+      result.appointments = data.length;
+      data.forEach((row: any) => {
+        result.importedAppointmentLabels.push(
+          `${row.patient_name} — ${row.date} ${row.time}`,
+        );
+      });
+    }
+  }
+
+  // Persist a snapshot of the latest migration so the UI can re-show it later.
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(
+        DEMO_STORAGE.lastMigration,
+        JSON.stringify({ at: new Date().toISOString(), result }),
+      );
+    } catch {
+      /* ignore */
     }
   }
 

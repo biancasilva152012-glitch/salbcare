@@ -282,7 +282,7 @@ const Experimente = () => {
 
         {/* Usage meter — quanto resta antes do bloqueio em cada módulo */}
         <div className="mx-auto max-w-2xl px-4 pb-3">
-          <div className="glass-card p-3 grid grid-cols-3 gap-2 text-center">
+          <div className="glass-card p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             {[
               {
                 label: "Pacientes",
@@ -297,10 +297,16 @@ const Experimente = () => {
                 icon: Calendar,
               },
               {
-                label: "Telehealth",
+                label: "Telehealth views",
                 used: usage.telehealthViews,
                 limit: DEMO_LIMITS.telehealthViews,
                 icon: Video,
+              },
+              {
+                label: "Teleconsultas",
+                used: usage.telehealthAttempts,
+                limit: DEMO_LIMITS.telehealthAttempts,
+                icon: Lock,
               },
             ].map((m) => {
               const Icon = m.icon;
@@ -310,7 +316,7 @@ const Experimente = () => {
                 <div key={m.label} className="space-y-1">
                   <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
                     <Icon className="h-3 w-3" />
-                    {m.label}
+                    <span className="truncate">{m.label}</span>
                   </div>
                   <p className={`text-sm font-bold ${blocked ? "text-destructive" : "text-foreground"}`}>
                     {m.used}/{m.limit}
@@ -643,6 +649,42 @@ const Experimente = () => {
                 exit={{ opacity: 0, y: -8 }}
                 className="space-y-3"
               >
+                {/* Per-module counters */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2 text-xs">
+                    <p className="font-medium">
+                      {usage.telehealthViews}/{DEMO_LIMITS.telehealthViews} visualizações
+                    </p>
+                    <span className="text-[10px] text-muted-foreground">
+                      {Math.max(0, DEMO_LIMITS.telehealthViews - usage.telehealthViews)} restantes
+                    </span>
+                  </div>
+                  <Progress
+                    value={(usage.telehealthViews / DEMO_LIMITS.telehealthViews) * 100}
+                    className="h-1.5"
+                  />
+                  <div className="flex items-center justify-between gap-2 text-xs pt-1">
+                    <p className="font-medium">
+                      {usage.telehealthAttempts}/{DEMO_LIMITS.telehealthAttempts} teleconsultas (demo)
+                    </p>
+                    <span className="text-[10px] text-muted-foreground">
+                      {Math.max(0, DEMO_LIMITS.telehealthAttempts - usage.telehealthAttempts)} restantes
+                    </span>
+                  </div>
+                  <Progress
+                    value={(usage.telehealthAttempts / DEMO_LIMITS.telehealthAttempts) * 100}
+                    className="h-1.5"
+                  />
+                  {usage.telehealthAttempts >= DEMO_LIMITS.telehealthAttempts && (
+                    <Alert className="py-2 border-primary/40 bg-primary/5">
+                      <Lock className="h-3.5 w-3.5 !text-primary" />
+                      <AlertDescription className="text-xs ml-1">
+                        <strong>Criar nova teleconsulta bloqueado.</strong> Visualizar este módulo continua liberado — crie conta para teleconsultas ilimitadas.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+
                 <div className="glass-card p-5 space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -658,8 +700,18 @@ const Experimente = () => {
                     <div className="absolute inset-0 backdrop-blur-sm bg-background/40 flex flex-col items-center justify-center gap-3 z-10">
                       <Lock className="h-8 w-8 text-primary" />
                       <p className="text-sm font-semibold">Recurso exclusivo da conta real</p>
-                      <Button size="sm" onClick={() => askSignup("Telehealth requer cadastro")} className="gradient-primary">
-                        Ativar em 20 segundos
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          // Increment the "tried to create teleconsulta" counter
+                          // and trigger the contextual paywall — only this
+                          // specific premium action is blocked.
+                          setUsage(incrementUsageCounter("telehealthAttempts"));
+                          askSignup("Criar teleconsulta requer cadastro");
+                        }}
+                        className="gradient-primary"
+                      >
+                        Tentar criar teleconsulta
                       </Button>
                     </div>
                     <div className="text-center text-xs text-muted-foreground">
