@@ -116,7 +116,50 @@ export default function FreemiumDebugPanel() {
     );
   }, [enabled, open, user?.id]);
 
-  const moduleUsage = useMemo(() => getAllModuleUsage(), [snapshot]);
+  // Build the module list shown in the panel.
+  // We intentionally exclude Teleconsulta (no longer surfaced) and add the
+  // Mentoria AI quota — that's the next gating point we want to monitor.
+  type DebugRow = {
+    key: "patients" | "appointments" | "mentorship";
+    label: string;
+    used: number;
+    limit: number;
+    percent: number;
+    origin: "local" | "backend";
+    views?: ModuleUsage["views"];
+  };
+
+  const moduleRows: DebugRow[] = useMemo(() => {
+    const patients = getModuleUsage("patients");
+    const appointments = getModuleUsage("appointments");
+    const mentorship = usageByModule.mentorship;
+    return [
+      {
+        key: "patients",
+        label: "Pacientes",
+        used: patients.used,
+        limit: patients.limit,
+        percent: patients.percent,
+        origin: user ? "backend" : "local",
+      },
+      {
+        key: "appointments",
+        label: "Consultas",
+        used: appointments.used,
+        limit: appointments.limit,
+        percent: appointments.percent,
+        origin: user ? "backend" : "local",
+      },
+      {
+        key: "mentorship",
+        label: "Mentoria IA",
+        used: mentorship.used,
+        limit: mentorship.limit,
+        percent: mentorship.percent,
+        origin: "backend",
+      },
+    ];
+  }, [snapshot, usageByModule, user]);
 
   if (!enabled) return null;
 
