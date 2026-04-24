@@ -28,6 +28,45 @@ export const DEMO_LIMITS = {
   telehealthAttempts: 1,
 } as const;
 
+export type DemoModule = "patients" | "appointments" | "telehealth";
+
+/**
+ * Single source of truth mapping each module to its counter keys + limits.
+ * Used by the unified `getModuleUsage` API so meters, Progress bars and the
+ * contextual paywall always read from the same place.
+ *
+ * - `attempts` is the counter that drives the contextual block (premium action)
+ * - `views` is informative only and NEVER blocks navigation
+ */
+export const DEMO_MODULE_CONFIG: Record<
+  DemoModule,
+  {
+    attemptsKey: keyof DemoUsageCounters;
+    attemptsLimit: number;
+    viewsKey?: keyof DemoUsageCounters;
+    viewsLimit?: number;
+    label: string;
+  }
+> = {
+  patients: {
+    attemptsKey: "patientsCreated",
+    attemptsLimit: DEMO_LIMITS.patients,
+    label: "Pacientes",
+  },
+  appointments: {
+    attemptsKey: "appointmentsCreated",
+    attemptsLimit: DEMO_LIMITS.appointments,
+    label: "Consultas",
+  },
+  telehealth: {
+    attemptsKey: "telehealthAttempts",
+    attemptsLimit: DEMO_LIMITS.telehealthAttempts,
+    viewsKey: "telehealthViews",
+    viewsLimit: DEMO_LIMITS.telehealthViews,
+    label: "Teleconsulta",
+  },
+};
+
 export const DEMO_STORAGE = {
   patients: "salbcare_demo_patients",
   appointments: "salbcare_demo_appointments",
