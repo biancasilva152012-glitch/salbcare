@@ -137,8 +137,8 @@ const ParaProfissionais = () => {
 
             <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)]">
-                <Link to="/cadastro" onClick={() => trackCtaClick("criar_conta_gratis", "hero")}>
-                  Entrar em 20 segundos
+                <Link to="/experimente" onClick={() => trackCtaClick("testar_agora", "hero")}>
+                  Testar agora
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -439,12 +439,12 @@ const ParaProfissionais = () => {
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true }}
              >
-               <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
-                 <Link to="/cadastro" onClick={() => trackCtaClick("comecar_gratis", "cta_final")}>
-                   Entrar em 20 segundos
-                   <ArrowRight className="h-4 w-4" />
-                 </Link>
-               </Button>
+                <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
+                  <Link to="/experimente" onClick={() => trackCtaClick("testar_agora", "cta_final")}>
+                    Testar agora
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
              </motion.div>
           </div>
         </section>
