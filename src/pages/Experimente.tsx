@@ -423,7 +423,7 @@ const Experimente = () => {
 
       {/* Signup prompt modal */}
       <Dialog open={signupOpen} onOpenChange={setSignupOpen}>
-        <DialogContent className="max-w-sm p-0 overflow-hidden">
+        <DialogContent className="max-w-sm p-0 overflow-hidden" data-testid="paywall-modal">
           <div className="bg-gradient-to-br from-primary/20 to-primary/5 px-6 pt-8 pb-6 text-center relative">
             <button onClick={() => setSignupOpen(false)} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
