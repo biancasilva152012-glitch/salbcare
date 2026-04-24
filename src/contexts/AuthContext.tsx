@@ -4,6 +4,11 @@ import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getPlanByProductId, PlanKey, getTrialDaysRemaining } from "@/config/plans";
 import { isAdminEmail } from "@/config/admin";
+import {
+  invokeCheckSubscriptionWithRetry,
+  readSubscriptionCache,
+  writeSubscriptionCache,
+} from "@/lib/subscriptionCache";
 
 interface SubscriptionState {
   subscribed: boolean;
