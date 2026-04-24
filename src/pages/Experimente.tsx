@@ -30,18 +30,8 @@ type DemoTab = "pacientes" | "agenda" | "telehealth";
 type PatientFilter = "all" | "with-phone" | "no-phone";
 type AppointmentFilter = "all" | "presencial" | "online" | "today" | "upcoming";
 
-// ============= Demo limits =============
-const DEMO_LIMITS = { patients: 3, appointments: 5 };
-const STORAGE = {
-  patients: "salbcare_demo_patients",
-  appointments: "salbcare_demo_appointments",
-  visited: "salbcare_demo_visited",
-  activeTab: "salbcare_demo_active_tab",
-  patientsSearch: "salbcare_demo_patients_search",
-  patientsFilter: "salbcare_demo_patients_filter",
-  appointmentsSearch: "salbcare_demo_appts_search",
-  appointmentsFilter: "salbcare_demo_appts_filter",
-};
+// ============= Demo limits (re-export aliases for legacy local refs) =============
+const STORAGE = DEMO_STORAGE_KEYS;
 
 // ============= Seeds (consistent: appointments reference real patients & coherent dates) =============
 const isoDateOffset = (days: number) => {
