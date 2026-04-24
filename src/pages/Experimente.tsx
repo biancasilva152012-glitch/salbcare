@@ -98,6 +98,15 @@ const Experimente = () => {
   const [signupReason, setSignupReason] = useState<string>("");
   const [usage, setUsage] = useState(() => readUsageCounters());
 
+  // Unified usage source for all modules — keeps top meter, per-module
+  // counters and Progress bars perfectly in sync. Recomputed whenever the
+  // underlying lists or counters change.
+  const moduleUsage = useMemo(
+    () => getAllModuleUsage(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [patients.length, appointments.length, usage],
+  );
+
   // Forms
   const [newPatient, setNewPatient] = useState({ name: "", phone: "", notes: "" });
   const [newAppt, setNewAppt] = useState({ patient: "", date: "", time: "", type: "presencial" as const });
