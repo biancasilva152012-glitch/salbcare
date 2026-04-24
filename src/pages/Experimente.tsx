@@ -519,15 +519,15 @@ const Experimente = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <p className="text-xs font-medium">
-                          {appointments.length}/{DEMO_LIMITS.appointments} consultas na demo
+                          {moduleUsage.appointments.used}/{moduleUsage.appointments.limit} consultas na demo
                         </p>
                         <span className="text-[10px] text-muted-foreground">
-                          {Math.max(0, DEMO_LIMITS.appointments - appointments.length)} restantes
+                          {moduleUsage.appointments.remaining} restantes
                         </span>
                       </div>
-                      <Progress value={(appointments.length / DEMO_LIMITS.appointments) * 100} className="h-1.5" />
+                      <Progress value={moduleUsage.appointments.percent} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={startNewAppt} disabled={appointments.length >= DEMO_LIMITS.appointments && !editingApptId}>
+                    <Button size="sm" variant="outline" onClick={startNewAppt} disabled={moduleUsage.appointments.blocked && !editingApptId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Nova consulta
                     </Button>
