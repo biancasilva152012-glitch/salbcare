@@ -573,11 +573,64 @@ const DashboardMentoria = () => {
           )}
         </motion.div>
       </motion.div>
-      {isFree && (
-        <p className="text-xs text-center text-muted-foreground py-2">
-          Mensagens este mês: {mentorshipCount}/{mentorshipLimit} (plano gratuito)
-        </p>
-      )}
+      {isFree && (() => {
+        const remaining = Math.max(0, mentorshipLimit - mentorshipCount);
+        const percent = Math.min(100, (mentorshipCount / mentorshipLimit) * 100);
+        const blocked = remaining === 0;
+
+        // Mensagem progressiva: incentivar uso até bater o limite e converter
+        let title = "";
+        let subtitle = "";
+        if (blocked) {
+          title = "Você atingiu suas 10 perguntas grátis deste mês 💬";
+          subtitle = "Continue organizando sua gestão na plataforma — receitas, despesas, pacientes — e desbloqueie a mentora ilimitada para seguir tirando dúvidas hoje.";
+        } else if (remaining === 1) {
+          title = "Última pergunta grátis deste mês ⏳";
+          subtitle = "Faça valer: pergunte sobre o que mais te incomoda hoje na sua gestão.";
+        } else if (percent >= 70) {
+          title = `${remaining} perguntas restantes neste mês`;
+          subtitle = "Quanto mais você organiza receitas e despesas no Financeiro, mais precisas ficam minhas respostas.";
+        } else if (percent >= 40) {
+          title = `${mentorshipCount} de ${mentorshipLimit} perguntas usadas`;
+          subtitle = "Aproveite — registre seus recebimentos da semana e me pergunte o quanto separar pra impostos.";
+        } else {
+          title = `Mentora financeira grátis: ${mentorshipCount}/${mentorshipLimit} perguntas este mês`;
+          subtitle = "Use também os atalhos do dashboard (Financeiro, Pacientes, Agenda) — eles me alimentam com seus números reais.";
+        }
+
+        return (
+          <motion.div variants={item} className="glass-card p-4 space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-foreground">{title}</p>
+              <span className="text-[10px] text-muted-foreground shrink-0">
+                {mentorshipCount}/{mentorshipLimit}
+              </span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  blocked
+                    ? "bg-destructive"
+                    : percent >= 70
+                      ? "bg-amber-500"
+                      : "bg-primary"
+                }`}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">{subtitle}</p>
+            {blocked && (
+              <Button
+                size="sm"
+                className="w-full gradient-primary text-xs h-8 mt-1"
+                onClick={() => setUpgradeOpen(true)}
+              >
+                Liberar mentora ilimitada
+              </Button>
+            )}
+          </motion.div>
+        );
+      })()}
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="mensagens de mentoria" currentUsage={mentorshipCount} limit={mentorshipLimit} />
     </PageContainer>
   );

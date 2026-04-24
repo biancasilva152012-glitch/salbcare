@@ -20,11 +20,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { isAdminEmail } from "@/config/admin";
 import {
   DEMO_LIMITS,
-  getAllModuleUsage,
+  getModuleUsage,
   readUsageCounters,
   syncDemoCounters,
   type DemoUsageCounters,
+  type ModuleUsage,
 } from "@/lib/demoStorage";
+import { useFreemiumLimits, FREE_LIMITS } from "@/hooks/useFreemiumLimits";
 import { Bug, RefreshCw, X, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,6 +78,7 @@ const buildSnapshot = (
 
 export default function FreemiumDebugPanel() {
   const { user } = useAuth();
+  const { usageByModule, isFree } = useFreemiumLimits();
   const isDev = import.meta.env.DEV;
   const isAdmin = isAdminEmail(user?.email);
   const enabled = isDev || isAdmin;
@@ -113,7 +116,50 @@ export default function FreemiumDebugPanel() {
     );
   }, [enabled, open, user?.id]);
 
-  const moduleUsage = useMemo(() => getAllModuleUsage(), [snapshot]);
+  // Build the module list shown in the panel.
+  // We intentionally exclude Teleconsulta (no longer surfaced) and add the
+  // Mentoria AI quota — that's the next gating point we want to monitor.
+  type DebugRow = {
+    key: "patients" | "appointments" | "mentorship";
+    label: string;
+    used: number;
+    limit: number;
+    percent: number;
+    origin: "local" | "backend";
+    views?: ModuleUsage["views"];
+  };
+
+  const moduleRows: DebugRow[] = useMemo(() => {
+    const patients = getModuleUsage("patients");
+    const appointments = getModuleUsage("appointments");
+    const mentorship = usageByModule.mentorship;
+    return [
+      {
+        key: "patients",
+        label: "Pacientes",
+        used: patients.used,
+        limit: patients.limit,
+        percent: patients.percent,
+        origin: user ? "backend" : "local",
+      },
+      {
+        key: "appointments",
+        label: "Consultas",
+        used: appointments.used,
+        limit: appointments.limit,
+        percent: appointments.percent,
+        origin: user ? "backend" : "local",
+      },
+      {
+        key: "mentorship",
+        label: "Mentoria IA",
+        used: mentorship.used,
+        limit: mentorship.limit,
+        percent: mentorship.percent,
+        origin: "backend",
+      },
+    ];
+  }, [snapshot, usageByModule, user]);
 
   if (!enabled) return null;
 
@@ -223,29 +269,29 @@ export default function FreemiumDebugPanel() {
             ) : null}
 
             <div className="space-y-2">
-              {(Object.keys(moduleUsage) as (keyof typeof moduleUsage)[]).map((key) => {
-                const u = moduleUsage[key];
-                return (
-                  <div
-                    key={key}
-                    className="rounded-md border border-border/60 p-2"
-                    data-testid={`debug-module-${key}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{u.label}</span>
+              {moduleRows.map((row) => (
+                <div
+                  key={row.key}
+                  className="rounded-md border border-border/60 p-2"
+                  data-testid={`debug-module-${row.key}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{row.label}</span>
+                    <div className="flex items-center gap-1.5">
+                      <Badge
+                        variant="outline"
+                        className="px-1.5 py-0 text-[9px] uppercase tracking-wide"
+                      >
+                        {row.origin}
+                      </Badge>
                       <span className="text-muted-foreground">
-                        {u.used}/{u.limit}
+                        {row.used}/{row.limit}
                       </span>
                     </div>
-                    <Progress value={u.percent} className="mt-1 h-1.5" />
-                    {u.views && (
-                      <div className="mt-1 text-[10px] text-muted-foreground">
-                        Views: {u.views.used}/{u.views.limit}
-                      </div>
-                    )}
                   </div>
-                );
-              })}
+                  <Progress value={row.percent} className="mt-1 h-1.5" />
+                </div>
+              ))}
             </div>
 
             <details className="rounded border border-border/60 p-2 text-[11px]">
