@@ -25,6 +25,7 @@ export const DEMO_LIMITS = {
   patients: 5,
   appointments: 5,
   telehealthViews: 3,
+  telehealthAttempts: 1,
 } as const;
 
 export const DEMO_STORAGE = {
@@ -37,18 +38,21 @@ export const DEMO_STORAGE = {
   appointmentsSearch: "salbcare_demo_appts_search",
   appointmentsFilter: "salbcare_demo_appts_filter",
   usageCounters: "salbcare_demo_usage_counters",
+  lastMigration: "salbcare_demo_last_migration",
 } as const;
 
 export type DemoUsageCounters = {
   patientsCreated: number;
   appointmentsCreated: number;
   telehealthViews: number;
+  telehealthAttempts: number;
 };
 
 const EMPTY_COUNTERS: DemoUsageCounters = {
   patientsCreated: 0,
   appointmentsCreated: 0,
   telehealthViews: 0,
+  telehealthAttempts: 0,
 };
 
 export function readUsageCounters(): DemoUsageCounters {
