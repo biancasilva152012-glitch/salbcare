@@ -311,7 +311,7 @@ const Experimente = () => {
 
         {/* Usage meter — quanto resta antes do bloqueio em cada módulo.
             Apenas a ação premium (criar) bloqueia; navegação fica sempre liberada. */}
-        <div className="mx-auto max-w-2xl px-4 pb-3">
+        <div className="mx-auto max-w-2xl px-4 pb-3" data-testid="freemium-meter">
           <div className="glass-card p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             {[
               { ...moduleUsage.patients, icon: Users, label: "Pacientes", isPremium: true },
@@ -338,7 +338,12 @@ const Experimente = () => {
               const Icon = m.icon;
               const blocked = m.blocked;
               return (
-                <div key={m.label} className="space-y-1">
+                <div
+                  key={m.label}
+                  className="space-y-1"
+                  data-testid={`meter-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
+                  data-blocked={blocked ? "1" : "0"}
+                >
                   <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
                     <Icon className="h-3 w-3" />
                     <span className="truncate">{m.label}</span>
@@ -373,6 +378,7 @@ const Experimente = () => {
                 size="sm"
                 variant="outline"
                 className="text-xs h-8"
+                data-testid="export-csv"
                 onClick={() => {
                   exportDemoAsCsv();
                   toast.success("Arquivos CSV gerados");
@@ -386,6 +392,7 @@ const Experimente = () => {
                 size="sm"
                 variant="outline"
                 className="text-xs h-8"
+                data-testid="export-pdf"
                 onClick={() => {
                   exportDemoAsPdf();
                   toast.success("PDF gerado");
