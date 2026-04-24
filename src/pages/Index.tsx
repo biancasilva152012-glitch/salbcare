@@ -126,8 +126,8 @@ const Index = () => {
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button asChild size="lg" className="gradient-primary font-bold gap-2 h-14 px-10 rounded-xl text-base shadow-lg shadow-primary/20">
-                <Link to="/cadastro">
-                  Entrar em 20 segundos
+                <Link to="/experimente">
+                  Testar agora
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -143,7 +143,7 @@ const Index = () => {
               </Button>
             </motion.div>
             <motion.p variants={fadeUp} className="text-xs text-muted-foreground">
-              Só nome, e-mail e senha — CRM/CRP você completa depois
+              Sem login. Sem cartão. Use a plataforma agora e crie conta quando gostar.
             </motion.p>
 
             {/* IA Mentora Preview */}
