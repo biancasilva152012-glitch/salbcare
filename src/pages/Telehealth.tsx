@@ -153,10 +153,33 @@ const Telehealth = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Teleconsulta</h1>
-          <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1 text-xs gradient-primary">
-            <Plus className="h-3.5 w-3.5" /> Nova Consulta
-          </Button>
+          {canCreateTelehealth ? (
+            <Button
+              size="sm"
+              onClick={() => setCreateOpen(true)}
+              className="gap-1 text-xs gradient-primary"
+              data-testid="telehealth-new-btn"
+            >
+              <Plus className="h-3.5 w-3.5" /> Nova Consulta
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              onClick={() => setUpgradeOpen(true)}
+              className="gap-1 text-xs gradient-primary"
+              data-testid="telehealth-new-btn-blocked"
+            >
+              <Plus className="h-3.5 w-3.5" /> Nova Consulta
+            </Button>
+          )}
         </div>
+
+        <FreemiumQuotaBanner
+          label="Teleconsultas"
+          usage={usageByModule.telehealth}
+          isFree={isFree}
+          trackingKey="telehealth"
+        />
 
         {/* Warning banner if no Meet link */}
         {!meetLink && (
