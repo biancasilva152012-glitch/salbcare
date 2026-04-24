@@ -27,6 +27,7 @@ import {
   exportDemoAsCsv,
   exportDemoAsPdf,
 } from "@/lib/demoStorage";
+import { useFreemiumConsistencyCheck } from "@/hooks/useFreemiumConsistencyCheck";
 
 // ============= Types =============
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
@@ -137,6 +138,9 @@ const Experimente = () => {
     // when the user later logs in and counters are merged.
     syncDemoCounters(null).then((merged) => setUsage(merged)).catch(() => {});
   }, []);
+
+  // Runtime consistency check: surface mismatches between UI and backend
+  useFreemiumConsistencyCheck(null);
 
   const askSignup = (reason: string) => {
     setSignupReason(reason);
@@ -307,7 +311,7 @@ const Experimente = () => {
 
         {/* Usage meter — quanto resta antes do bloqueio em cada módulo.
             Apenas a ação premium (criar) bloqueia; navegação fica sempre liberada. */}
-        <div className="mx-auto max-w-2xl px-4 pb-3">
+        <div className="mx-auto max-w-2xl px-4 pb-3" data-testid="freemium-meter">
           <div className="glass-card p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             {[
               { ...moduleUsage.patients, icon: Users, label: "Pacientes", isPremium: true },
@@ -334,7 +338,12 @@ const Experimente = () => {
               const Icon = m.icon;
               const blocked = m.blocked;
               return (
-                <div key={m.label} className="space-y-1">
+                <div
+                  key={m.label}
+                  className="space-y-1"
+                  data-testid={`meter-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
+                  data-blocked={blocked ? "1" : "0"}
+                >
                   <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
                     <Icon className="h-3 w-3" />
                     <span className="truncate">{m.label}</span>
@@ -369,6 +378,7 @@ const Experimente = () => {
                 size="sm"
                 variant="outline"
                 className="text-xs h-8"
+                data-testid="export-csv"
                 onClick={() => {
                   exportDemoAsCsv();
                   toast.success("Arquivos CSV gerados");
@@ -382,6 +392,7 @@ const Experimente = () => {
                 size="sm"
                 variant="outline"
                 className="text-xs h-8"
+                data-testid="export-pdf"
                 onClick={() => {
                   exportDemoAsPdf();
                   toast.success("PDF gerado");
@@ -412,7 +423,7 @@ const Experimente = () => {
 
       {/* Signup prompt modal */}
       <Dialog open={signupOpen} onOpenChange={setSignupOpen}>
-        <DialogContent className="max-w-sm p-0 overflow-hidden">
+        <DialogContent className="max-w-sm p-0 overflow-hidden" data-testid="paywall-modal">
           <div className="bg-gradient-to-br from-primary/20 to-primary/5 px-6 pt-8 pb-6 text-center relative">
             <button onClick={() => setSignupOpen(false)} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />

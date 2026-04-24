@@ -9,6 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // Playwright owns the e2e/ folder — keep vitest out of it.
+    exclude: ["node_modules", "dist", ".idea", ".git", ".cache", "e2e/**"],
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
