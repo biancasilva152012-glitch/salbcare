@@ -108,7 +108,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const [subResult, profileResult] = await Promise.all([
-        supabase.functions.invoke("check-subscription"),
+        invokeCheckSubscriptionWithRetry(3),
         supabase
           .from("profiles")
           .select("plan, trial_start_date, payment_status")
@@ -116,13 +116,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .single(),
       ]);
 
-      // Tolerate transient edge-function errors (e.g. 503 cold-start) — fall
-      // back to the profile row so the UI never blank-screens just because
-      // Stripe verification was momentarily unreachable.
-      if (subResult.error) {
-        console.warn("[check-subscription] transient error, using profile fallback", subResult.error);
+      // Pick the freshest source of truth for the Stripe-side data:
+      //   1) successful retry response → use it and refresh the cache
+      //   2) cached last-known-good response → use it (graceful degradation)
+      //   3) hard fallback (everything off)
+      let data: { subscribed: boolean; product_id: string | null; subscription_end: string | null };
+      if (subResult.data) {
+        data = subResult.data;
+        writeSubscriptionCache(userId, data);
+      } else {
+        const cached = readSubscriptionCache(userId);
+        if (cached) {
+          console.warn("[check-subscription] using cached subscription after", subResult.attempts, "failed attempts");
+          data = cached;
+        } else {
+          data = { subscribed: false, product_id: null, subscription_end: null };
+        }
       }
-      const data = subResult.data ?? { subscribed: false, product_id: null, subscription_end: null };
 
       let plan: PlanKey = getPlanByProductId(data.product_id);
       let trialDaysRemaining = 0;
