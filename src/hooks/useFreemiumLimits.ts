@@ -17,7 +17,10 @@ export const FREE_LIMITS = {
   patients: 5,
   appointments: 5,
   telehealthAttempts: 1,
-  mentorshipMessages: 5,
+  // 10 perguntas grátis: o suficiente para o profissional sentir valor real
+  // (diagnóstico financeiro, preço mínimo, reserva, impostos) antes de bater
+  // o paywall e converter em assinante para uso ilimitado.
+  mentorshipMessages: 10,
 } as const;
 
 export type FreemiumModule =
