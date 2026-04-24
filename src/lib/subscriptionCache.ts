@@ -117,6 +117,40 @@ export type InvokeWithRetryResult = {
 
 const RETRYABLE_STATUSES = new Set([502, 503, 504]);
 
+function normalizeInvokeError(err: unknown): { status?: number; message: string; code?: string; name?: string } {
+  const fallback = {
+    status: undefined,
+    message: err instanceof Error ? err.message : String(err),
+    code: undefined,
+    name: err instanceof Error ? err.name : undefined,
+  };
+
+  if (!err || typeof err !== "object") return fallback;
+
+  const anyErr = err as any;
+  const status = anyErr.status ?? anyErr.context?.status;
+  const message = typeof anyErr.message === "string" ? anyErr.message : fallback.message;
+  const code = typeof anyErr.code === "string" ? anyErr.code : undefined;
+  const name = typeof anyErr.name === "string" ? anyErr.name : undefined;
+
+  const rawJsonMatch = message.match(/\{.*\}$/);
+  if (rawJsonMatch) {
+    try {
+      const parsed = JSON.parse(rawJsonMatch[0]);
+      return {
+        status,
+        message: parsed.message || message,
+        code: parsed.code || code,
+        name,
+      };
+    } catch {
+      return { status, message, code, name };
+    }
+  }
+
+  return { status, message, code, name };
+}
+
 function isRetryable(err: any): boolean {
   if (!err) return false;
   const status = err.status ?? err.context?.status;
@@ -137,11 +171,20 @@ export async function invokeCheckSubscriptionWithRetry(
   maxAttempts = 3,
 ): Promise<InvokeWithRetryResult> {
   let attempt = 0;
-  let lastErr: any = null;
+  let lastErr: ReturnType<typeof normalizeInvokeError> | null = null;
 
   while (attempt < maxAttempts) {
     attempt += 1;
-    const { data, error } = await supabase.functions.invoke("check-subscription");
+    let data: unknown = null;
+    let error: unknown = null;
+
+    try {
+      const result = await supabase.functions.invoke("check-subscription");
+      data = result.data;
+      error = result.error;
+    } catch (err) {
+      error = normalizeInvokeError(err);
+    }
 
     // The edge function may return 200 with a structured fallback payload
     // (see supabase/functions/check-subscription/index.ts).
@@ -168,13 +211,13 @@ export async function invokeCheckSubscriptionWithRetry(
       return { data: data as CachedSubscription, error: null, attempts: attempt, fellBack: false };
     }
 
-    lastErr = error;
-    const retryable = isRetryable(error);
+    lastErr = normalizeInvokeError(error);
+    const retryable = isRetryable(lastErr);
     logEdgeIncident({
       fn: "check-subscription",
-      status: (error as any).status ?? (error as any).context?.status,
-      code: (error as any).code,
-      message: error.message,
+      status: lastErr.status,
+      code: lastErr.code,
+      message: lastErr.message,
       attempt,
       finalAttempt: !retryable || attempt === maxAttempts,
     });
@@ -189,7 +232,7 @@ export async function invokeCheckSubscriptionWithRetry(
   return {
     data: null,
     error: {
-      status: lastErr?.status ?? lastErr?.context?.status,
+      status: lastErr?.status,
       message: lastErr?.message ?? "unknown error",
       code: lastErr?.code,
     },
