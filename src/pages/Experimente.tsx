@@ -280,7 +280,50 @@ const Experimente = () => {
           </p>
         </div>
 
-        {/* Tabs */}
+        {/* Usage meter — quanto resta antes do bloqueio em cada módulo */}
+        <div className="mx-auto max-w-2xl px-4 pb-3">
+          <div className="glass-card p-3 grid grid-cols-3 gap-2 text-center">
+            {[
+              {
+                label: "Pacientes",
+                used: patients.length,
+                limit: DEMO_LIMITS.patients,
+                icon: Users,
+              },
+              {
+                label: "Consultas",
+                used: appointments.length,
+                limit: DEMO_LIMITS.appointments,
+                icon: Calendar,
+              },
+              {
+                label: "Telehealth",
+                used: usage.telehealthViews,
+                limit: DEMO_LIMITS.telehealthViews,
+                icon: Video,
+              },
+            ].map((m) => {
+              const Icon = m.icon;
+              const remaining = Math.max(0, m.limit - m.used);
+              const blocked = remaining === 0;
+              return (
+                <div key={m.label} className="space-y-1">
+                  <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <Icon className="h-3 w-3" />
+                    {m.label}
+                  </div>
+                  <p className={`text-sm font-bold ${blocked ? "text-destructive" : "text-foreground"}`}>
+                    {m.used}/{m.limit}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {blocked ? "bloqueado" : `${remaining} restante${remaining === 1 ? "" : "s"}`}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="mx-auto max-w-2xl px-4">
           <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted/50 p-1 border border-border/40">
             {[
