@@ -12,6 +12,9 @@ import CreateTeleconsultationModal from "@/components/telehealth/CreateTeleconsu
 import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
 import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import FreemiumQuotaBanner from "@/components/FreemiumQuotaBanner";
+import UpgradeModal from "@/components/UpgradeModal";
 import { PLANS } from "@/config/plans";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import { useNavigate } from "react-router-dom";
