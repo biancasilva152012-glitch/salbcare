@@ -55,7 +55,15 @@ function useLocalState<T>(key: string, initial: T): [T, (v: T) => void] {
 // ============= Page =============
 const Experimente = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"pacientes" | "agenda" | "telehealth">("pacientes");
+  const [tab, setTabRaw] = useState<DemoTab>(() => {
+    if (typeof window === "undefined") return "pacientes";
+    const saved = window.localStorage.getItem(STORAGE.activeTab) as DemoTab | null;
+    return saved === "pacientes" || saved === "agenda" || saved === "telehealth" ? saved : "pacientes";
+  });
+  const setTab = (t: DemoTab) => {
+    setTabRaw(t);
+    try { window.localStorage.setItem(STORAGE.activeTab, t); } catch {/* ignore */}
+  };
   const [patients, setPatients] = useLocalState<DemoPatient[]>(STORAGE.patients, seedPatients);
   const [appointments, setAppointments] = useLocalState<DemoAppointment[]>(STORAGE.appointments, seedAppointments);
 
@@ -80,6 +88,18 @@ const Experimente = () => {
     setSignupReason(reason);
     setSignupOpen(true);
     trackCtaClick("demo_signup_prompt", reason);
+  };
+
+  const resetDemoData = () => {
+    if (!confirm("Apagar todos os dados da demo e voltar ao estado inicial?")) return;
+    setPatients(seedPatients);
+    setAppointments(seedAppointments);
+    setShowPatientForm(false);
+    setShowApptForm(false);
+    setNewPatient({ name: "", phone: "", notes: "" });
+    setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
+    toast.success("Dados da demo limpos e re-semeados");
+    trackCtaClick("demo_reset", "experimente_page");
   };
 
   // Patient handlers
