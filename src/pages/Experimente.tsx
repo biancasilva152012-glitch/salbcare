@@ -242,8 +242,9 @@ const Experimente = () => {
   }, [appointments, apptsSearch, apptsFilter]);
 
   const goToSignup = () => {
-    trackCtaClick("demo_to_register", signupReason || "header_cta");
-    navigate("/cadastro");
+    trackCtaClick("demo_to_pro_landing", signupReason || "header_cta");
+    // Leva para a landing profissional para conhecer planos antes de cadastrar
+    navigate("/para-profissionais");
   };
 
   return (
@@ -263,7 +264,7 @@ const Experimente = () => {
               <span className="text-muted-foreground hidden sm:inline">— seus dados ficam só no seu navegador</span>
             </div>
             <Button size="sm" onClick={goToSignup} className="gradient-primary text-xs h-8">
-              Criar conta grátis
+              Ver planos
               <ArrowRight className="ml-1 h-3.5 w-3.5" />
             </Button>
           </div>
@@ -337,7 +338,7 @@ const Experimente = () => {
                     <Alert className="py-2 border-amber-500/40 bg-amber-500/5">
                       <AlertCircle className="h-3.5 w-3.5 !text-amber-600" />
                       <AlertDescription className="text-xs ml-1">
-                        Falta só 1 vaga. Próximo paciente vai pedir cadastro.
+                        Falta só 1 vaga. Próximo paciente vai sugerir conhecer os planos.
                       </AlertDescription>
                     </Alert>
                   )}
@@ -474,7 +475,7 @@ const Experimente = () => {
                     <Alert className="py-2 border-amber-500/40 bg-amber-500/5">
                       <AlertCircle className="h-3.5 w-3.5 !text-amber-600" />
                       <AlertDescription className="text-xs ml-1">
-                        Falta só 1 vaga. Próxima consulta vai pedir cadastro.
+                        Falta só 1 vaga. Próxima consulta vai sugerir conhecer os planos.
                       </AlertDescription>
                     </Alert>
                   )}
