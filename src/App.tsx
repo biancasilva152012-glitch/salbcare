@@ -12,6 +12,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import PageContainer from "@/components/PageContainer";
 import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
+import GlobalDemoMigration from "@/components/GlobalDemoMigration";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
 
@@ -105,6 +106,7 @@ const App = () => (
         <AuthProvider>
           <ScrollToTop />
           <TrackingProvider />
+          <GlobalDemoMigration />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
