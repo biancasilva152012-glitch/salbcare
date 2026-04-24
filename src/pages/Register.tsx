@@ -237,16 +237,6 @@ const Register = () => {
                 <Input type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-background/50 border-border/60" />
               </div>
               <div className="space-y-1.5">
-                <Label>Especialidade *</Label>
-                <Select onValueChange={(v) => setForm({ ...form, professional_type: v })} value={form.professional_type}>
-                  <SelectTrigger className="bg-background/50 border-border/60"><SelectValue placeholder="Selecione sua especialidade" /></SelectTrigger>
-                  <SelectContent>
-                    {specialties.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-1.5">
                 <Label>Senha *</Label>
                 <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-background/50 border-border/60" minLength={6} />
                 <p className="text-[10px] text-muted-foreground">Mínimo 6 caracteres</p>
