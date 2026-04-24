@@ -475,7 +475,7 @@ const Experimente = () => {
                     <Alert className="py-2 border-amber-500/40 bg-amber-500/5">
                       <AlertCircle className="h-3.5 w-3.5 !text-amber-600" />
                       <AlertDescription className="text-xs ml-1">
-                        Falta só 1 vaga. Próxima consulta vai pedir cadastro.
+                        Falta só 1 vaga. Próxima consulta vai sugerir conhecer os planos.
                       </AlertDescription>
                     </Alert>
                   )}
