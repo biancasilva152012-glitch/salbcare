@@ -80,6 +80,9 @@ const Experimente = () => {
   const setTab = (t: DemoTab) => {
     setTabRaw(t);
     try { window.localStorage.setItem(STORAGE.activeTab, t); } catch {/* ignore */}
+    if (t === "telehealth") {
+      setUsage(incrementUsageCounter("telehealthViews"));
+    }
   };
   const [patients, setPatients] = useLocalState<DemoPatient[]>(STORAGE.patients, seedPatients);
   const [appointments, setAppointments] = useLocalState<DemoAppointment[]>(STORAGE.appointments, seedAppointments);
@@ -162,6 +165,7 @@ const Experimente = () => {
         return;
       }
       setPatients([{ id: crypto.randomUUID(), ...newPatient }, ...patients]);
+      setUsage(incrementUsageCounter("patientsCreated"));
       toast.success("Paciente adicionado (demo)");
     }
     setNewPatient({ name: "", phone: "", notes: "" });
@@ -198,6 +202,7 @@ const Experimente = () => {
         return;
       }
       setAppointments([{ id: crypto.randomUUID(), ...newAppt }, ...appointments]);
+      setUsage(incrementUsageCounter("appointmentsCreated"));
       toast.success("Consulta agendada (demo)");
     }
     setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
