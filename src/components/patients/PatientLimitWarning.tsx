@@ -165,7 +165,7 @@ const PatientLimitWarning = ({ count, limit, isFree, blockOpen, onBlockClose }: 
               trackCtaClick("upgrade_essencial", "limit_block_modal");
               trackLimitWarning("hit_free_limit_10", count);
               onBlockClose();
-              navigate("/checkout?plan=basic");
+              navigate("/upgrade?reason=patients");
             }}
             className="w-full gradient-primary font-semibold py-5"
           >

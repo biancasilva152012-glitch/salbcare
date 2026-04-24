@@ -37,6 +37,8 @@ const Legal = lazyWithRetry(() => import("./pages/Legal"), "Legal");
 const Telehealth = lazyWithRetry(() => import("./pages/Telehealth"), "Telehealth");
 const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
+const Upgrade = lazyWithRetry(() => import("./pages/Upgrade"), "Upgrade");
+const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
 const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"), "AdminOverviewPage");
@@ -121,6 +123,8 @@ const App = () => (
               <Route path="/profissionais" element={<PublicProfessionals />} />
               <Route path="/planos" element={<Pricing />} />
               <Route path="/precos" element={<Pricing />} />
+              <Route path="/experimente" element={<Experimente />} />
+              <Route path="/upgrade" element={<Upgrade />} />
 
               {/* Blog SEO */}
               <Route path="/blog" element={<BlogIndex />} />

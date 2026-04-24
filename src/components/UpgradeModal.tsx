@@ -59,7 +59,7 @@ const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeMo
           <Button
             onClick={() => {
               onClose();
-              navigate("/checkout?plan=basic");
+              navigate(`/upgrade?reason=${encodeURIComponent(feature)}`);
             }}
             className="w-full gradient-primary font-semibold py-5"
           >
