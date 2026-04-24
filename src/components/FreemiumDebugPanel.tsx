@@ -269,29 +269,29 @@ export default function FreemiumDebugPanel() {
             ) : null}
 
             <div className="space-y-2">
-              {(Object.keys(moduleUsage) as (keyof typeof moduleUsage)[]).map((key) => {
-                const u = moduleUsage[key];
-                return (
-                  <div
-                    key={key}
-                    className="rounded-md border border-border/60 p-2"
-                    data-testid={`debug-module-${key}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{u.label}</span>
+              {moduleRows.map((row) => (
+                <div
+                  key={row.key}
+                  className="rounded-md border border-border/60 p-2"
+                  data-testid={`debug-module-${row.key}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{row.label}</span>
+                    <div className="flex items-center gap-1.5">
+                      <Badge
+                        variant="outline"
+                        className="px-1.5 py-0 text-[9px] uppercase tracking-wide"
+                      >
+                        {row.origin}
+                      </Badge>
                       <span className="text-muted-foreground">
-                        {u.used}/{u.limit}
+                        {row.used}/{row.limit}
                       </span>
                     </div>
-                    <Progress value={u.percent} className="mt-1 h-1.5" />
-                    {u.views && (
-                      <div className="mt-1 text-[10px] text-muted-foreground">
-                        Views: {u.views.used}/{u.views.limit}
-                      </div>
-                    )}
                   </div>
-                );
-              })}
+                  <Progress value={row.percent} className="mt-1 h-1.5" />
+                </div>
+              ))}
             </div>
 
             <details className="rounded border border-border/60 p-2 text-[11px]">
