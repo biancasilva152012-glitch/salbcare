@@ -56,6 +56,39 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
+function deriveSubscriptionState(
+  stripeData: { subscribed: boolean; product_id: string | null; subscription_end: string | null },
+  profile?: { plan?: string | null; trial_start_date?: string | null; payment_status?: string | null } | null,
+): SubscriptionState {
+  let plan: PlanKey = getPlanByProductId(stripeData.product_id);
+  let trialDaysRemaining = 0;
+  let paymentStatus = "none";
+  let needsOnboarding = false;
+
+  if (profile) {
+    paymentStatus = profile.payment_status || "none";
+    trialDaysRemaining = getTrialDaysRemaining(profile.trial_start_date || null);
+
+    if (!stripeData.subscribed && profile.plan && profile.plan === "basic") {
+      plan = profile.plan as PlanKey;
+    }
+
+    if (!profile.trial_start_date && paymentStatus === "none" && profile.plan === "basic") {
+      needsOnboarding = true;
+    }
+  }
+
+  return {
+    subscribed: stripeData.subscribed || paymentStatus === "active" || trialDaysRemaining > 0,
+    plan,
+    subscriptionEnd: stripeData.subscription_end || null,
+    loading: false,
+    trialDaysRemaining,
+    paymentStatus,
+    needsOnboarding,
+  };
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
@@ -112,7 +145,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const [subResult, profileResult] = await Promise.all([
+      const cached = readSubscriptionCache(userId);
+      const [subResult, profileResult] = await Promise.allSettled([
         invokeCheckSubscriptionWithRetry(3),
         supabase
           .from("profiles")
@@ -121,53 +155,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .single(),
       ]);
 
+      const profile = profileResult.status === "fulfilled" ? profileResult.value.data : null;
+
+      if (cached) {
+        setSubscription(deriveSubscriptionState(cached, profile as any));
+      } else if (profile) {
+        setSubscription(
+          deriveSubscriptionState(
+            { subscribed: false, product_id: null, subscription_end: null },
+            profile as any,
+          ),
+        );
+      }
+
       // Pick the freshest source of truth for the Stripe-side data:
       //   1) successful retry response → use it and refresh the cache
       //   2) cached last-known-good response → use it (graceful degradation)
       //   3) hard fallback (everything off)
       let data: { subscribed: boolean; product_id: string | null; subscription_end: string | null };
-      if (subResult.data) {
-        data = subResult.data;
+      if (subResult.status === "fulfilled" && subResult.value.data) {
+        data = subResult.value.data;
         writeSubscriptionCache(userId, data);
       } else {
-        const cached = readSubscriptionCache(userId);
         if (cached) {
-          console.warn("[check-subscription] using cached subscription after", subResult.attempts, "failed attempts");
+          const attempts = subResult.status === "fulfilled" ? subResult.value.attempts : 0;
+          console.warn("[check-subscription] using cached subscription after", attempts, "failed attempts");
           data = cached;
         } else {
           data = { subscribed: false, product_id: null, subscription_end: null };
         }
       }
 
-      let plan: PlanKey = getPlanByProductId(data.product_id);
-      let trialDaysRemaining = 0;
-      let paymentStatus = "none";
-      let needsOnboarding = false;
-
-      const profile = profileResult.data;
-      if (profile) {
-        paymentStatus = (profile as any).payment_status || "none";
-        const trialStart = (profile as any).trial_start_date;
-        trialDaysRemaining = getTrialDaysRemaining(trialStart);
-
-        if (!data.subscribed && profile.plan && profile.plan === "basic") {
-          plan = profile.plan as PlanKey;
-        }
-
-        if (!trialStart && paymentStatus === "none" && profile.plan === "basic") {
-          needsOnboarding = true;
-        }
-      }
-
-      setSubscription({
-        subscribed: data.subscribed || paymentStatus === "active" || trialDaysRemaining > 0,
-        plan,
-        subscriptionEnd: data.subscription_end || null,
-        loading: false,
-        trialDaysRemaining,
-        paymentStatus,
-        needsOnboarding,
-      });
+      setSubscription(deriveSubscriptionState(data, profile as any));
     } catch {
       setSubscription((s) => ({ ...s, loading: false }));
     } finally {
