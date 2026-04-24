@@ -21,6 +21,7 @@ import {
   DEMO_STORAGE as DEMO_STORAGE_KEYS,
   incrementUsageCounter,
   readUsageCounters,
+  getAllModuleUsage,
 } from "@/lib/demoStorage";
 
 // ============= Types =============
