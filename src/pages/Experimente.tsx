@@ -264,7 +264,7 @@ const Experimente = () => {
               <span className="text-muted-foreground hidden sm:inline">— seus dados ficam só no seu navegador</span>
             </div>
             <Button size="sm" onClick={goToSignup} className="gradient-primary text-xs h-8">
-              Criar conta grátis
+              Ver planos
               <ArrowRight className="ml-1 h-3.5 w-3.5" />
             </Button>
           </div>
