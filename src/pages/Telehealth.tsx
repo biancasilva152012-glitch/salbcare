@@ -12,6 +12,9 @@ import CreateTeleconsultationModal from "@/components/telehealth/CreateTeleconsu
 import { generateMedicalRecordPdf } from "@/utils/exportMedicalRecordPdf";
 import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import FreemiumQuotaBanner from "@/components/FreemiumQuotaBanner";
+import UpgradeModal from "@/components/UpgradeModal";
 import { PLANS } from "@/config/plans";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import { useNavigate } from "react-router-dom";
@@ -26,12 +29,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string 
 const Telehealth = () => {
   const { user, subscription } = useAuth();
   const { hasAccess } = useFeatureGate();
+  const { isFree, canCreateTelehealth, usageByModule } = useFreemiumLimits();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [prescriptionTc, setPrescriptionTc] = useState<any>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
@@ -148,10 +153,33 @@ const Telehealth = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Teleconsulta</h1>
-          <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1 text-xs gradient-primary">
-            <Plus className="h-3.5 w-3.5" /> Nova Consulta
-          </Button>
+          {canCreateTelehealth ? (
+            <Button
+              size="sm"
+              onClick={() => setCreateOpen(true)}
+              className="gap-1 text-xs gradient-primary"
+              data-testid="telehealth-new-btn"
+            >
+              <Plus className="h-3.5 w-3.5" /> Nova Consulta
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              onClick={() => setUpgradeOpen(true)}
+              className="gap-1 text-xs gradient-primary"
+              data-testid="telehealth-new-btn-blocked"
+            >
+              <Plus className="h-3.5 w-3.5" /> Nova Consulta
+            </Button>
+          )}
         </div>
+
+        <FreemiumQuotaBanner
+          label="Teleconsultas"
+          usage={usageByModule.telehealth}
+          isFree={isFree}
+          trackingKey="telehealth"
+        />
 
         {/* Warning banner if no Meet link */}
         {!meetLink && (
@@ -297,6 +325,13 @@ const Telehealth = () => {
         defaultMeetLink={meetLink || ""}
         doctorPhone={(profile as any)?.phone || ""}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["teleconsultations"] })}
+      />
+      <UpgradeModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        feature="teleconsultas"
+        currentUsage={usageByModule.telehealth.used}
+        limit={usageByModule.telehealth.limit}
       />
     </PageContainer>
   );

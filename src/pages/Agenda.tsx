@@ -21,6 +21,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import FreemiumQuotaBanner from "@/components/FreemiumQuotaBanner";
+import UpgradeModal from "@/components/UpgradeModal";
 import PatientSearchInput from "@/components/agenda/PatientSearchInput";
 import EmptyState from "@/components/EmptyState";
 import { CalendarX, Copy, Link } from "lucide-react";
@@ -36,6 +39,11 @@ const blockForm = { date: "", time: "", reason: "" };
 const Agenda = () => {
   const { user } = useAuth();
   const { hasAccess } = useFeatureGate();
+  const {
+    isFree,
+    canAddAppointment,
+    usageByModule,
+  } = useFreemiumLimits();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -49,6 +57,7 @@ const Agenda = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"appointments" | "requests">("appointments");
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   // Fetch service requests count for badge
   const { data: requestsCount = 0 } = useQuery({
@@ -496,17 +505,37 @@ const Agenda = () => {
                 </div>
               </DialogContent>
             </Dialog>
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Nova</Button>
-              </DialogTrigger>
-              <DialogContent className="bg-card border-border">
-                <DialogHeader><DialogTitle>Nova Consulta</DialogTitle></DialogHeader>
-                {renderAppointmentForm(false)}
-              </DialogContent>
-            </Dialog>
+            {canAddAppointment ? (
+              <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gradient-primary gap-1" data-testid="agenda-new-btn">
+                    <Plus className="h-4 w-4" /> Nova
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader><DialogTitle>Nova Consulta</DialogTitle></DialogHeader>
+                  {renderAppointmentForm(false)}
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Button
+                size="sm"
+                className="gradient-primary gap-1"
+                data-testid="agenda-new-btn-blocked"
+                onClick={() => setUpgradeOpen(true)}
+              >
+                <Plus className="h-4 w-4" /> Nova
+              </Button>
+            )}
           </div>
         </div>
+
+        <FreemiumQuotaBanner
+          label="Consultas"
+          usage={usageByModule.appointments}
+          isFree={isFree}
+          trackingKey="appointments"
+        />
 
         {/* Tab toggle */}
         <div className="flex rounded-lg bg-muted p-1">
@@ -790,6 +819,13 @@ const Agenda = () => {
         </>
         )}
       </div>
+      <UpgradeModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        feature="agenda"
+        currentUsage={usageByModule.appointments.used}
+        limit={usageByModule.appointments.limit}
+      />
     </PageContainer>
   );
 };
