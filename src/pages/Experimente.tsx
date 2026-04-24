@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle,
+  Users, Calendar, Video, Plus, Trash2, ArrowRight, Sparkles, Lock, X, CheckCircle2, Clock, Phone, RotateCcw, AlertCircle, Search, Pencil, Ban,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
@@ -18,6 +21,8 @@ import { trackCtaClick } from "@/hooks/useTracking";
 type DemoPatient = { id: string; name: string; phone: string; notes?: string };
 type DemoAppointment = { id: string; patient: string; date: string; time: string; type: "presencial" | "online" };
 type DemoTab = "pacientes" | "agenda" | "telehealth";
+type PatientFilter = "all" | "with-phone" | "no-phone";
+type AppointmentFilter = "all" | "presencial" | "online" | "today" | "upcoming";
 
 // ============= Demo limits =============
 const DEMO_LIMITS = { patients: 3, appointments: 5 };
@@ -26,16 +31,32 @@ const STORAGE = {
   appointments: "salbcare_demo_appointments",
   visited: "salbcare_demo_visited",
   activeTab: "salbcare_demo_active_tab",
+  patientsSearch: "salbcare_demo_patients_search",
+  patientsFilter: "salbcare_demo_patients_filter",
+  appointmentsSearch: "salbcare_demo_appts_search",
+  appointmentsFilter: "salbcare_demo_appts_filter",
 };
 
-const seedPatients: DemoPatient[] = [
+// ============= Seeds (consistent: appointments reference real patients & coherent dates) =============
+const isoDateOffset = (days: number) => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split("T")[0];
+};
+
+const buildSeedPatients = (): DemoPatient[] => [
   { id: "demo-1", name: "Maria Silva", phone: "(11) 98888-1234", notes: "Acompanhamento mensal" },
   { id: "demo-2", name: "João Santos", phone: "(11) 97777-5678", notes: "Primeira consulta" },
 ];
-const seedAppointments: DemoAppointment[] = [
-  { id: "ap-1", patient: "Maria Silva", date: new Date().toISOString().split("T")[0], time: "14:00", type: "presencial" },
-  { id: "ap-2", patient: "João Santos", date: new Date(Date.now() + 86400000).toISOString().split("T")[0], time: "10:30", type: "online" },
+
+const buildSeedAppointments = (): DemoAppointment[] => [
+  { id: "ap-1", patient: "Maria Silva", date: isoDateOffset(0), time: "14:00", type: "presencial" },
+  { id: "ap-2", patient: "João Santos", date: isoDateOffset(1), time: "10:30", type: "online" },
 ];
+
+const seedPatients = buildSeedPatients();
+const seedAppointments = buildSeedAppointments();
 
 // ============= Hooks =============
 function useLocalState<T>(key: string, initial: T): [T, (v: T) => void] {
@@ -67,6 +88,12 @@ const Experimente = () => {
   const [patients, setPatients] = useLocalState<DemoPatient[]>(STORAGE.patients, seedPatients);
   const [appointments, setAppointments] = useLocalState<DemoAppointment[]>(STORAGE.appointments, seedAppointments);
 
+  // Persisted filters / search
+  const [patientsSearch, setPatientsSearch] = useLocalState<string>(STORAGE.patientsSearch, "");
+  const [patientsFilter, setPatientsFilter] = useLocalState<PatientFilter>(STORAGE.patientsFilter, "all");
+  const [apptsSearch, setApptsSearch] = useLocalState<string>(STORAGE.appointmentsSearch, "");
+  const [apptsFilter, setApptsFilter] = useLocalState<AppointmentFilter>(STORAGE.appointmentsFilter, "all");
+
   const [signupOpen, setSignupOpen] = useState(false);
   const [signupReason, setSignupReason] = useState<string>("");
 
@@ -75,6 +102,8 @@ const Experimente = () => {
   const [newAppt, setNewAppt] = useState({ patient: "", date: "", time: "", type: "presencial" as const });
   const [showPatientForm, setShowPatientForm] = useState(false);
   const [showApptForm, setShowApptForm] = useState(false);
+  const [editingPatientId, setEditingPatientId] = useState<string | null>(null);
+  const [editingApptId, setEditingApptId] = useState<string | null>(null);
 
   // Track first visit
   useEffect(() => {
@@ -92,27 +121,55 @@ const Experimente = () => {
 
   const resetDemoData = () => {
     if (!confirm("Apagar todos os dados da demo e voltar ao estado inicial?")) return;
-    setPatients(seedPatients);
-    setAppointments(seedAppointments);
+    // Re-seed with fresh, consistent data (today/tomorrow dates + matching patients)
+    const freshPatients = buildSeedPatients();
+    const freshAppointments = buildSeedAppointments();
+    setPatients(freshPatients);
+    setAppointments(freshAppointments);
     setShowPatientForm(false);
     setShowApptForm(false);
+    setEditingPatientId(null);
+    setEditingApptId(null);
     setNewPatient({ name: "", phone: "", notes: "" });
     setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
-    toast.success("Dados da demo limpos e re-semeados");
+    setPatientsSearch("");
+    setPatientsFilter("all");
+    setApptsSearch("");
+    setApptsFilter("all");
+    toast.success("Dados re-semeados com pacientes e consultas iniciais");
     trackCtaClick("demo_reset", "experimente_page");
   };
 
   // Patient handlers
-  const addPatient = () => {
-    if (patients.length >= DEMO_LIMITS.patients) {
-      askSignup(`Você atingiu ${DEMO_LIMITS.patients} pacientes na demo`);
-      return;
-    }
-    if (!newPatient.name.trim()) { toast.error("Informe o nome"); return; }
-    setPatients([{ id: crypto.randomUUID(), ...newPatient }, ...patients]);
+  const startNewPatient = () => {
+    if (patients.length >= DEMO_LIMITS.patients) return; // blocked, alert handles UX
+    setEditingPatientId(null);
     setNewPatient({ name: "", phone: "", notes: "" });
+    setShowPatientForm((v) => !v);
+  };
+
+  const startEditPatient = (p: DemoPatient) => {
+    setEditingPatientId(p.id);
+    setNewPatient({ name: p.name, phone: p.phone, notes: p.notes ?? "" });
+    setShowPatientForm(true);
+  };
+
+  const savePatient = () => {
+    if (!newPatient.name.trim()) { toast.error("Informe o nome"); return; }
+    if (editingPatientId) {
+      setPatients(patients.map((p) => (p.id === editingPatientId ? { ...p, ...newPatient } : p)));
+      toast.success("Paciente atualizado (demo)");
+    } else {
+      if (patients.length >= DEMO_LIMITS.patients) {
+        askSignup(`Você atingiu ${DEMO_LIMITS.patients} pacientes na demo`);
+        return;
+      }
+      setPatients([{ id: crypto.randomUUID(), ...newPatient }, ...patients]);
+      toast.success("Paciente adicionado (demo)");
+    }
+    setNewPatient({ name: "", phone: "", notes: "" });
+    setEditingPatientId(null);
     setShowPatientForm(false);
-    toast.success("Paciente adicionado (demo)");
   };
 
   const removePatient = (id: string) => {
@@ -120,17 +177,69 @@ const Experimente = () => {
   };
 
   // Appointment handlers
-  const addAppointment = () => {
-    if (appointments.length >= DEMO_LIMITS.appointments) {
-      askSignup(`Você criou ${DEMO_LIMITS.appointments} consultas na demo`);
-      return;
-    }
-    if (!newAppt.patient || !newAppt.date || !newAppt.time) { toast.error("Preencha todos os campos"); return; }
-    setAppointments([{ id: crypto.randomUUID(), ...newAppt }, ...appointments]);
+  const startNewAppt = () => {
+    if (appointments.length >= DEMO_LIMITS.appointments) return;
+    setEditingApptId(null);
     setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
-    setShowApptForm(false);
-    toast.success("Consulta agendada (demo)");
+    setShowApptForm((v) => !v);
   };
+
+  const startEditAppt = (a: DemoAppointment) => {
+    setEditingApptId(a.id);
+    setNewAppt({ patient: a.patient, date: a.date, time: a.time, type: a.type as "presencial" });
+    setShowApptForm(true);
+  };
+
+  const saveAppointment = () => {
+    if (!newAppt.patient || !newAppt.date || !newAppt.time) { toast.error("Preencha todos os campos"); return; }
+    if (editingApptId) {
+      setAppointments(appointments.map((a) => (a.id === editingApptId ? { ...a, ...newAppt } : a)));
+      toast.success("Consulta atualizada (demo)");
+    } else {
+      if (appointments.length >= DEMO_LIMITS.appointments) {
+        askSignup(`Você criou ${DEMO_LIMITS.appointments} consultas na demo`);
+        return;
+      }
+      setAppointments([{ id: crypto.randomUUID(), ...newAppt }, ...appointments]);
+      toast.success("Consulta agendada (demo)");
+    }
+    setNewAppt({ patient: "", date: "", time: "", type: "presencial" });
+    setEditingApptId(null);
+    setShowApptForm(false);
+  };
+
+  const cancelAppointment = (id: string) => {
+    setAppointments(appointments.filter((a) => a.id !== id));
+    toast.success("Consulta cancelada");
+  };
+
+  // Derived: filtered lists
+  const filteredPatients = useMemo(() => {
+    const q = patientsSearch.trim().toLowerCase();
+    return patients.filter((p) => {
+      if (patientsFilter === "with-phone" && !p.phone) return false;
+      if (patientsFilter === "no-phone" && !!p.phone) return false;
+      if (!q) return true;
+      return (
+        p.name.toLowerCase().includes(q) ||
+        p.phone.toLowerCase().includes(q) ||
+        (p.notes ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [patients, patientsSearch, patientsFilter]);
+
+  const filteredAppointments = useMemo(() => {
+    const q = apptsSearch.trim().toLowerCase();
+    const today = isoDateOffset(0);
+    return appointments.filter((a) => {
+      if (apptsFilter === "presencial" && a.type !== "presencial") return false;
+      if (apptsFilter === "online" && a.type !== "online") return false;
+      if (apptsFilter === "today" && a.date !== today) return false;
+      if (apptsFilter === "upcoming" && a.date < today) return false;
+      if (!q) return true;
+      return a.patient.toLowerCase().includes(q) || a.date.includes(q) || a.time.includes(q);
+    });
+  }, [appointments, apptsSearch, apptsFilter]);
 
   const goToSignup = () => {
     trackCtaClick("demo_to_register", signupReason || "header_cta");
@@ -219,7 +328,7 @@ const Experimente = () => {
                       </div>
                       <Progress value={(patients.length / DEMO_LIMITS.patients) * 100} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={() => setShowPatientForm((v) => !v)} disabled={patients.length >= DEMO_LIMITS.patients}>
+                    <Button size="sm" variant="outline" onClick={startNewPatient} disabled={patients.length >= DEMO_LIMITS.patients && !editingPatientId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Adicionar
                     </Button>
@@ -236,15 +345,38 @@ const Experimente = () => {
                     <Alert className="py-2 border-primary/40 bg-primary/5">
                       <Lock className="h-3.5 w-3.5 !text-primary" />
                       <AlertDescription className="text-xs ml-1">
-                        Limite atingido. Crie conta grátis para pacientes ilimitados.
+                        <strong>Criar bloqueado.</strong> Editar e remover continuam liberados — crie conta para pacientes ilimitados.
                       </AlertDescription>
                     </Alert>
                   )}
                 </div>
 
+                {/* Search + filter (persisted) */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={patientsSearch}
+                      onChange={(e) => setPatientsSearch(e.target.value)}
+                      placeholder="Buscar pacientes…"
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                  <Select value={patientsFilter} onValueChange={(v) => setPatientsFilter(v as PatientFilter)}>
+                    <SelectTrigger className="w-[140px] h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="with-phone">Com telefone</SelectItem>
+                      <SelectItem value="no-phone">Sem telefone</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {showPatientForm && (
                   <div className="glass-card p-4 space-y-3">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {editingPatientId ? "Editando paciente" : "Novo paciente"}
+                    </p>
                     <div className="space-y-1.5">
                       <Label className="text-xs">Nome *</Label>
                       <Input value={newPatient.name} onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })} placeholder="Ex: Ana Costa" />
@@ -258,19 +390,21 @@ const Experimente = () => {
                       <Input value={newPatient.notes} onChange={(e) => setNewPatient({ ...newPatient, notes: e.target.value })} placeholder="Opcional" />
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" onClick={addPatient} className="flex-1 gradient-primary">Salvar</Button>
-                      <Button size="sm" variant="ghost" onClick={() => setShowPatientForm(false)}>Cancelar</Button>
+                      <Button size="sm" onClick={savePatient} className="flex-1 gradient-primary">
+                        {editingPatientId ? "Atualizar" : "Salvar"}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setShowPatientForm(false); setEditingPatientId(null); }}>Cancelar</Button>
                     </div>
                   </div>
                 )}
 
-                {patients.length === 0 && (
+                {filteredPatients.length === 0 && (
                   <div className="glass-card p-8 text-center text-sm text-muted-foreground">
-                    Nenhum paciente cadastrado.
+                    {patients.length === 0 ? "Nenhum paciente cadastrado." : "Nenhum resultado para a busca/filtro."}
                   </div>
                 )}
 
-                {patients.map((p) => (
+                {filteredPatients.map((p) => (
                   <div key={p.id} className="glass-card p-4 flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
                       {p.name.charAt(0).toUpperCase()}
@@ -279,6 +413,13 @@ const Experimente = () => {
                       <p className="font-medium text-sm truncate">{p.name}</p>
                       <p className="text-xs text-muted-foreground truncate">{p.phone || "Sem telefone"}</p>
                     </div>
+                    <button
+                      onClick={() => startEditPatient(p)}
+                      className="text-muted-foreground hover:text-primary p-1.5"
+                      aria-label="Editar"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => removePatient(p.id)}
                       className="text-muted-foreground hover:text-destructive p-1.5"
@@ -300,6 +441,7 @@ const Experimente = () => {
                 )}
               </motion.div>
             )}
+
 
             {/* Agenda */}
             {tab === "agenda" && (
@@ -323,7 +465,7 @@ const Experimente = () => {
                       </div>
                       <Progress value={(appointments.length / DEMO_LIMITS.appointments) * 100} className="h-1.5" />
                     </div>
-                    <Button size="sm" variant="outline" onClick={() => setShowApptForm((v) => !v)} disabled={appointments.length >= DEMO_LIMITS.appointments}>
+                    <Button size="sm" variant="outline" onClick={startNewAppt} disabled={appointments.length >= DEMO_LIMITS.appointments && !editingApptId}>
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       Nova consulta
                     </Button>
@@ -340,15 +482,40 @@ const Experimente = () => {
                     <Alert className="py-2 border-primary/40 bg-primary/5">
                       <Lock className="h-3.5 w-3.5 !text-primary" />
                       <AlertDescription className="text-xs ml-1">
-                        Limite atingido. Crie conta grátis para agenda ilimitada.
+                        <strong>Criar nova consulta bloqueado.</strong> Editar e cancelar continuam liberados — crie conta para agenda ilimitada.
                       </AlertDescription>
                     </Alert>
                   )}
                 </div>
 
+                {/* Search + filter (persisted) */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={apptsSearch}
+                      onChange={(e) => setApptsSearch(e.target.value)}
+                      placeholder="Buscar consultas…"
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                  <Select value={apptsFilter} onValueChange={(v) => setApptsFilter(v as AppointmentFilter)}>
+                    <SelectTrigger className="w-[140px] h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="today">Hoje</SelectItem>
+                      <SelectItem value="upcoming">Próximas</SelectItem>
+                      <SelectItem value="presencial">Presencial</SelectItem>
+                      <SelectItem value="online">Online</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {showApptForm && (
                   <div className="glass-card p-4 space-y-3">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {editingApptId ? "Editando consulta" : "Nova consulta"}
+                    </p>
                     <div className="space-y-1.5">
                       <Label className="text-xs">Paciente *</Label>
                       <Input value={newAppt.patient} onChange={(e) => setNewAppt({ ...newAppt, patient: e.target.value })} placeholder="Nome do paciente" />
@@ -364,19 +531,21 @@ const Experimente = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" onClick={addAppointment} className="flex-1 gradient-primary">Agendar</Button>
-                      <Button size="sm" variant="ghost" onClick={() => setShowApptForm(false)}>Cancelar</Button>
+                      <Button size="sm" onClick={saveAppointment} className="flex-1 gradient-primary">
+                        {editingApptId ? "Atualizar" : "Agendar"}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setShowApptForm(false); setEditingApptId(null); }}>Cancelar</Button>
                     </div>
                   </div>
                 )}
 
-                {appointments.length === 0 && (
+                {filteredAppointments.length === 0 && (
                   <div className="glass-card p-8 text-center text-sm text-muted-foreground">
-                    Nenhuma consulta agendada.
+                    {appointments.length === 0 ? "Nenhuma consulta agendada." : "Nenhum resultado para a busca/filtro."}
                   </div>
                 )}
 
-                {appointments.map((a) => (
+                {filteredAppointments.map((a) => (
                   <div key={a.id} className="glass-card p-4 flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
                       {a.type === "online" ? <Video className="h-4 w-4 text-primary" /> : <Calendar className="h-4 w-4 text-primary" />}
@@ -388,7 +557,21 @@ const Experimente = () => {
                         {new Date(a.date + "T00:00").toLocaleDateString("pt-BR")} às {a.time}
                       </p>
                     </div>
-                    <span className="text-[10px] uppercase font-semibold text-muted-foreground">{a.type}</span>
+                    <span className="text-[10px] uppercase font-semibold text-muted-foreground mr-1">{a.type}</span>
+                    <button
+                      onClick={() => startEditAppt(a)}
+                      className="text-muted-foreground hover:text-primary p-1.5"
+                      aria-label="Editar"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => cancelAppointment(a.id)}
+                      className="text-muted-foreground hover:text-destructive p-1.5"
+                      aria-label="Cancelar consulta"
+                    >
+                      <Ban className="h-4 w-4" />
+                    </button>
                   </div>
                 ))}
 
@@ -401,6 +584,7 @@ const Experimente = () => {
                     Limite da demo — crie conta para agenda ilimitada
                   </button>
                 )}
+
               </motion.div>
             )}
 
