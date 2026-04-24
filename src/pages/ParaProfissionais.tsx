@@ -432,7 +432,7 @@ const ParaProfissionais = () => {
              >
                <Button asChild size="lg" className="text-base px-8 py-6 rounded-xl font-bold bg-[hsl(185,100%,39%)] hover:bg-[hsl(185,100%,34%)] text-[hsl(0,0%,100%)] gap-2">
                  <Link to="/cadastro" onClick={() => trackCtaClick("comecar_gratis", "cta_final")}>
-                   Começar grátis
+                   Entrar em 20 segundos
                    <ArrowRight className="h-4 w-4" />
                  </Link>
                </Button>
