@@ -819,6 +819,13 @@ const Agenda = () => {
         </>
         )}
       </div>
+      <UpgradeModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        feature="agenda"
+        currentUsage={usageByModule.appointments.used}
+        limit={usageByModule.appointments.limit}
+      />
     </PageContainer>
   );
 };
