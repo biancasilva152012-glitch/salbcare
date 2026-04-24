@@ -282,7 +282,7 @@ const Experimente = () => {
 
         {/* Usage meter — quanto resta antes do bloqueio em cada módulo */}
         <div className="mx-auto max-w-2xl px-4 pb-3">
-          <div className="glass-card p-3 grid grid-cols-3 gap-2 text-center">
+          <div className="glass-card p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             {[
               {
                 label: "Pacientes",
@@ -297,10 +297,16 @@ const Experimente = () => {
                 icon: Calendar,
               },
               {
-                label: "Telehealth",
+                label: "Telehealth views",
                 used: usage.telehealthViews,
                 limit: DEMO_LIMITS.telehealthViews,
                 icon: Video,
+              },
+              {
+                label: "Teleconsultas",
+                used: usage.telehealthAttempts,
+                limit: DEMO_LIMITS.telehealthAttempts,
+                icon: Lock,
               },
             ].map((m) => {
               const Icon = m.icon;
@@ -310,7 +316,7 @@ const Experimente = () => {
                 <div key={m.label} className="space-y-1">
                   <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
                     <Icon className="h-3 w-3" />
-                    {m.label}
+                    <span className="truncate">{m.label}</span>
                   </div>
                   <p className={`text-sm font-bold ${blocked ? "text-destructive" : "text-foreground"}`}>
                     {m.used}/{m.limit}
