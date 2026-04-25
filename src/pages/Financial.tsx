@@ -199,7 +199,15 @@ const Financial = () => {
 
   const transactionFormJsx = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
-      <div className="space-y-1.5"><Label>Descrição</Label><Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5">
+        <Label>Descrição</Label>
+        <Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" />
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          {form.type === "income"
+            ? "Cada consulta registrada ajuda a IA a entender seu potencial real."
+            : "Gastos registrados = impostos otimizados pela IA."}
+        </p>
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="text" inputMode="numeric" placeholder="Ex: 1.500" value={form.amount} onChange={(e) => setForm({ ...form, amount: maskCurrency(e.target.value) })} className="bg-accent border-border" /></div>
         <div className="space-y-1.5">
@@ -223,6 +231,9 @@ const Financial = () => {
             ))}
           </SelectContent>
         </Select>
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          A IA usa a categoria para identificar onde você pode economizar e investir o que sobra.
+        </p>
       </div>
       <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
