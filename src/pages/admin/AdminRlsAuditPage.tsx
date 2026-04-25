@@ -326,7 +326,16 @@ const AdminRlsAuditPage = () => {
                   const Icon = v.icon;
                   return (
                     <tr key={r.table_name} className="border-t">
-                      <td className="px-3 py-2 font-mono">{r.table_name}</td>
+                      <td className="px-3 py-2 font-mono">
+                        <button
+                          onClick={() => openDetail(r.table_name)}
+                          className="inline-flex items-center gap-1.5 hover:text-primary hover:underline"
+                          data-testid={`rls-detail-${r.table_name}`}
+                        >
+                          {r.table_name}
+                          <Eye className="h-3 w-3 opacity-60" />
+                        </button>
+                      </td>
                       <td className="px-3 py-2">
                         <span className={`inline-flex items-center gap-1 ${v.color}`}>
                           <Icon className="h-3.5 w-3.5" /> {v.label}
