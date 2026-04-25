@@ -128,7 +128,7 @@ test.describe("/experimente — regressão utm/ref + robustez", () => {
     }, DEMO_KEYS);
 
     await page.goto("/experimente");
-    await page.waitForURL(/\/register\?/);
+    await page.waitForURL(/\/dashboard(\?|$)/);
 
     const state = await page.evaluate((keys) => ({
       demo: keys.map((k) => [k, localStorage.getItem(k)] as const),
