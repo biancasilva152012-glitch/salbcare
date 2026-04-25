@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ShieldAlert, Crown, Lock } from "lucide-react";
+import { ShieldAlert, Crown, Lock, Download, FileText } from "lucide-react";
+import Papa from "papaparse";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { useToast } from "@/hooks/use-toast";
 
 const MODULE_LABEL: Record<string, string> = {
   prescriptions: "Receitas digitais",
@@ -27,9 +31,25 @@ type BlockEvent = {
   created_at: string;
 };
 
+/**
+ * Converte o input <input type="date" value="YYYY-MM-DD" /> em ISO.
+ * - `from`: início do dia local (00:00:00)
+ * - `to`: fim do dia local (23:59:59.999) — torna o filtro INCLUSIVO,
+ *   evitando que eventos do próprio dia "até" sejam excluídos.
+ */
+function toIsoStart(yyyymmdd: string): string {
+  const d = new Date(`${yyyymmdd}T00:00:00`);
+  return d.toISOString();
+}
+function toIsoEndInclusive(yyyymmdd: string): string {
+  const d = new Date(`${yyyymmdd}T23:59:59.999`);
+  return d.toISOString();
+}
+
 const ProfileBlocks = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [events, setEvents] = useState<BlockEvent[]>([]);
@@ -46,8 +66,8 @@ const ProfileBlocks = () => {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(200);
-      if (from) q = q.gte("created_at", new Date(from).toISOString());
-      if (to) q = q.lt("created_at", new Date(to).toISOString());
+      if (from) q = q.gte("created_at", toIsoStart(from));
+      if (to) q = q.lte("created_at", toIsoEndInclusive(to));
       const { data } = await q;
       if (active) {
         setEvents((data as BlockEvent[]) ?? []);
@@ -65,6 +85,69 @@ const ProfileBlocks = () => {
 
   const totalsList = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 
+  const filterSuffix = useMemo(() => {
+    if (!from && !to) return "todos";
+    return `${from || "inicio"}_a_${to || "hoje"}`;
+  }, [from, to]);
+
+  const exportCsv = () => {
+    if (events.length === 0) {
+      toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
+      return;
+    }
+    const rows = events.map((e) => ({
+      data: new Date(e.created_at).toLocaleString("pt-BR"),
+      modulo: MODULE_LABEL[e.module] ?? e.module,
+      modulo_chave: e.module,
+      motivo: e.reason,
+    }));
+    const csv = Papa.unparse(rows);
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bloqueios_${filterSuffix}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportPdf = () => {
+    if (events.length === 0) {
+      toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
+      return;
+    }
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Atividades de bloqueio — SalbCare", 14, 16);
+    doc.setFontSize(10);
+    const periodo = `${from || "início"} → ${to || "hoje"}`;
+    doc.text(`Período: ${periodo}`, 14, 23);
+    doc.text(`Total de eventos: ${events.length}`, 14, 29);
+
+    autoTable(doc, {
+      startY: 36,
+      head: [["Módulo", "Quantidade"]],
+      body: totalsList.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [30, 41, 59] },
+    });
+
+    autoTable(doc, {
+      head: [["Data/hora", "Módulo", "Motivo"]],
+      body: events.map((e) => [
+        new Date(e.created_at).toLocaleString("pt-BR"),
+        MODULE_LABEL[e.module] ?? e.module,
+        e.reason,
+      ]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [30, 41, 59] },
+    });
+
+    doc.save(`bloqueios_${filterSuffix}.pdf`);
+  };
+
   return (
     <PageContainer backTo="/profile">
       <div className="space-y-5">
@@ -80,15 +163,38 @@ const ProfileBlocks = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <Label className="text-xs">De</Label>
-            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="bg-accent border-border" />
+            <Input
+              data-testid="block-filter-from"
+              type="date"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              className="bg-accent border-border"
+            />
           </div>
           <div className="space-y-1">
             <Label className="text-xs">Até</Label>
-            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="bg-accent border-border" />
+            <Input
+              data-testid="block-filter-to"
+              type="date"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              className="bg-accent border-border"
+            />
           </div>
         </div>
 
-        <div className="glass-card p-4 space-y-2">
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="outline" size="sm" onClick={exportCsv} data-testid="export-csv">
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Exportar CSV
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportPdf} data-testid="export-pdf">
+            <FileText className="h-3.5 w-3.5 mr-1.5" />
+            Exportar PDF
+          </Button>
+        </div>
+
+        <div className="glass-card p-4 space-y-2" data-testid="block-counts">
           <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider">
             Contagens por módulo
           </p>
