@@ -35,6 +35,8 @@ import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
 import { downloadCsvTemplate, PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 import GuestPatients from "@/components/guest/GuestPatients";
+import GuestSyncLockBanner from "@/components/GuestSyncLockBanner";
+import { isGuestSyncLocked, hasGuestData } from "@/lib/guestStorage";
 
 const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "", initial_anamnesis: "", procedure_performed: "" };
 
