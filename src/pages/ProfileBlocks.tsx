@@ -145,22 +145,58 @@ const ProfileBlocks = () => {
     return () => obs.disconnect();
   }, [page, hasMore, loading, fetchPage]);
 
+  // Busca textual: client-side sobre os eventos JÁ carregados.
+  // Casa por reason, module (chave OU rótulo PT-BR), id e por
+  // qualquer valor stringificado de metadata.
+  const visibleEvents = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return events;
+    return events.filter((e) => {
+      const label = MODULE_LABEL[e.module] ?? e.module;
+      const meta = e.metadata ? JSON.stringify(e.metadata).toLowerCase() : "";
+      return (
+        e.id.toLowerCase().includes(q) ||
+        e.module.toLowerCase().includes(q) ||
+        label.toLowerCase().includes(q) ||
+        e.reason.toLowerCase().includes(q) ||
+        meta.includes(q)
+      );
+    });
+  }, [events, search]);
+
+  // Contagens refletem o que está visível (busca + filtros aplicados).
   const counts = useMemo(() => {
     const acc: Record<string, number> = {};
-    for (const e of events) acc[e.module] = (acc[e.module] ?? 0) + 1;
+    for (const e of visibleEvents) acc[e.module] = (acc[e.module] ?? 0) + 1;
     return acc;
-  }, [events]);
+  }, [visibleEvents]);
 
   const totalsList = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 
   const filterSuffix = useMemo(() => {
-    if (!from && !to) return "todos";
-    return `${from || "inicio"}_a_${to || "hoje"}`;
-  }, [from, to]);
+    const parts: string[] = [];
+    if (from || to) parts.push(`${from || "inicio"}_a_${to || "hoje"}`);
+    if (moduleFilter !== "all") parts.push(moduleFilter);
+    return parts.length > 0 ? parts.join("_") : "todos";
+  }, [from, to, moduleFilter]);
+
+  const hasAnyFilter = !!from || !!to || moduleFilter !== "all" || !!search;
+
+  const clearFilters = () => {
+    setFrom("");
+    setTo("");
+    setModuleFilter("all");
+    setSearch("");
+    // O useEffect que observa from/to/moduleFilter dispara fetchPage(0, true).
+    // Forçamos page=0/hasMore=true aqui para o caso de só `search` estar ativo.
+    setPage(0);
+    setHasMore(true);
+  };
 
   /**
-   * Para exports: busca TODAS as páginas que casam com os filtros,
-   * não só as carregadas. Limite duro de 5000 para proteção.
+   * Para exports: busca TODAS as páginas que casam com os filtros
+   * de servidor (data + módulo). A busca textual NÃO é aplicada
+   * no servidor — aplicamos depois para incluir/excluir corretamente.
    */
   const fetchAllForExport = useCallback(async (): Promise<BlockEvent[]> => {
     if (!user) return [];
@@ -176,13 +212,39 @@ const ProfileBlocks = () => {
         .range(fromIdx, fromIdx + PAGE_SIZE - 1);
       if (from) q = q.gte("created_at", toIsoStart(from));
       if (to) q = q.lte("created_at", toIsoEndInclusive(to));
+      if (moduleFilter !== "all") q = q.eq("module", moduleFilter);
       const { data } = await q;
       const rows = (data as BlockEvent[]) ?? [];
       all.push(...rows);
       if (rows.length < PAGE_SIZE) break;
     }
-    return all;
-  }, [user, from, to]);
+    // Aplica a busca textual sobre o conjunto completo
+    const term = search.trim().toLowerCase();
+    if (!term) return all;
+    return all.filter((e) => {
+      const label = MODULE_LABEL[e.module] ?? e.module;
+      const meta = e.metadata ? JSON.stringify(e.metadata).toLowerCase() : "";
+      return (
+        e.id.toLowerCase().includes(term) ||
+        e.module.toLowerCase().includes(term) ||
+        label.toLowerCase().includes(term) ||
+        e.reason.toLowerCase().includes(term) ||
+        meta.includes(term)
+      );
+    });
+  }, [user, from, to, moduleFilter, search]);
+
+  // Coleta TODAS as chaves de metadata presentes no conjunto, para
+  // virarem colunas indexadas no CSV (uma coluna por chave).
+  const collectMetadataKeys = (rows: BlockEvent[]): string[] => {
+    const set = new Set<string>();
+    for (const e of rows) {
+      if (e.metadata && typeof e.metadata === "object") {
+        for (const k of Object.keys(e.metadata)) set.add(k);
+      }
+    }
+    return Array.from(set).sort();
+  };
 
   const exportCsv = async () => {
     const all = await fetchAllForExport();
@@ -190,13 +252,27 @@ const ProfileBlocks = () => {
       toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
       return;
     }
-    const rows = all.map((e) => ({
-      data: new Date(e.created_at).toLocaleString("pt-BR"),
-      modulo: MODULE_LABEL[e.module] ?? e.module,
-      modulo_chave: e.module,
-      motivo: e.reason,
-      metadata: e.metadata ? JSON.stringify(e.metadata) : "",
-    }));
+    const metaKeys = collectMetadataKeys(all);
+    const rows = all.map((e) => {
+      const base: Record<string, string> = {
+        evento_id: e.id,
+        data: new Date(e.created_at).toLocaleString("pt-BR"),
+        modulo: MODULE_LABEL[e.module] ?? e.module,
+        modulo_chave: e.module,
+        motivo: e.reason,
+        metadata_json: e.metadata ? JSON.stringify(e.metadata) : "",
+      };
+      // Cada chave de metadata vira sua própria coluna indexada
+      for (const k of metaKeys) {
+        const val = e.metadata && typeof e.metadata === "object"
+          ? (e.metadata as Record<string, unknown>)[k]
+          : undefined;
+        base[`meta_${k}`] = val === undefined || val === null
+          ? ""
+          : typeof val === "object" ? JSON.stringify(val) : String(val);
+      }
+      return base;
+    });
     const csv = Papa.unparse(rows);
     const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -221,14 +297,22 @@ const ProfileBlocks = () => {
     doc.setFontSize(10);
     const periodo = `${from || "início"} → ${to || "hoje"}`;
     doc.text(`Período: ${periodo}`, 14, 23);
-    doc.text(`Total de eventos: ${all.length}`, 14, 29);
+    if (moduleFilter !== "all") {
+      doc.text(`Módulo: ${MODULE_LABEL[moduleFilter] ?? moduleFilter}`, 14, 29);
+    }
+    if (search.trim()) {
+      doc.text(`Busca: "${search.trim()}"`, 14, moduleFilter !== "all" ? 35 : 29);
+    }
+    const headerEndY =
+      29 + (moduleFilter !== "all" ? 6 : 0) + (search.trim() ? 6 : 0);
+    doc.text(`Total de eventos: ${all.length}`, 14, headerEndY);
 
     const exportCounts: Record<string, number> = {};
     for (const e of all) exportCounts[e.module] = (exportCounts[e.module] ?? 0) + 1;
     const exportTotals = Object.entries(exportCounts).sort((a, b) => b[1] - a[1]);
 
     autoTable(doc, {
-      startY: 36,
+      startY: headerEndY + 7,
       head: [["Módulo", "Quantidade"]],
       body: exportTotals.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
       styles: { fontSize: 9 },
@@ -236,18 +320,53 @@ const ProfileBlocks = () => {
     });
 
     autoTable(doc, {
-      head: [["Data/hora", "Módulo", "Motivo"]],
-      body: all.map((e) => [
+      head: [["#", "Data/hora", "Módulo", "Motivo", "ID"]],
+      body: all.map((e, i) => [
+        String(i + 1),
         new Date(e.created_at).toLocaleString("pt-BR"),
         MODULE_LABEL[e.module] ?? e.module,
         e.reason,
+        e.id.slice(0, 8),
       ]),
       styles: { fontSize: 8 },
       headStyles: { fillColor: [30, 41, 59] },
     });
 
+    // Seção dedicada: metadata por evento, indexada (#1, #2, ...)
+    // Cada evento vira uma mini-tabela chave/valor após o índice.
+    const eventsWithMeta = all.filter(
+      (e) => e.metadata && typeof e.metadata === "object" && Object.keys(e.metadata).length > 0,
+    );
+    if (eventsWithMeta.length > 0) {
+      doc.addPage();
+      doc.setFontSize(13);
+      doc.text("Metadados por evento", 14, 16);
+      doc.setFontSize(9);
+      let cursorY = 22;
+      all.forEach((e, i) => {
+        if (!e.metadata || typeof e.metadata !== "object") return;
+        const entries = Object.entries(e.metadata as Record<string, unknown>);
+        if (entries.length === 0) return;
+        autoTable(doc, {
+          startY: cursorY,
+          head: [[`#${i + 1} • ${MODULE_LABEL[e.module] ?? e.module} • ${e.id.slice(0, 8)}`, ""]],
+          body: entries.map(([k, v]) => [
+            k,
+            typeof v === "object" ? JSON.stringify(v) : String(v),
+          ]),
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [71, 85, 105] },
+          columnStyles: { 0: { cellWidth: 50, fontStyle: "bold" } },
+        });
+        // jspdf-autotable atualiza lastAutoTable.finalY
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        cursorY = ((doc as any).lastAutoTable?.finalY ?? cursorY) + 4;
+      });
+    }
+
     doc.save(`bloqueios_${filterSuffix}.pdf`);
   };
+
 
   return (
     <PageContainer backTo="/profile">
