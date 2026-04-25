@@ -444,6 +444,66 @@ export function consumeGuestSyncSummary(): GuestSyncSummary | null {
   return s;
 }
 
+// ── Sync progress checkpoint (resume on reload) ─────────────────────────────
+/**
+ * Snapshot of the merge progress so a refresh mid-sync resumes where it left
+ * off (showing the user what was already imported, what failed, and what's
+ * still pending) instead of starting from zero.
+ */
+export type GuestSyncCheckpoint = {
+  userId: string;
+  steps: {
+    patients: "pending" | "running" | "done" | "failed" | "skipped";
+    appointments: "pending" | "running" | "done" | "failed" | "skipped";
+    teleconsultations: "pending" | "running" | "done" | "failed" | "skipped";
+  };
+  liveSummary: GuestSyncSummary;
+  pendingPatientIds: string[];
+  pendingAppointmentIds: string[];
+  importPatients: boolean;
+  importAppointments: boolean;
+  updatedAt: string;
+};
+
+export const GUEST_SYNC_CHECKPOINT_KEY = "salbcare_guest_sync_checkpoint";
+
+export function writeGuestSyncCheckpoint(c: GuestSyncCheckpoint) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(GUEST_SYNC_CHECKPOINT_KEY, JSON.stringify(c));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function readGuestSyncCheckpoint(userId: string): GuestSyncCheckpoint | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as GuestSyncCheckpoint;
+    if (parsed.userId !== userId) return null;
+    // Expire after 1h so a stale checkpoint doesn't haunt a clean session
+    const ts = Date.parse(parsed.updatedAt);
+    if (!Number.isFinite(ts) || Date.now() - ts > 60 * 60 * 1000) {
+      clearGuestSyncCheckpoint();
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export function clearGuestSyncCheckpoint() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(GUEST_SYNC_CHECKPOINT_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 // ── Dedup helpers ───────────────────────────────────────────────────────────
 export function normalizeName(name: string | null | undefined): string {
   return (name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
