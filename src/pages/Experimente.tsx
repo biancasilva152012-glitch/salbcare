@@ -4,67 +4,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { clearDemoStorage } from "@/lib/demoStorage";
+import { buildExperimenteRedirect } from "@/lib/experimenteRedirect";
 
 /**
  * Modo demonstração foi removido. Mantemos a rota /experimente para preservar
  * todos os CTAs existentes ("Testar agora", "Experimente sem cadastrar"...),
- * mas pulamos a tela de demo e mandamos direto para o destino certo:
- *   - Usuário logado  → /dashboard (ou rota profunda em ?next= se permitida)
- *   - Visitante       → /register?redirect=<rota permitida>
+ * mas pulamos a tela de demo e mandamos direto para o destino certo.
  *
- * A rotina de limpeza do localStorage da demo é centralizada em
- * `clearDemoStorage` (lib/demoStorage), de forma que somente as chaves
- * DEMO_STORAGE são removidas.
+ * A lógica de destino vive em `buildExperimenteRedirect` (puro/testável).
+ * A limpeza do localStorage da demo vive em `clearDemoStorage`.
  */
-
-// Allowlist de rotas internas permitidas como destino de redirect.
-// Qualquer valor fora desta lista é descartado para evitar open-redirect.
-const ALLOWED_REDIRECTS = [
-  "/dashboard",
-  "/dashboard/financeiro",
-  "/dashboard/financial",
-  "/dashboard/contabilidade",
-  "/dashboard/agenda",
-  "/dashboard/pacientes",
-  "/dashboard/juridico",
-  "/dashboard/teleconsulta",
-  "/dashboard/telehealth",
-  "/dashboard/mentoria",
-  "/profile",
-  "/subscription",
-] as const;
-
-// Query params que fazem sentido propagar (atribuição/marketing + next).
-// Os demais são descartados silenciosamente.
-const PRESERVED_QUERY_PARAMS = new Set([
-  "utm_source",
-  "utm_medium",
-  "utm_campaign",
-  "utm_term",
-  "utm_content",
-  "ref",
-  "next",
-]);
-
-function isAllowedRedirect(path: string | null | undefined): path is string {
-  if (!path) return false;
-  if (!path.startsWith("/")) return false;
-  if (path.startsWith("//")) return false; // bloqueia protocol-relative
-  // match exato OU subrota imediata
-  return (ALLOWED_REDIRECTS as readonly string[]).some(
-    (allowed) => path === allowed || path.startsWith(`${allowed}/`),
-  );
-}
-
-function buildPreservedSearch(rawSearch: string): string {
-  const incoming = new URLSearchParams(rawSearch);
-  const out = new URLSearchParams();
-  for (const [k, v] of incoming.entries()) {
-    if (PRESERVED_QUERY_PARAMS.has(k)) out.set(k, v);
-  }
-  return out.toString();
-}
-
 const Experimente = () => {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -79,23 +28,15 @@ const Experimente = () => {
     });
   }, [user]);
 
-  const target = useMemo(() => {
-    const params = new URLSearchParams(location.search);
-    const requestedNext = params.get("next");
-    const deepTarget = isAllowedRedirect(requestedNext) ? requestedNext! : "/dashboard";
-
-    const preserved = buildPreservedSearch(location.search);
-    const preservedSuffix = preserved ? `?${preserved}` : "";
-
-    if (user) {
-      return `${deepTarget}${preservedSuffix}`;
-    }
-
-    // Visitante → register, levando o destino final em ?redirect=
-    const registerParams = new URLSearchParams(preserved);
-    registerParams.set("redirect", deepTarget);
-    return `/register?${registerParams.toString()}`;
-  }, [user, location.search]);
+  const target = useMemo(
+    () =>
+      buildExperimenteRedirect({
+        authenticated: !!user,
+        search: location.search,
+        basePath: import.meta.env.BASE_URL,
+      }),
+    [user, location.search],
+  );
 
   if (loading) {
     return (
@@ -105,7 +46,8 @@ const Experimente = () => {
     );
   }
 
-  return <Navigate to={target} replace />;
+  return <Navigate to={target} replace aria-hidden="true" />;
 };
 
 export default Experimente;
+
