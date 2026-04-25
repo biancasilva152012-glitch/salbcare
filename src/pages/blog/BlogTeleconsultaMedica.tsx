@@ -78,7 +78,7 @@ const BlogTeleconsultaMedica = () => (
         <div className="border-t border-border pt-8 flex flex-col sm:flex-row gap-3">
           <Button asChild className="gradient-primary font-semibold gap-2">
             <Link to="/cadastro">
-              Começar agora — 7 dias grátis <ArrowRight className="h-4 w-4" />
+              Começar agora <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
           <Button asChild variant="outline">

@@ -148,7 +148,7 @@ const Diagnostico = () => {
       `💰 Economia estimada: R$ ${result.economia.toLocaleString("pt-BR")}/mês\n` +
       `⚠️ Risco: ${result.risco}\n` +
       `✅ Recomendação: ${result.recomendacao}\n\n` +
-      `Para resolver isso definitivamente, você tem 7 dias grátis no ecossistema completo da SALBCARE — agenda, prontuário, teleconsulta e contador especializado em saúde.\n\n` +
+      `Para resolver isso definitivamente, conheça o ecossistema completo da SALBCARE — agenda, prontuário, teleconsulta e contador especializado em saúde.\n\n` +
       `👉 https://salbcare.lovable.app/register\n\n` +
       `Qualquer dúvida, responde aqui 🙏\n— Bianca, Fundadora SALBCARE`
     );
@@ -376,11 +376,11 @@ const Diagnostico = () => {
                 <p className="text-base font-semibold">Quer resolver isso agora?</p>
                 <Button asChild size="lg" className="h-14 px-10 rounded-xl text-base font-semibold gradient-primary shadow-lg shadow-primary/20">
                   <Link to="/register">
-                    Começar 7 dias grátis na SALBCARE
+                    Começar agora na SALBCARE
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Link>
                 </Button>
-                <p className="text-xs text-muted-foreground">Sem cartão de crédito. Cancela quando quiser.</p>
+                <p className="text-xs text-muted-foreground">Cancele quando quiser.</p>
               </div>
 
               {/* Footer */}

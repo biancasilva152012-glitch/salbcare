@@ -81,7 +81,7 @@ const PremiumFeatureModal = ({ open, onClose, featureName, description }: Premiu
             Assinar plano {plan.name} por R$ {plan.price}/mês
           </Button>
           <p className="text-[10px] text-center text-muted-foreground">
-            7 dias grátis • Cancele quando quiser
+            Cancele quando quiser
           </p>
         </div>
       </DialogContent>

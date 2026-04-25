@@ -67,7 +67,7 @@ const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeMo
             Assinar por R$ {plan.price}/mês
           </Button>
           <p className="text-[10px] text-center text-muted-foreground">
-            7 dias grátis • Cancele quando quiser
+            Cancele quando quiser
           </p>
         </div>
       </DialogContent>

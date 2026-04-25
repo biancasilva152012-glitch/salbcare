@@ -51,24 +51,37 @@ const GuestEntry = () => {
 
         // Defensive: nuke any lingering Supabase auth tokens that signOut()
         // may have missed (legacy keys, multiple projects, custom storage).
-        // Anything matching sb-*-auth-token / supabase.auth.token gets purged.
+        // We match anything that looks like an auth/PKCE/session artifact.
+        const looksLikeAuth = (k: string) =>
+          k.startsWith("sb-") ||
+          k === "supabase.auth.token" ||
+          k.startsWith("supabase.auth.") ||
+          k.includes("-auth-token") ||
+          k.includes("auth.refreshToken") ||
+          k.includes("pkce-code-verifier") ||
+          k.includes("supabase.session");
+
         const purge = (storage: Storage) => {
           const toRemove: string[] = [];
           for (let i = 0; i < storage.length; i += 1) {
             const k = storage.key(i);
-            if (!k) continue;
-            if (
-              k.startsWith("sb-") ||
-              k === "supabase.auth.token" ||
-              k.startsWith("supabase.auth.")
-            ) {
-              toRemove.push(k);
-            }
+            if (k && looksLikeAuth(k)) toRemove.push(k);
           }
           toRemove.forEach((k) => storage.removeItem(k));
         };
         purge(window.localStorage);
         purge(window.sessionStorage);
+
+        // Also clear cookies that Supabase may set when running on a custom
+        // domain with cookie-based auth — `path=/` matches the default scope.
+        if (typeof document !== "undefined") {
+          document.cookie.split(";").forEach((c) => {
+            const name = c.split("=")[0]?.trim();
+            if (name && looksLikeAuth(name)) {
+              document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+            }
+          });
+        }
       } catch {
         /* ignore */
       }
