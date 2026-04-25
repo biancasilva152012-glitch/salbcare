@@ -71,6 +71,10 @@ vi.mock("sonner", () => ({
   },
 }));
 
+vi.mock("@/components/SEOHead", () => ({
+  default: () => null,
+}));
+
 // SyncGuestData precisa ser importado depois dos mocks
 const importSync = async () => (await import("@/pages/SyncGuestData")).default;
 
