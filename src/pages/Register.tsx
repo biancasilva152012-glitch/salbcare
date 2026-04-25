@@ -20,6 +20,11 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get("ref") || "";
+  // Preserve `next=/...` through the signup flow so users land back on the
+  // page they came from (e.g. /profile) once they finish creating an account.
+  const rawNext = searchParams.get("next") || "";
+  const safeNext = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
+  const nextQs = safeNext ? `?next=${encodeURIComponent(safeNext)}` : "";
   const [loading, setLoading] = useState(false);
   const [showRef, setShowRef] = useState(!!refCode);
 
