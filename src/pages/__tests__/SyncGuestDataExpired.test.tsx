@@ -167,7 +167,7 @@ describe("SyncGuestData — fallback de checkpoint expirado", () => {
     expect(live.textContent).toMatch(/2/); // 2 pacientes importados
   });
 
-  it('"Recomeçar do zero" some com o banner e zera o checkpoint', async () => {
+  it('"Recomeçar do zero" some com o banner e regrava um checkpoint zerado', async () => {
     seedGuestPatients(3);
     seedExpiredCheckpoint();
     await renderPage();
@@ -176,9 +176,48 @@ describe("SyncGuestData — fallback de checkpoint expirado", () => {
     fireEvent.click(restart);
 
     expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
-    expect(window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY)).toBeNull();
-    // Pacientes guest ainda estão lá para serem reimportados
+    // Pacientes guest continuam disponíveis para reimportação
     expect(window.localStorage.getItem(GUEST_DATA_KEY)).not.toBeNull();
+    // Como o resumo parcial é preservado, o useEffect de persistência regrava
+    // o checkpoint — mas agora com steps zerados (pending) e os 3 pacientes
+    // de volta na fila pendente.
+    const raw = window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY);
+    expect(raw).not.toBeNull();
+    const cp = JSON.parse(raw!);
+    expect(cp.steps).toEqual({
+      patients: "pending",
+      appointments: "pending",
+      teleconsultations: "pending",
+    });
+    expect(cp.pendingPatientIds.sort()).toEqual(["gp0", "gp1", "gp2"]);
+  });
+
+  it('"Recomeçar do zero" preserva o resumo parcial dos pacientes já importados', async () => {
+    seedGuestPatients(3);
+    // Checkpoint expirado: 2 pacientes já importados, 1 duplicado, 1 pendente
+    seedExpiredCheckpoint();
+    await renderPage();
+
+    const restart = await screen.findByTestId("sync-checkpoint-restart");
+    fireEvent.click(restart);
+
+    // Banner do fallback some
+    expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
+    // Resumo parcial PERMANECE visível com os contadores do checkpoint
+    const live = await screen.findByTestId("sync-live-summary");
+    // 2 pacientes importados (texto "2" no card "Pacientes importados")
+    const importedLabel = within(live).getByText("Pacientes importados");
+    expect(importedLabel.previousElementSibling?.textContent).toBe("2");
+    // 1 paciente duplicado
+    const dupLabel = within(live).getByText("Pacientes duplicados");
+    expect(dupLabel.previousElementSibling?.textContent).toBe("1");
+    // O checkpoint regravado também guarda o resumo histórico, garantindo
+    // que um novo F5 ainda exibe "Resumo parcial" intacto.
+    const raw = window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY);
+    expect(raw).not.toBeNull();
+    const cp = JSON.parse(raw!);
+    expect(cp.liveSummary.patients.imported).toBe(2);
+    expect(cp.liveSummary.patients.skippedDuplicate).toBe(1);
   });
 
   it('"Descartar" remove o checkpoint do storage e some com o banner', async () => {
@@ -261,6 +300,45 @@ describe("SyncGuestData — fronteira do TTL", () => {
     await renderPage();
 
     expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
+  });
+
+  it("age = TTL - 1ms → checkpoint é FRESH e renderiza a mesma UI de fresco (sem fallback)", async () => {
+    const now = Date.now();
+    vi.spyOn(Date, "now").mockReturnValue(now);
+
+    // 1ms ANTES do limite — ainda dentro da janela de retomada silenciosa
+    const updatedAt = new Date(now - GUEST_SYNC_CHECKPOINT_TTL_MS + 1).toISOString();
+    const cp: GuestSyncCheckpoint = {
+      userId: "user-1",
+      steps: { patients: "running", appointments: "pending", teleconsultations: "pending" },
+      liveSummary: {
+        outcome: "merged",
+        patients: { imported: 2, skippedDuplicate: 0, skippedQuota: 0 },
+        appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+        duplicates: { patients: [], appointments: [] },
+        at: updatedAt,
+      },
+      pendingPatientIds: ["gp2"],
+      pendingAppointmentIds: [],
+      importPatients: true,
+      importAppointments: true,
+      updatedAt,
+    };
+    window.localStorage.setItem(GUEST_SYNC_CHECKPOINT_KEY, JSON.stringify(cp));
+    seedGuestPatients(3);
+
+    const { readGuestSyncCheckpointDetailed } = await import("@/lib/guestStorage");
+    expect(readGuestSyncCheckpointDetailed("user-1").status).toBe("fresh");
+
+    await renderPage();
+
+    // Banner do fallback NUNCA aparece
+    expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
+    // Mesma UI de "fresh": progresso já é restaurado (1 paciente importado)
+    // e a barra de progresso aparece — confirmando o caminho silencioso.
+    expect(await screen.findByTestId("sync-progress")).toBeInTheDocument();
+    const live = await screen.findByTestId("sync-live-summary");
+    expect(live).toBeInTheDocument();
   });
 
   it("age = TTL + 1ms → checkpoint é EXPIRED (fallback aparece)", async () => {

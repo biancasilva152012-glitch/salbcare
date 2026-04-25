@@ -182,13 +182,22 @@ const SyncGuestData = () => {
   };
 
   /** Recomeça do zero, mas mantém o resumo parcial visível para referência
-   *  (o usuário pode comparar antes vs depois). */
+   *  (o usuário pode comparar antes vs depois). O `liveSummary` é semeado
+   *  com os contadores do checkpoint expirado para que o painel "Resumo
+   *  parcial" continue mostrando os pacientes/consultas que já tinham sido
+   *  importados na sessão anterior. */
   const handleRestartExpired = () => {
+    if (!expiredCheckpoint) return;
     setSteps(initialSteps());
     setStepError({});
     setLastError(null);
     setPendingPatients(readGuestPatients());
     setPendingAppointments(readGuestAppointments());
+    // Preserva os contadores históricos do checkpoint expirado.
+    setLiveSummary({
+      ...expiredCheckpoint.liveSummary,
+      at: new Date().toISOString(),
+    });
     clearGuestSyncCheckpoint();
     setExpiredCheckpoint(null);
     toast.info("Recomeçando importação. Resumo anterior preservado abaixo.");
