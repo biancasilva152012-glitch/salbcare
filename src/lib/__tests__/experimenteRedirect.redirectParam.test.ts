@@ -122,9 +122,10 @@ describe("buildExperimenteRedirect — basePath em ?next=", () => {
       basePath: "/app",
       search: "?redirect=/dashboard/pacientes&utm_source=a&utm_source=b&ref=x",
     });
-    const sp = u(r).searchParams;
-    expect(u(r).pathname).toBe("/app/register");
-    expect(sp.get("redirect")).toBe("/app/dashboard/pacientes");
+    const parsed = u(r);
+    const sp = parsed.searchParams;
+    expect(parsed.pathname).toBe("/app/dashboard/pacientes");
+    expect(sp.has("redirect")).toBe(false);
     expect(sp.getAll("utm_source")).toEqual(["a", "b"]);
     expect(sp.get("ref")).toBe("x");
   });
