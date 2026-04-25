@@ -21,6 +21,7 @@ import FinancialDiagnosisBanner from "@/components/financial/FinancialDiagnosisB
 import FinancialHealthProgress from "@/components/financial/FinancialHealthProgress";
 import AIPreviewLockedCard from "@/components/financial/AIPreviewLockedCard";
 import SmartTrialNotification from "@/components/financial/SmartTrialNotification";
+import FinancialOnboardingWizard from "@/components/financial/FinancialOnboardingWizard";
 import UpgradeModal from "@/components/UpgradeModal";
 
 import { usePushNotifications } from "@/hooks/usePushNotifications";
