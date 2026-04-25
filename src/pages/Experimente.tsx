@@ -5,6 +5,7 @@ import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { clearDemoStorage } from "@/lib/demoStorage";
 import { buildExperimenteRedirect, getPreservedKeysFromSearch } from "@/lib/experimenteRedirect";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Modo demonstração foi removido. Mantemos a rota /experimente para preservar
@@ -18,21 +19,6 @@ const Experimente = () => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    const removed = clearDemoStorage();
-    // Telemetria leve: nenhum valor de query é logado, apenas o NOME das
-    // chaves preservadas que estavam presentes (utm_* / ref). Isso permite
-    // entender atribuição/tráfego sem expor PII (e-mail, ids, tokens).
-    const preservedKeys = getPreservedKeysFromSearch(location.search);
-    // eslint-disable-next-line no-console
-    console.info("[experimente] redirect", {
-      flow: user ? "authed" : "visitor",
-      cleanedKeys: removed.length,
-      preservedKeys,
-    });
-  }, [user, location.search]);
-
-
   const target = useMemo(
     () =>
       buildExperimenteRedirect({
@@ -42,6 +28,34 @@ const Experimente = () => {
       }),
     [user, location.search],
   );
+
+  useEffect(() => {
+    if (loading) return;
+    const removed = clearDemoStorage();
+    const preservedKeys = getPreservedKeysFromSearch(location.search);
+    const flow = user ? "authed" : "visitor";
+    // eslint-disable-next-line no-console
+    console.info("[experimente] redirect", {
+      flow,
+      cleanedKeys: removed.length,
+      preservedKeys,
+    });
+    // Telemetria leve no backend — fire-and-forget. Nunca bloqueia o redirect
+    // e nunca envia VALORES da query (apenas nomes de chaves preservadas).
+    supabase.functions
+      .invoke("log-redirect-audit", {
+        body: {
+          flow,
+          source: "experimente",
+          preservedKeys,
+          resolvedPath: target,
+          outcome: "ok",
+        },
+      })
+      .catch(() => {
+        /* swallow — auditoria não pode quebrar UX */
+      });
+  }, [user, loading, location.search, target]);
 
   if (loading) {
     return (
