@@ -6,6 +6,8 @@ import {
   RefreshCw,
   CheckCircle2,
   XCircle,
+  Download,
+  FileText,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type AuditRow = {
   table_name: string;
@@ -38,6 +42,7 @@ const No = () => <XCircle className="h-3.5 w-3.5 text-destructive" aria-label="n
 const AdminRlsAuditPage = () => {
   const [rows, setRows] = useState<AuditRow[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [lastRunAt, setLastRunAt] = useState<Date | null>(null);
 
   const run = async () => {
     setLoading(true);
@@ -45,6 +50,7 @@ const AdminRlsAuditPage = () => {
       const { data, error } = await supabase.rpc("audit_rls_coverage");
       if (error) throw error;
       setRows((data ?? []) as AuditRow[]);
+      setLastRunAt(new Date());
     } catch (err: any) {
       toast.error(err?.message ?? "Falha ao auditar RLS.");
     } finally {
@@ -55,6 +61,109 @@ const AdminRlsAuditPage = () => {
   useEffect(() => {
     run();
   }, []);
+
+  // ── Exports ────────────────────────────────────────────────────────────
+  const stamp = (d: Date) =>
+    `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}`;
+
+  const yn = (v: boolean) => (v ? "sim" : "não");
+
+  const downloadCsv = () => {
+    if (!rows || !lastRunAt) return;
+    const header = [
+      "tabela",
+      "status",
+      "rls_ativo",
+      "select",
+      "insert",
+      "update",
+      "delete",
+      "user_scoped",
+      "observacao",
+    ];
+    const escape = (s: string) => `"${String(s).replace(/"/g, '""')}"`;
+    const lines = [header.join(",")];
+    for (const r of rows) {
+      lines.push(
+        [
+          r.table_name,
+          r.status,
+          yn(r.rls_enabled),
+          yn(r.has_select),
+          yn(r.has_insert),
+          yn(r.has_update),
+          yn(r.has_delete),
+          yn(r.user_scoped),
+          r.notes,
+        ]
+          .map(escape)
+          .join(","),
+      );
+    }
+    // Header comment line with timestamp for traceability
+    const csv = `# SALBCARE — Auditoria RLS — ${lastRunAt.toLocaleString("pt-BR")}\n${lines.join("\n")}\n`;
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `salbcare-rls-audit-${stamp(lastRunAt)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exportado.");
+  };
+
+  const downloadPdf = () => {
+    if (!rows || !lastRunAt) return;
+    const doc = new jsPDF({ orientation: "landscape" });
+    doc.setFontSize(14);
+    doc.text("SALBCARE — Auditoria de RLS", 14, 14);
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text(`Gerado em ${lastRunAt.toLocaleString("pt-BR")}`, 14, 20);
+    const counts = rows.reduce(
+      (acc, r) => {
+        acc[r.status] += 1;
+        return acc;
+      },
+      { ok: 0, warning: 0, fail: 0 } as Record<AuditRow["status"], number>,
+    );
+    doc.text(
+      `Resumo: ${counts.ok} OK • ${counts.warning} atenção • ${counts.fail} falha(s)`,
+      14,
+      25,
+    );
+
+    autoTable(doc, {
+      startY: 30,
+      head: [[
+        "Tabela",
+        "Status",
+        "RLS",
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE",
+        "user_id?",
+        "Observação",
+      ]],
+      body: rows.map((r) => [
+        r.table_name,
+        r.status,
+        yn(r.rls_enabled),
+        yn(r.has_select),
+        yn(r.has_insert),
+        yn(r.has_update),
+        yn(r.has_delete),
+        yn(r.user_scoped),
+        r.notes,
+      ]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [30, 64, 175] },
+    });
+
+    doc.save(`salbcare-rls-audit-${stamp(lastRunAt)}.pdf`);
+    toast.success("PDF exportado.");
+  };
 
   const summary = (() => {
     if (!rows) return null;
@@ -82,11 +191,38 @@ const AdminRlsAuditPage = () => {
               proteção por linha (RLS) ativa e se as policies isolam cada
               usuário aos próprios dados (<code>auth.uid() = user_id</code>).
             </p>
+            {lastRunAt && (
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Última verificação: {lastRunAt.toLocaleString("pt-BR")}
+              </p>
+            )}
           </div>
-          <Button onClick={run} disabled={loading} size="sm" variant="outline">
-            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? "animate-spin" : ""}`} />
-            Reexecutar
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={run} disabled={loading} size="sm" variant="outline">
+              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? "animate-spin" : ""}`} />
+              Reexecutar
+            </Button>
+            <Button
+              onClick={downloadCsv}
+              disabled={!rows || rows.length === 0}
+              size="sm"
+              variant="outline"
+              data-testid="rls-export-csv"
+            >
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              CSV
+            </Button>
+            <Button
+              onClick={downloadPdf}
+              disabled={!rows || rows.length === 0}
+              size="sm"
+              variant="outline"
+              data-testid="rls-export-pdf"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+          </div>
         </header>
 
         {summary && (

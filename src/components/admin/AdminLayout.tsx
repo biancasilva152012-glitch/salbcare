@@ -13,6 +13,7 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
 import ChangePasswordButton from "./ChangePasswordButton";
+import RlsHealthGate from "./RlsHealthGate";
 
 const NAV_ITEMS = [
   { label: "Visão Geral", icon: LayoutDashboard, path: "/admin" },
@@ -98,6 +99,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   };
 
   return (
+    <RlsHealthGate>
     <div className="flex min-h-screen bg-[hsl(220,20%,8%)]">
       {/* Sidebar */}
       <aside
@@ -217,6 +219,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         <div className="p-6 max-w-7xl mx-auto">{children}</div>
       </main>
     </div>
+    </RlsHealthGate>
   );
 };
 

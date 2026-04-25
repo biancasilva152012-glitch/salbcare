@@ -6,10 +6,13 @@ import {
   Trash2,
   Users,
   Calendar,
+  Video,
   AlertCircle,
   CheckCircle2,
   ArrowRight,
+  RefreshCw,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import PageContainer from "@/components/PageContainer";
@@ -72,6 +75,24 @@ const SyncGuestData = () => {
   const [importAppointments, setImportAppointments] = useState(true);
   const [merging, setMerging] = useState(false);
 
+  // Per-step progress used by the progress bar. "pending" → "running" → "done"
+  // (or "failed"). Teleconsultas é uma etapa apenas de placeholder por
+  // enquanto (não há rascunhos guest delas), mas mostramos o status para o
+  // usuário ter visibilidade.
+  type StepStatus = "pending" | "running" | "done" | "failed" | "skipped";
+  type Steps = {
+    patients: StepStatus;
+    appointments: StepStatus;
+    teleconsultations: StepStatus;
+  };
+  const initialSteps = (): Steps => ({
+    patients: "pending",
+    appointments: "pending",
+    teleconsultations: "pending",
+  });
+  const [steps, setSteps] = useState<Steps>(initialSteps);
+  const [lastError, setLastError] = useState<string | null>(null);
+
   // ── Guards ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (authLoading) return;
@@ -105,6 +126,13 @@ const SyncGuestData = () => {
   );
 
   // ── Actions ─────────────────────────────────────────────────────────────
+  /**
+   * Imports the guest data into the user account. The function is built so it
+   * can be re-invoked by the "Tentar importar novamente" button after a
+   * failure: it always clears the inflight marker on error and re-reads the
+   * SAME guest data from localStorage (we never wipe it until the merge fully
+   * succeeds), so retrying is safe and idempotent.
+   */
   const handleMerge = async () => {
     if (!user) return;
 
@@ -127,6 +155,12 @@ const SyncGuestData = () => {
     }
 
     setMerging(true);
+    setLastError(null);
+    setSteps({
+      patients: importPatients && guestPatients.length > 0 ? "running" : "skipped",
+      appointments: "pending",
+      teleconsultations: "pending",
+    });
 
     const summary: GuestSyncSummary = {
       outcome: "merged",
@@ -190,11 +224,19 @@ const SyncGuestData = () => {
           if (error) throw error;
           summary.patients.imported = data?.length ?? rows.length;
         }
+        setSteps((s) => ({ ...s, patients: "done" }));
       } else if (!importPatients) {
         summary.patients.skippedQuota = guestPatients.length;
+        setSteps((s) => ({ ...s, patients: "skipped" }));
+      } else {
+        setSteps((s) => ({ ...s, patients: "skipped" }));
       }
 
       // ── APPOINTMENTS ────────────────────────────────────────────────────
+      setSteps((s) => ({
+        ...s,
+        appointments: importAppointments && guestAppointments.length > 0 ? "running" : "skipped",
+      }));
       if (importAppointments && guestAppointments.length > 0) {
         const { data: existing, error: exErr } = await supabase
           .from("appointments")
@@ -242,9 +284,19 @@ const SyncGuestData = () => {
           if (error) throw error;
           summary.appointments.imported = data?.length ?? rows.length;
         }
+        setSteps((s) => ({ ...s, appointments: "done" }));
       } else if (!importAppointments) {
         summary.appointments.skippedQuota = guestAppointments.length;
+        setSteps((s) => ({ ...s, appointments: "skipped" }));
+      } else {
+        setSteps((s) => ({ ...s, appointments: "skipped" }));
       }
+
+      // ── TELECONSULTAS ───────────────────────────────────────────────────
+      // Não há rascunhos guest de teleconsultas hoje (modo guest só salva
+      // pacientes/agenda). Marcamos como "skipped" para que a barra termine
+      // em 100% e o usuário veja todas as etapas.
+      setSteps((s) => ({ ...s, teleconsultations: "skipped" }));
 
       clearGuestStorage();
       markGuestSyncAcknowledged();
@@ -259,9 +311,36 @@ const SyncGuestData = () => {
       } catch {
         /* ignore */
       }
-      toast.error(err?.message ?? "Falha ao importar dados do modo guest.");
+      const msg = err?.message ?? "Falha ao importar dados do modo guest.";
+      setLastError(msg);
+      setSteps((s) => {
+        // Mark the first non-done step as failed so the UI shows where it broke.
+        const next = { ...s };
+        const order: (keyof Steps)[] = ["patients", "appointments", "teleconsultations"];
+        for (const k of order) {
+          if (next[k] === "running" || next[k] === "pending") {
+            next[k] = "failed";
+            break;
+          }
+        }
+        return next;
+      });
+      toast.error(msg);
       setMerging(false);
     }
+  };
+
+  /** Resets the inflight lock and re-runs handleMerge with the same data. */
+  const handleRetry = () => {
+    if (!user) return;
+    try {
+      window.localStorage.removeItem("salbcare_guest_sync_inflight");
+    } catch {
+      /* ignore */
+    }
+    setLastError(null);
+    setSteps(initialSteps());
+    void handleMerge();
   };
 
   const handleDiscard = () => {
@@ -435,6 +514,94 @@ const SyncGuestData = () => {
                 <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
               </Link>
             </Button>
+          )}
+
+          {/* Progresso por etapa (visível durante e após a importação) */}
+          {(merging || lastError || Object.values(steps).some((s) => s !== "pending")) && (
+            <section
+              className="glass-card p-4 space-y-3"
+              data-testid="sync-progress"
+              aria-live="polite"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold">Progresso da importação</p>
+                <span className="text-[11px] text-muted-foreground" data-testid="sync-progress-percent">
+                  {(() => {
+                    const total = 3;
+                    const completed = Object.values(steps).filter(
+                      (s) => s === "done" || s === "skipped",
+                    ).length;
+                    return `${Math.round((completed / total) * 100)}%`;
+                  })()}
+                </span>
+              </div>
+              <Progress
+                value={
+                  (Object.values(steps).filter((s) => s === "done" || s === "skipped").length / 3) *
+                  100
+                }
+                className="h-2"
+              />
+              <ul className="space-y-1.5 text-[12px]">
+                {([
+                  { key: "patients", label: "Pacientes", icon: Users },
+                  { key: "appointments", label: "Agendamentos", icon: Calendar },
+                  { key: "teleconsultations", label: "Teleconsultas", icon: Video },
+                ] as const).map(({ key, label, icon: Icon }) => {
+                  const st = steps[key];
+                  const dot =
+                    st === "done"
+                      ? "bg-emerald-500"
+                      : st === "running"
+                        ? "bg-primary animate-pulse"
+                        : st === "failed"
+                          ? "bg-destructive"
+                          : st === "skipped"
+                            ? "bg-muted-foreground/40"
+                            : "bg-muted-foreground/20";
+                  const labelSt =
+                    st === "done"
+                      ? "concluído"
+                      : st === "running"
+                        ? "em andamento…"
+                        : st === "failed"
+                          ? "falhou"
+                          : st === "skipped"
+                            ? "pulado"
+                            : "aguardando";
+                  return (
+                    <li key={key} className="flex items-center gap-2" data-testid={`sync-step-${key}`}>
+                      <span className={`inline-block h-2 w-2 rounded-full ${dot}`} aria-hidden />
+                      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="font-medium">{label}</span>
+                      <span className="text-muted-foreground">— {labelSt}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {lastError && (
+                <div
+                  className="rounded-lg border border-destructive/40 bg-destructive/10 p-2 text-[11px] text-destructive"
+                  data-testid="sync-error"
+                >
+                  {lastError}
+                </div>
+              )}
+
+              {lastError && !merging && (
+                <Button
+                  onClick={handleRetry}
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  data-testid="sync-retry-btn"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                  Tentar importar novamente
+                </Button>
+              )}
+            </section>
           )}
 
           {/* Ações principais */}
