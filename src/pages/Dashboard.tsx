@@ -162,11 +162,13 @@ const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Greeting */}
-        <motion.div variants={item} className="space-y-0.5">
-          <p className="text-xs text-muted-foreground">Bem-vindo(a) de volta</p>
-          <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
-        </motion.div>
+        {/* Greeting (paid users only) */}
+        {isPaid && (
+          <motion.div variants={item} className="space-y-0.5">
+            <p className="text-xs text-muted-foreground">Bem-vindo(a) de volta</p>
+            <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
+          </motion.div>
+        )}
 
         {/* Push Notification Banner */}
         {isSupported && !isSubscribed && (
