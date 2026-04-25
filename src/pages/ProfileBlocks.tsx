@@ -605,6 +605,34 @@ const ProfileBlocks = () => {
           </Button>
         )}
 
+        {/* Contador de eventos: client (carregados+filtros visuais) vs server
+            (todos os registros que casam, base do export). */}
+        <div
+          className="glass-card p-3 text-xs space-y-1"
+          data-testid="event-counters"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Visíveis (cliente)</span>
+            <span className="font-medium" data-testid="counter-client">
+              {visibleEvents.length}
+              {!serverSearch && search && events.length !== visibleEvents.length && (
+                <span className="text-muted-foreground"> de {events.length} carregados</span>
+              )}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">No servidor (filtros aplicados)</span>
+            <span className="font-medium" data-testid="counter-server">
+              {serverTotal === null ? "—" : serverTotal}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground pt-1 border-t border-border/40">
+            {serverSearch || !search
+              ? "Exportação inclui todos os eventos do servidor que casam com os filtros (limite 5.000)."
+              : "Exportação respeita a busca textual aplicada após os filtros do servidor."}
+          </p>
+        </div>
+
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
