@@ -168,7 +168,10 @@ const Telehealth = () => {
           ) : (
             <Button
               size="sm"
-              onClick={() => setUpgradeOpen(true)}
+              onClick={() => {
+                logPremiumBlockAttempt("telehealth", "plan_required");
+                setUpgradeOpen(true);
+              }}
               className="gap-1 text-xs gradient-primary"
               data-testid="telehealth-new-btn-blocked"
             >
