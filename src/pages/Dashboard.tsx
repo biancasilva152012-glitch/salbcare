@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,6 +16,12 @@ import { supabase } from "@/integrations/supabase/client";
 import GuestDashboard from "@/components/guest/GuestDashboard";
 import GuestSyncReminderBanner from "@/components/GuestSyncReminderBanner";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
+import { useFinancialHealth } from "@/hooks/useFinancialHealth";
+import FinancialDiagnosisBanner from "@/components/financial/FinancialDiagnosisBanner";
+import FinancialHealthProgress from "@/components/financial/FinancialHealthProgress";
+import AIPreviewLockedCard from "@/components/financial/AIPreviewLockedCard";
+import SmartTrialNotification from "@/components/financial/SmartTrialNotification";
+import UpgradeModal from "@/components/UpgradeModal";
 
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Button } from "@/components/ui/button";
