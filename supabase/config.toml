@@ -15,3 +15,6 @@ verify_jwt = false
 [functions.send-push-reminder]
 verify_jwt = false
 
+[functions.log-redirect-audit]
+verify_jwt = false
+
