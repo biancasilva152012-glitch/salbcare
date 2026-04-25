@@ -8,19 +8,22 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import GuestBanner from "@/components/GuestBanner";
-import { GUEST_STORAGE, GUEST_LIMITS } from "@/lib/guestStorage";
+import { GUEST_DATA_KEY, GUEST_LIMITS } from "@/lib/guestStorage";
 
 beforeEach(() => {
   window.localStorage.clear();
 });
 
 const seedPatients = (n: number) => {
-  const list = Array.from({ length: n }, (_, i) => ({
+  const patients = Array.from({ length: n }, (_, i) => ({
     id: `p${i}`,
     name: `Paciente ${i}`,
     created_at: new Date().toISOString(),
   }));
-  window.localStorage.setItem(GUEST_STORAGE.patients, JSON.stringify(list));
+  window.localStorage.setItem(
+    GUEST_DATA_KEY,
+    JSON.stringify({ patients, appointments: [], startedAt: null }),
+  );
 };
 
 describe("GuestBanner", () => {
