@@ -28,7 +28,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string 
   completed: { label: "Encerrada", color: "bg-muted text-muted-foreground", dot: "bg-muted-foreground" },
 };
 
-const Telehealth = () => {
+const TelehealthInner = () => {
   const { user, subscription } = useAuth();
   const { hasAccess } = useFeatureGate();
   const { isFree, canCreateTelehealth, usageByModule } = useFreemiumLimits();
@@ -341,5 +341,18 @@ const Telehealth = () => {
     </PageContainer>
   );
 };
+
+import PremiumOnlyGuard from "@/components/PremiumOnlyGuard";
+
+const Telehealth = () => (
+  <PremiumOnlyGuard
+    feature="A Telessaúde"
+    description="Crie e administre teleconsultas após assinar o plano Essencial."
+    reason="telehealth"
+    redirectAfter="/dashboard/telehealth"
+  >
+    <TelehealthInner />
+  </PremiumOnlyGuard>
+);
 
 export default Telehealth;

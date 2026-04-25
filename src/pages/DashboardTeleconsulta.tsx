@@ -9,19 +9,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import GuestPaywall from "@/components/GuestPaywall";
+import PremiumOnlyGuard from "@/components/PremiumOnlyGuard";
 
-const DashboardTeleconsulta = () => {
+const DashboardTeleconsultaInner = () => {
   const { user } = useAuth();
-  if (!user) {
-    return (
-      <GuestPaywall
-        feature="a Teleconsulta"
-        description="Configure seu link de Google Meet após criar sua conta grátis para começar a atender pacientes online."
-        redirectAfterSignup="/dashboard/teleconsulta"
-      />
-    );
-  }
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
   const [linkInput, setLinkInput] = useState("");
@@ -123,5 +114,16 @@ const DashboardTeleconsulta = () => {
     </PageContainer>
   );
 };
+
+const DashboardTeleconsulta = () => (
+  <PremiumOnlyGuard
+    feature="A Teleconsulta"
+    description="Configure seu link de Google Meet após assinar o plano Essencial para começar a atender pacientes online."
+    reason="telehealth"
+    redirectAfter="/dashboard/teleconsulta"
+  >
+    <DashboardTeleconsultaInner />
+  </PremiumOnlyGuard>
+);
 
 export default DashboardTeleconsulta;

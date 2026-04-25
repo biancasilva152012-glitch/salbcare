@@ -10,19 +10,10 @@ import AccountantChatTab from "@/components/accounting/AccountantChatTab";
 import AccountantPartnerCard from "@/components/accounting/AccountantPartnerCard";
 import FeatureGate from "@/components/FeatureGate";
 import { useAuth } from "@/contexts/AuthContext";
-import GuestPaywall from "@/components/GuestPaywall";
+import PremiumOnlyGuard from "@/components/PremiumOnlyGuard";
 
-const Accounting = () => {
+const AccountingInner = () => {
   const { user } = useAuth();
-  if (!user) {
-    return (
-      <GuestPaywall
-        feature="a Contabilidade"
-        description="O módulo contábil precisa de uma conta para emitir notas, calcular impostos e abrir CNPJ. Cadastro grátis."
-        redirectAfterSignup="/dashboard/contabilidade"
-      />
-    );
-  }
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "dashboard";
 
@@ -54,5 +45,16 @@ const Accounting = () => {
     </PageContainer>
   );
 };
+
+const Accounting = () => (
+  <PremiumOnlyGuard
+    feature="A Contabilidade"
+    description="O módulo contábil é incluído no plano Essencial — emita notas, calcule impostos e abra CNPJ."
+    reason="accounting"
+    redirectAfter="/dashboard/contabilidade"
+  >
+    <AccountingInner />
+  </PremiumOnlyGuard>
+);
 
 export default Accounting;
