@@ -261,7 +261,7 @@ const Login = () => {
         </motion.div>
 
         <motion.div
-          className="text-center"
+          className="text-center space-y-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -270,6 +270,16 @@ const Login = () => {
             Não tem conta?{" "}
             <Link to={`/register${nextQs}`} className="text-primary hover:underline font-medium">
               Comece grátis por 7 dias
+            </Link>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            ou{" "}
+            <Link
+              to="/guest"
+              className="underline underline-offset-2 hover:text-foreground"
+              data-testid="login-guest-cta"
+            >
+              entrar como visitante (sem login)
             </Link>
           </p>
         </motion.div>
