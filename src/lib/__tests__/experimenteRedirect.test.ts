@@ -10,11 +10,9 @@ describe("buildExperimenteRedirect", () => {
       expect(r).toBe("/app/dashboard");
     });
 
-    it("aplica prefixo no /register e no ?redirect= do visitante", () => {
+    it("aplica prefixo no destino do visitante (acesso público direto, sem /register)", () => {
       const r = buildExperimenteRedirect({ authenticated: false, basePath: "/app" });
-      const u = url(r);
-      expect(u.pathname).toBe("/app/register");
-      expect(u.searchParams.get("redirect")).toBe("/app/dashboard");
+      expect(r).toBe("/app/dashboard");
     });
 
     it("aplica prefixo combinado com ?next= permitido (logado, deep route)", () => {
@@ -32,9 +30,7 @@ describe("buildExperimenteRedirect", () => {
         basePath: "/app",
         search: "?next=/dashboard/pacientes",
       });
-      const u = url(r);
-      expect(u.pathname).toBe("/app/register");
-      expect(u.searchParams.get("redirect")).toBe("/app/dashboard/pacientes");
+      expect(r).toBe("/app/dashboard/pacientes");
     });
 
     it("normaliza basePath (com/sem barra inicial/final)", () => {
