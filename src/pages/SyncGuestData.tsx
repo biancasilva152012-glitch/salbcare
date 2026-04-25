@@ -465,6 +465,17 @@ const SyncGuestData = () => {
               Descartar rascunhos
             </Button>
             <Button
+              onClick={handleManualClear}
+              disabled={merging}
+              variant="ghost"
+              size="sm"
+              className="w-full text-destructive hover:text-destructive"
+              data-testid="sync-manual-clear-btn"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-2" />
+              Limpar manualmente os dados deste navegador
+            </Button>
+            <Button
               onClick={handleLater}
               disabled={merging}
               variant="ghost"
