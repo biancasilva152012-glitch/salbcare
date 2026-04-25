@@ -299,42 +299,53 @@ const ProfileBlocks = () => {
     if (exporting) return;
     setExporting("csv");
     try {
-    const all = await fetchAllForExport();
-    if (all.length === 0) {
-      toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
-      return;
-    }
-    const metaKeys = collectMetadataKeys(all);
-    const rows = all.map((e) => {
-      const base: Record<string, string> = {
-        evento_id: e.id,
-        data: new Date(e.created_at).toLocaleString("pt-BR"),
-        modulo: MODULE_LABEL[e.module] ?? e.module,
-        modulo_chave: e.module,
-        motivo: e.reason,
-        metadata_json: e.metadata ? JSON.stringify(e.metadata) : "",
-      };
-      for (const k of metaKeys) {
-        const val = e.metadata && typeof e.metadata === "object"
-          ? (e.metadata as Record<string, unknown>)[k]
-          : undefined;
-        base[`meta_${k}`] = val === undefined || val === null
-          ? ""
-          : typeof val === "object" ? JSON.stringify(val) : String(val);
+      const all = await fetchAllForExport();
+      if (all.length === 0) {
+        toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
+        return;
       }
-      return base;
-    });
-    const csv = Papa.unparse(rows);
-    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `bloqueios_${filterSuffix}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const metaKeys = collectMetadataKeys(all);
+      const rows = all.map((e) => {
+        const base: Record<string, string> = {
+          evento_id: e.id,
+          data: new Date(e.created_at).toLocaleString("pt-BR"),
+          modulo: MODULE_LABEL[e.module] ?? e.module,
+          modulo_chave: e.module,
+          motivo: e.reason,
+          metadata_json: e.metadata ? JSON.stringify(e.metadata) : "",
+        };
+        for (const k of metaKeys) {
+          const val = e.metadata && typeof e.metadata === "object"
+            ? (e.metadata as Record<string, unknown>)[k]
+            : undefined;
+          base[`meta_${k}`] = val === undefined || val === null
+            ? ""
+            : typeof val === "object" ? JSON.stringify(val) : String(val);
+        }
+        return base;
+      });
+      const csv = Papa.unparse(rows);
+      const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `bloqueios_${filterSuffix}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("[ProfileBlocks] exportCsv falhou:", err);
+      toast({
+        title: "Erro ao exportar CSV",
+        description:
+          err instanceof Error
+            ? err.message
+            : "Não foi possível gerar o arquivo. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
+      // sempre destrava os botões, inclusive em erro inesperado
       setExporting(null);
     }
   };
