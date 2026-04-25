@@ -68,13 +68,23 @@ function isAllowedRedirect(path: string | null | undefined): path is string {
 }
 
 function buildPreservedSearch(rawSearch: string): string {
-  const incoming = new URLSearchParams(rawSearch);
+  // URLSearchParams é tolerante a percent-encoding malformado (não lança):
+  // pares inválidos viram a string crua. Mantemos esse comportamento "best
+  // effort" — nunca quebramos o redirect por causa de um param podre.
+  let incoming: URLSearchParams;
+  try {
+    incoming = new URLSearchParams(rawSearch);
+  } catch {
+    return "";
+  }
   const out = new URLSearchParams();
   for (const [k, v] of incoming.entries()) {
     // `next`/`nextRedirect` não devem aparecer no querystring final —
     // eles são consumidos para escolher o destino, não propagados.
     if (k === "next" || k === "nextRedirect") continue;
-    if (PRESERVED_QUERY_PARAMS.has(k)) out.set(k, v);
+    if (!PRESERVED_QUERY_PARAMS.has(k)) continue;
+    // `append` (não `set`) preserva múltiplos valores da mesma chave.
+    out.append(k, v);
   }
   return out.toString();
 }
