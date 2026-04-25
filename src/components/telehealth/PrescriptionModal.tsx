@@ -9,6 +9,8 @@ import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
 import { getProfessionConfig } from "@/config/professions";
 import { FileText, MessageCircle, Receipt, Loader2, Check, ShieldCheck, AlertTriangle, Download, QrCode } from "lucide-react";
 import SigningInstructionsModal from "@/components/telehealth/SigningInstructionsModal";
+import PremiumFeatureModal from "@/components/PremiumFeatureModal";
+import { usePremiumFeature } from "@/hooks/usePremiumFeature";
 
 interface PrescriptionModalProps {
   open: boolean;
