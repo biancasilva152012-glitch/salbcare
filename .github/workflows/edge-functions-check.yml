@@ -10,6 +10,7 @@ on:
     paths:
       - "supabase/functions/**"
       - "scripts/check-edge-functions.mjs"
+  workflow_dispatch:
 
 jobs:
   check:
@@ -20,5 +21,54 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+
       - name: Run dependency check
-        run: node scripts/check-edge-functions.mjs
+        id: scan
+        continue-on-error: true
+        run: |
+          mkdir -p reports
+          set +e
+          node scripts/check-edge-functions.mjs > reports/edge-functions-scan.txt 2> reports/edge-functions-scan.err
+          echo $? > reports/exit-code.txt
+          set -e
+
+          {
+            echo "# Edge Functions Dependency Scan"
+            echo ""
+            echo "**Commit:** \`${GITHUB_SHA}\`"
+            echo "**Run:** ${GITHUB_RUN_ID}"
+            echo "**Exit code:** $(cat reports/exit-code.txt)"
+            echo ""
+            echo "## stdout"
+            echo '```'
+            cat reports/edge-functions-scan.txt
+            echo '```'
+            echo ""
+            echo "## stderr (forbidden imports + version mismatches)"
+            echo '```'
+            cat reports/edge-functions-scan.err
+            echo '```'
+          } > reports/edge-functions-scan.md
+
+      - name: Print scan summary to job log
+        run: |
+          cat reports/edge-functions-scan.txt
+          echo "---"
+          cat reports/edge-functions-scan.err
+          cat reports/edge-functions-scan.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload scan report artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: edge-functions-scan-${{ github.run_id }}
+          path: reports/
+          retention-days: 30
+
+      - name: Fail job if scan reported issues
+        run: |
+          code=$(cat reports/exit-code.txt)
+          if [ "$code" != "0" ]; then
+            echo "::error::Edge function dependency scan failed (exit $code). See artifact 'edge-functions-scan-${GITHUB_RUN_ID}'."
+            exit "$code"
+          fi
