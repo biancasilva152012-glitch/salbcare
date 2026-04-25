@@ -17,6 +17,7 @@ import {
   GUEST_LIMITS,
   type GuestPatient,
 } from "@/lib/guestStorage";
+import GuestLimitDialog from "@/components/guest/GuestLimitDialog";
 
 const emptyForm = { name: "", phone: "", email: "", notes: "" };
 
@@ -28,6 +29,7 @@ const GuestPatients = () => {
   const [list, setList] = useState<GuestPatient[]>(() => readGuestPatients());
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [limitOpen, setLimitOpen] = useState(false);
 
   const reload = () => setList(readGuestPatients());
 
@@ -72,9 +74,28 @@ const GuestPatients = () => {
               Modo guest · {list.length}/{GUEST_LIMITS.patients} cadastrados
             </p>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog
+            open={open && !blocked}
+            onOpenChange={(v) => {
+              if (v && blocked) {
+                setLimitOpen(true);
+                return;
+              }
+              setOpen(v);
+            }}
+          >
             <DialogTrigger asChild>
-              <Button size="sm" disabled={blocked} className="gradient-primary">
+              <Button
+                size="sm"
+                className="gradient-primary"
+                onClick={(e) => {
+                  if (blocked) {
+                    e.preventDefault();
+                    setLimitOpen(true);
+                  }
+                }}
+                data-testid="guest-patients-new-btn"
+              >
                 <Plus className="h-4 w-4 mr-1.5" />
                 Novo
               </Button>
