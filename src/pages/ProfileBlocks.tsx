@@ -422,6 +422,9 @@ const ProfileBlocks = () => {
     }
 
     doc.save(`bloqueios_${filterSuffix}.pdf`);
+    } finally {
+      setExporting(null);
+    }
   };
 
 
