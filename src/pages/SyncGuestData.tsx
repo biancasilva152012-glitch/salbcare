@@ -37,6 +37,7 @@ import {
   hasMergedFor,
   isMergeInFlight,
   readGuestSyncCheckpoint,
+  readGuestSyncCheckpointDetailed,
   writeGuestSyncCheckpoint,
   clearGuestSyncCheckpoint,
   type GuestPatient,
