@@ -14,10 +14,10 @@ interface PatientLimitWarningProps {
 }
 
 /**
- * Aviso progressivo do limite de pacientes do plano gratuito (3 pacientes).
- * - count = limit - 1 (2): banner informativo discreto
- * - count = limit (3):     banner de urgência ("limite atingido")
- * - count > limit (modal): modal bloqueante quando o usuário tenta criar o 4º
+ * Aviso progressivo do limite de pacientes do plano gratuito (5 pacientes).
+ * - count = limit - 1 (4): banner informativo discreto
+ * - count = limit (5):     banner de urgência ("limite atingido")
+ * - count > limit (modal): modal bloqueante quando o usuário tenta criar o 6º
  *
  * Mantém a mesma copy/CTA do PremiumFeatureModal padrão para consistência.
  */

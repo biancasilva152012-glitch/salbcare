@@ -14,7 +14,7 @@ import { isAdminEmail } from "@/config/admin";
  */
 export const FREE_LIMITS = {
   financialTransactions: 10,
-  patients: 3,
+  patients: 5,
   appointments: 5,
   // Telessaúde é totalmente bloqueada no plano gratuito (recurso premium).
   telehealthAttempts: 0,
