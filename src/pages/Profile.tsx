@@ -10,6 +10,7 @@ import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import GuestPaywall from "@/components/GuestPaywall";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import ConsultationSettings from "@/components/profile/ConsultationSettings";
 import {
