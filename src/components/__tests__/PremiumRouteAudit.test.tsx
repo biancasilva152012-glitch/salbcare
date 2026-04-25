@@ -48,7 +48,16 @@ vi.mock("@/config/admin", () => ({
 }));
 
 // ── Mock do supabase client (capturamos chamadas a .insert) ──────────────
-const insertSpy = vi.fn(() => Promise.resolve({ data: null, error: null }));
+type AuditPayload = {
+  user_id: string;
+  module: string;
+  reason: string;
+  attempted_path: string | null;
+  metadata: Record<string, unknown>;
+};
+const insertSpy = vi.fn<[AuditPayload], Promise<{ data: null; error: null }>>(
+  () => Promise.resolve({ data: null, error: null }),
+);
 const fromSpy = vi.fn((_table: string) => ({ insert: insertSpy }));
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
