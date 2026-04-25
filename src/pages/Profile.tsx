@@ -41,11 +41,34 @@ const Profile = () => {
   const { user, signOut, subscription } = useAuth();
   if (!user) {
     return (
-      <GuestPaywall
-        feature="o seu Perfil"
-        description="Crie sua conta grátis para configurar perfil público, agenda, valores e assinatura."
-        redirectAfterSignup="/profile"
-      />
+      <PageContainer>
+        <div className="mx-auto max-w-md text-center space-y-4 py-10" data-testid="profile-guest">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+            <User className="h-7 w-7 text-primary" />
+          </div>
+          <div className="space-y-1.5">
+            <h1 className="text-xl font-bold">Entre na sua conta</h1>
+            <p className="text-sm text-muted-foreground">
+              Acesse seu perfil, agenda, valores de consulta e assinatura.
+            </p>
+          </div>
+          <div className="space-y-2 pt-1">
+            <Button
+              className="w-full gradient-primary font-semibold"
+              onClick={() => navigate("/login?next=/profile")}
+            >
+              Fazer login
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate("/register?next=/profile")}
+            >
+              Ainda não tenho conta
+            </Button>
+          </div>
+        </div>
+      </PageContainer>
     );
   }
   const queryClient = useQueryClient();
@@ -407,21 +430,6 @@ const Profile = () => {
               <div>
                 <span className="text-sm font-medium">Baixar meus dados</span>
                 <p className="text-[10px] text-muted-foreground">Exporta todos os seus dados em formato JSON</p>
-              </div>
-            </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </button>
-
-          <button
-            onClick={() => navigate("/profile/audit")}
-            className="glass-card flex w-full items-center justify-between p-3 text-left"
-            data-testid="profile-audit-link"
-          >
-            <div className="flex items-center gap-3">
-              <Shield className="h-5 w-5 text-primary" />
-              <div>
-                <span className="text-sm font-medium">Auditoria de redirecionamentos</span>
-                <p className="text-[10px] text-muted-foreground">Histórico dos redirects seguros vinculados à sua conta</p>
               </div>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
