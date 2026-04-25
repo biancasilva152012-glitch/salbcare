@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +11,7 @@ import { FileText, MessageCircle, Receipt, Loader2, Check, ShieldCheck, AlertTri
 import SigningInstructionsModal from "@/components/telehealth/SigningInstructionsModal";
 import PremiumFeatureModal from "@/components/PremiumFeatureModal";
 import { usePremiumFeature } from "@/hooks/usePremiumFeature";
+import { logPremiumBlockAttempt } from "@/lib/premiumBlockTracker";
 
 interface PrescriptionModalProps {
   open: boolean;
@@ -55,7 +56,15 @@ const PrescriptionModal = ({
   // Bloqueio de plano: se o usuário não tem plano pago, exibe paywall e
   // impede a abertura do formulário (defesa em profundidade — RLS já bloqueia
   // a inserção em digital_documents no backend).
-  if (open && !canIssuePrescription) {
+  const blocked = open && !canIssuePrescription;
+
+  useEffect(() => {
+    if (blocked) {
+      logPremiumBlockAttempt("prescriptions", "plan_required");
+    }
+  }, [blocked]);
+
+  if (blocked) {
     return (
       <PremiumFeatureModal
         open={open}

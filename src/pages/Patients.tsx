@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { maskPhone } from "@/utils/masks";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
-import UpgradeModal from "@/components/UpgradeModal";
 import PatientLimitWarning from "@/components/patients/PatientLimitWarning";
+import { logPremiumBlockAttempt } from "@/lib/premiumBlockTracker";
 import { usePatientProgressMessages } from "@/hooks/usePatientProgressMessages";
 import { motion } from "framer-motion";
 import { Plus, Search, ChevronRight, Pencil, Trash2, FileDown, CalendarIcon, Users, FileSpreadsheet, Upload, Loader2 } from "lucide-react";
@@ -41,7 +41,6 @@ const Patients = () => {
   const { user } = useAuth();
   const sub = useSubscription();
   const { canAddPatient: canAddPatientFreemium, patientsCount, patientsLimit, isFree } = useFreemiumLimits();
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [blockModalOpen, setBlockModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -290,8 +289,11 @@ const Patients = () => {
               </Dialog>
             ) : (
               <Button size="sm" className="gradient-primary gap-1" onClick={() => {
+                logPremiumBlockAttempt("patients_limit", "limit_reached", {
+                  count: patientsCount,
+                  limit: patientsLimit,
+                });
                 setBlockModalOpen(true);
-                setUpgradeOpen(true);
               }}>
                 <Plus className="h-4 w-4" /> Novo
               </Button>
@@ -442,7 +444,7 @@ const Patients = () => {
           />
         </motion.div>
       </div>
-      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="pacientes" currentUsage={patientsCount} limit={patientsLimit} />
+      {/* O bloqueio é exibido pelo PatientLimitWarning (modo modal) acima */}
     </PageContainer>
   );
 };

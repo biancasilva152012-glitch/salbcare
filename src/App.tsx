@@ -39,6 +39,7 @@ const Legal = lazyWithRetry(() => import("./pages/Legal"), "Legal");
 const Telehealth = lazyWithRetry(() => import("./pages/Telehealth"), "Telehealth");
 const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 const ProfileAudit = lazyWithRetry(() => import("./pages/ProfileAudit"), "ProfileAudit");
+const ProfileBlocks = lazyWithRetry(() => import("./pages/ProfileBlocks"), "ProfileBlocks");
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
 const Upgrade = lazyWithRetry(() => import("./pages/Upgrade"), "Upgrade");
 const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
@@ -167,6 +168,7 @@ const App = () => (
               <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/profile/audit" element={<ProfessionalRoute><ProfileAudit /></ProfessionalRoute>} />
+              <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<AdminOverviewPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />

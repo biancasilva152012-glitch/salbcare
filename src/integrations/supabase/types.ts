@@ -1120,6 +1120,33 @@ export type Database = {
         }
         Relationships: []
       }
+      premium_block_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          module: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          module: string
+          reason?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          module?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       professionals: {
         Row: {
           avatar_url: string | null
