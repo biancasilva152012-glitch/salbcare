@@ -37,6 +37,7 @@ import {
   hasMergedFor,
   isMergeInFlight,
   readGuestSyncCheckpoint,
+  readGuestSyncCheckpointDetailed,
   writeGuestSyncCheckpoint,
   clearGuestSyncCheckpoint,
   type GuestPatient,
@@ -127,11 +128,27 @@ const SyncGuestData = () => {
   // ── Restore checkpoint on mount so a refresh mid-sync resumes where it
   //    stopped (steps + live summary + pending lists). Only matches when the
   //    saved userId equals the current user.
+  //
+  //    Quando o checkpoint está EXPIRADO (>1h sem progresso), NÃO restauramos
+  //    automaticamente — exibimos um banner com o resumo parcial preservado e
+  //    botões para "Recomeçar do zero" ou "Descartar resumo". Isso evita que
+  //    um checkpoint velho confunda o usuário ou re-tente importações
+  //    obsoletas contra dados que já podem ter mudado no Supabase.
   const [restoredFromCheckpoint, setRestoredFromCheckpoint] = useState(false);
+  const [expiredCheckpoint, setExpiredCheckpoint] = useState<GuestSyncCheckpoint | null>(null);
   useEffect(() => {
     if (!user) return;
-    const cp = readGuestSyncCheckpoint(user.id);
-    if (!cp) return;
+    const result = readGuestSyncCheckpointDetailed(user.id);
+    if (result.status === "missing") return;
+
+    if (result.status === "expired") {
+      // Preserva o resumo parcial para o usuário ver — mas NÃO restaura
+      // os steps/pending para que ele decida o que fazer.
+      setExpiredCheckpoint(result.checkpoint);
+      return;
+    }
+
+    const cp = result.checkpoint;
     setSteps(cp.steps);
     setLiveSummary(cp.liveSummary);
     setImportPatients(cp.importPatients);
@@ -144,6 +161,45 @@ const SyncGuestData = () => {
     toast.info("Retomando importação de onde você parou.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  /** Aceita o checkpoint expirado: importa o estado salvo (steps + summary)
+   *  e tenta retomar. Útil quando o usuário sabe que abandonou ali e quer
+   *  só continuar. */
+  const handleResumeExpired = () => {
+    if (!expiredCheckpoint) return;
+    const cp = expiredCheckpoint;
+    setSteps(cp.steps);
+    setLiveSummary(cp.liveSummary);
+    setImportPatients(cp.importPatients);
+    setImportAppointments(cp.importAppointments);
+    const allPatients = readGuestPatients();
+    const allAppts = readGuestAppointments();
+    setPendingPatients(allPatients.filter((p) => cp.pendingPatientIds.includes(p.id)));
+    setPendingAppointments(allAppts.filter((a) => cp.pendingAppointmentIds.includes(a.id)));
+    setRestoredFromCheckpoint(true);
+    setExpiredCheckpoint(null);
+    toast.success("Sessão retomada. Você pode continuar a importação.");
+  };
+
+  /** Recomeça do zero, mas mantém o resumo parcial visível para referência
+   *  (o usuário pode comparar antes vs depois). */
+  const handleRestartExpired = () => {
+    setSteps(initialSteps());
+    setStepError({});
+    setLastError(null);
+    setPendingPatients(readGuestPatients());
+    setPendingAppointments(readGuestAppointments());
+    clearGuestSyncCheckpoint();
+    setExpiredCheckpoint(null);
+    toast.info("Recomeçando importação. Resumo anterior preservado abaixo.");
+  };
+
+  /** Descarta o resumo expirado por completo. */
+  const handleDiscardExpired = () => {
+    clearGuestSyncCheckpoint();
+    setExpiredCheckpoint(null);
+    toast.info("Resumo anterior descartado.");
+  };
 
   // Persist a checkpoint every time progress changes so a refresh resumes
   // cleanly. We persist to localStorage (not session) so it survives a
@@ -567,6 +623,83 @@ const SyncGuestData = () => {
               Decida o que fazer com eles. Duplicados serão ignorados automaticamente.
             </p>
           </header>
+
+          {/* Fallback de checkpoint expirado: mostra resumo parcial preservado
+              e oferece "retomar", "recomeçar do zero" ou "descartar". */}
+          {expiredCheckpoint && (
+            <section
+              className="glass-card border-amber-500/40 bg-amber-500/5 p-4 space-y-3"
+              data-testid="sync-checkpoint-expired"
+              aria-live="polite"
+            >
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold">
+                    Sessão de importação expirada
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    A última tentativa parou há mais de 1 hora. Já tínhamos
+                    importado <strong>{expiredCheckpoint.liveSummary.patients.imported}</strong> paciente(s)
+                    e <strong>{expiredCheckpoint.liveSummary.appointments.imported}</strong> consulta(s).
+                    Você pode retomar de onde parou, recomeçar do zero ou
+                    descartar este resumo.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-[10px]">
+                <div className="rounded-md border bg-background/40 p-1.5 text-center">
+                  <div className="font-semibold text-emerald-600 dark:text-emerald-400">
+                    {expiredCheckpoint.liveSummary.patients.imported +
+                      expiredCheckpoint.liveSummary.appointments.imported}
+                  </div>
+                  <div className="text-muted-foreground">importados</div>
+                </div>
+                <div className="rounded-md border bg-background/40 p-1.5 text-center">
+                  <div className="font-semibold text-amber-600 dark:text-amber-400">
+                    {expiredCheckpoint.liveSummary.patients.skippedDuplicate +
+                      expiredCheckpoint.liveSummary.appointments.skippedDuplicate}
+                  </div>
+                  <div className="text-muted-foreground">duplicados</div>
+                </div>
+                <div className="rounded-md border bg-background/40 p-1.5 text-center">
+                  <div className="font-semibold">
+                    {expiredCheckpoint.pendingPatientIds.length +
+                      expiredCheckpoint.pendingAppointmentIds.length}
+                  </div>
+                  <div className="text-muted-foreground">pendentes</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <Button
+                  onClick={handleResumeExpired}
+                  size="sm"
+                  className="gradient-primary font-semibold"
+                  data-testid="sync-checkpoint-resume"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                  Retomar
+                </Button>
+                <Button
+                  onClick={handleRestartExpired}
+                  size="sm"
+                  variant="outline"
+                  data-testid="sync-checkpoint-restart"
+                >
+                  Recomeçar do zero
+                </Button>
+                <Button
+                  onClick={handleDiscardExpired}
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  data-testid="sync-checkpoint-discard"
+                >
+                  Descartar
+                </Button>
+              </div>
+            </section>
+          )}
 
           {/* Bloco: Pacientes */}
           {guestPatients.length > 0 && (

@@ -1147,6 +1147,36 @@ export type Database = {
         }
         Relationships: []
       }
+      premium_route_blocks: {
+        Row: {
+          attempted_path: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          module: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          attempted_path?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          module: string
+          reason?: string
+          user_id: string
+        }
+        Update: {
+          attempted_path?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          module?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       professionals: {
         Row: {
           avatar_url: string | null
