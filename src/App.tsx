@@ -177,7 +177,7 @@ const App = () => (
               <Route path="/dashboard/limites" element={<ProfessionalRoute allowGuest><DashboardLimits /></ProfessionalRoute>} />
               <Route path="/sync-guest-data" element={<ProfessionalRoute><SyncGuestData /></ProfessionalRoute>} />
               <Route path="/sync-guest-data/done" element={<ProfessionalRoute><SyncGuestDataDone /></ProfessionalRoute>} />
-              <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
+              <Route path="/profile" element={<ProfessionalRoute allowGuest><Profile /></ProfessionalRoute>} />
               
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />

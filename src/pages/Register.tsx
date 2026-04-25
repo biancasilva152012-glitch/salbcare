@@ -20,6 +20,11 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get("ref") || "";
+  // Preserve `next=/...` through the signup flow so users land back on the
+  // page they came from (e.g. /profile) once they finish creating an account.
+  const rawNext = searchParams.get("next") || "";
+  const safeNext = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
+  const nextQs = safeNext ? `?next=${encodeURIComponent(safeNext)}` : "";
   const [loading, setLoading] = useState(false);
   const [showRef, setShowRef] = useState(!!refCode);
 
@@ -134,7 +139,7 @@ const Register = () => {
         if (signInError) {
           toast.success("Conta criada! Faça login para continuar.");
           setLoading(false);
-          navigate("/login");
+          navigate(`/login${nextQs}`);
           return;
         }
       }
@@ -167,7 +172,8 @@ const Register = () => {
 
       setLoading(false);
       toast.success("Conta criada com sucesso!");
-      navigate("/dashboard");
+      // Honor `next` so users (e.g. coming from /profile) return to where they were.
+      navigate(safeNext || "/dashboard");
     } catch (err) {
       console.error("[Register] Unexpected signup error:", err);
       setLoading(false);
@@ -268,7 +274,7 @@ const Register = () => {
 
         <motion.p className="text-center text-sm text-muted-foreground" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
           Já tem conta?{" "}
-          <Link to="/login" className="text-primary hover:underline font-medium">Entrar</Link>
+          <Link to={`/login${nextQs}`} className="text-primary hover:underline font-medium">Entrar</Link>
         </motion.p>
       </motion.div>
     </div>
