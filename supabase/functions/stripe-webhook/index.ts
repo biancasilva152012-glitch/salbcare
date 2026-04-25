@@ -2,8 +2,22 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
+const IMPORT_URLS = {
+  stripe: "https://esm.sh/stripe@18.5.0",
+  supabase: "https://esm.sh/@supabase/supabase-js@2.57.2",
+};
+
 const logStep = (step: string, details?: any) => {
   console.log(`[Webhook] ${step}${details ? ` - ${JSON.stringify(details)}` : ""}`);
+};
+
+const logInitError = (where: string, err: unknown) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  const stack = err instanceof Error ? err.stack : undefined;
+  console.error(
+    `[Webhook] ❌ Init failed at ${where}`,
+    JSON.stringify({ error: msg, stack, imports: IMPORT_URLS })
+  );
 };
 
 const PLAN_MAP: Record<string, { plan: string; billing: string }> = {
@@ -19,15 +33,29 @@ const PLAN_MAP: Record<string, { plan: string; billing: string }> = {
 };
 
 serve(async (req) => {
-  const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-    apiVersion: "2025-08-27.basil",
-  });
+  let stripe: Stripe;
+  let supabase: ReturnType<typeof createClient>;
+  try {
+    stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+      apiVersion: "2025-08-27.basil",
+    });
+    supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } }
+    );
+  } catch (err) {
+    logInitError("client_initialization", err);
+    return new Response(
+      JSON.stringify({
+        error: "Initialization failed",
+        message: err instanceof Error ? err.message : String(err),
+        imports: IMPORT_URLS,
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    { auth: { persistSession: false } }
-  );
 
   const signature = req.headers.get("stripe-signature");
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
