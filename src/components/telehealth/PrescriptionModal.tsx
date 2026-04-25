@@ -11,6 +11,7 @@ import { FileText, MessageCircle, Receipt, Loader2, Check, ShieldCheck, AlertTri
 import SigningInstructionsModal from "@/components/telehealth/SigningInstructionsModal";
 import PremiumFeatureModal from "@/components/PremiumFeatureModal";
 import { usePremiumFeature } from "@/hooks/usePremiumFeature";
+import { logPremiumBlockAttempt } from "@/lib/premiumBlockTracker";
 
 interface PrescriptionModalProps {
   open: boolean;
