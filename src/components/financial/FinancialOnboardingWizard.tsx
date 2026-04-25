@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { trackCtaClick } from "@/hooks/useTracking";
 import type { FinancialHealthState } from "@/hooks/useFinancialHealth";
+import { useFinancialSuggestions } from "@/hooks/useFinancialSuggestions";
 
 const DISMISS_KEY = "salbcare_financial_onboarding_dismissed";
 
@@ -39,6 +40,7 @@ interface Props {
  */
 const FinancialOnboardingWizard = ({ health, onOpenMentor }: Props) => {
   const navigate = useNavigate();
+  const suggestions = useFinancialSuggestions();
   const [dismissed, setDismissed] = useState(false);
   const step = health.onboardingStep ?? 3;
 
@@ -70,13 +72,16 @@ const FinancialOnboardingWizard = ({ health, onOpenMentor }: Props) => {
 
   const handleAddIncome = () => {
     trackCtaClick("financial_onboarding_add_income", "dashboard");
-    // Passamos type, category sugerida e uma descrição padrão para que o
-    // formulário abra praticamente pronto — basta digitar o valor.
+    // Sugestão dinâmica baseada no tipo profissional do usuário (ex.: psicólogo
+    // → "Sessão de psicoterapia"). A data já vai como próximo dia útil para
+    // poupar um clique.
+    const def = suggestions.defaultFor("income");
     const params = new URLSearchParams({
       onboarding: "1",
       type: "income",
-      category: "consulta",
-      description: "Consulta particular",
+      category: def.category,
+      description: def.description,
+      date: suggestions.nextBusinessDay(),
       autoOpen: "1",
     });
     navigate(`/dashboard/financial?${params.toString()}`);
@@ -84,11 +89,13 @@ const FinancialOnboardingWizard = ({ health, onOpenMentor }: Props) => {
 
   const handleAddExpense = () => {
     trackCtaClick("financial_onboarding_add_expense", "dashboard");
+    const def = suggestions.defaultFor("expense");
     const params = new URLSearchParams({
       onboarding: "2",
       type: "expense",
-      category: "aluguel",
-      description: "Aluguel do consultório",
+      category: def.category,
+      description: def.description,
+      date: suggestions.nextBusinessDay(),
       autoOpen: "1",
     });
     navigate(`/dashboard/financial?${params.toString()}`);
