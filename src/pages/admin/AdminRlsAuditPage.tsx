@@ -362,6 +362,56 @@ const AdminRlsAuditPage = () => {
           e <code>pg_policies</code> para cada tabela auditada.
         </p>
       </div>
+
+      <Dialog open={detailTable !== null} onOpenChange={(o) => !o && setDetailTable(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-mono">{detailTable}</DialogTitle>
+            <DialogDescription>
+              Policies registradas em <code>pg_policies</code> para esta tabela.
+            </DialogDescription>
+          </DialogHeader>
+          {detailLoading ? (
+            <div className="py-8 flex justify-center">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            </div>
+          ) : !detailRows || detailRows.length === 0 ? (
+            <p className="py-6 text-sm text-muted-foreground text-center">
+              Nenhuma policy registrada para esta tabela.
+            </p>
+          ) : (
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+              {(["SELECT", "INSERT", "UPDATE", "DELETE", "ALL"] as const).map((cmd) => {
+                const list = detailRows.filter((p) => p.command === cmd);
+                if (list.length === 0) return null;
+                return (
+                  <section key={cmd} className="rounded-lg border p-3">
+                    <p className="text-xs font-bold uppercase tracking-wide text-primary mb-2">
+                      {cmd}
+                    </p>
+                    <ul className="space-y-2">
+                      {list.map((p) => (
+                        <li key={p.policy_name} className="text-[11px] space-y-1">
+                          <p className="font-medium">{p.policy_name}</p>
+                          <p className="text-muted-foreground">
+                            roles: {p.roles?.join(", ") || "—"} • {p.permissive}
+                          </p>
+                          {p.using_expr && (
+                            <pre className="rounded bg-muted/50 p-2 overflow-x-auto"><code>USING: {p.using_expr}</code></pre>
+                          )}
+                          {p.with_check_expr && (
+                            <pre className="rounded bg-muted/50 p-2 overflow-x-auto"><code>WITH CHECK: {p.with_check_expr}</code></pre>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              })}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
