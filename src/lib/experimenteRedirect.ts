@@ -173,14 +173,9 @@ export function buildExperimenteRedirect({
   const deepTarget = resolveDeepTarget(params, prefix);
   const preserved = buildPreservedSearch(search);
 
-  if (authenticated) {
-    const suffix = preserved ? `?${preserved}` : "";
-    return `${prefix}${deepTarget}${suffix}`;
-  }
-
-  // Visitante → /register, com o destino final em ?redirect= (já com prefixo
-  // se houver — assim o /register pode dar push direto após o cadastro).
-  const registerParams = new URLSearchParams(preserved);
-  registerParams.set("redirect", `${prefix}${deepTarget}`);
-  return `${prefix}/register?${registerParams.toString()}`;
+  // Tanto o usuário autenticado quanto o visitante seguem direto para o
+  // destino solicitado. As rotas do dashboard são `allowGuest`, portanto
+  // visitantes recebem o modo demo público sem login/cadastro.
+  const suffix = preserved ? `?${preserved}` : "";
+  return `${prefix}${deepTarget}${suffix}`;
 }
