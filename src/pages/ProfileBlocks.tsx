@@ -314,7 +314,6 @@ const ProfileBlocks = () => {
         motivo: e.reason,
         metadata_json: e.metadata ? JSON.stringify(e.metadata) : "",
       };
-      // Cada chave de metadata vira sua própria coluna indexada
       for (const k of metaKeys) {
         const val = e.metadata && typeof e.metadata === "object"
           ? (e.metadata as Record<string, unknown>)[k]
@@ -335,9 +334,15 @@ const ProfileBlocks = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    } finally {
+      setExporting(null);
+    }
   };
 
   const exportPdf = async () => {
+    if (exporting) return;
+    setExporting("pdf");
+    try {
     const all = await fetchAllForExport();
     if (all.length === 0) {
       toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
