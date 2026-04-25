@@ -41,6 +41,14 @@ const Sucesso = () => {
   const isPending = !isConfirmed && attempts >= MAX_ATTEMPTS;
   const isConfirming = !isConfirmed && !isPending;
 
+  // Auto-redirect to dashboard once subscription flips to active so the user
+  // doesn't have to click. Small delay so they see the green check first.
+  useEffect(() => {
+    if (!isConfirmed) return;
+    const t = setTimeout(() => navigate("/dashboard", { replace: true }), 2500);
+    return () => clearTimeout(t);
+  }, [isConfirmed, navigate]);
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div
