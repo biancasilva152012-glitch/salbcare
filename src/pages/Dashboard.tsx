@@ -195,12 +195,15 @@ const Dashboard = () => {
           <motion.div variants={item}>
             <button
               onClick={() => navigate("/dashboard/mentoria")}
-              className="glass-card w-full p-3 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-center gap-3 border-primary/20 bg-primary/5"
+              className="glass-card w-full p-3 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-start gap-3 border-primary/20 bg-primary/5"
             >
               <span className="text-xl">{dailyInsight.icon}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-semibold text-primary uppercase tracking-wider">Insight do dia</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">{dailyInsight.text}</p>
+                <p className="text-[11px] font-semibold text-primary mt-1.5 inline-flex items-center gap-1">
+                  {dailyInsight.cta} <Sparkles className="h-3 w-3" />
+                </p>
               </div>
             </button>
           </motion.div>
