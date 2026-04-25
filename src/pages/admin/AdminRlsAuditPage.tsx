@@ -6,6 +6,8 @@ import {
   RefreshCw,
   CheckCircle2,
   XCircle,
+  Download,
+  FileText,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type AuditRow = {
   table_name: string;
