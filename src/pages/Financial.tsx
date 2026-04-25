@@ -393,6 +393,17 @@ const Financial = () => {
           </div>
         </div>
 
+        {/* Perguntas-gatilho da Mentora IA — desperta curiosidade e empurra
+            usuários free para o Plano Essencial. Para usuários pagos, leva
+            direto à conversa com a Mentora IA. */}
+        <FinancialCuriosityCTA
+          monthlyIncome={totalIncome}
+          monthlyExpense={totalExpense}
+          transactionCount={transactions.length}
+          isFree={isFree}
+          onUpgrade={() => setUpgradeOpen(true)}
+          onAskMentor={() => window.location.assign("/dashboard/mentoria")}
+        />
 
 
         <Tabs defaultValue="bar" className="w-full">
