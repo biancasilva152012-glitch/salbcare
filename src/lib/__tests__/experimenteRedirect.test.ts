@@ -128,7 +128,7 @@ describe("buildExperimenteRedirect", () => {
         authenticated: false,
         search: `?next=${encodeURIComponent(bad)}`,
       });
-      expect(url(r).searchParams.get("redirect")).toBe("/dashboard");
+      expect(url(r).pathname).toBe("/dashboard");
     });
   });
 });
