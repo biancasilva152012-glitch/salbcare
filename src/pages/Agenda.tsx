@@ -48,6 +48,7 @@ const Agenda = () => {
     canAddAppointment,
     usageByModule,
   } = useFreemiumLimits();
+  const guestSyncLocked = isGuestSyncLocked() && hasGuestData();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
