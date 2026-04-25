@@ -35,6 +35,8 @@ import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
 import { downloadCsvTemplate, PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
 import GuestPatients from "@/components/guest/GuestPatients";
+import GuestSyncLockBanner from "@/components/GuestSyncLockBanner";
+import { isGuestSyncLocked, hasGuestData } from "@/lib/guestStorage";
 
 const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "", initial_anamnesis: "", procedure_performed: "" };
 
@@ -56,8 +58,9 @@ const Patients = () => {
   // Progress celebration messages
   usePatientProgressMessages(patientsCount, isFree);
 
-  // Block new patient creation when trial expired AND no active subscription OR freemium limit
-  const canAddPatient = (sub.isAdmin || sub.isActive) && canAddPatientFreemium;
+  // Block new patient creation when trial expired AND no active subscription OR freemium limit OR pending guest sync
+  const guestSyncLocked = isGuestSyncLocked() && hasGuestData();
+  const canAddPatient = (sub.isAdmin || sub.isActive) && canAddPatientFreemium && !guestSyncLocked;
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
@@ -302,6 +305,8 @@ const Patients = () => {
             )}
           </div>
         </div>
+
+        {guestSyncLocked && <GuestSyncLockBanner section="pacientes" />}
 
         <PatientLimitWarning
           count={patientsCount}

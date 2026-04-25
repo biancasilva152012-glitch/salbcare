@@ -24,8 +24,13 @@ import {
   clearGuestStorage,
   markGuestSyncAcknowledged,
   hasGuestData,
+  clearGuestSyncLock,
+  writeGuestSyncSummary,
+  normalizeName,
+  appointmentKey,
   type GuestPatient,
   type GuestAppointment,
+  type GuestSyncSummary,
 } from "@/lib/guestStorage";
 
 /**
@@ -33,10 +38,15 @@ import {
  * still has guest patients/appointments in localStorage.
  *
  * Three outcomes:
- *  1. Mesclar  → import everything to Supabase respecting the free quota
- *                (5 patients / 5 appointments). Clears local data on success.
+ *  1. Mesclar  → import everything to Supabase respecting:
+ *                 - the free quota (5/5)
+ *                 - duplicate detection (name for patients, name+date+time for
+ *                   appointments) against existing Supabase rows AND within
+ *                   the incoming batch.
  *  2. Descartar → wipes localStorage and goes back to the dashboard.
  *  3. Decidir depois → just acknowledges and dismisses the screen.
+ *
+ * After merge/discard the user is sent to /sync-guest-data/done with a summary.
  */
 const SyncGuestData = () => {
   const navigate = useNavigate();
@@ -67,6 +77,7 @@ const SyncGuestData = () => {
     if (!hasGuestData()) {
       // Nothing to merge — just acknowledge so the toast/route stops firing.
       markGuestSyncAcknowledged();
+      clearGuestSyncLock();
       navigate(next, { replace: true });
     }
   }, [authLoading, user, navigate, next]);
@@ -79,71 +90,131 @@ const SyncGuestData = () => {
     ? guestAppointments.length
     : Math.max(0, FREE_LIMITS.appointments - appointmentsCount);
 
-  const patientsToImport = guestPatients.slice(
+  const patientsTrimmed = Math.max(
     0,
-    isPaid ? guestPatients.length : patientSlotsLeft,
+    guestPatients.length - (isPaid ? guestPatients.length : patientSlotsLeft),
   );
-  const appointmentsToImport = guestAppointments.slice(
+  const appointmentsTrimmed = Math.max(
     0,
-    isPaid ? guestAppointments.length : appointmentSlotsLeft,
+    guestAppointments.length - (isPaid ? guestAppointments.length : appointmentSlotsLeft),
   );
-
-  const patientsTrimmed = guestPatients.length - patientsToImport.length;
-  const appointmentsTrimmed = guestAppointments.length - appointmentsToImport.length;
 
   // ── Actions ─────────────────────────────────────────────────────────────
   const handleMerge = async () => {
     if (!user) return;
     setMerging(true);
 
-    let inserted = { patients: 0, appointments: 0 };
+    const summary: GuestSyncSummary = {
+      outcome: "merged",
+      patients: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+      appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+      duplicates: { patients: [], appointments: [] },
+      at: new Date().toISOString(),
+    };
+
     try {
-      if (importPatients && patientsToImport.length > 0) {
-        const rows = patientsToImport.map((p) => ({
-          user_id: user.id,
-          name: p.name,
-          phone: p.phone ?? null,
-          email: p.email ?? null,
-          notes: p.notes ?? null,
-        }));
-        const { error, data } = await supabase
+      // ── PATIENTS ────────────────────────────────────────────────────────
+      if (importPatients && guestPatients.length > 0) {
+        // Existing names in Supabase (RLS-scoped to this user)
+        const { data: existing, error: exErr } = await supabase
           .from("patients")
-          .insert(rows)
-          .select("id");
-        if (error) throw error;
-        inserted.patients = data?.length ?? rows.length;
+          .select("name");
+        if (exErr) throw exErr;
+        const seen = new Set<string>(
+          (existing ?? []).map((r) => normalizeName(r.name)),
+        );
+
+        const accepted: GuestPatient[] = [];
+        for (const p of guestPatients) {
+          const key = normalizeName(p.name);
+          if (seen.has(key)) {
+            summary.patients.skippedDuplicate += 1;
+            summary.duplicates.patients.push(p.name);
+            continue;
+          }
+          if (!isPaid && accepted.length >= patientSlotsLeft) {
+            summary.patients.skippedQuota += 1;
+            continue;
+          }
+          accepted.push(p);
+          seen.add(key);
+        }
+
+        if (accepted.length > 0) {
+          const rows = accepted.map((p) => ({
+            user_id: user.id,
+            name: p.name,
+            phone: p.phone ?? null,
+            email: p.email ?? null,
+            notes: p.notes ?? null,
+          }));
+          const { error, data } = await supabase
+            .from("patients")
+            .insert(rows)
+            .select("id");
+          if (error) throw error;
+          summary.patients.imported = data?.length ?? rows.length;
+        }
+      } else if (!importPatients) {
+        summary.patients.skippedQuota = guestPatients.length;
       }
 
-      if (importAppointments && appointmentsToImport.length > 0) {
-        const rows = appointmentsToImport.map((a) => ({
-          user_id: user.id,
-          patient_name: a.patient_name,
-          date: a.date,
-          time: a.time,
-          appointment_type: a.appointment_type,
-          notes: a.notes ?? null,
-          status: "scheduled",
-        }));
-        const { error, data } = await supabase
+      // ── APPOINTMENTS ────────────────────────────────────────────────────
+      if (importAppointments && guestAppointments.length > 0) {
+        const { data: existing, error: exErr } = await supabase
           .from("appointments")
-          .insert(rows)
-          .select("id");
-        if (error) throw error;
-        inserted.appointments = data?.length ?? rows.length;
+          .select("patient_name, date, time");
+        if (exErr) throw exErr;
+        const seen = new Set<string>(
+          (existing ?? []).map((r) =>
+            appointmentKey(r.patient_name as string, r.date as string, r.time as string),
+          ),
+        );
+
+        const accepted: GuestAppointment[] = [];
+        for (const a of guestAppointments) {
+          const key = appointmentKey(a.patient_name, a.date, a.time);
+          if (seen.has(key)) {
+            summary.appointments.skippedDuplicate += 1;
+            summary.duplicates.appointments.push(
+              `${a.patient_name} — ${a.date.split("-").reverse().slice(0, 2).join("/")} ${a.time}`,
+            );
+            continue;
+          }
+          if (!isPaid && accepted.length >= appointmentSlotsLeft) {
+            summary.appointments.skippedQuota += 1;
+            continue;
+          }
+          accepted.push(a);
+          seen.add(key);
+        }
+
+        if (accepted.length > 0) {
+          const rows = accepted.map((a) => ({
+            user_id: user.id,
+            patient_name: a.patient_name,
+            date: a.date,
+            time: a.time,
+            appointment_type: a.appointment_type,
+            notes: a.notes ?? null,
+            status: "scheduled",
+          }));
+          const { error, data } = await supabase
+            .from("appointments")
+            .insert(rows)
+            .select("id");
+          if (error) throw error;
+          summary.appointments.imported = data?.length ?? rows.length;
+        }
+      } else if (!importAppointments) {
+        summary.appointments.skippedQuota = guestAppointments.length;
       }
 
       clearGuestStorage();
       markGuestSyncAcknowledged();
-
-      const summary: string[] = [];
-      if (inserted.patients) summary.push(`${inserted.patients} paciente(s)`);
-      if (inserted.appointments) summary.push(`${inserted.appointments} consulta(s)`);
-      toast.success(
-        summary.length
-          ? `Importado: ${summary.join(" e ")}.`
-          : "Nada para importar — dados do guest limpos.",
-      );
-      navigate(next, { replace: true });
+      clearGuestSyncLock();
+      writeGuestSyncSummary(summary);
+      navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
     } catch (err: any) {
       toast.error(err?.message ?? "Falha ao importar dados do modo guest.");
       setMerging(false);
@@ -151,14 +222,23 @@ const SyncGuestData = () => {
   };
 
   const handleDiscard = () => {
+    const summary: GuestSyncSummary = {
+      outcome: "discarded",
+      patients: { imported: 0, skippedDuplicate: 0, skippedQuota: guestPatients.length },
+      appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: guestAppointments.length },
+      duplicates: { patients: [], appointments: [] },
+      at: new Date().toISOString(),
+    };
     clearGuestStorage();
     markGuestSyncAcknowledged();
-    toast.success("Rascunhos do modo guest descartados.");
-    navigate(next, { replace: true });
+    clearGuestSyncLock();
+    writeGuestSyncSummary(summary);
+    navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
   };
 
   const handleLater = () => {
     markGuestSyncAcknowledged();
+    clearGuestSyncLock();
     toast.info("Você pode voltar nesta tela manualmente em /sync-guest-data.");
     navigate(next, { replace: true });
   };
@@ -173,8 +253,7 @@ const SyncGuestData = () => {
     );
   }
 
-  const nothingToImport =
-    patientsToImport.length === 0 && appointmentsToImport.length === 0;
+  const nothingToImport = guestPatients.length === 0 && guestAppointments.length === 0;
 
   return (
     <>
@@ -197,7 +276,7 @@ const SyncGuestData = () => {
             <h1 className="text-xl font-bold">Sincronizar rascunhos do modo guest</h1>
             <p className="text-xs text-muted-foreground">
               Detectamos pacientes e consultas que você criou antes de logar.
-              Decida o que fazer com eles.
+              Decida o que fazer com eles. Duplicados serão ignorados automaticamente.
             </p>
           </header>
 
@@ -211,7 +290,6 @@ const SyncGuestData = () => {
                 <Checkbox
                   checked={importPatients}
                   onCheckedChange={(v) => setImportPatients(v === true)}
-                  disabled={patientsToImport.length === 0}
                   className="mt-0.5"
                 />
                 <div className="flex-1 min-w-0">
@@ -224,8 +302,8 @@ const SyncGuestData = () => {
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
                     {isPaid
-                      ? "Plano Essencial — todos serão importados."
-                      : `Plano grátis: ${patientsToImport.length} de ${guestPatients.length} cabem (${patientsCount}/${FREE_LIMITS.patients} já usados).`}
+                      ? "Plano Essencial — todos cabem (após dedup)."
+                      : `Plano grátis: até ${patientSlotsLeft} cabem (${patientsCount}/${FREE_LIMITS.patients} já usados).`}
                   </p>
                 </div>
               </label>
@@ -233,8 +311,8 @@ const SyncGuestData = () => {
                 <div className="flex items-start gap-2 rounded-lg bg-amber-500/10 border border-amber-500/30 p-2 text-[11px]">
                   <AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                   <span>
-                    {patientsTrimmed} paciente(s) ficarão de fora — atualize para
-                    o Essencial para importar todos.
+                    Até {patientsTrimmed} paciente(s) podem ficar de fora por limite
+                    do plano grátis.
                   </span>
                 </div>
               )}
@@ -251,7 +329,6 @@ const SyncGuestData = () => {
                 <Checkbox
                   checked={importAppointments}
                   onCheckedChange={(v) => setImportAppointments(v === true)}
-                  disabled={appointmentsToImport.length === 0}
                   className="mt-0.5"
                 />
                 <div className="flex-1 min-w-0">
@@ -264,8 +341,8 @@ const SyncGuestData = () => {
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
                     {isPaid
-                      ? "Plano Essencial — todas serão importadas."
-                      : `Plano grátis: ${appointmentsToImport.length} de ${guestAppointments.length} cabem (${appointmentsCount}/${FREE_LIMITS.appointments} já usadas).`}
+                      ? "Plano Essencial — todas cabem (após dedup)."
+                      : `Plano grátis: até ${appointmentSlotsLeft} cabem (${appointmentsCount}/${FREE_LIMITS.appointments} já usadas).`}
                   </p>
                 </div>
               </label>
@@ -273,8 +350,8 @@ const SyncGuestData = () => {
                 <div className="flex items-start gap-2 rounded-lg bg-amber-500/10 border border-amber-500/30 p-2 text-[11px]">
                   <AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                   <span>
-                    {appointmentsTrimmed} consulta(s) ficarão de fora — atualize
-                    para o Essencial para importar todas.
+                    Até {appointmentsTrimmed} consulta(s) podem ficar de fora por
+                    limite do plano grátis.
                   </span>
                 </div>
               )}
