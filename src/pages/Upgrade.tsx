@@ -16,14 +16,17 @@ const fadeUp = {
 const Upgrade = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const reason = params.get("reason"); // patients | financial | mentorship | telehealth
+  const reason = params.get("reason");
   const { user, subscription } = useAuth();
   const limits = useFreemiumLimits();
 
+  // Mapeamento de reason → texto contextual. Aceita também variações vindas
+  // do PremiumFeatureModal (ex: "Receitas e atestados digitais") via match
+  // case-insensitive de palavras-chave.
   const reasonLabels: Record<string, { title: string; subtitle: string }> = {
     patients: {
-      title: "Você atingiu o limite de pacientes",
-      subtitle: "Continue cadastrando sem interrupções no plano Essencial.",
+      title: `Você atingiu o limite de ${limits.patientsLimit} pacientes do plano gratuito`,
+      subtitle: "No plano Essencial você cadastra pacientes ilimitados.",
     },
     financial: {
       title: "Você atingiu o limite de lançamentos do mês",
@@ -31,16 +34,39 @@ const Upgrade = () => {
     },
     mentorship: {
       title: "Você atingiu o limite da mentoria com IA",
-      subtitle: "Tenha conversas ilimitadas com a mentora financeira.",
+      subtitle: `No gratuito são ${limits.mentorshipLimit} mensagens/mês — no Essencial são ilimitadas.`,
     },
     telehealth: {
       title: "Teleconsulta é exclusiva do plano Essencial",
-      subtitle: "Atenda online via Google Meet com link no seu perfil.",
+      subtitle: "Crie consultas online via Google Meet com link no seu perfil.",
+    },
+    prescriptions: {
+      title: "Receitas digitais são exclusivas do plano Essencial",
+      subtitle: "Emita Receita Comum, Controle Especial e Notificação Azul/Amarela com assinatura digital.",
+    },
+    certificates: {
+      title: "Atestados digitais são exclusivos do plano Essencial",
+      subtitle: "Emita atestados e certificados com hash de verificação e assinatura ICP.",
+    },
+    public_directory: {
+      title: "Aparecer no diretório público é exclusivo do Essencial",
+      subtitle: "Tenha um perfil destacado em /profissionais e receba pacientes da plataforma.",
     },
   };
 
-  const headline = reason && reasonLabels[reason]
-    ? reasonLabels[reason]
+  const matchedKey =
+    reason && (reasonLabels[reason]
+      ? reason
+      : /receita|atestado|prescric|certificad/i.test(reason)
+        ? "prescriptions"
+        : /tele|meet|video/i.test(reason)
+          ? "telehealth"
+          : /diret|profissionai|marketplace/i.test(reason)
+            ? "public_directory"
+            : null);
+
+  const headline = matchedKey
+    ? reasonLabels[matchedKey]
     : { title: "Desbloqueie tudo no Essencial", subtitle: "R$ 89/mês • 7 dias grátis • Cancele quando quiser." };
 
   const planName = subscription.subscribed ? "Essencial" : (subscription.trialDaysRemaining > 0 ? "Trial" : "Grátis");
