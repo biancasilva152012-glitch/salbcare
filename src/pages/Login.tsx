@@ -181,7 +181,7 @@ const Login = () => {
         >
           <p className="text-sm text-muted-foreground">
             Ainda não tem conta?{" "}
-            <Link to="/planos" onClick={() => trackCtaClick("conheca_planos", "login_banner")} className="text-primary font-semibold hover:underline">
+            <Link to={`/planos${nextQs}`} onClick={() => trackCtaClick("conheca_planos", "login_banner")} className="text-primary font-semibold hover:underline">
               Conheça os planos →
             </Link>
           </p>
@@ -268,7 +268,7 @@ const Login = () => {
         >
           <p className="text-sm text-muted-foreground">
             Não tem conta?{" "}
-            <Link to="/register" className="text-primary hover:underline font-medium">
+            <Link to={`/register${nextQs}`} className="text-primary hover:underline font-medium">
               Comece grátis por 7 dias
             </Link>
           </p>
