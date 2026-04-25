@@ -3,8 +3,8 @@ import { toast } from "sonner";
 import { trackLimitWarning } from "@/hooks/useTracking";
 
 /**
- * Shows celebratory progress toasts after the 2nd and 3rd patient.
- * Each message fires only once per session via ref tracking.
+ * Mensagens de celebração ao cadastrar pacientes no plano gratuito (limite=3).
+ * Cada mensagem dispara apenas 1x por sessão.
  */
 export function usePatientProgressMessages(count: number, isFree: boolean) {
   const shownRef = useRef<Set<number>>(new Set());
@@ -14,9 +14,7 @@ export function usePatientProgressMessages(count: number, isFree: boolean) {
 
     const messages: Record<number, string> = {
       1: "Primeiro paciente cadastrado! 🎉 Você já começou.",
-      2: "Profissionais ativos geralmente têm vários pacientes cadastrados 📋",
-      3: "Você já começou a organizar sua base! 💪",
-      5: "Metade do limite gratuito alcançada. Continue crescendo! 📈",
+      2: "Bom ritmo! Mais 1 paciente disponível no plano gratuito 📋",
     };
 
     const msg = messages[count];
