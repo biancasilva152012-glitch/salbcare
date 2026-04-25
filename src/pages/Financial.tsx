@@ -542,6 +542,11 @@ const Financial = () => {
         )}
       </div>
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="lançamentos financeiros" currentUsage={financialCount} limit={financialLimit} />
+      <MentorIAExplainerModal
+        open={explainerOpen}
+        onClose={() => setExplainerOpen(false)}
+        onUpgrade={() => { setExplainerOpen(false); setUpgradeOpen(true); }}
+      />
     </PageContainer>
   );
 };
