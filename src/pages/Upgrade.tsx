@@ -7,6 +7,7 @@ import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import { useAuth } from "@/contexts/AuthContext";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
+import { resolveUpgradeReason, buildCheckoutQuery } from "@/lib/upgradeReason";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -54,16 +55,7 @@ const Upgrade = () => {
     },
   };
 
-  const matchedKey =
-    reason && (reasonLabels[reason]
-      ? reason
-      : /receita|atestado|prescric|certificad/i.test(reason)
-        ? "prescriptions"
-        : /tele|meet|video/i.test(reason)
-          ? "telehealth"
-          : /diret|profissionai|marketplace/i.test(reason)
-            ? "public_directory"
-            : null);
+  const matchedKey = resolveUpgradeReason(reason);
 
   const headline = matchedKey
     ? reasonLabels[matchedKey]
@@ -108,9 +100,7 @@ const Upgrade = () => {
   const goCheckout = () => {
     trackCtaClick("upgrade_essencial", `upgrade_page_${matchedKey || reason || "generic"}`);
     // Pré-seleciona o plano Essencial e propaga o motivo para o checkout
-    const params = new URLSearchParams({ plan: "basic" });
-    if (matchedKey || reason) params.set("reason", matchedKey || reason || "");
-    navigate(`/checkout?${params.toString()}`);
+    navigate(`/checkout?${buildCheckoutQuery(matchedKey, reason)}`);
   };
 
   return (
