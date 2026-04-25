@@ -15,6 +15,8 @@ import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import FreemiumQuotaBanner from "@/components/FreemiumQuotaBanner";
 import UpgradeModal from "@/components/UpgradeModal";
+import PremiumFeatureModal from "@/components/PremiumFeatureModal";
+import { usePremiumFeature } from "@/hooks/usePremiumFeature";
 import { PLANS } from "@/config/plans";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import { useNavigate } from "react-router-dom";
