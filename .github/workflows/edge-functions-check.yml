@@ -1,0 +1,24 @@
+name: Edge Functions Dependency Check
+
+on:
+  push:
+    paths:
+      - "supabase/functions/**"
+      - "scripts/check-edge-functions.mjs"
+      - ".github/workflows/edge-functions-check.yml"
+  pull_request:
+    paths:
+      - "supabase/functions/**"
+      - "scripts/check-edge-functions.mjs"
+
+jobs:
+  check:
+    name: Scan edge function imports & versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run dependency check
+        run: node scripts/check-edge-functions.mjs
