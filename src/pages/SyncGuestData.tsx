@@ -624,6 +624,83 @@ const SyncGuestData = () => {
             </p>
           </header>
 
+          {/* Fallback de checkpoint expirado: mostra resumo parcial preservado
+              e oferece "retomar", "recomeçar do zero" ou "descartar". */}
+          {expiredCheckpoint && (
+            <section
+              className="glass-card border-amber-500/40 bg-amber-500/5 p-4 space-y-3"
+              data-testid="sync-checkpoint-expired"
+              aria-live="polite"
+            >
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold">
+                    Sessão de importação expirada
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    A última tentativa parou há mais de 1 hora. Já tínhamos
+                    importado <strong>{expiredCheckpoint.liveSummary.patients.imported}</strong> paciente(s)
+                    e <strong>{expiredCheckpoint.liveSummary.appointments.imported}</strong> consulta(s).
+                    Você pode retomar de onde parou, recomeçar do zero ou
+                    descartar este resumo.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-[10px]">
+                <div className="rounded-md border bg-background/40 p-1.5 text-center">
+                  <div className="font-semibold text-emerald-600 dark:text-emerald-400">
+                    {expiredCheckpoint.liveSummary.patients.imported +
+                      expiredCheckpoint.liveSummary.appointments.imported}
+                  </div>
+                  <div className="text-muted-foreground">importados</div>
+                </div>
+                <div className="rounded-md border bg-background/40 p-1.5 text-center">
+                  <div className="font-semibold text-amber-600 dark:text-amber-400">
+                    {expiredCheckpoint.liveSummary.patients.skippedDuplicate +
+                      expiredCheckpoint.liveSummary.appointments.skippedDuplicate}
+                  </div>
+                  <div className="text-muted-foreground">duplicados</div>
+                </div>
+                <div className="rounded-md border bg-background/40 p-1.5 text-center">
+                  <div className="font-semibold">
+                    {expiredCheckpoint.pendingPatientIds.length +
+                      expiredCheckpoint.pendingAppointmentIds.length}
+                  </div>
+                  <div className="text-muted-foreground">pendentes</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <Button
+                  onClick={handleResumeExpired}
+                  size="sm"
+                  className="gradient-primary font-semibold"
+                  data-testid="sync-checkpoint-resume"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                  Retomar
+                </Button>
+                <Button
+                  onClick={handleRestartExpired}
+                  size="sm"
+                  variant="outline"
+                  data-testid="sync-checkpoint-restart"
+                >
+                  Recomeçar do zero
+                </Button>
+                <Button
+                  onClick={handleDiscardExpired}
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  data-testid="sync-checkpoint-discard"
+                >
+                  Descartar
+                </Button>
+              </div>
+            </section>
+          )}
+
           {/* Bloco: Pacientes */}
           {guestPatients.length > 0 && (
             <section
