@@ -47,6 +47,7 @@ const DashboardLimits = lazyWithRetry(() => import("./pages/DashboardLimits"), "
 const SyncGuestData = lazyWithRetry(() => import("./pages/SyncGuestData"), "SyncGuestData");
 const SyncGuestDataDone = lazyWithRetry(() => import("./pages/SyncGuestDataDone"), "SyncGuestDataDone");
 const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
+const GuestEntry = lazyWithRetry(() => import("./pages/GuestEntry"), "GuestEntry");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
 const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"), "AdminOverviewPage");
@@ -136,6 +137,7 @@ const App = () => (
               <Route path="/planos" element={<Pricing />} />
               <Route path="/precos" element={<Pricing />} />
               <Route path="/experimente" element={<Experimente />} />
+              <Route path="/guest" element={<GuestEntry />} />
               <Route path="/upgrade" element={<Upgrade />} />
 
               {/* Blog SEO */}
