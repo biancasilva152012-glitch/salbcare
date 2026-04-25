@@ -53,9 +53,26 @@ serve(async (req) => {
     if (!customerId) throw new Error("No Stripe customer found");
 
     const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
+    let body: any = {};
+    try { body = await req.json(); } catch { /* empty body is ok */ }
+    const allowedOrigins = [origin, "https://salbcare.lovable.app", "https://salbcare.com.br", "https://www.salbcare.com.br"];
+    const returnResult = resolveSafePath({
+      candidates: [body?.returnUrl, "/dashboard"],
+      allowedOrigins,
+    });
+    if (returnResult.reason !== "ok" && returnResult.reason !== "fallback-empty") {
+      await logRedirectAudit({
+        userId: user.id,
+        flow: "authed",
+        source: "stripe-portal",
+        preservedKeys: [],
+        resolvedPath: returnResult.path,
+        outcome: returnResult.reason,
+      });
+    }
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${origin}/dashboard`,
+      return_url: `${origin}${returnResult.path}`,
     });
 
     return new Response(JSON.stringify({ url: portalSession.url }), {
