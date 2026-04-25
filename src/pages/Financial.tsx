@@ -249,50 +249,91 @@ const Financial = () => {
     }));
   }, [filteredByMonth]);
 
-  const transactionFormJsx = (isEdit: boolean) => (
-    <div className="space-y-3 pt-2">
-      <div className="space-y-1.5">
-        <Label>Descrição</Label>
-        <Input ref={descriptionRef} placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" />
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
-          {form.type === "income"
-            ? "Cada consulta registrada ajuda a IA a entender seu potencial real."
-            : "Gastos registrados = impostos otimizados pela IA."}
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="text" inputMode="numeric" placeholder="Ex: 1.500" value={form.amount} onChange={(e) => setForm({ ...form, amount: maskCurrency(e.target.value) })} className="bg-accent border-border" /></div>
+  const transactionFormJsx = (isEdit: boolean) => {
+    // Sugestões de descrição contextuais ao tipo selecionado.
+    const descriptionSuggestions = suggestions.suggestionsFor(form.type);
+    const datalistId = `tx-suggestions-${isEdit ? "edit" : "new"}`;
+    // Data formatada em pt-BR para reforçar legibilidade ("seg, 28 de abr. de 2026").
+    let formattedDate = "";
+    if (form.date && /^\d{4}-\d{2}-\d{2}$/.test(form.date)) {
+      try {
+        formattedDate = format(new Date(form.date + "T12:00:00"), "EEE, dd 'de' MMM 'de' yyyy", { locale: ptBR });
+      } catch { /* ignore */ }
+    }
+    return (
+      <div className="space-y-3 pt-2">
         <div className="space-y-1.5">
-          <Label>Tipo</Label>
-          <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as "income" | "expense" })}>
+          <Label>Descrição</Label>
+          <Input
+            ref={descriptionRef}
+            list={datalistId}
+            placeholder={form.type === "income" ? "Ex: Consulta particular" : "Ex: Aluguel do consultório"}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            className="bg-accent border-border"
+          />
+          <datalist id={datalistId}>
+            {descriptionSuggestions.map((s) => (
+              <option key={s} value={s} />
+            ))}
+          </datalist>
+          <p className="text-[10px] text-muted-foreground leading-relaxed">
+            {form.type === "income"
+              ? "Cada consulta registrada ajuda a IA a entender seu potencial real."
+              : "Gastos registrados = impostos otimizados pela IA."}
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="text" inputMode="numeric" placeholder="Ex: 1.500" value={form.amount} onChange={(e) => setForm({ ...form, amount: maskCurrency(e.target.value) })} className="bg-accent border-border" /></div>
+          <div className="space-y-1.5">
+            <Label>Tipo</Label>
+            <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as "income" | "expense" })}>
+              <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="income">Receita</SelectItem>
+                <SelectItem value="expense">Despesa</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Categoria</Label>
+          <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
             <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="income">Receita</SelectItem>
-              <SelectItem value="expense">Despesa</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
+          <p className="text-[10px] text-muted-foreground leading-relaxed">
+            A IA usa a categoria para identificar onde você pode economizar e investir o que sobra.
+          </p>
         </div>
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label>Data</Label>
+            {!isEdit && (
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, date: suggestions.nextBusinessDay() })}
+                className="text-[10px] text-primary font-semibold hover:underline"
+              >
+                Próximo dia útil
+              </button>
+            )}
+          </div>
+          <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" />
+          {formattedDate && (
+            <p className="text-[10px] text-muted-foreground capitalize">{formattedDate}</p>
+          )}
+        </div>
+        <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
+          {isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Adicionando..." : "Adicionar")}
+        </Button>
       </div>
-      <div className="space-y-1.5">
-        <Label>Categoria</Label>
-        <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-          <SelectTrigger className="bg-accent border-border"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {categories.map((c) => (
-              <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
-          A IA usa a categoria para identificar onde você pode economizar e investir o que sobra.
-        </p>
-      </div>
-      <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
-      <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
-        {isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Adicionando..." : "Adicionar")}
-      </Button>
-    </div>
-  );
+    );
+  };
 
   if (isLoading) {
     return <PageContainer><PageSkeleton variant="list" /></PageContainer>;
