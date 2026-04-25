@@ -504,10 +504,30 @@ const Financial = () => {
             </TabsContent>
           )}
         </Tabs>
-        {isFree && (
+        {isFree ? (
           <p className="text-xs text-center text-muted-foreground mt-2">
             Lançamentos este mês: {financialCount}/{financialLimit} (plano gratuito)
           </p>
+        ) : (
+          transactions.length > 0 && (
+            <button
+              type="button"
+              onClick={() => window.location.assign("/dashboard/mentoria")}
+              className="glass-card mt-3 w-full p-3 text-left flex items-center gap-3 border-primary/20 bg-primary/5 hover:border-primary/50 transition-all active:scale-[0.99]"
+            >
+              <span className="text-xl">🤖</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-semibold text-primary uppercase tracking-wider">
+                  Pergunte para a Mentora IA
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Você já lançou {transactions.length} {transactions.length === 1 ? "transação" : "transações"}.
+                  Quer descobrir para onde está indo seu dinheiro este mês?
+                </p>
+              </div>
+              <ArrowUpRight className="h-4 w-4 text-primary shrink-0" />
+            </button>
+          )
         )}
       </div>
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="lançamentos financeiros" currentUsage={financialCount} limit={financialLimit} />
