@@ -70,16 +70,28 @@ const FinancialOnboardingWizard = ({ health, onOpenMentor }: Props) => {
 
   const handleAddIncome = () => {
     trackCtaClick("financial_onboarding_add_income", "dashboard");
-    navigate(
-      "/dashboard/financial?onboarding=1&type=income&autoOpen=1",
-    );
+    // Passamos type, category sugerida e uma descrição padrão para que o
+    // formulário abra praticamente pronto — basta digitar o valor.
+    const params = new URLSearchParams({
+      onboarding: "1",
+      type: "income",
+      category: "consulta",
+      description: "Consulta particular",
+      autoOpen: "1",
+    });
+    navigate(`/dashboard/financial?${params.toString()}`);
   };
 
   const handleAddExpense = () => {
     trackCtaClick("financial_onboarding_add_expense", "dashboard");
-    navigate(
-      "/dashboard/financial?onboarding=2&type=expense&category=aluguel&autoOpen=1",
-    );
+    const params = new URLSearchParams({
+      onboarding: "2",
+      type: "expense",
+      category: "aluguel",
+      description: "Aluguel do consultório",
+      autoOpen: "1",
+    });
+    navigate(`/dashboard/financial?${params.toString()}`);
   };
 
   const handleFinish = () => {
