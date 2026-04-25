@@ -181,6 +181,30 @@ describe("SyncGuestData — fallback de checkpoint expirado", () => {
     expect(window.localStorage.getItem(GUEST_DATA_KEY)).not.toBeNull();
   });
 
+  it('"Recomeçar do zero" preserva o resumo parcial dos pacientes já importados', async () => {
+    seedGuestPatients(3);
+    // Checkpoint expirado: 2 pacientes já importados, 1 duplicado, 1 pendente
+    seedExpiredCheckpoint();
+    await renderPage();
+
+    const restart = await screen.findByTestId("sync-checkpoint-restart");
+    fireEvent.click(restart);
+
+    // Banner do fallback some
+    expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
+    // Resumo parcial PERMANECE visível com os contadores do checkpoint
+    const live = await screen.findByTestId("sync-live-summary");
+    // 2 pacientes importados (texto "2" no card "Pacientes importados")
+    const importedLabel = within(live).getByText("Pacientes importados");
+    expect(importedLabel.previousElementSibling?.textContent).toBe("2");
+    // 1 paciente duplicado
+    const dupLabel = within(live).getByText("Pacientes duplicados");
+    expect(dupLabel.previousElementSibling?.textContent).toBe("1");
+    // O checkpoint foi limpo do storage (vai ser regravado quando o usuário
+    // clicar em "Mesclar" novamente, mas agora zerado)
+    expect(window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY)).toBeNull();
+  });
+
   it('"Descartar" remove o checkpoint do storage e some com o banner', async () => {
     seedGuestPatients(3);
     seedExpiredCheckpoint();
