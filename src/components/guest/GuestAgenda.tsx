@@ -44,7 +44,7 @@ const GuestAgenda = () => {
 
   const handleAdd = () => {
     const result = addGuestAppointment(form);
-    if (!result.ok) {
+    if (result.ok === false) {
       if (result.reason === "limit") {
         toast.error(
           `Limite do modo guest atingido (${GUEST_LIMITS.appointments} consultas). Crie sua conta grátis para subir para 5.`,
@@ -172,12 +172,8 @@ const GuestAgenda = () => {
             icon={CalendarIcon}
             title="Sem consultas ainda"
             description="Agende sua primeira consulta para testar a agenda."
-            action={
-              <Button onClick={() => setOpen(true)} className="gradient-primary">
-                <Plus className="h-4 w-4 mr-2" />
-                Agendar consulta
-              </Button>
-            }
+            actionLabel="Agendar consulta"
+            onAction={() => setOpen(true)}
           />
         ) : (
           <div className="space-y-2">

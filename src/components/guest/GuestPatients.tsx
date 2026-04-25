@@ -33,7 +33,7 @@ const GuestPatients = () => {
 
   const handleAdd = () => {
     const result = addGuestPatient(form);
-    if (!result.ok) {
+    if (result.ok === false) {
       if (result.reason === "limit") {
         toast.error(
           `Limite do modo guest atingido (${GUEST_LIMITS.patients} pacientes). Crie sua conta grátis para subir para 5.`,
@@ -138,12 +138,8 @@ const GuestPatients = () => {
             icon={Users}
             title="Sem pacientes ainda"
             description="Cadastre seu primeiro paciente para testar a plataforma."
-            action={
-              <Button onClick={() => setOpen(true)} className="gradient-primary">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Adicionar paciente
-              </Button>
-            }
+            actionLabel="Adicionar paciente"
+            onAction={() => setOpen(true)}
           />
         ) : (
           <div className="space-y-2">
