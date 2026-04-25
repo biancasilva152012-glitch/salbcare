@@ -92,6 +92,33 @@ const SyncGuestData = () => {
   });
   const [steps, setSteps] = useState<Steps>(initialSteps);
   const [lastError, setLastError] = useState<string | null>(null);
+  /** Per-step error so we can show "tentar só Pacientes" / "tentar só Agendamentos". */
+  const [stepError, setStepError] = useState<{
+    patients?: string;
+    appointments?: string;
+  }>({});
+
+  // Running summary accumulated across (possibly partial) retries. We use a
+  // single object so the footer can show live counts before the user confirms,
+  // and so retrying only the failed step adds to (not replaces) what already
+  // succeeded.
+  const emptySummary = (): GuestSyncSummary => ({
+    outcome: "merged",
+    patients: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+    appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+    duplicates: { patients: [], appointments: [] },
+    at: new Date().toISOString(),
+  });
+  const [liveSummary, setLiveSummary] = useState<GuestSyncSummary>(emptySummary);
+  /** Patients/Appointments still pending in localStorage (not yet imported nor
+   *  permanently skipped). After a step succeeds we drop the imported items
+   *  from this list so a retry only re-tries what's left. */
+  const [pendingPatients, setPendingPatients] = useState<GuestPatient[]>(() =>
+    readGuestPatients(),
+  );
+  const [pendingAppointments, setPendingAppointments] = useState<GuestAppointment[]>(
+    () => readGuestAppointments(),
+  );
 
   // ── Guards ──────────────────────────────────────────────────────────────
   useEffect(() => {
