@@ -62,6 +62,11 @@ function isAllowedRedirect(path: string | null | undefined): path is string {
   if (!path) return false;
   if (!path.startsWith("/")) return false;
   if (path.startsWith("//")) return false; // protocol-relative
+  // Bloqueia path traversal e variantes percent-encoded.
+  const lowered = path.toLowerCase();
+  if (lowered.includes("..")) return false;
+  if (lowered.includes("%2f") || lowered.includes("%5c")) return false; // / e \ encodados
+  if (lowered.includes("\\")) return false;
   return (ALLOWED_REDIRECTS as readonly string[]).some(
     (allowed) => path === allowed || path.startsWith(`${allowed}/`),
   );
