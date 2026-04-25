@@ -40,6 +40,7 @@ interface Props {
  */
 const FinancialOnboardingWizard = ({ health, onOpenMentor }: Props) => {
   const navigate = useNavigate();
+  const suggestions = useFinancialSuggestions();
   const [dismissed, setDismissed] = useState(false);
   const step = health.onboardingStep ?? 3;
 
