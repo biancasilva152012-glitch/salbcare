@@ -58,8 +58,9 @@ const Patients = () => {
   // Progress celebration messages
   usePatientProgressMessages(patientsCount, isFree);
 
-  // Block new patient creation when trial expired AND no active subscription OR freemium limit
-  const canAddPatient = (sub.isAdmin || sub.isActive) && canAddPatientFreemium;
+  // Block new patient creation when trial expired AND no active subscription OR freemium limit OR pending guest sync
+  const guestSyncLocked = isGuestSyncLocked() && hasGuestData();
+  const canAddPatient = (sub.isAdmin || sub.isActive) && canAddPatientFreemium && !guestSyncLocked;
 
   const parseDateBR = (dateStr: string): string | null => {
     if (!dateStr) return null;
@@ -304,6 +305,8 @@ const Patients = () => {
             )}
           </div>
         </div>
+
+        {guestSyncLocked && <GuestSyncLockBanner section="pacientes" />}
 
         <PatientLimitWarning
           count={patientsCount}
