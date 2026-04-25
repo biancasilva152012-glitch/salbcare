@@ -145,11 +145,17 @@ const Checkout = () => {
             onClick={handleCheckout}
             disabled={loading}
             className="w-full gradient-primary font-semibold py-5 gap-2"
+            data-testid="checkout-pay-btn"
           >
-            {loading ? (
+            {status === "starting" ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Redirecionando...
+                Iniciando checkout…
+              </>
+            ) : status === "redirecting" ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Redirecionando para o Stripe…
               </>
             ) : (
               <>
@@ -158,6 +164,33 @@ const Checkout = () => {
               </>
             )}
           </Button>
+
+          {/* Live status feedback so the user is never staring at a frozen
+              button while we contact Stripe. */}
+          {status !== "idle" && (
+            <div
+              className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground space-y-1"
+              data-testid="checkout-status"
+              role="status"
+            >
+              <p className={status === "starting" ? "text-foreground font-medium" : ""}>
+                {status === "starting" ? "→" : "✓"} Conectando ao Stripe…
+              </p>
+              <p
+                className={
+                  status === "redirecting" ? "text-foreground font-medium" : ""
+                }
+              >
+                {status === "redirecting" ? "→" : status === "error" ? "✕" : "•"}{" "}
+                Abrindo a página de pagamento segura
+              </p>
+              {status === "error" && (
+                <p className="text-destructive">
+                  ✕ Falha ao iniciar o checkout. Tente novamente.
+                </p>
+              )}
+            </div>
+          )}
 
           <p className="text-[10px] text-center text-muted-foreground">
             Pagamento seguro processado pelo Stripe. Você será redirecionado para a página de pagamento.
