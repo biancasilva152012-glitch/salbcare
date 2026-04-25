@@ -8,15 +8,34 @@ import {
   XCircle,
   Download,
   FileText,
+  Eye,
+  Loader2,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
+import { useAuth } from "@/contexts/AuthContext";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+
+type PolicyRow = {
+  policy_name: string;
+  command: string;
+  permissive: string;
+  roles: string[];
+  using_expr: string;
+  with_check_expr: string;
+};
 
 type AuditRow = {
   table_name: string;
