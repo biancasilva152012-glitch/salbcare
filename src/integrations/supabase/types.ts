@@ -1647,6 +1647,17 @@ export type Database = {
           profile_slug: string
         }[]
       }
+      get_rls_policies_for_table: {
+        Args: { _table: string }
+        Returns: {
+          command: string
+          permissive: string
+          policy_name: string
+          roles: string[]
+          using_expr: string
+          with_check_expr: string
+        }[]
+      }
       has_active_paid_plan: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
