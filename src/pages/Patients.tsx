@@ -249,8 +249,8 @@ const Patients = () => {
       <div className="space-y-1.5"><Label>Procedimento Realizado</Label><Textarea placeholder="Descrição do procedimento..." value={form.procedure_performed} onChange={(e) => setForm({ ...form, procedure_performed: e.target.value })} className="bg-accent border-border" rows={3} /></div>
       <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Histórico médico</Label><Textarea placeholder="Histórico..." value={form.medical_history} onChange={(e) => setForm({ ...form, medical_history: e.target.value })} className="bg-accent border-border" /></div>
-      <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
-        {isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Cadastrando..." : "Cadastrar")}
+      <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending || guestSyncLocked}>
+        {guestSyncLocked ? "Bloqueado — sincronize seus rascunhos" : isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Cadastrando..." : "Cadastrar")}
       </Button>
     </div>
   );
@@ -329,10 +329,30 @@ const Patients = () => {
                 <button onClick={() => handleExportPdf(selected)} className="text-xs text-primary hover:underline flex items-center gap-1">
                   <FileDown className="h-3 w-3" /> PDF
                 </button>
-                <button onClick={() => openEdit(selected)} className="text-xs text-primary hover:underline flex items-center gap-1"><Pencil className="h-3 w-3" /> Editar</button>
+                <button
+                  onClick={() => guestSyncLocked
+                    ? toast.info("Sincronize seus rascunhos do modo guest antes de editar.")
+                    : openEdit(selected)
+                  }
+                  disabled={guestSyncLocked}
+                  className="text-xs text-primary hover:underline flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline"
+                >
+                  <Pencil className="h-3 w-3" /> Editar
+                </button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <button className="text-xs text-destructive hover:underline flex items-center gap-1"><Trash2 className="h-3 w-3" /> Excluir</button>
+                    <button
+                      disabled={guestSyncLocked}
+                      className="text-xs text-destructive hover:underline flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline"
+                      onClick={(e) => {
+                        if (guestSyncLocked) {
+                          e.preventDefault();
+                          toast.info("Sincronize seus rascunhos do modo guest antes de excluir.");
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" /> Excluir
+                    </button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="bg-card border-border">
                     <AlertDialogHeader>
@@ -341,7 +361,7 @@ const Patients = () => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => deleteMutation.mutate(selected.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                      <AlertDialogAction onClick={() => deleteMutation.mutate(selected.id)} className="bg-destructive text-destructive-foreground" disabled={guestSyncLocked}>Excluir</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
