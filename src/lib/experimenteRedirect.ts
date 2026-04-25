@@ -25,8 +25,9 @@ export const ALLOWED_REDIRECTS = [
 ] as const;
 
 // Apenas estes parâmetros sobrevivem. Tudo o mais é descartado.
-// `next`/`nextRedirect` são tratados como sinônimos da rota interna desejada;
-// só viram redirect quando passam pela allowlist.
+// `next`/`nextRedirect`/`redirect` são tratados como sinônimos da rota
+// interna desejada; só viram destino quando passam pela allowlist E quando
+// não conflitam entre si (duplicatas inconsistentes → fallback /dashboard).
 export const PRESERVED_QUERY_PARAMS = new Set([
   "utm_source",
   "utm_medium",
@@ -36,7 +37,10 @@ export const PRESERVED_QUERY_PARAMS = new Set([
   "ref",
   "next",
   "nextRedirect",
+  "redirect",
 ]);
+
+const TARGET_PARAM_KEYS = ["next", "nextRedirect", "redirect"] as const;
 
 export type BuildRedirectInput = {
   authenticated: boolean;
@@ -56,6 +60,18 @@ function normalizeBasePath(raw?: string): string {
   if (!p.startsWith("/")) p = `/${p}`;
   if (p.endsWith("/")) p = p.slice(0, -1);
   return p;
+}
+
+/**
+ * Strip a known basePath prefix from `path` so the allowlist check works
+ * even when the value already includes the prefix (ex.: ?next=/app/dashboard
+ * num app servido em /app).
+ */
+function stripBasePath(path: string, basePath: string): string {
+  if (!basePath) return path;
+  if (path === basePath) return "/";
+  if (path.startsWith(`${basePath}/`)) return path.slice(basePath.length);
+  return path;
 }
 
 function isAllowedRedirect(path: string | null | undefined): path is string {
@@ -84,9 +100,9 @@ function buildPreservedSearch(rawSearch: string): string {
   }
   const out = new URLSearchParams();
   for (const [k, v] of incoming.entries()) {
-    // `next`/`nextRedirect` não devem aparecer no querystring final —
-    // eles são consumidos para escolher o destino, não propagados.
-    if (k === "next" || k === "nextRedirect") continue;
+    // Os params de destino (next/nextRedirect/redirect) NUNCA sobrevivem
+    // ao redirect — são consumidos por resolveDeepTarget.
+    if ((TARGET_PARAM_KEYS as readonly string[]).includes(k)) continue;
     if (!PRESERVED_QUERY_PARAMS.has(k)) continue;
     // `append` (não `set`) preserva múltiplos valores da mesma chave.
     out.append(k, v);
@@ -95,22 +111,29 @@ function buildPreservedSearch(rawSearch: string): string {
 }
 
 /**
- * Resolve the deep target from `next` / `nextRedirect`, accepting the FIRST
- * value that passes the allowlist (deterministic when repeated).
+ * Resolve the deep target from `next` / `nextRedirect` / `redirect`,
+ * accepting the FIRST value that passes the allowlist (deterministic when
+ * repeated).
  *
- * - Multiple `next=` values: each one is checked in order; the first that
- *   matches the allowlist wins. If none matches, falls back to /dashboard.
- * - This guarantees `?next=/admin&next=/dashboard/agenda` deterministically
- *   resolves to `/dashboard/agenda` instead of silently using `/dashboard`.
+ * Inconsistency rule: if the query specifies BOTH `next` and `redirect`
+ * (or any combination of the three target keys) and they resolve to
+ * DIFFERENT allowed paths, we conservatively fall back to `/dashboard`
+ * instead of silently picking one. This avoids attacker-controlled
+ * disagreements being treated as "valid".
  */
-function resolveDeepTarget(params: URLSearchParams): string {
-  const candidates = [
-    ...params.getAll("next"),
-    ...params.getAll("nextRedirect"),
-  ];
-  for (const c of candidates) {
-    if (isAllowedRedirect(c)) return c;
+function resolveDeepTarget(params: URLSearchParams, basePath: string): string {
+  const allowedSeen = new Set<string>();
+  for (const key of TARGET_PARAM_KEYS) {
+    for (const raw of params.getAll(key)) {
+      const stripped = stripBasePath(raw, basePath);
+      if (isAllowedRedirect(stripped)) {
+        allowedSeen.add(stripped);
+      }
+    }
   }
+  if (allowedSeen.size === 0) return "/dashboard";
+  if (allowedSeen.size === 1) return [...allowedSeen][0];
+  // Múltiplos destinos válidos divergentes → não escolhemos por conta própria.
   return "/dashboard";
 }
 
@@ -128,7 +151,7 @@ export function getPreservedKeysFromSearch(search: string): string[] {
   }
   const seen = new Set<string>();
   for (const k of params.keys()) {
-    if (k === "next" || k === "nextRedirect") continue;
+    if ((TARGET_PARAM_KEYS as readonly string[]).includes(k)) continue;
     if (PRESERVED_QUERY_PARAMS.has(k)) seen.add(k);
   }
   return [...seen].sort();
@@ -147,7 +170,7 @@ export function buildExperimenteRedirect({
     params = new URLSearchParams();
   }
 
-  const deepTarget = resolveDeepTarget(params);
+  const deepTarget = resolveDeepTarget(params, prefix);
   const preserved = buildPreservedSearch(search);
 
   if (authenticated) {
@@ -161,4 +184,3 @@ export function buildExperimenteRedirect({
   registerParams.set("redirect", `${prefix}${deepTarget}`);
   return `${prefix}/register?${registerParams.toString()}`;
 }
-
