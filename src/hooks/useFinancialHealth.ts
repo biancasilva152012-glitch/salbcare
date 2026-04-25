@@ -31,12 +31,25 @@ export interface FinancialHealthStep {
   premium?: boolean;
 }
 
+export interface MentorUnlocks {
+  /** Visão consolidada do mês — desbloqueia com a primeira receita. */
+  monthlyView: boolean;
+  /** Projeção 3 meses — desbloqueia com receita + 1 gasto fixo. */
+  projection: boolean;
+  /** Recomendações personalizadas — ≥5 lançamentos. */
+  recommendations: boolean;
+}
+
 export interface FinancialHealthState {
   isLoading: boolean;
   /** Total de lançamentos (qualquer tipo). */
   transactionCount: number;
   /** Total de receitas no mês corrente (R$). */
   monthlyIncome: number;
+  /** Total de despesas no mês corrente (R$). */
+  monthlyExpense: number;
+  /** Lucro líquido do mês corrente (income - expense, R$). */
+  monthlyProfit: number;
   /** true se o usuário não tem nenhum lançamento ainda. */
   isEmpty: boolean;
   /** true após cadastrar pelo menos 3 lançamentos. */
@@ -48,6 +61,10 @@ export interface FinancialHealthState {
   steps: FinancialHealthStep[];
   /** true quando o trial acabou e o usuário ainda não converteu. */
   trialExpiredNotConverted: boolean;
+  /** Análises da Mentora IA destravadas progressivamente. */
+  mentorUnlocks: MentorUnlocks;
+  /** Etapa atual do wizard (1, 2, 3 ou null se já concluiu). */
+  onboardingStep: 1 | 2 | 3 | null;
 }
 
 export function useFinancialHealth(): FinancialHealthState {
