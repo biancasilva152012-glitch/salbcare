@@ -46,14 +46,17 @@ describe("guestStorage — sync summary", () => {
       outcome: "merged" as const,
       patients: { imported: 2, skippedDuplicate: 1, skippedQuota: 0 },
       appointments: { imported: 1, skippedDuplicate: 0, skippedQuota: 1 },
-      duplicates: { patients: ["Maria"], appointments: [] },
+      duplicates: {
+        patients: [{ label: "Maria", reason: "name" as const }],
+        appointments: [],
+      },
       at: new Date().toISOString(),
     };
     writeGuestSyncSummary(summary);
     expect(sessionStorage.getItem(GUEST_SYNC_SUMMARY_KEY)).not.toBeNull();
     const got = readGuestSyncSummary();
     expect(got?.patients.imported).toBe(2);
-    expect(got?.duplicates.patients).toEqual(["Maria"]);
+    expect(got?.duplicates.patients[0]).toEqual({ label: "Maria", reason: "name" });
     clearGuestSyncSummary();
     expect(readGuestSyncSummary()).toBeNull();
   });

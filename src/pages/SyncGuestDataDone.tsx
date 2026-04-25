@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,9 +15,9 @@ import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
 import {
-  readGuestSyncSummary,
-  clearGuestSyncSummary,
+  consumeGuestSyncSummary,
   type GuestSyncSummary,
+  type DuplicateRecord,
 } from "@/lib/guestStorage";
 
 /**
@@ -32,13 +32,10 @@ const SyncGuestDataDone = () => {
   const [params] = useSearchParams();
   const next = params.get("next") || "/dashboard";
 
-  const summary = useMemo<GuestSyncSummary | null>(() => readGuestSyncSummary(), []);
+  // Atomically read + delete the summary so back/refresh never replays it.
+  // Lazy initializer guarantees consumeGuestSyncSummary runs exactly once.
+  const [summary] = useState<GuestSyncSummary | null>(() => consumeGuestSyncSummary());
   const [showDuplicates, setShowDuplicates] = useState(false);
-
-  // Clear once consumed so refresh doesn't keep showing stale data.
-  useEffect(() => {
-    return () => clearGuestSyncSummary();
-  }, []);
 
   // No summary? bounce back.
   useEffect(() => {
@@ -168,12 +165,22 @@ const SyncGuestDataDone = () => {
                 )}
               </button>
               {showDuplicates && (
-                <ul className="mt-2 space-y-0.5 pl-5 list-disc text-muted-foreground">
-                  {summary.duplicates.patients.map((n, i) => (
-                    <li key={`p-${i}`}>Paciente: {n}</li>
+                <ul className="mt-2 space-y-1 pl-5 list-disc text-muted-foreground" data-testid="done-duplicates-list">
+                  {summary.duplicates.patients.map((d, i) => (
+                    <li key={`p-${i}`}>
+                      Paciente: {d.label}{" "}
+                      <span className="text-[10px] uppercase tracking-wide opacity-70">
+                        ({reasonLabel(d.reason)})
+                      </span>
+                    </li>
                   ))}
-                  {summary.duplicates.appointments.map((n, i) => (
-                    <li key={`a-${i}`}>Consulta: {n}</li>
+                  {summary.duplicates.appointments.map((d, i) => (
+                    <li key={`a-${i}`}>
+                      Consulta: {d.label}{" "}
+                      <span className="text-[10px] uppercase tracking-wide opacity-70">
+                        ({reasonLabel(d.reason)})
+                      </span>
+                    </li>
                   ))}
                 </ul>
               )}
@@ -226,5 +233,18 @@ const Row = ({
     </span>
   </div>
 );
+
+/** Friendly label for the criterion that flagged a duplicate. */
+const reasonLabel = (reason: DuplicateRecord["reason"]): string => {
+  switch (reason) {
+    case "email":
+      return "mesmo e-mail";
+    case "name+date+time":
+      return "mesmo nome, data e horário";
+    case "name":
+    default:
+      return "mesmo nome";
+  }
+};
 
 export default SyncGuestDataDone;

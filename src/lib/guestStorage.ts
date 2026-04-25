@@ -234,13 +234,19 @@ export function isGuestSyncLocked(): boolean {
 }
 
 // ── Sync summary (handed to the confirmation screen) ────────────────────────
+/** A single ignored item with the criterion that flagged it. */
+export type DuplicateRecord = {
+  label: string; // "Maria Silva" or "Maria — 25/04 14:30"
+  reason: "name" | "email" | "name+date+time";
+};
+
 export type GuestSyncSummary = {
   outcome: "merged" | "discarded";
   patients: { imported: number; skippedDuplicate: number; skippedQuota: number };
   appointments: { imported: number; skippedDuplicate: number; skippedQuota: number };
   duplicates: {
-    patients: string[]; // names
-    appointments: string[]; // "Nome — DD/MM HH:mm"
+    patients: DuplicateRecord[];
+    appointments: DuplicateRecord[];
   };
   at: string;
 };
@@ -275,10 +281,22 @@ export function clearGuestSyncSummary() {
   }
 }
 
+/** Atomically read + delete the summary so refresh/back never replays it. */
+export function consumeGuestSyncSummary(): GuestSyncSummary | null {
+  const s = readGuestSyncSummary();
+  if (s) clearGuestSyncSummary();
+  return s;
+}
+
 // ── Dedup helpers ───────────────────────────────────────────────────────────
 /** Normalize a name for duplicate comparison: lowercase + collapse whitespace. */
 export function normalizeName(name: string | null | undefined): string {
   return (name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+}
+
+/** Normalize an email for duplicate comparison: lowercase + trim. Empty → "". */
+export function normalizeEmail(email: string | null | undefined): string {
+  return (email ?? "").toLowerCase().trim();
 }
 
 /** Composite key for an appointment: name|date|HH:mm. */

@@ -27,6 +27,7 @@ import {
   clearGuestSyncLock,
   writeGuestSyncSummary,
   normalizeName,
+  normalizeEmail,
   appointmentKey,
   type GuestPatient,
   type GuestAppointment,
@@ -115,21 +116,33 @@ const SyncGuestData = () => {
     try {
       // ── PATIENTS ────────────────────────────────────────────────────────
       if (importPatients && guestPatients.length > 0) {
-        // Existing names in Supabase (RLS-scoped to this user)
+        // Existing names + emails in Supabase (RLS-scoped to this user)
         const { data: existing, error: exErr } = await supabase
           .from("patients")
-          .select("name");
+          .select("name, email");
         if (exErr) throw exErr;
-        const seen = new Set<string>(
+        const seenNames = new Set<string>(
           (existing ?? []).map((r) => normalizeName(r.name)),
+        );
+        const seenEmails = new Set<string>(
+          (existing ?? [])
+            .map((r) => normalizeEmail((r as any).email))
+            .filter((e) => e.length > 0),
         );
 
         const accepted: GuestPatient[] = [];
         for (const p of guestPatients) {
-          const key = normalizeName(p.name);
-          if (seen.has(key)) {
+          const nameKey = normalizeName(p.name);
+          const emailKey = normalizeEmail(p.email);
+          // Email match wins as the more specific criterion
+          if (emailKey && seenEmails.has(emailKey)) {
             summary.patients.skippedDuplicate += 1;
-            summary.duplicates.patients.push(p.name);
+            summary.duplicates.patients.push({ label: `${p.name} <${p.email}>`, reason: "email" });
+            continue;
+          }
+          if (seenNames.has(nameKey)) {
+            summary.patients.skippedDuplicate += 1;
+            summary.duplicates.patients.push({ label: p.name, reason: "name" });
             continue;
           }
           if (!isPaid && accepted.length >= patientSlotsLeft) {
@@ -137,7 +150,8 @@ const SyncGuestData = () => {
             continue;
           }
           accepted.push(p);
-          seen.add(key);
+          seenNames.add(nameKey);
+          if (emailKey) seenEmails.add(emailKey);
         }
 
         if (accepted.length > 0) {
@@ -176,9 +190,10 @@ const SyncGuestData = () => {
           const key = appointmentKey(a.patient_name, a.date, a.time);
           if (seen.has(key)) {
             summary.appointments.skippedDuplicate += 1;
-            summary.duplicates.appointments.push(
-              `${a.patient_name} — ${a.date.split("-").reverse().slice(0, 2).join("/")} ${a.time}`,
-            );
+            summary.duplicates.appointments.push({
+              label: `${a.patient_name} — ${a.date.split("-").reverse().slice(0, 2).join("/")} ${a.time}`,
+              reason: "name+date+time",
+            });
             continue;
           }
           if (!isPaid && accepted.length >= appointmentSlotsLeft) {
