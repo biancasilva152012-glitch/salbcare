@@ -354,86 +354,95 @@ const ProfileBlocks = () => {
     if (exporting) return;
     setExporting("pdf");
     try {
-    const all = await fetchAllForExport();
-    if (all.length === 0) {
-      toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
-      return;
-    }
-    const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("Atividades de bloqueio — SalbCare", 14, 16);
-    doc.setFontSize(10);
-    const periodo = `${from || "início"} → ${to || "hoje"}`;
-    doc.text(`Período: ${periodo}`, 14, 23);
-    if (moduleFilter !== "all") {
-      doc.text(`Módulo: ${MODULE_LABEL[moduleFilter] ?? moduleFilter}`, 14, 29);
-    }
-    if (search.trim()) {
-      doc.text(`Busca: "${search.trim()}"`, 14, moduleFilter !== "all" ? 35 : 29);
-    }
-    const headerEndY =
-      29 + (moduleFilter !== "all" ? 6 : 0) + (search.trim() ? 6 : 0);
-    doc.text(`Total de eventos: ${all.length}`, 14, headerEndY);
+      const all = await fetchAllForExport();
+      if (all.length === 0) {
+        toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
+        return;
+      }
+      const doc = new jsPDF();
+      doc.setFontSize(14);
+      doc.text("Atividades de bloqueio — SalbCare", 14, 16);
+      doc.setFontSize(10);
+      const periodo = `${from || "início"} → ${to || "hoje"}`;
+      doc.text(`Período: ${periodo}`, 14, 23);
+      if (moduleFilter !== "all") {
+        doc.text(`Módulo: ${MODULE_LABEL[moduleFilter] ?? moduleFilter}`, 14, 29);
+      }
+      if (search.trim()) {
+        doc.text(`Busca: "${search.trim()}"`, 14, moduleFilter !== "all" ? 35 : 29);
+      }
+      const headerEndY =
+        29 + (moduleFilter !== "all" ? 6 : 0) + (search.trim() ? 6 : 0);
+      doc.text(`Total de eventos: ${all.length}`, 14, headerEndY);
 
-    const exportCounts: Record<string, number> = {};
-    for (const e of all) exportCounts[e.module] = (exportCounts[e.module] ?? 0) + 1;
-    const exportTotals = Object.entries(exportCounts).sort((a, b) => b[1] - a[1]);
+      const exportCounts: Record<string, number> = {};
+      for (const e of all) exportCounts[e.module] = (exportCounts[e.module] ?? 0) + 1;
+      const exportTotals = Object.entries(exportCounts).sort((a, b) => b[1] - a[1]);
 
-    autoTable(doc, {
-      startY: headerEndY + 7,
-      head: [["Módulo", "Quantidade"]],
-      body: exportTotals.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [30, 41, 59] },
-    });
-
-    autoTable(doc, {
-      head: [["#", "Data/hora", "Módulo", "Motivo", "ID"]],
-      body: all.map((e, i) => [
-        String(i + 1),
-        new Date(e.created_at).toLocaleString("pt-BR"),
-        MODULE_LABEL[e.module] ?? e.module,
-        e.reason,
-        e.id.slice(0, 8),
-      ]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [30, 41, 59] },
-    });
-
-    // Seção dedicada: metadata por evento, indexada (#1, #2, ...)
-    // Cada evento vira uma mini-tabela chave/valor após o índice.
-    const eventsWithMeta = all.filter(
-      (e) => e.metadata && typeof e.metadata === "object" && Object.keys(e.metadata).length > 0,
-    );
-    if (eventsWithMeta.length > 0) {
-      doc.addPage();
-      doc.setFontSize(13);
-      doc.text("Metadados por evento", 14, 16);
-      doc.setFontSize(9);
-      let cursorY = 22;
-      all.forEach((e, i) => {
-        if (!e.metadata || typeof e.metadata !== "object") return;
-        const entries = Object.entries(e.metadata as Record<string, unknown>);
-        if (entries.length === 0) return;
-        autoTable(doc, {
-          startY: cursorY,
-          head: [[`#${i + 1} • ${MODULE_LABEL[e.module] ?? e.module} • ${e.id.slice(0, 8)}`, ""]],
-          body: entries.map(([k, v]) => [
-            k,
-            typeof v === "object" ? JSON.stringify(v) : String(v),
-          ]),
-          styles: { fontSize: 8 },
-          headStyles: { fillColor: [71, 85, 105] },
-          columnStyles: { 0: { cellWidth: 50, fontStyle: "bold" } },
-        });
-        // jspdf-autotable atualiza lastAutoTable.finalY
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cursorY = ((doc as any).lastAutoTable?.finalY ?? cursorY) + 4;
+      autoTable(doc, {
+        startY: headerEndY + 7,
+        head: [["Módulo", "Quantidade"]],
+        body: exportTotals.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [30, 41, 59] },
       });
-    }
 
-    doc.save(`bloqueios_${filterSuffix}.pdf`);
+      autoTable(doc, {
+        head: [["#", "Data/hora", "Módulo", "Motivo", "ID"]],
+        body: all.map((e, i) => [
+          String(i + 1),
+          new Date(e.created_at).toLocaleString("pt-BR"),
+          MODULE_LABEL[e.module] ?? e.module,
+          e.reason,
+          e.id.slice(0, 8),
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [30, 41, 59] },
+      });
+
+      // Seção dedicada: metadata por evento, indexada (#1, #2, ...)
+      const eventsWithMeta = all.filter(
+        (e) => e.metadata && typeof e.metadata === "object" && Object.keys(e.metadata).length > 0,
+      );
+      if (eventsWithMeta.length > 0) {
+        doc.addPage();
+        doc.setFontSize(13);
+        doc.text("Metadados por evento", 14, 16);
+        doc.setFontSize(9);
+        let cursorY = 22;
+        all.forEach((e, i) => {
+          if (!e.metadata || typeof e.metadata !== "object") return;
+          const entries = Object.entries(e.metadata as Record<string, unknown>);
+          if (entries.length === 0) return;
+          autoTable(doc, {
+            startY: cursorY,
+            head: [[`#${i + 1} • ${MODULE_LABEL[e.module] ?? e.module} • ${e.id.slice(0, 8)}`, ""]],
+            body: entries.map(([k, v]) => [
+              k,
+              typeof v === "object" ? JSON.stringify(v) : String(v),
+            ]),
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [71, 85, 105] },
+            columnStyles: { 0: { cellWidth: 50, fontStyle: "bold" } },
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          cursorY = ((doc as any).lastAutoTable?.finalY ?? cursorY) + 4;
+        });
+      }
+
+      doc.save(`bloqueios_${filterSuffix}.pdf`);
+    } catch (err) {
+      console.error("[ProfileBlocks] exportPdf falhou:", err);
+      toast({
+        title: "Erro ao exportar PDF",
+        description:
+          err instanceof Error
+            ? err.message
+            : "Não foi possível gerar o arquivo. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
+      // sempre destrava os botões, inclusive em erro inesperado
       setExporting(null);
     }
   };
