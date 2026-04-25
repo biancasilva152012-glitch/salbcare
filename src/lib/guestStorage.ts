@@ -197,3 +197,92 @@ export function hasGuestData(): boolean {
   return readGuestPatients().length > 0 || readGuestAppointments().length > 0;
 }
 
+// ── Read-only lock during pending sync ──────────────────────────────────────
+/**
+ * Set when the post-login sync redirector is triggered, cleared after the user
+ * picks merge/discard/later. While set, the authenticated dashboard pages
+ * (Patients, Agenda) should disable CRUD to avoid creating duplicates against
+ * the same drafts the user is about to merge.
+ */
+export const GUEST_SYNC_LOCK_KEY = "salbcare_guest_sync_lock";
+
+export function setGuestSyncLock() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(GUEST_SYNC_LOCK_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function clearGuestSyncLock() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(GUEST_SYNC_LOCK_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function isGuestSyncLocked(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(GUEST_SYNC_LOCK_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+// ── Sync summary (handed to the confirmation screen) ────────────────────────
+export type GuestSyncSummary = {
+  outcome: "merged" | "discarded";
+  patients: { imported: number; skippedDuplicate: number; skippedQuota: number };
+  appointments: { imported: number; skippedDuplicate: number; skippedQuota: number };
+  duplicates: {
+    patients: string[]; // names
+    appointments: string[]; // "Nome — DD/MM HH:mm"
+  };
+  at: string;
+};
+
+export const GUEST_SYNC_SUMMARY_KEY = "salbcare_guest_sync_summary";
+
+export function writeGuestSyncSummary(s: GuestSyncSummary) {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(GUEST_SYNC_SUMMARY_KEY, JSON.stringify(s));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function readGuestSyncSummary(): GuestSyncSummary | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(GUEST_SYNC_SUMMARY_KEY);
+    return raw ? (JSON.parse(raw) as GuestSyncSummary) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearGuestSyncSummary() {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(GUEST_SYNC_SUMMARY_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+// ── Dedup helpers ───────────────────────────────────────────────────────────
+/** Normalize a name for duplicate comparison: lowercase + collapse whitespace. */
+export function normalizeName(name: string | null | undefined): string {
+  return (name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+}
+
+/** Composite key for an appointment: name|date|HH:mm. */
+export function appointmentKey(name: string, date: string, time: string): string {
+  return `${normalizeName(name)}|${date}|${time.slice(0, 5)}`;
+}
+
