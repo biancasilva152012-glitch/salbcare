@@ -36,9 +36,13 @@ import {
   endMerge,
   hasMergedFor,
   isMergeInFlight,
+  readGuestSyncCheckpoint,
+  writeGuestSyncCheckpoint,
+  clearGuestSyncCheckpoint,
   type GuestPatient,
   type GuestAppointment,
   type GuestSyncSummary,
+  type GuestSyncCheckpoint,
 } from "@/lib/guestStorage";
 
 /**
@@ -120,6 +124,50 @@ const SyncGuestData = () => {
     () => readGuestAppointments(),
   );
 
+  // ── Restore checkpoint on mount so a refresh mid-sync resumes where it
+  //    stopped (steps + live summary + pending lists). Only matches when the
+  //    saved userId equals the current user.
+  const [restoredFromCheckpoint, setRestoredFromCheckpoint] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+    const cp = readGuestSyncCheckpoint(user.id);
+    if (!cp) return;
+    setSteps(cp.steps);
+    setLiveSummary(cp.liveSummary);
+    setImportPatients(cp.importPatients);
+    setImportAppointments(cp.importAppointments);
+    const allPatients = readGuestPatients();
+    const allAppts = readGuestAppointments();
+    setPendingPatients(allPatients.filter((p) => cp.pendingPatientIds.includes(p.id)));
+    setPendingAppointments(allAppts.filter((a) => cp.pendingAppointmentIds.includes(a.id)));
+    setRestoredFromCheckpoint(true);
+    toast.info("Retomando importação de onde você parou.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Persist a checkpoint every time progress changes so a refresh resumes
+  // cleanly. We persist to localStorage (not session) so it survives a
+  // hard reload of the tab.
+  useEffect(() => {
+    if (!user) return;
+    const anyProgress =
+      Object.values(steps).some((s) => s !== "pending") ||
+      liveSummary.patients.imported > 0 ||
+      liveSummary.appointments.imported > 0;
+    if (!anyProgress) return;
+    const cp: GuestSyncCheckpoint = {
+      userId: user.id,
+      steps,
+      liveSummary,
+      pendingPatientIds: pendingPatients.map((p) => p.id),
+      pendingAppointmentIds: pendingAppointments.map((a) => a.id),
+      importPatients,
+      importAppointments,
+      updatedAt: new Date().toISOString(),
+    };
+    writeGuestSyncCheckpoint(cp);
+  }, [user, steps, liveSummary, pendingPatients, pendingAppointments, importPatients, importAppointments]);
+
   // ── Guards ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (authLoading) return;
@@ -131,6 +179,7 @@ const SyncGuestData = () => {
       // Nothing to merge — just acknowledge so the toast/route stops firing.
       markGuestSyncAcknowledged();
       clearGuestSyncLock();
+      clearGuestSyncCheckpoint();
       navigate(next, { replace: true });
     }
   }, [authLoading, user, navigate, next]);
@@ -343,6 +392,7 @@ const SyncGuestData = () => {
     clearGuestStorage();
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     endMerge(user.id);
     writeGuestSyncSummary(finalSummary);
     navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
@@ -356,6 +406,7 @@ const SyncGuestData = () => {
       clearGuestStorage();
       markGuestSyncAcknowledged();
       clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
       navigate(next, { replace: true });
       return;
     }
@@ -440,6 +491,7 @@ const SyncGuestData = () => {
     clearGuestStorage();
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     if (user) endMerge(user.id);
     writeGuestSyncSummary(summary);
     navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
@@ -465,6 +517,7 @@ const SyncGuestData = () => {
     clearGuestStorage();
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     toast.success("Dados de visitante removidos deste navegador.");
     navigate(next, { replace: true });
   };
@@ -472,6 +525,7 @@ const SyncGuestData = () => {
   const handleLater = () => {
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     toast.info("Você pode voltar nesta tela manualmente em /sync-guest-data.");
     navigate(next, { replace: true });
   };

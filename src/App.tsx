@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProfessionalRoute from "@/components/ProfessionalRoute";
+import PremiumRoute from "@/components/PremiumRoute";
 import BottomNav from "@/components/BottomNav";
 import CookieConsent from "./components/CookieConsent";
 import PageSkeleton from "@/components/PageSkeleton";
@@ -14,6 +15,7 @@ import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import GlobalDemoMigration from "@/components/GlobalDemoMigration";
 import GuestDataSyncRedirector from "@/components/GuestDataSyncRedirector";
+import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
@@ -117,6 +119,7 @@ const App = () => (
           <TrackingProvider />
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
+          <GlobalStatusBanner />
           <FreemiumDebugPanel />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
@@ -171,8 +174,8 @@ const App = () => (
               {/* Guest-paywall rendered inside the page when !user */}
               <Route path="/dashboard/financeiro" element={<ProfessionalRoute allowGuest><DashboardFinanceiro /></ProfessionalRoute>} />
               <Route path="/dashboard/financial" element={<ProfessionalRoute allowGuest><Financial /></ProfessionalRoute>} />
-              <Route path="/dashboard/contabilidade" element={<ProfessionalRoute allowGuest><Accounting /></ProfessionalRoute>} />
-              <Route path="/dashboard/juridico" element={<ProfessionalRoute allowGuest><Legal /></ProfessionalRoute>} />
+              <Route path="/dashboard/contabilidade" element={<PremiumRoute module="accounting"><Accounting /></PremiumRoute>} />
+              <Route path="/dashboard/juridico" element={<PremiumRoute module="legal"><Legal /></PremiumRoute>} />
               <Route path="/dashboard/teleconsulta" element={<ProfessionalRoute allowGuest><DashboardTeleconsulta /></ProfessionalRoute>} />
               <Route path="/dashboard/telehealth" element={<ProfessionalRoute allowGuest><Telehealth /></ProfessionalRoute>} />
               <Route path="/dashboard/mentoria" element={<ProfessionalRoute allowGuest><DashboardMentoria /></ProfessionalRoute>} />

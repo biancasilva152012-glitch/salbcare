@@ -53,9 +53,24 @@ const Upgrade = () => {
       title: "Aparecer no diretório público é exclusivo do Essencial",
       subtitle: "Tenha um perfil destacado em /profissionais e receba pacientes da plataforma.",
     },
+    premium_required: {
+      title:
+        params.get("module") === "accounting"
+          ? "Marketplace de Contabilidade é exclusivo do Essencial"
+          : params.get("module") === "legal"
+            ? "Suporte Jurídico é exclusivo do Essencial"
+            : "Esta área é exclusiva do plano Essencial",
+      subtitle: "Ative o Essencial para liberar este módulo e todas as funcionalidades premium.",
+    },
+    trial_ending: {
+      title: "Seu trial está terminando",
+      subtitle: "Mantenha acesso a tudo ativando o Essencial agora — sem interrupção.",
+    },
   };
 
-  const matchedKey = resolveUpgradeReason(reason);
+  const canonicalKey = resolveUpgradeReason(reason);
+  const extraKey = reason && reasonLabels[reason] ? reason : null;
+  const matchedKey = canonicalKey ?? extraKey;
 
   const headline = matchedKey
     ? reasonLabels[matchedKey]
@@ -100,7 +115,7 @@ const Upgrade = () => {
   const goCheckout = () => {
     trackCtaClick("upgrade_essencial", `upgrade_page_${matchedKey || reason || "generic"}`);
     // Pré-seleciona o plano Essencial e propaga o motivo para o checkout
-    navigate(`/checkout?${buildCheckoutQuery(matchedKey, reason)}`);
+    navigate(`/checkout?${buildCheckoutQuery(canonicalKey, reason)}`);
   };
 
   return (
