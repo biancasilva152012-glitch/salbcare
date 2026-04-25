@@ -23,6 +23,11 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  if (!user) {
+    // Lazy import avoided — component is small and used only here
+    const GuestDashboard = require("@/components/guest/GuestDashboard").default;
+    return <GuestDashboard />;
+  }
   const { isSupported, isSubscribed, isLoading: pushLoading, subscribe } = usePushNotifications();
 
   const { data: profile, isLoading } = useQuery({

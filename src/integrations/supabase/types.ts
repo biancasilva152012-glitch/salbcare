@@ -1236,6 +1236,7 @@ export type Database = {
           council_state: string | null
           created_at: string
           crm: string | null
+          directory_grandfathered: boolean
           email: string
           id: string
           interval_minutes: number
@@ -1274,6 +1275,7 @@ export type Database = {
           council_state?: string | null
           created_at?: string
           crm?: string | null
+          directory_grandfathered?: boolean
           email: string
           id?: string
           interval_minutes?: number
@@ -1312,6 +1314,7 @@ export type Database = {
           council_state?: string | null
           created_at?: string
           crm?: string | null
+          directory_grandfathered?: boolean
           email?: string
           id?: string
           interval_minutes?: number
