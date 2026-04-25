@@ -22,10 +22,10 @@ export type DemoAppointment = {
 };
 
 export const DEMO_LIMITS = {
-  patients: 5,
+  patients: 3,
   appointments: 5,
   telehealthViews: 3,
-  telehealthAttempts: 1,
+  telehealthAttempts: 0,
 } as const;
 
 export type DemoModule = "patients" | "appointments" | "telehealth";
