@@ -158,10 +158,10 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
       "?next=%09/admin", // tab + path
     ])("descarta tentativa %p e cai em /dashboard", (search) => {
       const r = buildExperimenteRedirect({ authenticated: false, search });
-      const redirect = u(r).searchParams.get("redirect");
-      expect(redirect).toBe("/dashboard");
-      expect(redirect).not.toContain("admin");
-      expect(redirect).not.toContain("..");
+      const path = u(r).pathname;
+      expect(path).toBe("/dashboard");
+      expect(path).not.toContain("admin");
+      expect(path).not.toContain("..");
     });
 
     it("redirect final NUNCA contém esquema externo, mesmo com input adversarial", () => {
