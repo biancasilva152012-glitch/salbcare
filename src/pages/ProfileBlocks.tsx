@@ -296,6 +296,9 @@ const ProfileBlocks = () => {
   };
 
   const exportCsv = async () => {
+    if (exporting) return;
+    setExporting("csv");
+    try {
     const all = await fetchAllForExport();
     if (all.length === 0) {
       toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
