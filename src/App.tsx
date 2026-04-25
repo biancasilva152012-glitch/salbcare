@@ -45,6 +45,7 @@ const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscr
 const Upgrade = lazyWithRetry(() => import("./pages/Upgrade"), "Upgrade");
 const DashboardLimits = lazyWithRetry(() => import("./pages/DashboardLimits"), "DashboardLimits");
 const SyncGuestData = lazyWithRetry(() => import("./pages/SyncGuestData"), "SyncGuestData");
+const SyncGuestDataDone = lazyWithRetry(() => import("./pages/SyncGuestDataDone"), "SyncGuestDataDone");
 const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
@@ -174,6 +175,7 @@ const App = () => (
               <Route path="/dashboard/mentoria" element={<ProfessionalRoute allowGuest><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/dashboard/limites" element={<ProfessionalRoute allowGuest><DashboardLimits /></ProfessionalRoute>} />
               <Route path="/sync-guest-data" element={<ProfessionalRoute><SyncGuestData /></ProfessionalRoute>} />
+              <Route path="/sync-guest-data/done" element={<ProfessionalRoute><SyncGuestDataDone /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/profile/audit" element={<ProfessionalRoute><ProfileAudit /></ProfessionalRoute>} />
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
