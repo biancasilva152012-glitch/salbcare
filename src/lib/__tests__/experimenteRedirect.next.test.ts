@@ -111,11 +111,10 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
         authenticated: false,
         search: "?utm_source=hero one&ref=foo bar",
       });
-      // Decodificado pela URL/URLSearchParams deve voltar ao original.
-      const sp = u(r).searchParams;
-      expect(sp.get("utm_source")).toBe("hero one");
-      expect(sp.get("ref")).toBe("foo bar");
-      expect(sp.get("redirect")).toBe("/dashboard");
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard");
+      expect(parsed.searchParams.get("utm_source")).toBe("hero one");
+      expect(parsed.searchParams.get("ref")).toBe("foo bar");
     });
   });
 
