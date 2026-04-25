@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   hasGuestData,
   hasGuestSyncBeenAcknowledged,
+  setGuestSyncLock,
 } from "@/lib/guestStorage";
 
 /**
