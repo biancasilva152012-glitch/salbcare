@@ -132,17 +132,19 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
       expect(sp.get("utm_campaign")).toBe("e");
     });
 
-    it("visitante: idem + sempre adiciona redirect", () => {
+    it("visitante: idem e vai direto ao destino padrão", () => {
       const r = buildExperimenteRedirect({
         authenticated: false,
         search:
           "?utm_source=a&utm_source=b&ref=x&ref=y&utm_medium=z&garbage=1",
       });
-      const sp = u(r).searchParams;
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard");
+      const sp = parsed.searchParams;
       expect(sp.getAll("utm_source")).toEqual(["a", "b"]);
       expect(sp.getAll("ref")).toEqual(["x", "y"]);
       expect(sp.get("utm_medium")).toBe("z");
-      expect(sp.get("redirect")).toBe("/dashboard");
+      expect(sp.has("redirect")).toBe(false);
       expect(sp.has("garbage")).toBe(false);
     });
   });
