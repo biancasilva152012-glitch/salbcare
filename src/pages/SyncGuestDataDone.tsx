@@ -15,9 +15,9 @@ import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
 import SEOHead from "@/components/SEOHead";
 import {
-  readGuestSyncSummary,
-  clearGuestSyncSummary,
+  consumeGuestSyncSummary,
   type GuestSyncSummary,
+  type DuplicateRecord,
 } from "@/lib/guestStorage";
 
 /**
