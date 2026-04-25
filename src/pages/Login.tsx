@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,12 @@ const floatingOrbs = [
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Preserve `next=/...` through the entire login flow so users land back
+  // on the page they came from (e.g. /profile) after authenticating.
+  const rawNext = searchParams.get("next") || "";
+  const safeNext = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
+  const nextQs = safeNext ? `?next=${encodeURIComponent(safeNext)}` : "";
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,6 +65,9 @@ const Login = () => {
 
       if (userType === "patient") {
         navigate("/patient-dashboard/perfil");
+      } else if (safeNext) {
+        // Honor the `next` redirect after login (e.g. back to /profile)
+        navigate(safeNext);
       } else if (!(profile as any)?.council_number) {
         navigate("/complete-profile");
       } else {
