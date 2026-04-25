@@ -190,6 +190,7 @@ const App = () => (
               <Route path="/admin/settings" element={<AdminSettingsPage />} />
               <Route path="/admin/partners" element={<AdminPartnersPage />} />
               <Route path="/admin/roles" element={<AdminRolesPage />} />
+              <Route path="/admin/rls-audit" element={<AdminRlsAuditPage />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />
 
               <Route path="*" element={<NotFound />} />
