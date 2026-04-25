@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { resolveSafePath } from "../_shared/safeRedirect.ts";
+import { logRedirectAudit } from "../_shared/auditRedirect.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -82,6 +84,42 @@ serve(async (req) => {
 
     logStep("Trial check", { priceId, hadTrial, skipTrial, isTrialEligible });
 
+    // Validate optional success_url/cancel_url paths from client through allowlist.
+    const allowedOrigins = [origin, "https://salbcare.lovable.app", "https://salbcare.com.br", "https://www.salbcare.com.br"];
+    const successResult = resolveSafePath({
+      candidates: [body?.successUrl, "/dashboard"],
+      allowedOrigins,
+    });
+    const cancelResult = resolveSafePath({
+      candidates: [body?.cancelUrl, "/subscription"],
+      allowedOrigins,
+    });
+    const successPath = successResult.path === "/dashboard"
+      ? "/dashboard?from_checkout=true"
+      : successResult.path;
+
+    // Audit any rejection (fallback) so we can spot abuse attempts.
+    if (successResult.reason !== "ok" && successResult.reason !== "fallback-empty") {
+      await logRedirectAudit({
+        userId: user.id,
+        flow: "authed",
+        source: "create-checkout",
+        preservedKeys: [],
+        resolvedPath: successResult.path,
+        outcome: successResult.reason,
+      });
+    }
+    if (cancelResult.reason !== "ok" && cancelResult.reason !== "fallback-empty") {
+      await logRedirectAudit({
+        userId: user.id,
+        flow: "authed",
+        source: "create-checkout",
+        preservedKeys: [],
+        resolvedPath: cancelResult.path,
+        outcome: cancelResult.reason,
+      });
+    }
+
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -89,8 +127,8 @@ serve(async (req) => {
       mode: "subscription",
       payment_method_types: ["card", "boleto"],
       payment_method_collection: "always",
-      success_url: `${origin}/dashboard?from_checkout=true`,
-      cancel_url: `${origin}/subscription`,
+      success_url: `${origin}${successPath}`,
+      cancel_url: `${origin}${cancelResult.path}`,
       metadata: {
         user_id: user.id,
       },

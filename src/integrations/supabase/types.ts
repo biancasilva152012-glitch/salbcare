@@ -1339,6 +1339,39 @@ export type Database = {
         }
         Relationships: []
       }
+      redirect_audit_events: {
+        Row: {
+          created_at: string
+          flow: string
+          id: string
+          outcome: string
+          preserved_keys: string[]
+          resolved_path: string | null
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          flow: string
+          id?: string
+          outcome: string
+          preserved_keys?: string[]
+          resolved_path?: string | null
+          source: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          flow?: string
+          id?: string
+          outcome?: string
+          preserved_keys?: string[]
+          resolved_path?: string | null
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           consultation_price: number | null
