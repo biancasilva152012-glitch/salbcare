@@ -109,7 +109,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await signOut();
-    navigate("/login");
+    navigate("/login?next=/profile");
   };
 
   // Sync local state with profile data
