@@ -100,6 +100,7 @@ const ProfileBlocks = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState<null | "csv" | "pdf">(null);
+  const [serverTotal, setServerTotal] = useState<number | null>(null);
   const [selected, setSelected] = useState<BlockEvent | null>(null);
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
