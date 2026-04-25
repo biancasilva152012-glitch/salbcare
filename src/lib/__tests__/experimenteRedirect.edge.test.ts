@@ -20,10 +20,12 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         authenticated: false,
         search: "?utm_source=a&utm_source=b&ref=x&ref=y",
       });
-      const sp = u(r).searchParams;
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard");
+      const sp = parsed.searchParams;
       expect(sp.getAll("utm_source")).toEqual(["a", "b"]);
       expect(sp.getAll("ref")).toEqual(["x", "y"]);
-      expect(sp.get("redirect")).toBe("/dashboard");
+      expect(sp.has("redirect")).toBe(false);
     });
 
     it("preserva ordem original entre múltiplos utm_*", () => {
