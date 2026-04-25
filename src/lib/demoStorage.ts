@@ -272,16 +272,7 @@ export function hasMigratableDemoData(): boolean {
   return p.length > 0 || a.length > 0;
 }
 
-export function clearDemoStorage() {
-  if (typeof window === "undefined") return;
-  Object.values(DEMO_STORAGE).forEach((k) => {
-    try {
-      window.localStorage.removeItem(k);
-    } catch {
-      /* ignore */
-    }
-  });
-}
+// `clearDemoStorage` is defined above (returns the list of removed keys).
 
 export type MigrationConflict = {
   kind: "patient" | "appointment";
