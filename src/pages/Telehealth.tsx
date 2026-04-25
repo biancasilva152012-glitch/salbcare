@@ -15,6 +15,8 @@ import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import FreemiumQuotaBanner from "@/components/FreemiumQuotaBanner";
 import UpgradeModal from "@/components/UpgradeModal";
+import PremiumFeatureModal from "@/components/PremiumFeatureModal";
+import { usePremiumFeature } from "@/hooks/usePremiumFeature";
 import { PLANS } from "@/config/plans";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +32,7 @@ const Telehealth = () => {
   const { user, subscription } = useAuth();
   const { hasAccess } = useFeatureGate();
   const { isFree, canCreateTelehealth, usageByModule } = useFreemiumLimits();
+  const { canCreateTeleconsultation } = usePremiumFeature();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
@@ -153,7 +156,7 @@ const Telehealth = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Teleconsulta</h1>
-          {canCreateTelehealth ? (
+          {canCreateTeleconsultation ? (
             <Button
               size="sm"
               onClick={() => setCreateOpen(true)}
@@ -169,7 +172,7 @@ const Telehealth = () => {
               className="gap-1 text-xs gradient-primary"
               data-testid="telehealth-new-btn-blocked"
             >
-              <Plus className="h-3.5 w-3.5" /> Nova Consulta
+              <Lock className="h-3.5 w-3.5" /> Nova Consulta
             </Button>
           )}
         </div>
@@ -326,12 +329,11 @@ const Telehealth = () => {
         doctorPhone={(profile as any)?.phone || ""}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["teleconsultations"] })}
       />
-      <UpgradeModal
+      <PremiumFeatureModal
         open={upgradeOpen}
         onClose={() => setUpgradeOpen(false)}
-        feature="teleconsultas"
-        currentUsage={usageByModule.telehealth.used}
-        limit={usageByModule.telehealth.limit}
+        featureName="Teleconsulta integrada"
+        description="A teleconsulta integrada com Google Meet é exclusiva do plano Essencial. Faça upgrade para criar e gerenciar suas videoconsultas."
       />
     </PageContainer>
   );

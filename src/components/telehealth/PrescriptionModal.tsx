@@ -9,6 +9,8 @@ import { generatePrescriptionPdf } from "@/utils/exportPrescriptionPdf";
 import { getProfessionConfig } from "@/config/professions";
 import { FileText, MessageCircle, Receipt, Loader2, Check, ShieldCheck, AlertTriangle, Download, QrCode } from "lucide-react";
 import SigningInstructionsModal from "@/components/telehealth/SigningInstructionsModal";
+import PremiumFeatureModal from "@/components/PremiumFeatureModal";
+import { usePremiumFeature } from "@/hooks/usePremiumFeature";
 
 interface PrescriptionModalProps {
   open: boolean;
@@ -39,6 +41,8 @@ const PrescriptionModal = ({
 }: PrescriptionModalProps) => {
   const config = getProfessionConfig(professionalType || "medico");
 
+  const { canIssuePrescription } = usePremiumFeature();
+
   const [step, setStep] = useState<Step>("form");
   const [prescription, setPrescription] = useState("");
   const [certificate, setCertificate] = useState("");
@@ -47,6 +51,20 @@ const PrescriptionModal = ({
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [showSigningModal, setShowSigningModal] = useState(false);
   const [docHash, setDocHash] = useState("");
+
+  // Bloqueio de plano: se o usuário não tem plano pago, exibe paywall e
+  // impede a abertura do formulário (defesa em profundidade — RLS já bloqueia
+  // a inserção em digital_documents no backend).
+  if (open && !canIssuePrescription) {
+    return (
+      <PremiumFeatureModal
+        open={open}
+        onClose={() => onOpenChange(false)}
+        featureName="Receitas e atestados digitais"
+        description="A emissão de receitas (comum, controle especial, notificação azul/amarela) e atestados digitais é exclusiva do plano Essencial."
+      />
+    );
+  }
 
   const handleGenerate = async () => {
     if (!prescription.trim() && !certificate.trim()) {
