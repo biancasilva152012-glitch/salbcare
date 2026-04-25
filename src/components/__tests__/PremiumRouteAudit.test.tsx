@@ -55,8 +55,8 @@ type AuditPayload = {
   attempted_path: string | null;
   metadata: Record<string, unknown>;
 };
-const insertSpy = vi.fn<[AuditPayload], Promise<{ data: null; error: null }>>(
-  () => Promise.resolve({ data: null, error: null }),
+const insertSpy = vi.fn((_payload: AuditPayload) =>
+  Promise.resolve({ data: null, error: null }),
 );
 const fromSpy = vi.fn((_table: string) => ({ insert: insertSpy }));
 vi.mock("@/integrations/supabase/client", () => ({
