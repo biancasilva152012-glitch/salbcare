@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
@@ -30,7 +30,10 @@ import {
   ChevronRight,
   Search,
   X,
+  Loader2,
+  ArrowUpDown,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -70,22 +73,73 @@ function toIsoEndInclusive(yyyymmdd: string): string {
   return new Date(`${yyyymmdd}T23:59:59.999`).toISOString();
 }
 
+type SortOrder = "desc" | "asc";
+
 const ProfileBlocks = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [moduleFilter, setModuleFilter] = useState<string>("all");
-  const [search, setSearch] = useState("");
+  // ---- Estado inicial vindo da query string (compartilhável / persistente) ----
+  const [from, setFrom] = useState(() => searchParams.get("from") ?? "");
+  const [to, setTo] = useState(() => searchParams.get("to") ?? "");
+  const [moduleFilter, setModuleFilter] = useState<string>(
+    () => searchParams.get("module") ?? "all",
+  );
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
+  const [serverSearch, setServerSearch] = useState<boolean>(
+    () => searchParams.get("serverSearch") === "1",
+  );
+  const [sortOrder, setSortOrder] = useState<SortOrder>(
+    () => (searchParams.get("order") === "asc" ? "asc" : "desc"),
+  );
+
   const [events, setEvents] = useState<BlockEvent[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState<null | "csv" | "pdf">(null);
   const [selected, setSelected] = useState<BlockEvent | null>(null);
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Sincroniza estado -> query string (replace para não poluir histórico)
+  useEffect(() => {
+    const next = new URLSearchParams();
+    if (from) next.set("from", from);
+    if (to) next.set("to", to);
+    if (moduleFilter !== "all") next.set("module", moduleFilter);
+    if (search) next.set("q", search);
+    if (serverSearch) next.set("serverSearch", "1");
+    if (sortOrder !== "desc") next.set("order", sortOrder);
+    setSearchParams(next, { replace: true });
+  }, [from, to, moduleFilter, search, serverSearch, sortOrder, setSearchParams]);
+
+  // Escapa % e _ pra não virarem wildcards no LIKE
+  const escapeLike = (s: string) => s.replace(/[\\%_]/g, (m) => `\\${m}`);
+
+  /**
+   * Aplica os filtros server-side compartilhados por listagem e exports.
+   * - data (gte/lte) e módulo são SEMPRE no servidor
+   * - busca textual: server quando serverSearch=true (ilike em module/reason
+   *   e cast da metadata para texto), senão fica só client-side
+   * - ordenação: created_at conforme sortOrder
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const applyServerFilters = useCallback((q: any) => {
+    if (from) q = q.gte("created_at", toIsoStart(from));
+    if (to) q = q.lte("created_at", toIsoEndInclusive(to));
+    if (moduleFilter !== "all") q = q.eq("module", moduleFilter);
+    if (serverSearch && search.trim()) {
+      const term = `%${escapeLike(search.trim())}%`;
+      // OR em colunas texto + cast da jsonb metadata para text.
+      q = q.or(
+        `module.ilike.${term},reason.ilike.${term},metadata::text.ilike.${term}`,
+      );
+    }
+    return q.order("created_at", { ascending: sortOrder === "asc" });
+  }, [from, to, moduleFilter, serverSearch, search, sortOrder]);
 
   /**
    * Busca uma página específica respeitando os filtros.
@@ -101,11 +155,8 @@ const ProfileBlocks = () => {
         .from("premium_block_attempts")
         .select("id, module, reason, created_at, metadata")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
         .range(fromIdx, toIdx);
-      if (from) q = q.gte("created_at", toIsoStart(from));
-      if (to) q = q.lte("created_at", toIsoEndInclusive(to));
-      if (moduleFilter !== "all") q = q.eq("module", moduleFilter);
+      q = applyServerFilters(q);
       const { data, error } = await q;
       if (error) {
         setLoading(false);
@@ -116,7 +167,7 @@ const ProfileBlocks = () => {
       setHasMore(rows.length === PAGE_SIZE);
       setLoading(false);
     },
-    [user, from, to, moduleFilter],
+    [user, applyServerFilters],
   );
 
   // Reset ao mudar usuário ou filtros: busca página 0 substituindo o estado.
@@ -125,7 +176,7 @@ const ProfileBlocks = () => {
     setPage(0);
     setHasMore(true);
     fetchPage(0, true);
-  }, [user, from, to, moduleFilter, fetchPage]);
+  }, [user, fetchPage]);
 
   // Infinite scroll: observer no sentinela carrega próxima página.
   useEffect(() => {
@@ -145,12 +196,11 @@ const ProfileBlocks = () => {
     return () => obs.disconnect();
   }, [page, hasMore, loading, fetchPage]);
 
-  // Busca textual: client-side sobre os eventos JÁ carregados.
-  // Casa por reason, module (chave OU rótulo PT-BR), id e por
-  // qualquer valor stringificado de metadata.
+  // Busca textual client-side: aplicada SOMENTE quando serverSearch=false,
+  // para não filtrar duas vezes o que já veio filtrado do servidor.
   const visibleEvents = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return events;
+    if (!q || serverSearch) return events;
     return events.filter((e) => {
       const label = MODULE_LABEL[e.module] ?? e.module;
       const meta = e.metadata ? JSON.stringify(e.metadata).toLowerCase() : "";
@@ -162,7 +212,7 @@ const ProfileBlocks = () => {
         meta.includes(q)
       );
     });
-  }, [events, search]);
+  }, [events, search, serverSearch]);
 
   // Contagens refletem o que está visível (busca + filtros aplicados).
   const counts = useMemo(() => {
@@ -177,26 +227,28 @@ const ProfileBlocks = () => {
     const parts: string[] = [];
     if (from || to) parts.push(`${from || "inicio"}_a_${to || "hoje"}`);
     if (moduleFilter !== "all") parts.push(moduleFilter);
+    parts.push(sortOrder === "asc" ? "asc" : "desc");
     return parts.length > 0 ? parts.join("_") : "todos";
-  }, [from, to, moduleFilter]);
+  }, [from, to, moduleFilter, sortOrder]);
 
-  const hasAnyFilter = !!from || !!to || moduleFilter !== "all" || !!search;
+  const hasAnyFilter =
+    !!from || !!to || moduleFilter !== "all" || !!search || sortOrder !== "desc" || serverSearch;
 
   const clearFilters = () => {
     setFrom("");
     setTo("");
     setModuleFilter("all");
     setSearch("");
-    // O useEffect que observa from/to/moduleFilter dispara fetchPage(0, true).
-    // Forçamos page=0/hasMore=true aqui para o caso de só `search` estar ativo.
+    setServerSearch(false);
+    setSortOrder("desc");
     setPage(0);
     setHasMore(true);
   };
 
   /**
-   * Para exports: busca TODAS as páginas que casam com os filtros
-   * de servidor (data + módulo). A busca textual NÃO é aplicada
-   * no servidor — aplicamos depois para incluir/excluir corretamente.
+   * Para exports: busca TODAS as páginas que casam com os filtros server-side
+   * (data + módulo + busca, se serverSearch). A busca client-side é aplicada
+   * em seguida quando serverSearch=false. A ordem segue sortOrder.
    */
   const fetchAllForExport = useCallback(async (): Promise<BlockEvent[]> => {
     if (!user) return [];
@@ -208,19 +260,15 @@ const ProfileBlocks = () => {
         .from("premium_block_attempts")
         .select("id, module, reason, created_at, metadata")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
         .range(fromIdx, fromIdx + PAGE_SIZE - 1);
-      if (from) q = q.gte("created_at", toIsoStart(from));
-      if (to) q = q.lte("created_at", toIsoEndInclusive(to));
-      if (moduleFilter !== "all") q = q.eq("module", moduleFilter);
+      q = applyServerFilters(q);
       const { data } = await q;
       const rows = (data as BlockEvent[]) ?? [];
       all.push(...rows);
       if (rows.length < PAGE_SIZE) break;
     }
-    // Aplica a busca textual sobre o conjunto completo
     const term = search.trim().toLowerCase();
-    if (!term) return all;
+    if (!term || serverSearch) return all;
     return all.filter((e) => {
       const label = MODULE_LABEL[e.module] ?? e.module;
       const meta = e.metadata ? JSON.stringify(e.metadata).toLowerCase() : "";
@@ -232,7 +280,8 @@ const ProfileBlocks = () => {
         meta.includes(term)
       );
     });
-  }, [user, from, to, moduleFilter, search]);
+  }, [user, applyServerFilters, search, serverSearch]);
+
 
   // Coleta TODAS as chaves de metadata presentes no conjunto, para
   // virarem colunas indexadas no CSV (uma coluna por chave).
@@ -247,6 +296,9 @@ const ProfileBlocks = () => {
   };
 
   const exportCsv = async () => {
+    if (exporting) return;
+    setExporting("csv");
+    try {
     const all = await fetchAllForExport();
     if (all.length === 0) {
       toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
@@ -262,7 +314,6 @@ const ProfileBlocks = () => {
         motivo: e.reason,
         metadata_json: e.metadata ? JSON.stringify(e.metadata) : "",
       };
-      // Cada chave de metadata vira sua própria coluna indexada
       for (const k of metaKeys) {
         const val = e.metadata && typeof e.metadata === "object"
           ? (e.metadata as Record<string, unknown>)[k]
@@ -283,9 +334,15 @@ const ProfileBlocks = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    } finally {
+      setExporting(null);
+    }
   };
 
   const exportPdf = async () => {
+    if (exporting) return;
+    setExporting("pdf");
+    try {
     const all = await fetchAllForExport();
     if (all.length === 0) {
       toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
@@ -365,6 +422,9 @@ const ProfileBlocks = () => {
     }
 
     doc.save(`bloqueios_${filterSuffix}.pdf`);
+    } finally {
+      setExporting(null);
+    }
   };
 
 
@@ -446,6 +506,39 @@ const ProfileBlocks = () => {
               </button>
             )}
           </div>
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <Label htmlFor="server-search" className="text-[11px] text-muted-foreground">
+              Buscar no servidor (inclui eventos não carregados)
+            </Label>
+            <Switch
+              id="server-search"
+              data-testid="block-server-search"
+              checked={serverSearch}
+              onCheckedChange={setServerSearch}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <Label className="text-xs flex items-center gap-1.5">
+            <ArrowUpDown className="h-3 w-3" />
+            Ordenação
+          </Label>
+          <Select
+            value={sortOrder}
+            onValueChange={(v) => setSortOrder(v as SortOrder)}
+          >
+            <SelectTrigger
+              data-testid="block-filter-order"
+              className="bg-accent border-border"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Mais recentes primeiro</SelectItem>
+              <SelectItem value="asc">Mais antigos primeiro</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {hasAnyFilter && (
@@ -462,13 +555,35 @@ const ProfileBlocks = () => {
         )}
 
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline" size="sm" onClick={exportCsv} data-testid="export-csv">
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Exportar CSV
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportCsv}
+            disabled={exporting !== null}
+            data-testid="export-csv"
+            aria-busy={exporting === "csv"}
+          >
+            {exporting === "csv" ? (
+              <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+            )}
+            {exporting === "csv" ? "Gerando CSV…" : "Exportar CSV"}
           </Button>
-          <Button variant="outline" size="sm" onClick={exportPdf} data-testid="export-pdf">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            Exportar PDF
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportPdf}
+            disabled={exporting !== null}
+            data-testid="export-pdf"
+            aria-busy={exporting === "pdf"}
+          >
+            {exporting === "pdf" ? (
+              <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+            )}
+            {exporting === "pdf" ? "Gerando PDF…" : "Exportar PDF"}
           </Button>
         </div>
 
