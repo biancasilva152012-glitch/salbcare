@@ -32,6 +32,8 @@ import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
 import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";
 import GuestPaywall from "@/components/GuestPaywall";
+import FinancialEmptyState from "@/components/financial/FinancialEmptyState";
+import MentorIAExplainerModal from "@/components/financial/MentorIAExplainerModal";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
@@ -65,6 +67,7 @@ const Financial = () => {
   const { hasAccess } = useFeatureGate();
   const { canAddFinancial, financialCount, financialLimit, isFree, isPaid } = useFreemiumLimits();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [explainerOpen, setExplainerOpen] = useState(false);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -199,7 +202,15 @@ const Financial = () => {
 
   const transactionFormJsx = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
-      <div className="space-y-1.5"><Label>Descrição</Label><Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" /></div>
+      <div className="space-y-1.5">
+        <Label>Descrição</Label>
+        <Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" />
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          {form.type === "income"
+            ? "Cada consulta registrada ajuda a IA a entender seu potencial real."
+            : "Gastos registrados = impostos otimizados pela IA."}
+        </p>
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5"><Label>Valor (R$)</Label><Input type="text" inputMode="numeric" placeholder="Ex: 1.500" value={form.amount} onChange={(e) => setForm({ ...form, amount: maskCurrency(e.target.value) })} className="bg-accent border-border" /></div>
         <div className="space-y-1.5">
@@ -223,6 +234,9 @@ const Financial = () => {
             ))}
           </SelectContent>
         </Select>
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          A IA usa a categoria para identificar onde você pode economizar e investir o que sobra.
+        </p>
       </div>
       <div className="space-y-1.5"><Label>Data</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending}>
@@ -438,12 +452,9 @@ const Financial = () => {
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
           {filteredTransactions.length === 0 && transactions.length === 0 && (
-            <EmptyState
-              icon={DollarSign}
-              title="Seu caixa está zerado — por enquanto"
-              description="Registre a primeira consulta recebida e comece a enxergar quanto fica de verdade no seu bolso, sem surpresa no fim do mês."
-              actionLabel="Lançar primeira receita"
-              onAction={() => { setForm({ ...emptyForm, type: "income" }); setOpen(true); }}
+            <FinancialEmptyState
+              onAddIncome={() => { setForm({ ...emptyForm, type: "income" }); setOpen(true); }}
+              onLearnAboutAI={() => setExplainerOpen(true)}
             />
           )}
           {filteredTransactions.length === 0 && transactions.length > 0 && (
@@ -531,6 +542,11 @@ const Financial = () => {
         )}
       </div>
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="lançamentos financeiros" currentUsage={financialCount} limit={financialLimit} />
+      <MentorIAExplainerModal
+        open={explainerOpen}
+        onClose={() => setExplainerOpen(false)}
+        onUpgrade={() => { setExplainerOpen(false); setUpgradeOpen(true); }}
+      />
     </PageContainer>
   );
 };
