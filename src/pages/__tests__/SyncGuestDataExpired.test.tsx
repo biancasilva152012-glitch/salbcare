@@ -219,3 +219,79 @@ describe("SyncGuestData — fallback de checkpoint expirado", () => {
     expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
   });
 });
+
+// ── Boundary: comportamento exato no TTL ───────────────────────────────────
+//
+// `GUEST_SYNC_CHECKPOINT_TTL_MS` define o limite. A regra implementada em
+// `readGuestSyncCheckpointDetailed` é:
+//   - age <= TTL  →  fresh   (NUNCA aciona o fallback)
+//   - age >  TTL  →  expired (aciona o fallback)
+//
+// Esses testes congelam Date.now para garantir que o limite é respeitado
+// no milissegundo certo — sem flakiness por relógio real.
+describe("SyncGuestData — fronteira do TTL", () => {
+  it("age = TTL exatamente → checkpoint é considerado FRESH (sem fallback)", async () => {
+    const now = Date.now();
+    vi.spyOn(Date, "now").mockReturnValue(now);
+
+    const updatedAt = new Date(now - GUEST_SYNC_CHECKPOINT_TTL_MS).toISOString();
+    const cp: GuestSyncCheckpoint = {
+      userId: "user-1",
+      steps: { patients: "running", appointments: "pending", teleconsultations: "pending" },
+      liveSummary: {
+        outcome: "merged",
+        patients: { imported: 1, skippedDuplicate: 0, skippedQuota: 0 },
+        appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+        duplicates: { patients: [], appointments: [] },
+        at: updatedAt,
+      },
+      pendingPatientIds: ["gp0"],
+      pendingAppointmentIds: [],
+      importPatients: true,
+      importAppointments: true,
+      updatedAt,
+    };
+    window.localStorage.setItem(GUEST_SYNC_CHECKPOINT_KEY, JSON.stringify(cp));
+    seedGuestPatients(3);
+
+    // Sanity: o helper concorda com a UI sobre o limite.
+    const { readGuestSyncCheckpointDetailed } = await import("@/lib/guestStorage");
+    expect(readGuestSyncCheckpointDetailed("user-1").status).toBe("fresh");
+
+    await renderPage();
+
+    expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
+  });
+
+  it("age = TTL + 1ms → checkpoint é EXPIRED (fallback aparece)", async () => {
+    const now = Date.now();
+    vi.spyOn(Date, "now").mockReturnValue(now);
+
+    const updatedAt = new Date(now - GUEST_SYNC_CHECKPOINT_TTL_MS - 1).toISOString();
+    const cp: GuestSyncCheckpoint = {
+      userId: "user-1",
+      steps: { patients: "done", appointments: "pending", teleconsultations: "pending" },
+      liveSummary: {
+        outcome: "merged",
+        patients: { imported: 2, skippedDuplicate: 0, skippedQuota: 0 },
+        appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+        duplicates: { patients: [], appointments: [] },
+        at: updatedAt,
+      },
+      pendingPatientIds: ["gp2"],
+      pendingAppointmentIds: [],
+      importPatients: true,
+      importAppointments: true,
+      updatedAt,
+    };
+    window.localStorage.setItem(GUEST_SYNC_CHECKPOINT_KEY, JSON.stringify(cp));
+    seedGuestPatients(3);
+
+    const { readGuestSyncCheckpointDetailed } = await import("@/lib/guestStorage");
+    expect(readGuestSyncCheckpointDetailed("user-1").status).toBe("expired");
+
+    await renderPage();
+
+    expect(await screen.findByTestId("sync-checkpoint-expired")).toBeInTheDocument();
+  });
+});
