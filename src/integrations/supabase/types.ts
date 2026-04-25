@@ -1566,6 +1566,14 @@ export type Database = {
         Returns: boolean
       }
       check_email_user_type: { Args: { check_email: string }; Returns: string }
+      check_rls_health: {
+        Args: never
+        Returns: {
+          checked_at: string
+          failing_tables: string[]
+          overall_ok: boolean
+        }[]
+      }
       get_ambassador_spots_taken: { Args: never; Returns: number }
       get_partner_by_slug: {
         Args: { _slug: string }
