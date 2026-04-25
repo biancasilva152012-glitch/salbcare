@@ -33,15 +33,29 @@ const PLAN_MAP: Record<string, { plan: string; billing: string }> = {
 };
 
 serve(async (req) => {
-  const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-    apiVersion: "2025-08-27.basil",
-  });
+  let stripe: Stripe;
+  let supabase: ReturnType<typeof createClient>;
+  try {
+    stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+      apiVersion: "2025-08-27.basil",
+    });
+    supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } }
+    );
+  } catch (err) {
+    logInitError("client_initialization", err);
+    return new Response(
+      JSON.stringify({
+        error: "Initialization failed",
+        message: err instanceof Error ? err.message : String(err),
+        imports: IMPORT_URLS,
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    { auth: { persistSession: false } }
-  );
 
   const signature = req.headers.get("stripe-signature");
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
