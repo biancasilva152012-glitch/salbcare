@@ -8,15 +8,24 @@ const u = (s: string) => new URL(s, "http://x");
 
 describe("buildExperimenteRedirect — repeated next + extra edges", () => {
   describe("next repetido (determinístico)", () => {
-    it("escolhe o PRIMEIRO next permitido quando vários são informados", () => {
+    it("mantém destino quando vários nexts apontam para o MESMO valor", () => {
       const r = buildExperimenteRedirect({
         authenticated: true,
-        search: "?next=/dashboard/agenda&next=/dashboard/pacientes",
+        search: "?next=/dashboard/agenda&next=/dashboard/agenda",
       });
       expect(r).toBe("/dashboard/agenda");
     });
 
-    it("ignora nexts inválidos e usa o primeiro válido na sequência", () => {
+    it("descarta para /dashboard quando nexts válidos DIVERGEM (inconsistência)", () => {
+      const r = buildExperimenteRedirect({
+        authenticated: true,
+        search: "?next=/dashboard/agenda&next=/dashboard/pacientes",
+      });
+      // Política conservadora: dois destinos válidos diferentes = ambíguo → /dashboard
+      expect(r).toBe("/dashboard");
+    });
+
+    it("ignora nexts inválidos e usa o único válido restante", () => {
       const r = buildExperimenteRedirect({
         authenticated: true,
         search: "?next=/admin/users&next=https://evil.com&next=/dashboard/agenda",
@@ -32,13 +41,20 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
       expect(r).toBe("/dashboard");
     });
 
-    it("mistura next + nextRedirect respeita ordem (next vem antes)", () => {
+    it("mistura next + nextRedirect com mesmo destino é OK", () => {
+      const r = buildExperimenteRedirect({
+        authenticated: true,
+        search: "?nextRedirect=/dashboard/agenda&next=/dashboard/agenda",
+      });
+      expect(r).toBe("/dashboard/agenda");
+    });
+
+    it("mistura next + nextRedirect com destinos diferentes é ambígua → /dashboard", () => {
       const r = buildExperimenteRedirect({
         authenticated: true,
         search: "?nextRedirect=/dashboard/pacientes&next=/dashboard/agenda",
       });
-      // next vem antes de nextRedirect na fila de candidatos
-      expect(r).toBe("/dashboard/agenda");
+      expect(r).toBe("/dashboard");
     });
 
     it("propaga corretamente para /register?redirect= no fluxo visitante", () => {
