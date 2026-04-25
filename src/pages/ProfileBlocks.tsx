@@ -271,6 +271,9 @@ const ProfileBlocks = () => {
     setSortOrder("desc");
     setPage(0);
     setHasMore(true);
+    // Limpa explicitamente todos os parâmetros suportados na URL — também
+    // remove chaves antigas que possam estar herdadas (ex: paginação futura).
+    setSearchParams(new URLSearchParams(), { replace: true });
   };
 
   /**
