@@ -20,6 +20,14 @@ const Checkout = () => {
   const { user } = useAuth();
 
   const [loading, setLoading] = useState(false);
+  /**
+   * Drives the status overlay during checkout. Sequence is:
+   *   idle → starting (SDK call) → redirecting (we got a URL, doing
+   *   window.location.href) → error (rolls back to idle).
+   */
+  const [status, setStatus] = useState<"idle" | "starting" | "redirecting" | "error">(
+    "idle",
+  );
   const [annual, setAnnual] = useState(periodParam === "annual");
   const { partner, applyDiscount } = usePartnerDiscount();
 
@@ -36,6 +44,7 @@ const Checkout = () => {
     }
 
     setLoading(true);
+    setStatus("starting");
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: { priceId, skipTrial: hasDiscount },
@@ -45,14 +54,19 @@ const Checkout = () => {
       if (data?.url) {
         trackCheckoutStart(plan.name, displayPrice);
         sessionStorage.setItem("salbcare_from_checkout", "true");
-        window.location.href = data.url;
+        setStatus("redirecting");
+        // Small delay so the user actually sees the "Redirecionando…" overlay
+        // before the browser navigates away to Stripe.
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 350);
       } else {
         throw new Error("URL de checkout não retornada");
       }
     } catch (err) {
       console.error("[Checkout] Erro:", err);
       toast.error("Erro ao iniciar o pagamento. Tente novamente.");
-    } finally {
+      setStatus("error");
       setLoading(false);
     }
   };
