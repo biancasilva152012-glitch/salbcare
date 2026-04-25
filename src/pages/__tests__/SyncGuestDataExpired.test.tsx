@@ -167,7 +167,7 @@ describe("SyncGuestData — fallback de checkpoint expirado", () => {
     expect(live.textContent).toMatch(/2/); // 2 pacientes importados
   });
 
-  it('"Recomeçar do zero" some com o banner e zera o checkpoint', async () => {
+  it('"Recomeçar do zero" some com o banner e regrava um checkpoint zerado', async () => {
     seedGuestPatients(3);
     seedExpiredCheckpoint();
     await renderPage();
@@ -176,9 +176,20 @@ describe("SyncGuestData — fallback de checkpoint expirado", () => {
     fireEvent.click(restart);
 
     expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
-    expect(window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY)).toBeNull();
-    // Pacientes guest ainda estão lá para serem reimportados
+    // Pacientes guest continuam disponíveis para reimportação
     expect(window.localStorage.getItem(GUEST_DATA_KEY)).not.toBeNull();
+    // Como o resumo parcial é preservado, o useEffect de persistência regrava
+    // o checkpoint — mas agora com steps zerados (pending) e os 3 pacientes
+    // de volta na fila pendente.
+    const raw = window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY);
+    expect(raw).not.toBeNull();
+    const cp = JSON.parse(raw!);
+    expect(cp.steps).toEqual({
+      patients: "pending",
+      appointments: "pending",
+      teleconsultations: "pending",
+    });
+    expect(cp.pendingPatientIds.sort()).toEqual(["gp0", "gp1", "gp2"]);
   });
 
   it('"Recomeçar do zero" preserva o resumo parcial dos pacientes já importados', async () => {
@@ -200,9 +211,13 @@ describe("SyncGuestData — fallback de checkpoint expirado", () => {
     // 1 paciente duplicado
     const dupLabel = within(live).getByText("Pacientes duplicados");
     expect(dupLabel.previousElementSibling?.textContent).toBe("1");
-    // O checkpoint foi limpo do storage (vai ser regravado quando o usuário
-    // clicar em "Mesclar" novamente, mas agora zerado)
-    expect(window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY)).toBeNull();
+    // O checkpoint regravado também guarda o resumo histórico, garantindo
+    // que um novo F5 ainda exibe "Resumo parcial" intacto.
+    const raw = window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY);
+    expect(raw).not.toBeNull();
+    const cp = JSON.parse(raw!);
+    expect(cp.liveSummary.patients.imported).toBe(2);
+    expect(cp.liveSummary.patients.skippedDuplicate).toBe(1);
   });
 
   it('"Descartar" remove o checkpoint do storage e some com o banner', async () => {
