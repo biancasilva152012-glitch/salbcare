@@ -516,6 +516,94 @@ const SyncGuestData = () => {
             </Button>
           )}
 
+          {/* Progresso por etapa (visível durante e após a importação) */}
+          {(merging || lastError || Object.values(steps).some((s) => s !== "pending")) && (
+            <section
+              className="glass-card p-4 space-y-3"
+              data-testid="sync-progress"
+              aria-live="polite"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold">Progresso da importação</p>
+                <span className="text-[11px] text-muted-foreground" data-testid="sync-progress-percent">
+                  {(() => {
+                    const total = 3;
+                    const completed = Object.values(steps).filter(
+                      (s) => s === "done" || s === "skipped",
+                    ).length;
+                    return `${Math.round((completed / total) * 100)}%`;
+                  })()}
+                </span>
+              </div>
+              <Progress
+                value={
+                  (Object.values(steps).filter((s) => s === "done" || s === "skipped").length / 3) *
+                  100
+                }
+                className="h-2"
+              />
+              <ul className="space-y-1.5 text-[12px]">
+                {([
+                  { key: "patients", label: "Pacientes", icon: Users },
+                  { key: "appointments", label: "Agendamentos", icon: Calendar },
+                  { key: "teleconsultations", label: "Teleconsultas", icon: Video },
+                ] as const).map(({ key, label, icon: Icon }) => {
+                  const st = steps[key];
+                  const dot =
+                    st === "done"
+                      ? "bg-emerald-500"
+                      : st === "running"
+                        ? "bg-primary animate-pulse"
+                        : st === "failed"
+                          ? "bg-destructive"
+                          : st === "skipped"
+                            ? "bg-muted-foreground/40"
+                            : "bg-muted-foreground/20";
+                  const labelSt =
+                    st === "done"
+                      ? "concluído"
+                      : st === "running"
+                        ? "em andamento…"
+                        : st === "failed"
+                          ? "falhou"
+                          : st === "skipped"
+                            ? "pulado"
+                            : "aguardando";
+                  return (
+                    <li key={key} className="flex items-center gap-2" data-testid={`sync-step-${key}`}>
+                      <span className={`inline-block h-2 w-2 rounded-full ${dot}`} aria-hidden />
+                      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="font-medium">{label}</span>
+                      <span className="text-muted-foreground">— {labelSt}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {lastError && (
+                <div
+                  className="rounded-lg border border-destructive/40 bg-destructive/10 p-2 text-[11px] text-destructive"
+                  data-testid="sync-error"
+                >
+                  {lastError}
+                </div>
+              )}
+
+              {lastError && !merging && (
+                <Button
+                  onClick={handleRetry}
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  data-testid="sync-retry-btn"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                  Tentar importar novamente
+                </Button>
+              )}
+            </section>
+          )}
+
           {/* Ações principais */}
           <div className="space-y-2 pt-2">
             <Button
