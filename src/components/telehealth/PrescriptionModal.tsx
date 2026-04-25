@@ -56,7 +56,15 @@ const PrescriptionModal = ({
   // Bloqueio de plano: se o usuário não tem plano pago, exibe paywall e
   // impede a abertura do formulário (defesa em profundidade — RLS já bloqueia
   // a inserção em digital_documents no backend).
-  if (open && !canIssuePrescription) {
+  const blocked = open && !canIssuePrescription;
+
+  useEffect(() => {
+    if (blocked) {
+      logPremiumBlockAttempt("prescriptions", "plan_required");
+    }
+  }, [blocked]);
+
+  if (blocked) {
     return (
       <PremiumFeatureModal
         open={open}
