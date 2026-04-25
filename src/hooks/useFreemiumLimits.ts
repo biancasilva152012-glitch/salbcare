@@ -14,13 +14,12 @@ import { isAdminEmail } from "@/config/admin";
  */
 export const FREE_LIMITS = {
   financialTransactions: 10,
-  patients: 5,
+  patients: 3,
   appointments: 5,
-  telehealthAttempts: 1,
-  // 10 perguntas grátis: o suficiente para o profissional sentir valor real
-  // (diagnóstico financeiro, preço mínimo, reserva, impostos) antes de bater
-  // o paywall e converter em assinante para uso ilimitado.
-  mentorshipMessages: 10,
+  // Telessaúde é totalmente bloqueada no plano gratuito (recurso premium).
+  telehealthAttempts: 0,
+  // 5 mensagens grátis na mentoria de IA antes de exigir o plano Essencial.
+  mentorshipMessages: 5,
 } as const;
 
 export type FreemiumModule =
