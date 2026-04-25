@@ -41,7 +41,6 @@ const Patients = () => {
   const { user } = useAuth();
   const sub = useSubscription();
   const { canAddPatient: canAddPatientFreemium, patientsCount, patientsLimit, isFree } = useFreemiumLimits();
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [blockModalOpen, setBlockModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
