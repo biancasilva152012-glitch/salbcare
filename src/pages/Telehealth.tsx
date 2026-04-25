@@ -32,6 +32,7 @@ const Telehealth = () => {
   const { user, subscription } = useAuth();
   const { hasAccess } = useFeatureGate();
   const { isFree, canCreateTelehealth, usageByModule } = useFreemiumLimits();
+  const { canCreateTeleconsultation } = usePremiumFeature();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
