@@ -230,6 +230,13 @@ const GuestAgenda = () => {
           </div>
         )}
       </motion.div>
+
+      <GuestLimitDialog
+        open={limitOpen}
+        onOpenChange={setLimitOpen}
+        scope="appointments"
+        limit={GUEST_LIMITS.appointments}
+      />
     </PageContainer>
   );
 };
