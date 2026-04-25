@@ -343,8 +343,6 @@ const SyncGuestData = () => {
     void handleMerge();
   };
 
-  };
-
   const handleDiscard = () => {
     const summary: GuestSyncSummary = {
       outcome: "discarded",
