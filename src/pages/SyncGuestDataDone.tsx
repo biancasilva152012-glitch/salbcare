@@ -233,4 +233,17 @@ const Row = ({
   </div>
 );
 
+/** Friendly label for the criterion that flagged a duplicate. */
+const reasonLabel = (reason: DuplicateRecord["reason"]): string => {
+  switch (reason) {
+    case "email":
+      return "mesmo e-mail";
+    case "name+date+time":
+      return "mesmo nome, data e horário";
+    case "name":
+    default:
+      return "mesmo nome";
+  }
+};
+
 export default SyncGuestDataDone;
