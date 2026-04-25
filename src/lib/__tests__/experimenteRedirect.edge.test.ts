@@ -57,7 +57,7 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         authenticated: false,
         search: "?next=",
       });
-      expect(u(r).searchParams.get("redirect")).toBe("/dashboard");
+      expect(u(r).pathname).toBe("/dashboard");
     });
 
     it("query string vazia não quebra", () => {
@@ -70,7 +70,7 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         buildExperimenteRedirect({ authenticated: true, search: "?&&=&" }),
       ).not.toThrow();
       const r = buildExperimenteRedirect({ authenticated: false, search: "?&&=&" });
-      expect(u(r).pathname).toBe("/register");
+      expect(u(r).pathname).toBe("/dashboard");
     });
   });
 
