@@ -57,14 +57,15 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
       expect(r).toBe("/dashboard");
     });
 
-    it("propaga corretamente para /register?redirect= no fluxo visitante", () => {
+    it("propaga corretamente o destino direto no fluxo visitante", () => {
       const r = buildExperimenteRedirect({
         authenticated: false,
         search: "?next=/admin&next=/dashboard/teleconsulta&utm_source=ads",
       });
-      const sp = u(r).searchParams;
-      expect(sp.get("redirect")).toBe("/dashboard/teleconsulta");
-      expect(sp.get("utm_source")).toBe("ads");
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard/teleconsulta");
+      expect(parsed.searchParams.get("utm_source")).toBe("ads");
+      expect(parsed.searchParams.has("redirect")).toBe(false);
     });
 
     it("nunca vaza next/nextRedirect no querystring final mesmo repetidos", () => {
