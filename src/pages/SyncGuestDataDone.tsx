@@ -164,12 +164,22 @@ const SyncGuestDataDone = () => {
                 )}
               </button>
               {showDuplicates && (
-                <ul className="mt-2 space-y-0.5 pl-5 list-disc text-muted-foreground">
-                  {summary.duplicates.patients.map((n, i) => (
-                    <li key={`p-${i}`}>Paciente: {n}</li>
+                <ul className="mt-2 space-y-1 pl-5 list-disc text-muted-foreground" data-testid="done-duplicates-list">
+                  {summary.duplicates.patients.map((d, i) => (
+                    <li key={`p-${i}`}>
+                      Paciente: {d.label}{" "}
+                      <span className="text-[10px] uppercase tracking-wide opacity-70">
+                        ({reasonLabel(d.reason)})
+                      </span>
+                    </li>
                   ))}
-                  {summary.duplicates.appointments.map((n, i) => (
-                    <li key={`a-${i}`}>Consulta: {n}</li>
+                  {summary.duplicates.appointments.map((d, i) => (
+                    <li key={`a-${i}`}>
+                      Consulta: {d.label}{" "}
+                      <span className="text-[10px] uppercase tracking-wide opacity-70">
+                        ({reasonLabel(d.reason)})
+                      </span>
+                    </li>
                   ))}
                 </ul>
               )}
