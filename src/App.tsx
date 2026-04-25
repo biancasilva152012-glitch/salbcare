@@ -168,6 +168,7 @@ const App = () => (
               <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/profile/audit" element={<ProfessionalRoute><ProfileAudit /></ProfessionalRoute>} />
+              <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<AdminOverviewPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
