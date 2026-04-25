@@ -37,7 +37,7 @@ const PlanSettingsTab = () => {
           </div>
           <div className="flex items-center justify-between py-2 border-t border-border/30">
             <span className="text-xs text-muted-foreground">Trial</span>
-            <span className="text-xs text-primary">{plan.hasTrial ? "7 dias grátis" : "Sem trial"}</span>
+            <span className="text-xs text-muted-foreground">Sem trial</span>
           </div>
         </div>
 
