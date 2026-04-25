@@ -455,6 +455,14 @@ const Financial = () => {
           onAskMentor={() => window.location.assign("/dashboard/mentoria")}
         />
 
+        {/* Perguntas que destravam a Mentora IA — só free.
+            Revela impacto financeiro estimado antes do CTA de upgrade. */}
+        <FinancialMentorTeaserQuestions
+          monthlyIncome={totalIncome}
+          monthlyExpense={totalExpense}
+          isFree={isFree}
+          onUpgrade={() => setUpgradeOpen(true)}
+        />
 
         <Tabs defaultValue="bar" className="w-full">
           <TabsList className="w-full">
