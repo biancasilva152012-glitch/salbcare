@@ -13,7 +13,7 @@ import PageContainer from "@/components/PageContainer";
 import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import GlobalDemoMigration from "@/components/GlobalDemoMigration";
-import GuestDataSyncToast from "@/components/GuestDataSyncToast";
+import GuestDataSyncRedirector from "@/components/GuestDataSyncRedirector";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
@@ -44,6 +44,7 @@ const ProfileBlocks = lazyWithRetry(() => import("./pages/ProfileBlocks"), "Prof
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
 const Upgrade = lazyWithRetry(() => import("./pages/Upgrade"), "Upgrade");
 const DashboardLimits = lazyWithRetry(() => import("./pages/DashboardLimits"), "DashboardLimits");
+const SyncGuestData = lazyWithRetry(() => import("./pages/SyncGuestData"), "SyncGuestData");
 const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
@@ -112,7 +113,7 @@ const App = () => (
           <ScrollToTop />
           <TrackingProvider />
           <GlobalDemoMigration />
-          <GuestDataSyncToast />
+          <GuestDataSyncRedirector />
           <FreemiumDebugPanel />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
@@ -172,6 +173,7 @@ const App = () => (
               <Route path="/dashboard/telehealth" element={<ProfessionalRoute allowGuest><Telehealth /></ProfessionalRoute>} />
               <Route path="/dashboard/mentoria" element={<ProfessionalRoute allowGuest><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/dashboard/limites" element={<ProfessionalRoute allowGuest><DashboardLimits /></ProfessionalRoute>} />
+              <Route path="/sync-guest-data" element={<ProfessionalRoute><SyncGuestData /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/profile/audit" element={<ProfessionalRoute><ProfileAudit /></ProfessionalRoute>} />
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
