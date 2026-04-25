@@ -32,6 +32,8 @@ import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
 import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";
 import GuestPaywall from "@/components/GuestPaywall";
+import FinancialEmptyState from "@/components/financial/FinancialEmptyState";
+import MentorIAExplainerModal from "@/components/financial/MentorIAExplainerModal";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
