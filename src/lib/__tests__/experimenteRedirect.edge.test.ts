@@ -97,7 +97,7 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         search: "?next=%2F%2Fevil.com",
       });
       // %2F%2F decodifica para "//" → bloqueado pela proteção de open-redirect.
-      expect(u(r).searchParams.get("redirect")).toBe("/dashboard");
+      expect(u(r).pathname).toBe("/dashboard");
     });
 
     it("decodifica `next` percent-encoded válido e respeita allowlist", () => {
