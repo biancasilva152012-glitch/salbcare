@@ -34,11 +34,13 @@ import { toast } from "sonner";
 import { exportPatientPdf } from "@/utils/exportPatientPdf";
 import type { Tables } from "@/integrations/supabase/types";
 import { downloadCsvTemplate, PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE } from "@/utils/csvTemplates";
+import GuestPatients from "@/components/guest/GuestPatients";
 
 const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", medical_history: "", initial_anamnesis: "", procedure_performed: "" };
 
 const Patients = () => {
   const { user } = useAuth();
+  if (!user) return <GuestPatients />;
   const sub = useSubscription();
   const { canAddPatient: canAddPatientFreemium, patientsCount, patientsLimit, isFree } = useFreemiumLimits();
   const [blockModalOpen, setBlockModalOpen] = useState(false);

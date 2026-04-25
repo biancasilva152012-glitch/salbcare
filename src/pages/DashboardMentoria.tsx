@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
 import { useAuth } from "@/contexts/AuthContext";
+import GuestPaywall from "@/components/GuestPaywall";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -52,6 +53,15 @@ const CurrencyInput = ({ value, onChange, placeholder, ...props }: { value: stri
 
 const DashboardMentoria = () => {
   const { session, user } = useAuth();
+  if (!user) {
+    return (
+      <GuestPaywall
+        feature="a Mentora Financeira IA"
+        description="A mentora IA precisa de uma conta para personalizar respostas com seus números reais. Cadastro grátis."
+        redirectAfterSignup="/dashboard/mentoria"
+      />
+    );
+  }
   const navigate = useNavigate();
   const { canSendMentorship, mentorshipCount, mentorshipLimit, isFree } = useFreemiumLimits();
   const [upgradeOpen, setUpgradeOpen] = useState(false);

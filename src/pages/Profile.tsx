@@ -10,6 +10,7 @@ import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import GuestPaywall from "@/components/GuestPaywall";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import ConsultationSettings from "@/components/profile/ConsultationSettings";
 import {
@@ -38,6 +39,15 @@ const Profile = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, signOut, subscription } = useAuth();
+  if (!user) {
+    return (
+      <GuestPaywall
+        feature="o seu Perfil"
+        description="Crie sua conta grátis para configurar perfil público, agenda, valores e assinatura."
+        redirectAfterSignup="/profile"
+      />
+    );
+  }
   const queryClient = useQueryClient();
   const consultationRef = useRef<HTMLDivElement>(null);
   const [deleteStep, setDeleteStep] = useState(0);

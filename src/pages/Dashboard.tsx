@@ -12,6 +12,8 @@ import PageSkeleton from "@/components/PageSkeleton";
 import ActivationOnboarding from "@/components/ActivationOnboarding";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import GuestDashboard from "@/components/guest/GuestDashboard";
+import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Button } from "@/components/ui/button";
@@ -23,9 +25,8 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isPaid } = useFreemiumLimits();
   if (!user) {
-    // Lazy import avoided — component is small and used only here
-    const GuestDashboard = require("@/components/guest/GuestDashboard").default;
     return <GuestDashboard />;
   }
   const { isSupported, isSubscribed, isLoading: pushLoading, subscribe } = usePushNotifications();
@@ -161,11 +162,13 @@ const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Greeting */}
-        <motion.div variants={item} className="space-y-0.5">
-          <p className="text-xs text-muted-foreground">Bem-vindo(a) de volta</p>
-          <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
-        </motion.div>
+        {/* Greeting (paid users only) */}
+        {isPaid && (
+          <motion.div variants={item} className="space-y-0.5">
+            <p className="text-xs text-muted-foreground">Bem-vindo(a) de volta</p>
+            <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
+          </motion.div>
+        )}
 
         {/* Push Notification Banner */}
         {isSupported && !isSubscribed && (

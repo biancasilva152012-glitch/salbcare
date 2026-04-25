@@ -4,8 +4,20 @@ import LegalDashboardTab from "@/components/legal/LegalDashboardTab";
 import LawyerMarketplaceTab from "@/components/legal/LawyerMarketplaceTab";
 import LegalTemplatesTab from "@/components/legal/LegalTemplatesTab";
 import FeatureGate from "@/components/FeatureGate";
+import { useAuth } from "@/contexts/AuthContext";
+import GuestPaywall from "@/components/GuestPaywall";
 
 const Legal = () => {
+  const { user } = useAuth();
+  if (!user) {
+    return (
+      <GuestPaywall
+        feature="o Suporte Jurídico"
+        description="Acesse modelos jurídicos e converse com advogados após criar sua conta grátis."
+        redirectAfterSignup="/dashboard/juridico"
+      />
+    );
+  }
   return (
     <PageContainer backTo="/dashboard">
       <div className="space-y-5">
