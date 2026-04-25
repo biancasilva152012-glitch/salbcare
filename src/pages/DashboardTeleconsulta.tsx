@@ -115,4 +115,15 @@ const DashboardTeleconsultaInner = () => {
   );
 };
 
+const DashboardTeleconsulta = () => (
+  <PremiumOnlyGuard
+    feature="A Teleconsulta"
+    description="Configure seu link de Google Meet após assinar o plano Essencial para começar a atender pacientes online."
+    reason="telehealth"
+    redirectAfter="/dashboard/teleconsulta"
+  >
+    <DashboardTeleconsultaInner />
+  </PremiumOnlyGuard>
+);
+
 export default DashboardTeleconsulta;
