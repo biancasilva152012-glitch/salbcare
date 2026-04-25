@@ -59,6 +59,7 @@ const AdminFinancePage = lazyWithRetry(() => import("./pages/admin/AdminFinanceP
 const AdminSettingsPage = lazyWithRetry(() => import("./pages/admin/AdminSettingsPage"), "AdminSettingsPage");
 const AdminPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminPartnersPage"), "AdminPartnersPage");
 const AdminRolesPage = lazyWithRetry(() => import("./pages/admin/AdminRolesPage"), "AdminRolesPage");
+const AdminRlsAuditPage = lazyWithRetry(() => import("./pages/admin/AdminRlsAuditPage"), "AdminRlsAuditPage");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
 const Index = lazyWithRetry(() => import("./pages/Index"), "Index");
