@@ -403,6 +403,64 @@ const ProfileBlocks = () => {
           </div>
         </div>
 
+        <div className="space-y-1">
+          <Label className="text-xs">Módulo</Label>
+          <Select value={moduleFilter} onValueChange={setModuleFilter}>
+            <SelectTrigger
+              data-testid="block-filter-module"
+              className="bg-accent border-border"
+            >
+              <SelectValue placeholder="Todos os módulos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os módulos</SelectItem>
+              {Object.entries(MODULE_LABEL).map(([key, label]) => (
+                <SelectItem key={key} value={key}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1">
+          <Label className="text-xs">Buscar</Label>
+          <div className="relative">
+            <Search className="h-3.5 w-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Input
+              data-testid="block-search"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="motivo, módulo ou ID do evento…"
+              className="bg-accent border-border pl-8 pr-8"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                aria-label="Limpar busca"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {hasAnyFilter && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            data-testid="clear-filters"
+            className="w-full"
+          >
+            <X className="h-3.5 w-3.5 mr-1.5" />
+            Limpar filtros
+          </Button>
+        )}
+
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" size="sm" onClick={exportCsv} data-testid="export-csv">
             <Download className="h-3.5 w-3.5 mr-1.5" />
