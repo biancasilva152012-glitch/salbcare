@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -33,7 +33,8 @@ const SyncGuestDataDone = () => {
   const next = params.get("next") || "/dashboard";
 
   // Atomically read + delete the summary so back/refresh never replays it.
-  const summary = useMemo<GuestSyncSummary | null>(() => consumeGuestSyncSummary(), []);
+  // Lazy initializer guarantees consumeGuestSyncSummary runs exactly once.
+  const [summary] = useState<GuestSyncSummary | null>(() => consumeGuestSyncSummary());
   const [showDuplicates, setShowDuplicates] = useState(false);
 
   // No summary? bounce back.
