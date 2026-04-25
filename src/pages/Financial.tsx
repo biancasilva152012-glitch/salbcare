@@ -63,7 +63,7 @@ const Financial = () => {
     );
   }
   const { hasAccess } = useFeatureGate();
-  const { canAddFinancial, financialCount, financialLimit, isFree } = useFreemiumLimits();
+  const { canAddFinancial, financialCount, financialLimit, isFree, isPaid } = useFreemiumLimits();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -239,7 +239,14 @@ const Financial = () => {
     <PageContainer backTo="/dashboard">
       <div className="space-y-5">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Financeiro</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">Financeiro</h1>
+            {isPaid && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase tracking-wider">
+                <Crown className="h-3 w-3" /> Premium ilimitado
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             {hasAccess("pdf_export") && (
               <Button size="sm" variant="outline" className="gap-1" onClick={() => exportFinancialPdf(transactions, filterMonth)}>
