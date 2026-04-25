@@ -290,8 +290,11 @@ const Patients = () => {
               </Dialog>
             ) : (
               <Button size="sm" className="gradient-primary gap-1" onClick={() => {
+                logPremiumBlockAttempt("patients_limit", "limit_reached", {
+                  count: patientsCount,
+                  limit: patientsLimit,
+                });
                 setBlockModalOpen(true);
-                setUpgradeOpen(true);
               }}>
                 <Plus className="h-4 w-4" /> Novo
               </Button>
