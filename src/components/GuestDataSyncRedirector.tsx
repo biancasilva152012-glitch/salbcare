@@ -52,6 +52,7 @@ const GuestDataSyncRedirector = () => {
     if (!hasGuestData()) return;
 
     triggered.current = true;
+    setGuestSyncLock();
     const next = encodeURIComponent(location.pathname + location.search);
     navigate(`/sync-guest-data?next=${next}`, { replace: true });
   }, [user, loading, location.pathname, location.search, navigate]);
