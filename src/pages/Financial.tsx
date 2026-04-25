@@ -35,6 +35,7 @@ import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments
 import GuestPaywall from "@/components/GuestPaywall";
 import FinancialEmptyState from "@/components/financial/FinancialEmptyState";
 import MentorIAExplainerModal from "@/components/financial/MentorIAExplainerModal";
+import FinancialCuriosityCTA from "@/components/financial/FinancialCuriosityCTA";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
@@ -86,18 +87,21 @@ const Financial = () => {
   useEffect(() => {
     const type = searchParams.get("type");
     const category = searchParams.get("category");
+    const description = searchParams.get("description");
     const autoOpen = searchParams.get("autoOpen") === "1";
-    if (!type && !category && !autoOpen) return;
+    if (!type && !category && !description && !autoOpen) return;
     setForm((prev) => ({
       ...prev,
       type: type === "expense" ? "expense" : type === "income" ? "income" : prev.type,
       category: category || prev.category,
+      description: description || prev.description,
     }));
     if (autoOpen) {
       setOpen(true);
       const next = new URLSearchParams(searchParams);
       next.delete("type");
       next.delete("category");
+      next.delete("description");
       next.delete("autoOpen");
       setSearchParams(next, { replace: true });
     }
