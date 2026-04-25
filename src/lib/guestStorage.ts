@@ -1,12 +1,18 @@
 /**
  * Guest mode storage — runs the dashboard in localStorage when no auth user.
  *
- * Keeps a strict separation from `demoStorage.ts`:
- * - demoStorage powers the dedicated /experimente tabs (legacy, redirect-only today)
- * - guestStorage powers the *real* dashboard pages (Patients, Agenda) when !user
+ * STORAGE LAYOUT (single key):
+ *   salbcare_guest_data = {
+ *     patients: GuestPatient[],
+ *     appointments: GuestAppointment[],
+ *     startedAt: ISO string
+ *   }
  *
- * Limits are intentionally low (3/3) to drive sign-up; mentoria/telehealth/
- * financial/profile remain blocked behind the GuestPaywall.
+ * Legacy keys (`salbcare_guest_patients`, `salbcare_guest_appointments`,
+ * `salbcare_guest_started_at`) are auto-migrated into the unified key on first
+ * read and then removed.
+ *
+ * Limits are intentionally low (3/3) to drive sign-up.
  */
 
 export const GUEST_LIMITS = {
@@ -14,10 +20,22 @@ export const GUEST_LIMITS = {
   appointments: 3,
 } as const;
 
-export const GUEST_STORAGE = {
+/** Single-key bundle used by the whole app. */
+export const GUEST_DATA_KEY = "salbcare_guest_data";
+
+/** Legacy keys (only kept here so we can migrate + clear them). */
+const LEGACY_KEYS = {
   patients: "salbcare_guest_patients",
   appointments: "salbcare_guest_appointments",
   startedAt: "salbcare_guest_started_at",
+} as const;
+
+/** Re-exported for backwards compatibility (tests, components that imported the
+ * old surface). All entries point at the SAME single key now. */
+export const GUEST_STORAGE = {
+  patients: GUEST_DATA_KEY,
+  appointments: GUEST_DATA_KEY,
+  startedAt: GUEST_DATA_KEY,
 } as const;
 
 export type GuestPatient = {
@@ -39,7 +57,24 @@ export type GuestAppointment = {
   created_at: string;
 };
 
-const safeRead = <T,>(key: string, fallback: T): T => {
+type GuestBundle = {
+  patients: GuestPatient[];
+  appointments: GuestAppointment[];
+  startedAt: string | null;
+};
+
+const emptyBundle = (): GuestBundle => ({
+  patients: [],
+  appointments: [],
+  startedAt: null,
+});
+
+const newId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `g_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+const safeReadJson = <T,>(key: string, fallback: T): T => {
   if (typeof window === "undefined") return fallback;
   try {
     const raw = window.localStorage.getItem(key);
@@ -49,40 +84,104 @@ const safeRead = <T,>(key: string, fallback: T): T => {
   }
 };
 
-const safeWrite = (key: string, value: unknown) => {
+const safeRemove = (key: string) => {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(key, JSON.stringify(value));
+    window.localStorage.removeItem(key);
   } catch {
-    /* quota or private mode — silently ignore */
+    /* ignore */
   }
 };
 
-const newId = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `g_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+/**
+ * Reads the unified bundle. If the bundle is missing but legacy keys exist,
+ * migrate them in-place and remove the legacy entries. Idempotent.
+ */
+function readBundle(): GuestBundle {
+  if (typeof window === "undefined") return emptyBundle();
+
+  const fromUnified = safeReadJson<GuestBundle | null>(GUEST_DATA_KEY, null);
+
+  // Legacy snapshot
+  const legacyPatients = safeReadJson<GuestPatient[]>(LEGACY_KEYS.patients, []);
+  const legacyAppointments = safeReadJson<GuestAppointment[]>(
+    LEGACY_KEYS.appointments,
+    [],
+  );
+  const legacyStartedAt = (() => {
+    try {
+      return window.localStorage.getItem(LEGACY_KEYS.startedAt);
+    } catch {
+      return null;
+    }
+  })();
+
+  const hasLegacy =
+    legacyPatients.length > 0 ||
+    legacyAppointments.length > 0 ||
+    Boolean(legacyStartedAt);
+
+  if (!fromUnified && !hasLegacy) return emptyBundle();
+
+  // Merge: unified takes priority for items, legacy fills in gaps. We never
+  // duplicate by id, so re-running migration is a no-op.
+  const base: GuestBundle = fromUnified ?? emptyBundle();
+  if (hasLegacy) {
+    const seenP = new Set(base.patients.map((p) => p.id));
+    for (const p of legacyPatients) {
+      if (!seenP.has(p.id)) {
+        base.patients.push(p);
+        seenP.add(p.id);
+      }
+    }
+    const seenA = new Set(base.appointments.map((a) => a.id));
+    for (const a of legacyAppointments) {
+      if (!seenA.has(a.id)) {
+        base.appointments.push(a);
+        seenA.add(a.id);
+      }
+    }
+    if (!base.startedAt && legacyStartedAt) {
+      base.startedAt = legacyStartedAt;
+    }
+    writeBundle(base);
+    safeRemove(LEGACY_KEYS.patients);
+    safeRemove(LEGACY_KEYS.appointments);
+    safeRemove(LEGACY_KEYS.startedAt);
+  }
+
+  return base;
+}
+
+function writeBundle(b: GuestBundle) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(b));
+  } catch {
+    /* quota or private mode — silently ignore */
+  }
+}
 
 export function ensureGuestStartedAt(): string {
-  if (typeof window === "undefined") return new Date().toISOString();
-  const existing = window.localStorage.getItem(GUEST_STORAGE.startedAt);
-  if (existing) return existing;
+  const b = readBundle();
+  if (b.startedAt) return b.startedAt;
   const now = new Date().toISOString();
-  window.localStorage.setItem(GUEST_STORAGE.startedAt, now);
+  b.startedAt = now;
+  writeBundle(b);
   return now;
 }
 
 // ── Patients ────────────────────────────────────────────────────────────────
 export function readGuestPatients(): GuestPatient[] {
-  return safeRead<GuestPatient[]>(GUEST_STORAGE.patients, []);
+  return readBundle().patients;
 }
 
 export function addGuestPatient(
   input: Omit<GuestPatient, "id" | "created_at">,
 ): { ok: true; patient: GuestPatient } | { ok: false; reason: "limit" | "invalid" } {
   if (!input.name?.trim()) return { ok: false, reason: "invalid" };
-  const list = readGuestPatients();
-  if (list.length >= GUEST_LIMITS.patients) return { ok: false, reason: "limit" };
+  const b = readBundle();
+  if (b.patients.length >= GUEST_LIMITS.patients) return { ok: false, reason: "limit" };
   const patient: GuestPatient = {
     id: newId(),
     name: input.name.trim(),
@@ -91,20 +190,20 @@ export function addGuestPatient(
     notes: input.notes?.trim() || undefined,
     created_at: new Date().toISOString(),
   };
-  safeWrite(GUEST_STORAGE.patients, [patient, ...list]);
+  b.patients = [patient, ...b.patients];
+  writeBundle(b);
   return { ok: true, patient };
 }
 
 export function deleteGuestPatient(id: string) {
-  safeWrite(
-    GUEST_STORAGE.patients,
-    readGuestPatients().filter((p) => p.id !== id),
-  );
+  const b = readBundle();
+  b.patients = b.patients.filter((p) => p.id !== id);
+  writeBundle(b);
 }
 
 // ── Appointments ────────────────────────────────────────────────────────────
 export function readGuestAppointments(): GuestAppointment[] {
-  return safeRead<GuestAppointment[]>(GUEST_STORAGE.appointments, []);
+  return readBundle().appointments;
 }
 
 export function addGuestAppointment(
@@ -115,8 +214,8 @@ export function addGuestAppointment(
   if (!input.patient_name?.trim() || !input.date || !input.time) {
     return { ok: false, reason: "invalid" };
   }
-  const list = readGuestAppointments();
-  if (list.length >= GUEST_LIMITS.appointments) return { ok: false, reason: "limit" };
+  const b = readBundle();
+  if (b.appointments.length >= GUEST_LIMITS.appointments) return { ok: false, reason: "limit" };
   const appointment: GuestAppointment = {
     id: newId(),
     patient_name: input.patient_name.trim(),
@@ -126,15 +225,15 @@ export function addGuestAppointment(
     notes: input.notes?.trim() || undefined,
     created_at: new Date().toISOString(),
   };
-  safeWrite(GUEST_STORAGE.appointments, [appointment, ...list]);
+  b.appointments = [appointment, ...b.appointments];
+  writeBundle(b);
   return { ok: true, appointment };
 }
 
 export function deleteGuestAppointment(id: string) {
-  safeWrite(
-    GUEST_STORAGE.appointments,
-    readGuestAppointments().filter((a) => a.id !== id),
-  );
+  const b = readBundle();
+  b.appointments = b.appointments.filter((a) => a.id !== id);
+  writeBundle(b);
 }
 
 // ── Aggregate usage (drives the GuestBanner) ────────────────────────────────
@@ -144,31 +243,28 @@ export type GuestUsage = {
 };
 
 export function getGuestUsage(): GuestUsage {
-  const p = readGuestPatients().length;
-  const a = readGuestAppointments().length;
+  const b = readBundle();
   return {
     patients: {
-      used: p,
+      used: b.patients.length,
       limit: GUEST_LIMITS.patients,
-      remaining: Math.max(0, GUEST_LIMITS.patients - p),
+      remaining: Math.max(0, GUEST_LIMITS.patients - b.patients.length),
     },
     appointments: {
-      used: a,
+      used: b.appointments.length,
       limit: GUEST_LIMITS.appointments,
-      remaining: Math.max(0, GUEST_LIMITS.appointments - a),
+      remaining: Math.max(0, GUEST_LIMITS.appointments - b.appointments.length),
     },
   };
 }
 
+/** Wipes the guest bundle AND any leftover legacy keys. */
 export function clearGuestStorage() {
   if (typeof window === "undefined") return;
-  for (const key of Object.values(GUEST_STORAGE)) {
-    try {
-      window.localStorage.removeItem(key);
-    } catch {
-      /* ignore */
-    }
-  }
+  safeRemove(GUEST_DATA_KEY);
+  safeRemove(LEGACY_KEYS.patients);
+  safeRemove(LEGACY_KEYS.appointments);
+  safeRemove(LEGACY_KEYS.startedAt);
 }
 
 /** Marker stored after the post-login sync screen runs (regardless of the
@@ -194,16 +290,11 @@ export function hasGuestSyncBeenAcknowledged(): boolean {
 }
 
 export function hasGuestData(): boolean {
-  return readGuestPatients().length > 0 || readGuestAppointments().length > 0;
+  const b = readBundle();
+  return b.patients.length > 0 || b.appointments.length > 0;
 }
 
 // ── Read-only lock during pending sync ──────────────────────────────────────
-/**
- * Set when the post-login sync redirector is triggered, cleared after the user
- * picks merge/discard/later. While set, the authenticated dashboard pages
- * (Patients, Agenda) should disable CRUD to avoid creating duplicates against
- * the same drafts the user is about to merge.
- */
 export const GUEST_SYNC_LOCK_KEY = "salbcare_guest_sync_lock";
 
 export function setGuestSyncLock() {
@@ -233,15 +324,80 @@ export function isGuestSyncLocked(): boolean {
   }
 }
 
+// ── In-flight merge guard (idempotency) ─────────────────────────────────────
+/**
+ * Prevents duplicate imports if the user refreshes the sync page while the
+ * merge is in flight. Stores `${userId}:${ISO}` so we can both detect the
+ * "currently merging for this user" state and recover if the tab actually
+ * crashes (we expire entries older than 10 minutes).
+ */
+export const GUEST_MERGE_INFLIGHT_KEY = "salbcare_guest_sync_inflight";
+export const GUEST_MERGE_DONE_KEY = "salbcare_guest_sync_done_for";
+
+const TEN_MINUTES = 10 * 60 * 1000;
+
+export function isMergeInFlight(userId: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = window.localStorage.getItem(GUEST_MERGE_INFLIGHT_KEY);
+    if (!raw) return false;
+    const [uid, iso] = raw.split("|");
+    if (uid !== userId) return false;
+    const ts = Date.parse(iso);
+    if (!Number.isFinite(ts)) return false;
+    return Date.now() - ts < TEN_MINUTES;
+  } catch {
+    return false;
+  }
+}
+
+export function beginMerge(userId: string): boolean {
+  if (typeof window === "undefined") return false;
+  if (hasMergedFor(userId)) return false;
+  if (isMergeInFlight(userId)) return false;
+  try {
+    window.localStorage.setItem(
+      GUEST_MERGE_INFLIGHT_KEY,
+      `${userId}|${new Date().toISOString()}`,
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function endMerge(userId: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(GUEST_MERGE_INFLIGHT_KEY);
+    const prev = window.localStorage.getItem(GUEST_MERGE_DONE_KEY);
+    const list = prev ? prev.split(",").filter(Boolean) : [];
+    if (!list.includes(userId)) list.push(userId);
+    window.localStorage.setItem(GUEST_MERGE_DONE_KEY, list.join(","));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function hasMergedFor(userId: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = window.localStorage.getItem(GUEST_MERGE_DONE_KEY);
+    if (!raw) return false;
+    return raw.split(",").includes(userId);
+  } catch {
+    return false;
+  }
+}
+
 // ── Sync summary (handed to the confirmation screen) ────────────────────────
-/** A single ignored item with the criterion that flagged it. */
 export type DuplicateRecord = {
-  label: string; // "Maria Silva" or "Maria — 25/04 14:30"
+  label: string;
   reason: "name" | "email" | "name+date+time";
 };
 
 export type GuestSyncSummary = {
-  outcome: "merged" | "discarded";
+  outcome: "merged" | "discarded" | "manual_clear";
   patients: { imported: number; skippedDuplicate: number; skippedQuota: number };
   appointments: { imported: number; skippedDuplicate: number; skippedQuota: number };
   duplicates: {
@@ -289,18 +445,14 @@ export function consumeGuestSyncSummary(): GuestSyncSummary | null {
 }
 
 // ── Dedup helpers ───────────────────────────────────────────────────────────
-/** Normalize a name for duplicate comparison: lowercase + collapse whitespace. */
 export function normalizeName(name: string | null | undefined): string {
   return (name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
 }
 
-/** Normalize an email for duplicate comparison: lowercase + trim. Empty → "". */
 export function normalizeEmail(email: string | null | undefined): string {
   return (email ?? "").toLowerCase().trim();
 }
 
-/** Composite key for an appointment: name|date|HH:mm. */
 export function appointmentKey(name: string, date: string, time: string): string {
   return `${normalizeName(name)}|${date}|${time.slice(0, 5)}`;
 }
-
