@@ -100,6 +100,7 @@ const ProfileBlocks = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState<null | "csv" | "pdf">(null);
+  const [serverTotal, setServerTotal] = useState<number | null>(null);
   const [selected, setSelected] = useState<BlockEvent | null>(null);
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -178,6 +179,33 @@ const ProfileBlocks = () => {
     fetchPage(0, true);
   }, [user, fetchPage]);
 
+  // Conta total de eventos no servidor (mesmos filtros de servidor),
+  // usado para mostrar "carregados X de Y total" e prévia do export.
+  useEffect(() => {
+    if (!user) {
+      setServerTotal(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      let q = supabase
+        .from("premium_block_attempts")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      q = applyServerFilters(q);
+      const { count, error } = await q;
+      if (cancelled) return;
+      if (error) {
+        setServerTotal(null);
+        return;
+      }
+      setServerTotal(count ?? 0);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, applyServerFilters]);
+
   // Infinite scroll: observer no sentinela carrega próxima página.
   useEffect(() => {
     const node = sentinelRef.current;
@@ -243,6 +271,9 @@ const ProfileBlocks = () => {
     setSortOrder("desc");
     setPage(0);
     setHasMore(true);
+    // Limpa explicitamente todos os parâmetros suportados na URL — também
+    // remove chaves antigas que possam estar herdadas (ex: paginação futura).
+    setSearchParams(new URLSearchParams(), { replace: true });
   };
 
   /**
@@ -299,42 +330,53 @@ const ProfileBlocks = () => {
     if (exporting) return;
     setExporting("csv");
     try {
-    const all = await fetchAllForExport();
-    if (all.length === 0) {
-      toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
-      return;
-    }
-    const metaKeys = collectMetadataKeys(all);
-    const rows = all.map((e) => {
-      const base: Record<string, string> = {
-        evento_id: e.id,
-        data: new Date(e.created_at).toLocaleString("pt-BR"),
-        modulo: MODULE_LABEL[e.module] ?? e.module,
-        modulo_chave: e.module,
-        motivo: e.reason,
-        metadata_json: e.metadata ? JSON.stringify(e.metadata) : "",
-      };
-      for (const k of metaKeys) {
-        const val = e.metadata && typeof e.metadata === "object"
-          ? (e.metadata as Record<string, unknown>)[k]
-          : undefined;
-        base[`meta_${k}`] = val === undefined || val === null
-          ? ""
-          : typeof val === "object" ? JSON.stringify(val) : String(val);
+      const all = await fetchAllForExport();
+      if (all.length === 0) {
+        toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
+        return;
       }
-      return base;
-    });
-    const csv = Papa.unparse(rows);
-    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `bloqueios_${filterSuffix}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const metaKeys = collectMetadataKeys(all);
+      const rows = all.map((e) => {
+        const base: Record<string, string> = {
+          evento_id: e.id,
+          data: new Date(e.created_at).toLocaleString("pt-BR"),
+          modulo: MODULE_LABEL[e.module] ?? e.module,
+          modulo_chave: e.module,
+          motivo: e.reason,
+          metadata_json: e.metadata ? JSON.stringify(e.metadata) : "",
+        };
+        for (const k of metaKeys) {
+          const val = e.metadata && typeof e.metadata === "object"
+            ? (e.metadata as Record<string, unknown>)[k]
+            : undefined;
+          base[`meta_${k}`] = val === undefined || val === null
+            ? ""
+            : typeof val === "object" ? JSON.stringify(val) : String(val);
+        }
+        return base;
+      });
+      const csv = Papa.unparse(rows);
+      const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `bloqueios_${filterSuffix}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("[ProfileBlocks] exportCsv falhou:", err);
+      toast({
+        title: "Erro ao exportar CSV",
+        description:
+          err instanceof Error
+            ? err.message
+            : "Não foi possível gerar o arquivo. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
+      // sempre destrava os botões, inclusive em erro inesperado
       setExporting(null);
     }
   };
@@ -343,86 +385,95 @@ const ProfileBlocks = () => {
     if (exporting) return;
     setExporting("pdf");
     try {
-    const all = await fetchAllForExport();
-    if (all.length === 0) {
-      toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
-      return;
-    }
-    const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("Atividades de bloqueio — SalbCare", 14, 16);
-    doc.setFontSize(10);
-    const periodo = `${from || "início"} → ${to || "hoje"}`;
-    doc.text(`Período: ${periodo}`, 14, 23);
-    if (moduleFilter !== "all") {
-      doc.text(`Módulo: ${MODULE_LABEL[moduleFilter] ?? moduleFilter}`, 14, 29);
-    }
-    if (search.trim()) {
-      doc.text(`Busca: "${search.trim()}"`, 14, moduleFilter !== "all" ? 35 : 29);
-    }
-    const headerEndY =
-      29 + (moduleFilter !== "all" ? 6 : 0) + (search.trim() ? 6 : 0);
-    doc.text(`Total de eventos: ${all.length}`, 14, headerEndY);
+      const all = await fetchAllForExport();
+      if (all.length === 0) {
+        toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
+        return;
+      }
+      const doc = new jsPDF();
+      doc.setFontSize(14);
+      doc.text("Atividades de bloqueio — SalbCare", 14, 16);
+      doc.setFontSize(10);
+      const periodo = `${from || "início"} → ${to || "hoje"}`;
+      doc.text(`Período: ${periodo}`, 14, 23);
+      if (moduleFilter !== "all") {
+        doc.text(`Módulo: ${MODULE_LABEL[moduleFilter] ?? moduleFilter}`, 14, 29);
+      }
+      if (search.trim()) {
+        doc.text(`Busca: "${search.trim()}"`, 14, moduleFilter !== "all" ? 35 : 29);
+      }
+      const headerEndY =
+        29 + (moduleFilter !== "all" ? 6 : 0) + (search.trim() ? 6 : 0);
+      doc.text(`Total de eventos: ${all.length}`, 14, headerEndY);
 
-    const exportCounts: Record<string, number> = {};
-    for (const e of all) exportCounts[e.module] = (exportCounts[e.module] ?? 0) + 1;
-    const exportTotals = Object.entries(exportCounts).sort((a, b) => b[1] - a[1]);
+      const exportCounts: Record<string, number> = {};
+      for (const e of all) exportCounts[e.module] = (exportCounts[e.module] ?? 0) + 1;
+      const exportTotals = Object.entries(exportCounts).sort((a, b) => b[1] - a[1]);
 
-    autoTable(doc, {
-      startY: headerEndY + 7,
-      head: [["Módulo", "Quantidade"]],
-      body: exportTotals.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [30, 41, 59] },
-    });
-
-    autoTable(doc, {
-      head: [["#", "Data/hora", "Módulo", "Motivo", "ID"]],
-      body: all.map((e, i) => [
-        String(i + 1),
-        new Date(e.created_at).toLocaleString("pt-BR"),
-        MODULE_LABEL[e.module] ?? e.module,
-        e.reason,
-        e.id.slice(0, 8),
-      ]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [30, 41, 59] },
-    });
-
-    // Seção dedicada: metadata por evento, indexada (#1, #2, ...)
-    // Cada evento vira uma mini-tabela chave/valor após o índice.
-    const eventsWithMeta = all.filter(
-      (e) => e.metadata && typeof e.metadata === "object" && Object.keys(e.metadata).length > 0,
-    );
-    if (eventsWithMeta.length > 0) {
-      doc.addPage();
-      doc.setFontSize(13);
-      doc.text("Metadados por evento", 14, 16);
-      doc.setFontSize(9);
-      let cursorY = 22;
-      all.forEach((e, i) => {
-        if (!e.metadata || typeof e.metadata !== "object") return;
-        const entries = Object.entries(e.metadata as Record<string, unknown>);
-        if (entries.length === 0) return;
-        autoTable(doc, {
-          startY: cursorY,
-          head: [[`#${i + 1} • ${MODULE_LABEL[e.module] ?? e.module} • ${e.id.slice(0, 8)}`, ""]],
-          body: entries.map(([k, v]) => [
-            k,
-            typeof v === "object" ? JSON.stringify(v) : String(v),
-          ]),
-          styles: { fontSize: 8 },
-          headStyles: { fillColor: [71, 85, 105] },
-          columnStyles: { 0: { cellWidth: 50, fontStyle: "bold" } },
-        });
-        // jspdf-autotable atualiza lastAutoTable.finalY
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cursorY = ((doc as any).lastAutoTable?.finalY ?? cursorY) + 4;
+      autoTable(doc, {
+        startY: headerEndY + 7,
+        head: [["Módulo", "Quantidade"]],
+        body: exportTotals.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [30, 41, 59] },
       });
-    }
 
-    doc.save(`bloqueios_${filterSuffix}.pdf`);
+      autoTable(doc, {
+        head: [["#", "Data/hora", "Módulo", "Motivo", "ID"]],
+        body: all.map((e, i) => [
+          String(i + 1),
+          new Date(e.created_at).toLocaleString("pt-BR"),
+          MODULE_LABEL[e.module] ?? e.module,
+          e.reason,
+          e.id.slice(0, 8),
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [30, 41, 59] },
+      });
+
+      // Seção dedicada: metadata por evento, indexada (#1, #2, ...)
+      const eventsWithMeta = all.filter(
+        (e) => e.metadata && typeof e.metadata === "object" && Object.keys(e.metadata).length > 0,
+      );
+      if (eventsWithMeta.length > 0) {
+        doc.addPage();
+        doc.setFontSize(13);
+        doc.text("Metadados por evento", 14, 16);
+        doc.setFontSize(9);
+        let cursorY = 22;
+        all.forEach((e, i) => {
+          if (!e.metadata || typeof e.metadata !== "object") return;
+          const entries = Object.entries(e.metadata as Record<string, unknown>);
+          if (entries.length === 0) return;
+          autoTable(doc, {
+            startY: cursorY,
+            head: [[`#${i + 1} • ${MODULE_LABEL[e.module] ?? e.module} • ${e.id.slice(0, 8)}`, ""]],
+            body: entries.map(([k, v]) => [
+              k,
+              typeof v === "object" ? JSON.stringify(v) : String(v),
+            ]),
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [71, 85, 105] },
+            columnStyles: { 0: { cellWidth: 50, fontStyle: "bold" } },
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          cursorY = ((doc as any).lastAutoTable?.finalY ?? cursorY) + 4;
+        });
+      }
+
+      doc.save(`bloqueios_${filterSuffix}.pdf`);
+    } catch (err) {
+      console.error("[ProfileBlocks] exportPdf falhou:", err);
+      toast({
+        title: "Erro ao exportar PDF",
+        description:
+          err instanceof Error
+            ? err.message
+            : "Não foi possível gerar o arquivo. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
+      // sempre destrava os botões, inclusive em erro inesperado
       setExporting(null);
     }
   };
@@ -553,6 +604,34 @@ const ProfileBlocks = () => {
             Limpar filtros
           </Button>
         )}
+
+        {/* Contador de eventos: client (carregados+filtros visuais) vs server
+            (todos os registros que casam, base do export). */}
+        <div
+          className="glass-card p-3 text-xs space-y-1"
+          data-testid="event-counters"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Visíveis (cliente)</span>
+            <span className="font-medium" data-testid="counter-client">
+              {visibleEvents.length}
+              {!serverSearch && search && events.length !== visibleEvents.length && (
+                <span className="text-muted-foreground"> de {events.length} carregados</span>
+              )}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">No servidor (filtros aplicados)</span>
+            <span className="font-medium" data-testid="counter-server">
+              {serverTotal === null ? "—" : serverTotal}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground pt-1 border-t border-border/40">
+            {serverSearch || !search
+              ? "Exportação inclui todos os eventos do servidor que casam com os filtros (limite 5.000)."
+              : "Exportação respeita a busca textual aplicada após os filtros do servidor."}
+          </p>
+        </div>
 
         <div className="grid grid-cols-2 gap-2">
           <Button
