@@ -32,13 +32,9 @@ const SyncGuestDataDone = () => {
   const [params] = useSearchParams();
   const next = params.get("next") || "/dashboard";
 
-  const summary = useMemo<GuestSyncSummary | null>(() => readGuestSyncSummary(), []);
+  // Atomically read + delete the summary so back/refresh never replays it.
+  const summary = useMemo<GuestSyncSummary | null>(() => consumeGuestSyncSummary(), []);
   const [showDuplicates, setShowDuplicates] = useState(false);
-
-  // Clear once consumed so refresh doesn't keep showing stale data.
-  useEffect(() => {
-    return () => clearGuestSyncSummary();
-  }, []);
 
   // No summary? bounce back.
   useEffect(() => {
