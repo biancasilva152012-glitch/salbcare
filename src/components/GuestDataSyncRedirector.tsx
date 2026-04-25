@@ -60,4 +60,6 @@ const GuestDataSyncRedirector = () => {
   return null;
 };
 
+GuestDataSyncRedirector.displayName = "GuestDataSyncRedirector";
+
 export default GuestDataSyncRedirector;

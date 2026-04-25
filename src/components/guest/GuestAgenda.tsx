@@ -26,6 +26,7 @@ import {
   GUEST_LIMITS,
   type GuestAppointment,
 } from "@/lib/guestStorage";
+import GuestLimitDialog from "@/components/guest/GuestLimitDialog";
 
 const emptyForm = {
   patient_name: "",
@@ -39,6 +40,7 @@ const GuestAgenda = () => {
   const [list, setList] = useState<GuestAppointment[]>(() => readGuestAppointments());
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [limitOpen, setLimitOpen] = useState(false);
 
   const reload = () => setList(readGuestAppointments());
 
@@ -86,9 +88,28 @@ const GuestAgenda = () => {
               Modo guest · {list.length}/{GUEST_LIMITS.appointments} consultas
             </p>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog
+            open={open && !blocked}
+            onOpenChange={(v) => {
+              if (v && blocked) {
+                setLimitOpen(true);
+                return;
+              }
+              setOpen(v);
+            }}
+          >
             <DialogTrigger asChild>
-              <Button size="sm" disabled={blocked} className="gradient-primary">
+              <Button
+                size="sm"
+                className="gradient-primary"
+                onClick={(e) => {
+                  if (blocked) {
+                    e.preventDefault();
+                    setLimitOpen(true);
+                  }
+                }}
+                data-testid="guest-agenda-new-btn"
+              >
                 <Plus className="h-4 w-4 mr-1.5" />
                 Nova
               </Button>
@@ -209,6 +230,13 @@ const GuestAgenda = () => {
           </div>
         )}
       </motion.div>
+
+      <GuestLimitDialog
+        open={limitOpen}
+        onOpenChange={setLimitOpen}
+        scope="appointments"
+        limit={GUEST_LIMITS.appointments}
+      />
     </PageContainer>
   );
 };
