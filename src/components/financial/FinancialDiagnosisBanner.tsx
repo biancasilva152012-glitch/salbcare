@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import FinancialDiagnosisModal from "./FinancialDiagnosisModal";
+import { trackCtaClick } from "@/hooks/useTracking";
 
 const DISMISS_KEY = "salbcare_financial_diagnosis_banner_dismissed";
 
@@ -16,13 +17,17 @@ interface Props {
  * iniciar o diagnóstico financeiro. Some assim que ele cadastra a
  * primeira transação (controle externo via prop `hidden`).
  *
+ * O CTA agora abre o `FinancialDiagnosisModal` (mini-questionário com
+ * objetivo + faixa) em vez de navegar direto. Só depois do diagnóstico
+ * preliminar é que o usuário cai em /dashboard/financial.
+ *
  * Persistimos um flag de dismiss em localStorage para respeitar a
  * decisão do usuário entre sessões — o banner só volta se ele zerar
  * o storage ou se reativarmos a campanha.
  */
 const FinancialDiagnosisBanner = ({ hidden }: Props) => {
-  const navigate = useNavigate();
   const [dismissed, setDismissed] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -44,7 +49,8 @@ const FinancialDiagnosisBanner = ({ hidden }: Props) => {
   };
 
   const handleStart = () => {
-    navigate("/dashboard/financial?onboarding=diagnosis");
+    trackCtaClick("financial_diagnosis_open", "dashboard_banner");
+    setModalOpen(true);
   };
 
   return (
