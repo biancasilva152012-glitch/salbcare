@@ -54,49 +54,55 @@ const FinancialDiagnosisBanner = ({ hidden }: Props) => {
   };
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-4"
-      data-testid="financial-diagnosis-banner"
-      aria-label="Diagnóstico financeiro"
-    >
-      <button
-        type="button"
-        onClick={handleDismiss}
-        aria-label="Dispensar banner de diagnóstico"
-        className="absolute top-2 right-2 text-muted-foreground hover:text-foreground p-1"
+    <>
+      <motion.section
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-4"
+        data-testid="financial-diagnosis-banner"
+        aria-label="Diagnóstico financeiro"
       >
-        <X className="h-3.5 w-3.5" />
-      </button>
+        <button
+          type="button"
+          onClick={handleDismiss}
+          aria-label="Dispensar banner de diagnóstico"
+          className="absolute top-2 right-2 text-muted-foreground hover:text-foreground p-1"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
 
-      <div className="flex items-start gap-3 pr-5">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15">
-          <Sparkles className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0 space-y-2">
-          <div className="space-y-0.5">
-            <h2 className="text-sm font-bold leading-snug">
-              Você sabe quanto está ganhando de verdade?
-            </h2>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Profissionais autônomos perdem em média{" "}
-              <span className="font-semibold text-foreground">R$ 480/mês</span>{" "}
-              por falta de controle financeiro.
-            </p>
+        <div className="flex items-start gap-3 pr-5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15">
+            <Sparkles className="h-5 w-5 text-primary" />
           </div>
-          <Button
-            size="sm"
-            onClick={handleStart}
-            className="gradient-primary font-semibold text-xs gap-1.5"
-            data-testid="financial-diagnosis-cta"
-          >
-            Fazer meu diagnóstico gratuito
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Button>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="space-y-0.5">
+              <h2 className="text-sm font-bold leading-snug">
+                Você sabe quanto está ganhando de verdade?
+              </h2>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Profissionais autônomos perdem em média{" "}
+                <span className="font-semibold text-foreground">R$ 480/mês</span>{" "}
+                por falta de controle financeiro.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              onClick={handleStart}
+              className="gradient-primary font-semibold text-xs gap-1.5"
+              data-testid="financial-diagnosis-cta"
+            >
+              Fazer meu diagnóstico gratuito
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
-      </div>
-    </motion.section>
+      </motion.section>
+      <FinancialDiagnosisModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
+    </>
   );
 };
 
