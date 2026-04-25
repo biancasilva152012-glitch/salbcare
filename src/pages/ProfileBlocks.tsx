@@ -8,13 +8,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ShieldAlert, Crown, Lock, Download, FileText, ChevronRight } from "lucide-react";
+import {
+  ShieldAlert,
+  Crown,
+  Lock,
+  Download,
+  FileText,
+  ChevronRight,
+  Search,
+  X,
+} from "lucide-react";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -61,6 +77,8 @@ const ProfileBlocks = () => {
 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [moduleFilter, setModuleFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const [events, setEvents] = useState<BlockEvent[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -87,6 +105,7 @@ const ProfileBlocks = () => {
         .range(fromIdx, toIdx);
       if (from) q = q.gte("created_at", toIsoStart(from));
       if (to) q = q.lte("created_at", toIsoEndInclusive(to));
+      if (moduleFilter !== "all") q = q.eq("module", moduleFilter);
       const { data, error } = await q;
       if (error) {
         setLoading(false);
@@ -97,7 +116,7 @@ const ProfileBlocks = () => {
       setHasMore(rows.length === PAGE_SIZE);
       setLoading(false);
     },
-    [user, from, to],
+    [user, from, to, moduleFilter],
   );
 
   // Reset ao mudar usuário ou filtros: busca página 0 substituindo o estado.
@@ -106,7 +125,7 @@ const ProfileBlocks = () => {
     setPage(0);
     setHasMore(true);
     fetchPage(0, true);
-  }, [user, from, to, fetchPage]);
+  }, [user, from, to, moduleFilter, fetchPage]);
 
   // Infinite scroll: observer no sentinela carrega próxima página.
   useEffect(() => {
