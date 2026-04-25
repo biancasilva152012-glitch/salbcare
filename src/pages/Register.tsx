@@ -139,7 +139,7 @@ const Register = () => {
         if (signInError) {
           toast.success("Conta criada! Faça login para continuar.");
           setLoading(false);
-          navigate("/login");
+          navigate(`/login${nextQs}`);
           return;
         }
       }
@@ -172,7 +172,8 @@ const Register = () => {
 
       setLoading(false);
       toast.success("Conta criada com sucesso!");
-      navigate("/dashboard");
+      // Honor `next` so users (e.g. coming from /profile) return to where they were.
+      navigate(safeNext || "/dashboard");
     } catch (err) {
       console.error("[Register] Unexpected signup error:", err);
       setLoading(false);
