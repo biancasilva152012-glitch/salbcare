@@ -1,0 +1,86 @@
+/**
+ * E2E-ish guard: when the guest visitor has filled their quota, clicking
+ * "Novo Paciente" / "Nova Consulta" must NOT open the create form. Instead
+ * the upgrade modal (GuestLimitDialog) must appear, blocking submission.
+ *
+ * This test renders the actual guest pages (which read directly from
+ * localStorage) so it exercises the same code path as the live preview.
+ */
+import { describe, it, expect, beforeEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import GuestPatients from "@/components/guest/GuestPatients";
+import GuestAgenda from "@/components/guest/GuestAgenda";
+import { GUEST_DATA_KEY, GUEST_LIMITS } from "@/lib/guestStorage";
+
+const seedGuest = (patients: number, appointments: number) => {
+  const ps = Array.from({ length: patients }, (_, i) => ({
+    id: `p${i}`,
+    name: `Paciente ${i}`,
+    created_at: new Date().toISOString(),
+  }));
+  const as = Array.from({ length: appointments }, (_, i) => ({
+    id: `a${i}`,
+    patient_name: `Paciente ${i}`,
+    date: "2026-04-25",
+    time: "10:00",
+    appointment_type: "presencial",
+    created_at: new Date().toISOString(),
+  }));
+  window.localStorage.setItem(
+    GUEST_DATA_KEY,
+    JSON.stringify({ patients: ps, appointments: as, startedAt: null }),
+  );
+};
+
+beforeEach(() => {
+  window.localStorage.clear();
+});
+
+describe("Guest limits — patients", () => {
+  it("opens the upgrade modal instead of the form when at the limit", () => {
+    seedGuest(GUEST_LIMITS.patients, 0);
+    render(
+      <MemoryRouter>
+        <GuestPatients />
+      </MemoryRouter>,
+    );
+
+    const newBtn = screen.getByTestId("guest-patients-new-btn");
+    fireEvent.click(newBtn);
+
+    // Upgrade dialog should be visible
+    expect(screen.getByTestId("guest-limit-dialog")).toBeInTheDocument();
+
+    // The actual create form (label "Nome *") should NOT be on screen
+    expect(screen.queryByLabelText(/Nome \*/i)).not.toBeInTheDocument();
+  });
+
+  it("allows opening the form when below the limit", () => {
+    seedGuest(GUEST_LIMITS.patients - 1, 0);
+    render(
+      <MemoryRouter>
+        <GuestPatients />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByTestId("guest-patients-new-btn"));
+    expect(screen.queryByTestId("guest-limit-dialog")).not.toBeInTheDocument();
+  });
+});
+
+describe("Guest limits — appointments", () => {
+  it("opens the upgrade modal instead of the form when at the limit", () => {
+    seedGuest(0, GUEST_LIMITS.appointments);
+    render(
+      <MemoryRouter>
+        <GuestAgenda />
+      </MemoryRouter>,
+    );
+
+    const newBtn = screen.getByTestId("guest-agenda-new-btn");
+    fireEvent.click(newBtn);
+
+    expect(screen.getByTestId("guest-limit-dialog")).toBeInTheDocument();
+  });
+});

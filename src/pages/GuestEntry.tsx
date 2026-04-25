@@ -33,7 +33,8 @@ const GuestEntry = () => {
     let cancelled = false;
     const reset = async () => {
       try {
-        await supabase.auth.signOut();
+        // `local` scope clears the persisted session in this browser only.
+        await supabase.auth.signOut({ scope: "local" });
       } catch {
         /* already signed out */
       }
@@ -47,6 +48,27 @@ const GuestEntry = () => {
         window.localStorage.removeItem(GUEST_MERGE_INFLIGHT_KEY);
         window.localStorage.removeItem(GUEST_MERGE_DONE_KEY);
         window.sessionStorage.removeItem(GUEST_SYNC_SUMMARY_KEY);
+
+        // Defensive: nuke any lingering Supabase auth tokens that signOut()
+        // may have missed (legacy keys, multiple projects, custom storage).
+        // Anything matching sb-*-auth-token / supabase.auth.token gets purged.
+        const purge = (storage: Storage) => {
+          const toRemove: string[] = [];
+          for (let i = 0; i < storage.length; i += 1) {
+            const k = storage.key(i);
+            if (!k) continue;
+            if (
+              k.startsWith("sb-") ||
+              k === "supabase.auth.token" ||
+              k.startsWith("supabase.auth.")
+            ) {
+              toRemove.push(k);
+            }
+          }
+          toRemove.forEach((k) => storage.removeItem(k));
+        };
+        purge(window.localStorage);
+        purge(window.sessionStorage);
       } catch {
         /* ignore */
       }
