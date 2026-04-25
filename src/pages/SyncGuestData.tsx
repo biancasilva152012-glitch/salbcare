@@ -154,16 +154,203 @@ const SyncGuestData = () => {
 
   // ── Actions ─────────────────────────────────────────────────────────────
   /**
-   * Imports the guest data into the user account. The function is built so it
-   * can be re-invoked by the "Tentar importar novamente" button after a
-   * failure: it always clears the inflight marker on error and re-reads the
-   * SAME guest data from localStorage (we never wipe it until the merge fully
-   * succeeds), so retrying is safe and idempotent.
+   * Each step is a self-contained async function so the UI can retry just the
+   * failed one (e.g. only Pacientes or only Agendamentos). Steps mutate the
+   * `liveSummary` and the local pending lists so the running totals stay
+   * coherent across partial retries.
    */
-  const handleMerge = async () => {
+  type StepKey = "patients" | "appointments";
+
+  const runPatientsStep = async (): Promise<void> => {
+    if (!user) return;
+    setSteps((s) => ({ ...s, patients: "running" }));
+    setStepError((e) => ({ ...e, patients: undefined }));
+
+    if (!importPatients) {
+      setLiveSummary((s) => ({
+        ...s,
+        patients: { ...s.patients, skippedQuota: pendingPatients.length },
+      }));
+      setSteps((s) => ({ ...s, patients: "skipped" }));
+      return;
+    }
+    if (pendingPatients.length === 0) {
+      setSteps((s) => ({ ...s, patients: "done" }));
+      return;
+    }
+
+    const { data: existing, error: exErr } = await supabase
+      .from("patients")
+      .select("name, email");
+    if (exErr) throw exErr;
+    const seenNames = new Set<string>(
+      (existing ?? []).map((r) => normalizeName(r.name)),
+    );
+    const seenEmails = new Set<string>(
+      (existing ?? [])
+        .map((r) => normalizeEmail((r as any).email))
+        .filter((e) => e.length > 0),
+    );
+
+    const accepted: GuestPatient[] = [];
+    const newDuplicates: typeof liveSummary.duplicates.patients = [];
+    let skippedDup = 0;
+    let skippedQuota = 0;
+    for (const p of pendingPatients) {
+      const nameKey = normalizeName(p.name);
+      const emailKey = normalizeEmail(p.email);
+      if (emailKey && seenEmails.has(emailKey)) {
+        skippedDup += 1;
+        newDuplicates.push({ label: `${p.name} <${p.email}>`, reason: "email" });
+        continue;
+      }
+      if (seenNames.has(nameKey)) {
+        skippedDup += 1;
+        newDuplicates.push({ label: p.name, reason: "name" });
+        continue;
+      }
+      if (!isPaid && accepted.length >= patientSlotsLeft) {
+        skippedQuota += 1;
+        continue;
+      }
+      accepted.push(p);
+      seenNames.add(nameKey);
+      if (emailKey) seenEmails.add(emailKey);
+    }
+
+    let importedCount = 0;
+    if (accepted.length > 0) {
+      const rows = accepted.map((p) => ({
+        user_id: user.id,
+        name: p.name,
+        phone: p.phone ?? null,
+        email: p.email ?? null,
+        notes: p.notes ?? null,
+      }));
+      const { error, data } = await supabase
+        .from("patients")
+        .insert(rows)
+        .select("id");
+      if (error) throw error;
+      importedCount = data?.length ?? rows.length;
+    }
+
+    setPendingPatients([]);
+    setLiveSummary((s) => ({
+      ...s,
+      patients: {
+        imported: s.patients.imported + importedCount,
+        skippedDuplicate: s.patients.skippedDuplicate + skippedDup,
+        skippedQuota: s.patients.skippedQuota + skippedQuota,
+      },
+      duplicates: {
+        ...s.duplicates,
+        patients: [...s.duplicates.patients, ...newDuplicates],
+      },
+    }));
+    setSteps((s) => ({ ...s, patients: "done" }));
+  };
+
+  const runAppointmentsStep = async (): Promise<void> => {
+    if (!user) return;
+    setSteps((s) => ({ ...s, appointments: "running" }));
+    setStepError((e) => ({ ...e, appointments: undefined }));
+
+    if (!importAppointments) {
+      setLiveSummary((s) => ({
+        ...s,
+        appointments: { ...s.appointments, skippedQuota: pendingAppointments.length },
+      }));
+      setSteps((s) => ({ ...s, appointments: "skipped" }));
+      return;
+    }
+    if (pendingAppointments.length === 0) {
+      setSteps((s) => ({ ...s, appointments: "done" }));
+      return;
+    }
+
+    const { data: existing, error: exErr } = await supabase
+      .from("appointments")
+      .select("patient_name, date, time");
+    if (exErr) throw exErr;
+    const seen = new Set<string>(
+      (existing ?? []).map((r) =>
+        appointmentKey(r.patient_name as string, r.date as string, r.time as string),
+      ),
+    );
+
+    const accepted: GuestAppointment[] = [];
+    const newDuplicates: typeof liveSummary.duplicates.appointments = [];
+    let skippedDup = 0;
+    let skippedQuota = 0;
+    for (const a of pendingAppointments) {
+      const key = appointmentKey(a.patient_name, a.date, a.time);
+      if (seen.has(key)) {
+        skippedDup += 1;
+        newDuplicates.push({
+          label: `${a.patient_name} — ${a.date.split("-").reverse().slice(0, 2).join("/")} ${a.time}`,
+          reason: "name+date+time",
+        });
+        continue;
+      }
+      if (!isPaid && accepted.length >= appointmentSlotsLeft) {
+        skippedQuota += 1;
+        continue;
+      }
+      accepted.push(a);
+      seen.add(key);
+    }
+
+    let importedCount = 0;
+    if (accepted.length > 0) {
+      const rows = accepted.map((a) => ({
+        user_id: user.id,
+        patient_name: a.patient_name,
+        date: a.date,
+        time: a.time,
+        appointment_type: a.appointment_type,
+        notes: a.notes ?? null,
+        status: "scheduled",
+      }));
+      const { error, data } = await supabase
+        .from("appointments")
+        .insert(rows)
+        .select("id");
+      if (error) throw error;
+      importedCount = data?.length ?? rows.length;
+    }
+
+    setPendingAppointments([]);
+    setLiveSummary((s) => ({
+      ...s,
+      appointments: {
+        imported: s.appointments.imported + importedCount,
+        skippedDuplicate: s.appointments.skippedDuplicate + skippedDup,
+        skippedQuota: s.appointments.skippedQuota + skippedQuota,
+      },
+      duplicates: {
+        ...s.duplicates,
+        appointments: [...s.duplicates.appointments, ...newDuplicates],
+      },
+    }));
+    setSteps((s) => ({ ...s, appointments: "done" }));
+  };
+
+  const finalize = () => {
+    if (!user) return;
+    setSteps((s) => ({ ...s, teleconsultations: "skipped" }));
+    const finalSummary: GuestSyncSummary = { ...liveSummary, at: new Date().toISOString() };
+    clearGuestStorage();
+    markGuestSyncAcknowledged();
+    clearGuestSyncLock();
+    endMerge(user.id);
+    writeGuestSyncSummary(finalSummary);
+    navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
+  };
+
+  const runMerge = async (scope: "all" | StepKey) => {
     if (!user) return;
 
-    // Idempotency: never run twice for the same user_id, even on refresh.
     if (hasMergedFor(user.id)) {
       toast.info("Os dados de visitante já foram importados nesta conta.");
       clearGuestStorage();
@@ -183,191 +370,63 @@ const SyncGuestData = () => {
 
     setMerging(true);
     setLastError(null);
-    setSteps({
-      patients: importPatients && guestPatients.length > 0 ? "running" : "skipped",
-      appointments: "pending",
-      teleconsultations: "pending",
-    });
 
-    const summary: GuestSyncSummary = {
-      outcome: "merged",
-      patients: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
-      appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
-      duplicates: { patients: [], appointments: [] },
-      at: new Date().toISOString(),
-    };
+    const stepsToRun: StepKey[] =
+      scope === "all" ? ["patients", "appointments"] : [scope];
 
-    try {
-      // ── PATIENTS ────────────────────────────────────────────────────────
-      if (importPatients && guestPatients.length > 0) {
-        const { data: existing, error: exErr } = await supabase
-          .from("patients")
-          .select("name, email");
-        if (exErr) throw exErr;
-        const seenNames = new Set<string>(
-          (existing ?? []).map((r) => normalizeName(r.name)),
-        );
-        const seenEmails = new Set<string>(
-          (existing ?? [])
-            .map((r) => normalizeEmail((r as any).email))
-            .filter((e) => e.length > 0),
-        );
-
-        const accepted: GuestPatient[] = [];
-        for (const p of guestPatients) {
-          const nameKey = normalizeName(p.name);
-          const emailKey = normalizeEmail(p.email);
-          if (emailKey && seenEmails.has(emailKey)) {
-            summary.patients.skippedDuplicate += 1;
-            summary.duplicates.patients.push({ label: `${p.name} <${p.email}>`, reason: "email" });
-            continue;
-          }
-          if (seenNames.has(nameKey)) {
-            summary.patients.skippedDuplicate += 1;
-            summary.duplicates.patients.push({ label: p.name, reason: "name" });
-            continue;
-          }
-          if (!isPaid && accepted.length >= patientSlotsLeft) {
-            summary.patients.skippedQuota += 1;
-            continue;
-          }
-          accepted.push(p);
-          seenNames.add(nameKey);
-          if (emailKey) seenEmails.add(emailKey);
-        }
-
-        if (accepted.length > 0) {
-          const rows = accepted.map((p) => ({
-            user_id: user.id,
-            name: p.name,
-            phone: p.phone ?? null,
-            email: p.email ?? null,
-            notes: p.notes ?? null,
-          }));
-          const { error, data } = await supabase
-            .from("patients")
-            .insert(rows)
-            .select("id");
-          if (error) throw error;
-          summary.patients.imported = data?.length ?? rows.length;
-        }
-        setSteps((s) => ({ ...s, patients: "done" }));
-      } else if (!importPatients) {
-        summary.patients.skippedQuota = guestPatients.length;
-        setSteps((s) => ({ ...s, patients: "skipped" }));
-      } else {
-        setSteps((s) => ({ ...s, patients: "skipped" }));
-      }
-
-      // ── APPOINTMENTS ────────────────────────────────────────────────────
-      setSteps((s) => ({
-        ...s,
-        appointments: importAppointments && guestAppointments.length > 0 ? "running" : "skipped",
-      }));
-      if (importAppointments && guestAppointments.length > 0) {
-        const { data: existing, error: exErr } = await supabase
-          .from("appointments")
-          .select("patient_name, date, time");
-        if (exErr) throw exErr;
-        const seen = new Set<string>(
-          (existing ?? []).map((r) =>
-            appointmentKey(r.patient_name as string, r.date as string, r.time as string),
-          ),
-        );
-
-        const accepted: GuestAppointment[] = [];
-        for (const a of guestAppointments) {
-          const key = appointmentKey(a.patient_name, a.date, a.time);
-          if (seen.has(key)) {
-            summary.appointments.skippedDuplicate += 1;
-            summary.duplicates.appointments.push({
-              label: `${a.patient_name} — ${a.date.split("-").reverse().slice(0, 2).join("/")} ${a.time}`,
-              reason: "name+date+time",
-            });
-            continue;
-          }
-          if (!isPaid && accepted.length >= appointmentSlotsLeft) {
-            summary.appointments.skippedQuota += 1;
-            continue;
-          }
-          accepted.push(a);
-          seen.add(key);
-        }
-
-        if (accepted.length > 0) {
-          const rows = accepted.map((a) => ({
-            user_id: user.id,
-            patient_name: a.patient_name,
-            date: a.date,
-            time: a.time,
-            appointment_type: a.appointment_type,
-            notes: a.notes ?? null,
-            status: "scheduled",
-          }));
-          const { error, data } = await supabase
-            .from("appointments")
-            .insert(rows)
-            .select("id");
-          if (error) throw error;
-          summary.appointments.imported = data?.length ?? rows.length;
-        }
-        setSteps((s) => ({ ...s, appointments: "done" }));
-      } else if (!importAppointments) {
-        summary.appointments.skippedQuota = guestAppointments.length;
-        setSteps((s) => ({ ...s, appointments: "skipped" }));
-      } else {
-        setSteps((s) => ({ ...s, appointments: "skipped" }));
-      }
-
-      // ── TELECONSULTAS ───────────────────────────────────────────────────
-      // Não há rascunhos guest de teleconsultas hoje (modo guest só salva
-      // pacientes/agenda). Marcamos como "skipped" para que a barra termine
-      // em 100% e o usuário veja todas as etapas.
-      setSteps((s) => ({ ...s, teleconsultations: "skipped" }));
-
-      clearGuestStorage();
-      markGuestSyncAcknowledged();
-      clearGuestSyncLock();
-      endMerge(user.id);
-      writeGuestSyncSummary(summary);
-      navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
-    } catch (err: any) {
-      // Roll back the in-flight marker so the user can retry.
+    let anyStepFailed = false;
+    for (const k of stepsToRun) {
       try {
-        window.localStorage.removeItem("salbcare_guest_sync_inflight");
-      } catch {
-        /* ignore */
+        if (k === "patients") await runPatientsStep();
+        else await runAppointmentsStep();
+      } catch (err: any) {
+        anyStepFailed = true;
+        const msg =
+          err?.message ??
+          `Falha ao importar ${k === "patients" ? "pacientes" : "agendamentos"}.`;
+        setStepError((e) => ({ ...e, [k]: msg }));
+        setLastError(msg);
+        setSteps((s) => ({ ...s, [k]: "failed" }));
+        toast.error(msg);
+        break;
       }
-      const msg = err?.message ?? "Falha ao importar dados do modo guest.";
-      setLastError(msg);
-      setSteps((s) => {
-        // Mark the first non-done step as failed so the UI shows where it broke.
-        const next = { ...s };
-        const order: (keyof Steps)[] = ["patients", "appointments", "teleconsultations"];
-        for (const k of order) {
-          if (next[k] === "running" || next[k] === "pending") {
-            next[k] = "failed";
-            break;
-          }
-        }
-        return next;
-      });
-      toast.error(msg);
-      setMerging(false);
     }
-  };
 
-  /** Resets the inflight lock and re-runs handleMerge with the same data. */
-  const handleRetry = () => {
-    if (!user) return;
     try {
       window.localStorage.removeItem("salbcare_guest_sync_inflight");
     } catch {
       /* ignore */
     }
-    setLastError(null);
+
+    if (anyStepFailed) {
+      setMerging(false);
+      return;
+    }
+
+    setSteps((s) => {
+      const allDoneOrSkipped =
+        (s.patients === "done" || s.patients === "skipped") &&
+        (s.appointments === "done" || s.appointments === "skipped");
+      if (allDoneOrSkipped) {
+        setTimeout(finalize, 0);
+      } else {
+        setMerging(false);
+      }
+      return s;
+    });
+  };
+
+  const handleMerge = () => {
+    void runMerge("all");
+  };
+  const handleRetry = () => {
     setSteps(initialSteps());
-    void handleMerge();
+    setStepError({});
+    setLastError(null);
+    void runMerge("all");
+  };
+  const handleRetryStep = (k: StepKey) => {
+    void runMerge(k);
   };
 
   const handleDiscard = () => {
