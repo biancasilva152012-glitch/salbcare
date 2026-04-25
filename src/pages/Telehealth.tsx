@@ -329,12 +329,11 @@ const Telehealth = () => {
         doctorPhone={(profile as any)?.phone || ""}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["teleconsultations"] })}
       />
-      <UpgradeModal
+      <PremiumFeatureModal
         open={upgradeOpen}
         onClose={() => setUpgradeOpen(false)}
-        feature="teleconsultas"
-        currentUsage={usageByModule.telehealth.used}
-        limit={usageByModule.telehealth.limit}
+        featureName="Teleconsulta integrada"
+        description="A teleconsulta integrada com Google Meet é exclusiva do plano Essencial. Faça upgrade para criar e gerenciar suas videoconsultas."
       />
     </PageContainer>
   );
