@@ -216,12 +216,22 @@ const Dashboard = () => {
               </motion.div>
             )}
 
+            {financialHealth.onboardingStep !== null && (
+              <motion.div variants={item}>
+                <FinancialOnboardingWizard
+                  health={financialHealth}
+                  onOpenMentor={() => navigate("/dashboard/mentoria")}
+                />
+              </motion.div>
+            )}
+
             {!financialHealth.isEmpty && (
               <motion.div variants={item}>
                 <FinancialHealthProgress
                   steps={financialHealth.steps}
                   progressPercent={financialHealth.progressPercent}
                   onPremiumStepClick={openUpgrade}
+                  mentorUnlocks={financialHealth.mentorUnlocks}
                 />
               </motion.div>
             )}

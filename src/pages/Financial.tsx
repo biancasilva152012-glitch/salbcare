@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import PageSkeleton from "@/components/PageSkeleton";
 import ListPagination from "@/components/ListPagination";
 import { usePagination } from "@/hooks/usePagination";
