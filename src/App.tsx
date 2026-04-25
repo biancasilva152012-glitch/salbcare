@@ -156,16 +156,18 @@ const App = () => (
               <Route path="/payment-success" element={<ProfessionalRoute><PaymentSuccess /></ProfessionalRoute>} />
               <Route path="/sucesso" element={<ProfessionalRoute><Sucesso /></ProfessionalRoute>} />
               <Route path="/cancelado" element={<ProfessionalRoute><Cancelado /></ProfessionalRoute>} />
-              <Route path="/dashboard" element={<ProfessionalRoute><Dashboard /></ProfessionalRoute>} />
-              <Route path="/dashboard/financeiro" element={<ProfessionalRoute><DashboardFinanceiro /></ProfessionalRoute>} />
-              <Route path="/dashboard/financial" element={<ProfessionalRoute><Financial /></ProfessionalRoute>} />
-              <Route path="/dashboard/contabilidade" element={<ProfessionalRoute><Accounting /></ProfessionalRoute>} />
-              <Route path="/dashboard/agenda" element={<ProfessionalRoute><Agenda /></ProfessionalRoute>} />
-              <Route path="/dashboard/pacientes" element={<ProfessionalRoute><Patients /></ProfessionalRoute>} />
-              <Route path="/dashboard/juridico" element={<ProfessionalRoute><Legal /></ProfessionalRoute>} />
-              <Route path="/dashboard/teleconsulta" element={<ProfessionalRoute><DashboardTeleconsulta /></ProfessionalRoute>} />
-              <Route path="/dashboard/telehealth" element={<ProfessionalRoute><Telehealth /></ProfessionalRoute>} />
-              <Route path="/dashboard/mentoria" element={<ProfessionalRoute><DashboardMentoria /></ProfessionalRoute>} />
+              {/* Guest-friendly: localStorage-backed UI when !user */}
+              <Route path="/dashboard" element={<ProfessionalRoute allowGuest><Dashboard /></ProfessionalRoute>} />
+              <Route path="/dashboard/agenda" element={<ProfessionalRoute allowGuest><Agenda /></ProfessionalRoute>} />
+              <Route path="/dashboard/pacientes" element={<ProfessionalRoute allowGuest><Patients /></ProfessionalRoute>} />
+              {/* Guest-paywall rendered inside the page when !user */}
+              <Route path="/dashboard/financeiro" element={<ProfessionalRoute allowGuest><DashboardFinanceiro /></ProfessionalRoute>} />
+              <Route path="/dashboard/financial" element={<ProfessionalRoute allowGuest><Financial /></ProfessionalRoute>} />
+              <Route path="/dashboard/contabilidade" element={<ProfessionalRoute allowGuest><Accounting /></ProfessionalRoute>} />
+              <Route path="/dashboard/juridico" element={<ProfessionalRoute allowGuest><Legal /></ProfessionalRoute>} />
+              <Route path="/dashboard/teleconsulta" element={<ProfessionalRoute allowGuest><DashboardTeleconsulta /></ProfessionalRoute>} />
+              <Route path="/dashboard/telehealth" element={<ProfessionalRoute allowGuest><Telehealth /></ProfessionalRoute>} />
+              <Route path="/dashboard/mentoria" element={<ProfessionalRoute allowGuest><DashboardMentoria /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute><Profile /></ProfessionalRoute>} />
               <Route path="/profile/audit" element={<ProfessionalRoute><ProfileAudit /></ProfessionalRoute>} />
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
