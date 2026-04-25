@@ -155,7 +155,7 @@ const Index = () => {
                     <span className="text-[10px] text-primary font-bold">IA</span>
                   </div>
                   <p className="text-xs text-muted-foreground bg-muted/50 rounded-xl rounded-tl-none px-3 py-2 leading-relaxed">
-                    Sua receita cresceu 12% este mês. Quer ver como otimizar seus impostos?
+                    Você teve mais consultas esse mês! Quer que eu mostre onde investir o dinheiro extra para lucrar ainda mais?
                   </p>
                 </div>
                 <div className="flex justify-end">

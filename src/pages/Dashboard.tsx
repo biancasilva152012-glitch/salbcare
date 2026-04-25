@@ -206,6 +206,44 @@ const Dashboard = () => {
           <GuestSyncReminderBanner />
         </motion.div>
 
+        {/* Engajamento financeiro progressivo */}
+        {!financialHealth.isLoading && (
+          <>
+            {financialHealth.isEmpty && (
+              <motion.div variants={item}>
+                <FinancialDiagnosisBanner hidden={false} />
+              </motion.div>
+            )}
+
+            {!financialHealth.isEmpty && (
+              <motion.div variants={item}>
+                <FinancialHealthProgress
+                  steps={financialHealth.steps}
+                  progressPercent={financialHealth.progressPercent}
+                  onPremiumStepClick={openUpgrade}
+                />
+              </motion.div>
+            )}
+
+            {financialHealth.trialExpiredNotConverted &&
+              financialHealth.hasMinimumForSmartNotification && (
+                <motion.div variants={item}>
+                  <SmartTrialNotification
+                    monthlyIncome={financialHealth.monthlyIncome}
+                    onUpgrade={openUpgrade}
+                  />
+                </motion.div>
+              )}
+
+            {financialHealth.hasMinimumForPreview &&
+              !financialHealth.steps.find((s) => s.id === "ai_analysis")?.done && (
+                <motion.div variants={item}>
+                  <AIPreviewLockedCard onUpgrade={openUpgrade} />
+                </motion.div>
+              )}
+          </>
+        )}
+
         {/* Daily Insight */}
         {dailyInsight && (
           <motion.div variants={item}>
@@ -360,6 +398,14 @@ const Dashboard = () => {
           </div>
         </motion.div>
       </motion.div>
+
+      <UpgradeModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        feature="Mentora Financeira IA"
+        currentUsage={financialHealth.transactionCount}
+        limit={financialHealth.transactionCount}
+      />
     </PageContainer>
   );
 };

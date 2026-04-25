@@ -159,7 +159,7 @@ const ParaProfissionais = () => {
             </motion.p>
             <motion.p variants={fadeUp} className="mt-2 text-center">
               <Link
-                to="/experimente"
+                to="/profissionais"
                 onClick={() => trackCtaClick("experimente_demo", "hero")}
                 className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
               >
@@ -181,7 +181,7 @@ const ParaProfissionais = () => {
                     <span className="text-[10px] text-primary font-bold">IA</span>
                   </div>
                   <p className="text-xs text-muted-foreground bg-muted/50 rounded-xl rounded-tl-none px-3 py-2 leading-relaxed">
-                    Sua receita cresceu 12% este mês. Quer ver como otimizar seus impostos?
+                    Você teve mais consultas esse mês! Quer que eu mostre onde investir o dinheiro extra para lucrar ainda mais?
                   </p>
                 </div>
                 <div className="flex justify-end">
