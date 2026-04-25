@@ -179,7 +179,6 @@ const SyncGuestData = () => {
       // Nothing to merge — just acknowledge so the toast/route stops firing.
       markGuestSyncAcknowledged();
       clearGuestSyncLock();
-    clearGuestSyncCheckpoint();
       clearGuestSyncCheckpoint();
       navigate(next, { replace: true });
     }
