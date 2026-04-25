@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { clearDemoStorage } from "@/lib/demoStorage";
-import { buildExperimenteRedirect } from "@/lib/experimenteRedirect";
+import { buildExperimenteRedirect, getPreservedKeysFromSearch } from "@/lib/experimenteRedirect";
 
 /**
  * Modo demonstração foi removido. Mantemos a rota /experimente para preservar
@@ -20,13 +20,18 @@ const Experimente = () => {
 
   useEffect(() => {
     const removed = clearDemoStorage();
-    // Telemetria leve — apenas a contagem, sem dados sensíveis.
+    // Telemetria leve: nenhum valor de query é logado, apenas o NOME das
+    // chaves preservadas que estavam presentes (utm_* / ref). Isso permite
+    // entender atribuição/tráfego sem expor PII (e-mail, ids, tokens).
+    const preservedKeys = getPreservedKeysFromSearch(location.search);
     // eslint-disable-next-line no-console
     console.info("[experimente] redirect", {
-      authenticated: !!user,
+      flow: user ? "authed" : "visitor",
       cleanedKeys: removed.length,
+      preservedKeys,
     });
-  }, [user]);
+  }, [user, location.search]);
+
 
   const target = useMemo(
     () =>
