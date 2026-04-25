@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
@@ -8,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, ShieldCheck, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, ShieldCheck, ShieldAlert, ChevronLeft, ChevronRight, FileDown } from "lucide-react";
 
 type AuditEvent = {
   id: string;
@@ -21,6 +23,13 @@ type AuditEvent = {
 };
 
 const PAGE_SIZE = 20;
+
+const FALLBACK_OUTCOMES = new Set([
+  "fallback-disallowed",
+  "fallback-traversal",
+  "fallback-external-origin",
+  "fallback-ambiguous",
+]);
 
 const outcomeVariant = (outcome: string): "default" | "secondary" | "destructive" => {
   if (outcome === "ok") return "default";
@@ -50,7 +59,9 @@ const outcomeLabel = (outcome: string) => {
 const ProfileAudit = () => {
   const { user, loading: authLoading } = useAuth();
   const [events, setEvents] = useState<AuditEvent[]>([]);
+  const [fallbackCounts, setFallbackCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
   const [from, setFrom] = useState("");
@@ -65,29 +76,48 @@ const ProfileAudit = () => {
     [total],
   );
 
+  const totalFallbacks = useMemo(
+    () => Object.values(fallbackCounts).reduce((a, b) => a + b, 0),
+    [fallbackCounts],
+  );
+
+  const buildBaseQuery = () => {
+    if (!user) return null;
+    let q = supabase
+      .from("redirect_audit_events")
+      .select("id, flow, source, preserved_keys, resolved_path, outcome, created_at", { count: "exact" })
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (from) q = q.gte("created_at", new Date(from).toISOString());
+    if (to) {
+      const toDate = new Date(to);
+      toDate.setDate(toDate.getDate() + 1);
+      q = q.lt("created_at", toDate.toISOString());
+    }
+    return q;
+  };
+
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
     const load = async () => {
       setLoading(true);
-      let query = supabase
-        .from("redirect_audit_events")
-        .select("id, flow, source, preserved_keys, resolved_path, outcome, created_at", { count: "exact" })
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 
-      if (from) {
-        query = query.gte("created_at", new Date(from).toISOString());
-      }
-      if (to) {
-        // Inclusivo: somar 1 dia.
-        const toDate = new Date(to);
-        toDate.setDate(toDate.getDate() + 1);
-        query = query.lt("created_at", toDate.toISOString());
-      }
+      // Página atual
+      const pageQuery = buildBaseQuery()!.range(
+        page * PAGE_SIZE,
+        page * PAGE_SIZE + PAGE_SIZE - 1,
+      );
+      const { data, count, error } = await pageQuery;
 
-      const { data, count, error } = await query;
+      // Contagem de fallbacks por outcome (sem paginação, mesmos filtros).
+      // RLS garante que só vemos eventos do próprio usuário.
+      const fallbackQuery = buildBaseQuery()!
+        .in("outcome", [...FALLBACK_OUTCOMES])
+        .limit(1000);
+      const { data: fbData } = await fallbackQuery;
+
       if (cancelled) return;
       if (error) {
         console.error("[profile-audit] load error", error);
@@ -97,13 +127,69 @@ const ProfileAudit = () => {
         setEvents((data ?? []) as AuditEvent[]);
         setTotal(count ?? 0);
       }
+      const counts: Record<string, number> = {};
+      (fbData ?? []).forEach((row: any) => {
+        counts[row.outcome] = (counts[row.outcome] ?? 0) + 1;
+      });
+      setFallbackCounts(counts);
       setLoading(false);
     };
     load();
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, page, from, to]);
+
+  const handleExportPdf = async () => {
+    if (!user) return;
+    setExporting(true);
+    try {
+      // Exporta TODOS os eventos do filtro atual (limite hard de 1000 para
+      // proteger memória do navegador).
+      const { data, error } = await buildBaseQuery()!.limit(1000);
+      if (error) throw error;
+      const rows = (data ?? []) as AuditEvent[];
+
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+      doc.setFontSize(14);
+      doc.text("Auditoria de redirecionamentos", 40, 40);
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      const filterLine = `Filtros: ${from || "início"} → ${to || "hoje"} • ${rows.length} evento(s)`;
+      doc.text(filterLine, 40, 56);
+      doc.text(`Gerado em ${new Date().toLocaleString("pt-BR")}`, 40, 68);
+      doc.setTextColor(0);
+
+      autoTable(doc, {
+        startY: 84,
+        head: [["Data", "Fluxo", "Origem", "Resultado", "Destino", "Chaves"]],
+        body: rows.map((ev) => [
+          new Date(ev.created_at).toLocaleString("pt-BR"),
+          ev.flow === "authed" ? "Logado" : "Visitante",
+          ev.source,
+          outcomeLabel(ev.outcome),
+          ev.resolved_path ?? "—",
+          ev.preserved_keys.join(", ") || "—",
+        ]),
+        styles: { fontSize: 8, cellPadding: 4 },
+        headStyles: { fillColor: [15, 23, 42] },
+        columnStyles: {
+          0: { cellWidth: 110 },
+          1: { cellWidth: 60 },
+          2: { cellWidth: 90 },
+          3: { cellWidth: 120 },
+        },
+      });
+
+      const stamp = new Date().toISOString().slice(0, 10);
+      doc.save(`auditoria-redirects-${stamp}.pdf`);
+    } catch (err) {
+      console.error("[profile-audit] export error", err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   if (authLoading) {
     return (
@@ -144,12 +230,13 @@ const ProfileAudit = () => {
           </div>
         </div>
 
+        {/* Filtros */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Filtros</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div>
                 <Label htmlFor="from">De</Label>
                 <Input
@@ -184,17 +271,73 @@ const ProfileAudit = () => {
                     setPage(0);
                   }}
                 >
-                  Limpar filtros
+                  Limpar
+                </Button>
+              </div>
+              <div className="flex items-end">
+                <Button
+                  className="w-full gap-2"
+                  onClick={handleExportPdf}
+                  disabled={exporting || total === 0}
+                  data-testid="export-pdf"
+                >
+                  {exporting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <FileDown className="h-4 w-4" />
+                  )}
+                  Exportar PDF
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Fallbacks destacados */}
+        <Card data-testid="fallback-section" className={totalFallbacks > 0 ? "border-destructive/50" : ""}>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <ShieldAlert
+              className={`h-5 w-5 ${totalFallbacks > 0 ? "text-destructive" : "text-muted-foreground"}`}
+              aria-hidden
+            />
+            <CardTitle className="text-base">
+              Eventos bloqueados{" "}
+              <span className="text-sm text-muted-foreground font-normal">
+                ({totalFallbacks})
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {totalFallbacks === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Nenhuma tentativa de redirect bloqueada no período. ✨
+              </p>
+            ) : (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[...FALLBACK_OUTCOMES].map((outcome) => {
+                  const count = fallbackCounts[outcome] ?? 0;
+                  if (count === 0) return null;
+                  return (
+                    <li
+                      key={outcome}
+                      className="flex items-center justify-between p-3 rounded-md border bg-muted/30"
+                      data-testid={`fallback-${outcome}`}
+                    >
+                      <span className="text-sm">{outcomeLabel(outcome)}</span>
+                      <Badge variant="destructive">{count}</Badge>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Lista paginada */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Eventos</CardTitle>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground" data-testid="total-count">
               {total} {total === 1 ? "evento" : "eventos"}
             </span>
           </CardHeader>
@@ -204,13 +347,17 @@ const ProfileAudit = () => {
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
             ) : events.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center">
+              <p className="text-sm text-muted-foreground py-6 text-center" data-testid="empty-state">
                 Nenhum redirecionamento registrado neste período.
               </p>
             ) : (
-              <ul className="divide-y">
+              <ul className="divide-y" data-testid="event-list">
                 {events.map((ev) => (
-                  <li key={ev.id} className="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                  <li
+                    key={ev.id}
+                    className="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4"
+                    data-testid="event-item"
+                  >
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge variant={outcomeVariant(ev.outcome)}>{outcomeLabel(ev.outcome)}</Badge>
@@ -241,11 +388,12 @@ const ProfileAudit = () => {
                   size="sm"
                   disabled={page === 0 || loading}
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  data-testid="prev-page"
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Anterior
                 </Button>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground" data-testid="page-indicator">
                   Página {page + 1} de {totalPages}
                 </span>
                 <Button
@@ -253,6 +401,7 @@ const ProfileAudit = () => {
                   size="sm"
                   disabled={page + 1 >= totalPages || loading}
                   onClick={() => setPage((p) => p + 1)}
+                  data-testid="next-page"
                 >
                   Próxima
                   <ChevronRight className="h-4 w-4 ml-1" />

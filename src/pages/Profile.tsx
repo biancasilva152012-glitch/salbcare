@@ -370,8 +370,7 @@ const Profile = () => {
             <span className="text-sm font-medium">Meu plano</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
-
+          </button>
 
         {/* Consultation Settings */}
         <div ref={consultationRef}>
@@ -398,6 +397,21 @@ const Profile = () => {
               <div>
                 <span className="text-sm font-medium">Baixar meus dados</span>
                 <p className="text-[10px] text-muted-foreground">Exporta todos os seus dados em formato JSON</p>
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+
+          <button
+            onClick={() => navigate("/profile/audit")}
+            className="glass-card flex w-full items-center justify-between p-3 text-left"
+            data-testid="profile-audit-link"
+          >
+            <div className="flex items-center gap-3">
+              <Shield className="h-5 w-5 text-primary" />
+              <div>
+                <span className="text-sm font-medium">Auditoria de redirecionamentos</span>
+                <p className="text-[10px] text-muted-foreground">Histórico dos redirects seguros vinculados à sua conta</p>
               </div>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
