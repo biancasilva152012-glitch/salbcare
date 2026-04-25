@@ -287,6 +287,45 @@ describe("SyncGuestData — fronteira do TTL", () => {
     expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
   });
 
+  it("age = TTL - 1ms → checkpoint é FRESH e renderiza a mesma UI de fresco (sem fallback)", async () => {
+    const now = Date.now();
+    vi.spyOn(Date, "now").mockReturnValue(now);
+
+    // 1ms ANTES do limite — ainda dentro da janela de retomada silenciosa
+    const updatedAt = new Date(now - GUEST_SYNC_CHECKPOINT_TTL_MS + 1).toISOString();
+    const cp: GuestSyncCheckpoint = {
+      userId: "user-1",
+      steps: { patients: "running", appointments: "pending", teleconsultations: "pending" },
+      liveSummary: {
+        outcome: "merged",
+        patients: { imported: 2, skippedDuplicate: 0, skippedQuota: 0 },
+        appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+        duplicates: { patients: [], appointments: [] },
+        at: updatedAt,
+      },
+      pendingPatientIds: ["gp2"],
+      pendingAppointmentIds: [],
+      importPatients: true,
+      importAppointments: true,
+      updatedAt,
+    };
+    window.localStorage.setItem(GUEST_SYNC_CHECKPOINT_KEY, JSON.stringify(cp));
+    seedGuestPatients(3);
+
+    const { readGuestSyncCheckpointDetailed } = await import("@/lib/guestStorage");
+    expect(readGuestSyncCheckpointDetailed("user-1").status).toBe("fresh");
+
+    await renderPage();
+
+    // Banner do fallback NUNCA aparece
+    expect(screen.queryByTestId("sync-checkpoint-expired")).not.toBeInTheDocument();
+    // Mesma UI de "fresh": progresso já é restaurado (1 paciente importado)
+    // e a barra de progresso aparece — confirmando o caminho silencioso.
+    expect(await screen.findByTestId("sync-progress")).toBeInTheDocument();
+    const live = await screen.findByTestId("sync-live-summary");
+    expect(live).toBeInTheDocument();
+  });
+
   it("age = TTL + 1ms → checkpoint é EXPIRED (fallback aparece)", async () => {
     const now = Date.now();
     vi.spyOn(Date, "now").mockReturnValue(now);
