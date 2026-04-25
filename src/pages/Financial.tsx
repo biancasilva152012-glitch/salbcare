@@ -452,12 +452,9 @@ const Financial = () => {
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
           {filteredTransactions.length === 0 && transactions.length === 0 && (
-            <EmptyState
-              icon={DollarSign}
-              title="Seu caixa está zerado — por enquanto"
-              description="Registre a primeira consulta recebida e comece a enxergar quanto fica de verdade no seu bolso, sem surpresa no fim do mês."
-              actionLabel="Lançar primeira receita"
-              onAction={() => { setForm({ ...emptyForm, type: "income" }); setOpen(true); }}
+            <FinancialEmptyState
+              onAddIncome={() => { setForm({ ...emptyForm, type: "income" }); setOpen(true); }}
+              onLearnAboutAI={() => setExplainerOpen(true)}
             />
           )}
           {filteredTransactions.length === 0 && transactions.length > 0 && (
