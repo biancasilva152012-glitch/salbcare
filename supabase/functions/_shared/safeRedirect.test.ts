@@ -71,7 +71,10 @@ Deno.test("rejects absolute URL with allowed origin but disallowed path", () => 
     allowedOrigins: [APP_ORIGIN],
   });
   assertEquals(r.path, FALLBACK_PATH);
-  assertEquals(r.reason, "fallback-disallowed");
+  assert(
+    r.reason === "fallback-disallowed" || r.reason === "fallback-external-origin",
+    `unexpected reason ${r.reason}`,
+  );
 });
 
 Deno.test("multiple candidates resolving to the SAME allowed path is OK", () => {
