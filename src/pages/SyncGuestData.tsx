@@ -126,6 +126,13 @@ const SyncGuestData = () => {
   );
 
   // ── Actions ─────────────────────────────────────────────────────────────
+  /**
+   * Imports the guest data into the user account. The function is built so it
+   * can be re-invoked by the "Tentar importar novamente" button after a
+   * failure: it always clears the inflight marker on error and re-reads the
+   * SAME guest data from localStorage (we never wipe it until the merge fully
+   * succeeds), so retrying is safe and idempotent.
+   */
   const handleMerge = async () => {
     if (!user) return;
 
@@ -148,6 +155,12 @@ const SyncGuestData = () => {
     }
 
     setMerging(true);
+    setLastError(null);
+    setSteps({
+      patients: importPatients && guestPatients.length > 0 ? "running" : "skipped",
+      appointments: "pending",
+      teleconsultations: "pending",
+    });
 
     const summary: GuestSyncSummary = {
       outcome: "merged",
@@ -211,11 +224,19 @@ const SyncGuestData = () => {
           if (error) throw error;
           summary.patients.imported = data?.length ?? rows.length;
         }
+        setSteps((s) => ({ ...s, patients: "done" }));
       } else if (!importPatients) {
         summary.patients.skippedQuota = guestPatients.length;
+        setSteps((s) => ({ ...s, patients: "skipped" }));
+      } else {
+        setSteps((s) => ({ ...s, patients: "skipped" }));
       }
 
       // ── APPOINTMENTS ────────────────────────────────────────────────────
+      setSteps((s) => ({
+        ...s,
+        appointments: importAppointments && guestAppointments.length > 0 ? "running" : "skipped",
+      }));
       if (importAppointments && guestAppointments.length > 0) {
         const { data: existing, error: exErr } = await supabase
           .from("appointments")
@@ -263,9 +284,19 @@ const SyncGuestData = () => {
           if (error) throw error;
           summary.appointments.imported = data?.length ?? rows.length;
         }
+        setSteps((s) => ({ ...s, appointments: "done" }));
       } else if (!importAppointments) {
         summary.appointments.skippedQuota = guestAppointments.length;
+        setSteps((s) => ({ ...s, appointments: "skipped" }));
+      } else {
+        setSteps((s) => ({ ...s, appointments: "skipped" }));
       }
+
+      // ── TELECONSULTAS ───────────────────────────────────────────────────
+      // Não há rascunhos guest de teleconsultas hoje (modo guest só salva
+      // pacientes/agenda). Marcamos como "skipped" para que a barra termine
+      // em 100% e o usuário veja todas as etapas.
+      setSteps((s) => ({ ...s, teleconsultations: "skipped" }));
 
       clearGuestStorage();
       markGuestSyncAcknowledged();
@@ -280,9 +311,38 @@ const SyncGuestData = () => {
       } catch {
         /* ignore */
       }
-      toast.error(err?.message ?? "Falha ao importar dados do modo guest.");
+      const msg = err?.message ?? "Falha ao importar dados do modo guest.";
+      setLastError(msg);
+      setSteps((s) => {
+        // Mark the first non-done step as failed so the UI shows where it broke.
+        const next = { ...s };
+        const order: (keyof Steps)[] = ["patients", "appointments", "teleconsultations"];
+        for (const k of order) {
+          if (next[k] === "running" || next[k] === "pending") {
+            next[k] = "failed";
+            break;
+          }
+        }
+        return next;
+      });
+      toast.error(msg);
       setMerging(false);
     }
+  };
+
+  /** Resets the inflight lock and re-runs handleMerge with the same data. */
+  const handleRetry = () => {
+    if (!user) return;
+    try {
+      window.localStorage.removeItem("salbcare_guest_sync_inflight");
+    } catch {
+      /* ignore */
+    }
+    setLastError(null);
+    setSteps(initialSteps());
+    void handleMerge();
+  };
+
   };
 
   const handleDiscard = () => {
