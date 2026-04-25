@@ -39,6 +39,15 @@ const Profile = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, signOut, subscription } = useAuth();
+  if (!user) {
+    return (
+      <GuestPaywall
+        feature="o seu Perfil"
+        description="Crie sua conta grátis para configurar perfil público, agenda, valores e assinatura."
+        redirectAfterSignup="/profile"
+      />
+    );
+  }
   const queryClient = useQueryClient();
   const consultationRef = useRef<HTMLDivElement>(null);
   const [deleteStep, setDeleteStep] = useState(0);
