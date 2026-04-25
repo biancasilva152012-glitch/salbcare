@@ -506,6 +506,39 @@ const ProfileBlocks = () => {
               </button>
             )}
           </div>
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <Label htmlFor="server-search" className="text-[11px] text-muted-foreground">
+              Buscar no servidor (inclui eventos não carregados)
+            </Label>
+            <Switch
+              id="server-search"
+              data-testid="block-server-search"
+              checked={serverSearch}
+              onCheckedChange={setServerSearch}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <Label className="text-xs flex items-center gap-1.5">
+            <ArrowUpDown className="h-3 w-3" />
+            Ordenação
+          </Label>
+          <Select
+            value={sortOrder}
+            onValueChange={(v) => setSortOrder(v as SortOrder)}
+          >
+            <SelectTrigger
+              data-testid="block-filter-order"
+              className="bg-accent border-border"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Mais recentes primeiro</SelectItem>
+              <SelectItem value="asc">Mais antigos primeiro</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {hasAnyFilter && (
@@ -522,13 +555,35 @@ const ProfileBlocks = () => {
         )}
 
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline" size="sm" onClick={exportCsv} data-testid="export-csv">
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Exportar CSV
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportCsv}
+            disabled={exporting !== null}
+            data-testid="export-csv"
+            aria-busy={exporting === "csv"}
+          >
+            {exporting === "csv" ? (
+              <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+            )}
+            {exporting === "csv" ? "Gerando CSV…" : "Exportar CSV"}
           </Button>
-          <Button variant="outline" size="sm" onClick={exportPdf} data-testid="export-pdf">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            Exportar PDF
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportPdf}
+            disabled={exporting !== null}
+            data-testid="export-pdf"
+            aria-busy={exporting === "pdf"}
+          >
+            {exporting === "pdf" ? (
+              <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+            )}
+            {exporting === "pdf" ? "Gerando PDF…" : "Exportar PDF"}
           </Button>
         </div>
 
