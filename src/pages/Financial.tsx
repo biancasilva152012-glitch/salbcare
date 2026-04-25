@@ -36,6 +36,8 @@ import GuestPaywall from "@/components/GuestPaywall";
 import FinancialEmptyState from "@/components/financial/FinancialEmptyState";
 import MentorIAExplainerModal from "@/components/financial/MentorIAExplainerModal";
 import FinancialCuriosityCTA from "@/components/financial/FinancialCuriosityCTA";
+import FinancialMentorTeaserQuestions from "@/components/financial/FinancialMentorTeaserQuestions";
+import { useFinancialSuggestions } from "@/hooks/useFinancialSuggestions";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
