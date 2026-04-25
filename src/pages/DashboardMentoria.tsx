@@ -637,4 +637,15 @@ const DashboardMentoriaInner = () => {
   );
 };
 
+const DashboardMentoria = () => (
+  <PremiumOnlyGuard
+    feature="A Mentora Financeira IA"
+    description="A mentora IA é exclusiva do plano Essencial — respostas personalizadas com seus números reais."
+    reason="mentorship"
+    redirectAfter="/dashboard/mentoria"
+  >
+    <DashboardMentoriaInner />
+  </PremiumOnlyGuard>
+);
+
 export default DashboardMentoria;
