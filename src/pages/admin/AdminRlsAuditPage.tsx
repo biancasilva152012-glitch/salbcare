@@ -8,15 +8,34 @@ import {
   XCircle,
   Download,
   FileText,
+  Eye,
+  Loader2,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
+import { useAuth } from "@/contexts/AuthContext";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+
+type PolicyRow = {
+  policy_name: string;
+  command: string;
+  permissive: string;
+  roles: string[];
+  using_expr: string;
+  with_check_expr: string;
+};
 
 type AuditRow = {
   table_name: string;
@@ -40,9 +59,33 @@ const Yes = () => <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" aria-la
 const No = () => <XCircle className="h-3.5 w-3.5 text-destructive" aria-label="não" />;
 
 const AdminRlsAuditPage = () => {
+  const { user } = useAuth();
   const [rows, setRows] = useState<AuditRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastRunAt, setLastRunAt] = useState<Date | null>(null);
+
+  // Per-table policy detail dialog
+  const [detailTable, setDetailTable] = useState<string | null>(null);
+  const [detailRows, setDetailRows] = useState<PolicyRow[] | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  const openDetail = async (table: string) => {
+    setDetailTable(table);
+    setDetailRows(null);
+    setDetailLoading(true);
+    try {
+      const { data, error } = await supabase.rpc("get_rls_policies_for_table", {
+        _table: table,
+      });
+      if (error) throw error;
+      setDetailRows((data ?? []) as PolicyRow[]);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Falha ao carregar policies.");
+      setDetailRows([]);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
 
   const run = async () => {
     setLoading(true);
@@ -68,101 +111,115 @@ const AdminRlsAuditPage = () => {
 
   const yn = (v: boolean) => (v ? "sim" : "não");
 
-  const downloadCsv = () => {
+  /** Short, traceable user-id slice used in filenames (first 8 chars of UUID). */
+  const userSlug = () => (user?.id ? user.id.replace(/-/g, "").slice(0, 8) : "anon");
+
+  /** SHA-256 of the canonical body, used as a tamper-evident signature. */
+  const sha256Hex = async (text: string): Promise<string> => {
+    const buf = new TextEncoder().encode(text);
+    const digest = await crypto.subtle.digest("SHA-256", buf);
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  };
+
+  const downloadCsv = async () => {
     if (!rows || !lastRunAt) return;
     const header = [
-      "tabela",
-      "status",
-      "rls_ativo",
-      "select",
-      "insert",
-      "update",
-      "delete",
-      "user_scoped",
-      "observacao",
+      "tabela", "status", "rls_ativo", "select", "insert",
+      "update", "delete", "user_scoped", "observacao",
     ];
     const escape = (s: string) => `"${String(s).replace(/"/g, '""')}"`;
-    const lines = [header.join(",")];
+    const body = [header.join(",")];
     for (const r of rows) {
-      lines.push(
+      body.push(
         [
-          r.table_name,
-          r.status,
-          yn(r.rls_enabled),
-          yn(r.has_select),
-          yn(r.has_insert),
-          yn(r.has_update),
-          yn(r.has_delete),
-          yn(r.user_scoped),
-          r.notes,
-        ]
-          .map(escape)
-          .join(","),
+          r.table_name, r.status, yn(r.rls_enabled), yn(r.has_select),
+          yn(r.has_insert), yn(r.has_update), yn(r.has_delete),
+          yn(r.user_scoped), r.notes,
+        ].map(escape).join(","),
       );
     }
-    // Header comment line with timestamp for traceability
-    const csv = `# SALBCARE — Auditoria RLS — ${lastRunAt.toLocaleString("pt-BR")}\n${lines.join("\n")}\n`;
+    const bodyText = body.join("\n");
+    const hash = await sha256Hex(bodyText);
+    const csv =
+      `# SALBCARE — Auditoria RLS\n` +
+      `# Gerado em: ${lastRunAt.toISOString()}\n` +
+      `# Executado por: ${user?.id ?? "desconhecido"} (${user?.email ?? "—"})\n` +
+      `# SHA-256 (corpo): ${hash}\n` +
+      `${bodyText}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `salbcare-rls-audit-${stamp(lastRunAt)}.csv`;
+    a.download = `salbcare-rls-audit-${stamp(lastRunAt)}-${userSlug()}-${hash.slice(0, 8)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("CSV exportado.");
+    toast.success("CSV exportado com assinatura SHA-256.");
   };
 
-  const downloadPdf = () => {
+  const downloadPdf = async () => {
     if (!rows || !lastRunAt) return;
+    const counts = rows.reduce(
+      (acc, r) => { acc[r.status] += 1; return acc; },
+      { ok: 0, warning: 0, fail: 0 } as Record<AuditRow["status"], number>,
+    );
+
+    // Canonical body → hash → embed back in the PDF for tamper evidence.
+    const canonical = rows
+      .map((r) =>
+        [r.table_name, r.status, r.rls_enabled, r.has_select, r.has_insert,
+          r.has_update, r.has_delete, r.user_scoped, r.notes].join("|"),
+      )
+      .join("\n");
+    const hash = await sha256Hex(
+      `${lastRunAt.toISOString()}|${user?.id ?? ""}|${canonical}`,
+    );
+
     const doc = new jsPDF({ orientation: "landscape" });
     doc.setFontSize(14);
     doc.text("SALBCARE — Auditoria de RLS", 14, 14);
     doc.setFontSize(9);
     doc.setTextColor(120);
     doc.text(`Gerado em ${lastRunAt.toLocaleString("pt-BR")}`, 14, 20);
-    const counts = rows.reduce(
-      (acc, r) => {
-        acc[r.status] += 1;
-        return acc;
-      },
-      { ok: 0, warning: 0, fail: 0 } as Record<AuditRow["status"], number>,
-    );
+    doc.text(`Executado por: ${user?.email ?? "—"} (${user?.id ?? "—"})`, 14, 25);
     doc.text(
       `Resumo: ${counts.ok} OK • ${counts.warning} atenção • ${counts.fail} falha(s)`,
-      14,
-      25,
+      14, 30,
     );
 
     autoTable(doc, {
-      startY: 30,
+      startY: 35,
       head: [[
-        "Tabela",
-        "Status",
-        "RLS",
-        "SELECT",
-        "INSERT",
-        "UPDATE",
-        "DELETE",
-        "user_id?",
-        "Observação",
+        "Tabela", "Status", "RLS", "SELECT", "INSERT",
+        "UPDATE", "DELETE", "user_id?", "Observação",
       ]],
       body: rows.map((r) => [
-        r.table_name,
-        r.status,
-        yn(r.rls_enabled),
-        yn(r.has_select),
-        yn(r.has_insert),
-        yn(r.has_update),
-        yn(r.has_delete),
-        yn(r.user_scoped),
-        r.notes,
+        r.table_name, r.status, yn(r.rls_enabled), yn(r.has_select),
+        yn(r.has_insert), yn(r.has_update), yn(r.has_delete),
+        yn(r.user_scoped), r.notes,
       ]),
       styles: { fontSize: 8 },
       headStyles: { fillColor: [30, 64, 175] },
     });
 
-    doc.save(`salbcare-rls-audit-${stamp(lastRunAt)}.pdf`);
-    toast.success("PDF exportado.");
+    // Signature footer on every page
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7);
+      doc.setTextColor(140);
+      doc.text(
+        `Assinatura SHA-256: ${hash}`,
+        14,
+        doc.internal.pageSize.getHeight() - 6,
+      );
+    }
+
+    doc.save(
+      `salbcare-rls-audit-${stamp(lastRunAt)}-${userSlug()}-${hash.slice(0, 8)}.pdf`,
+    );
+    toast.success("PDF exportado com assinatura SHA-256.");
   };
 
   const summary = (() => {
@@ -269,7 +326,16 @@ const AdminRlsAuditPage = () => {
                   const Icon = v.icon;
                   return (
                     <tr key={r.table_name} className="border-t">
-                      <td className="px-3 py-2 font-mono">{r.table_name}</td>
+                      <td className="px-3 py-2 font-mono">
+                        <button
+                          onClick={() => openDetail(r.table_name)}
+                          className="inline-flex items-center gap-1.5 hover:text-primary hover:underline"
+                          data-testid={`rls-detail-${r.table_name}`}
+                        >
+                          {r.table_name}
+                          <Eye className="h-3 w-3 opacity-60" />
+                        </button>
+                      </td>
                       <td className="px-3 py-2">
                         <span className={`inline-flex items-center gap-1 ${v.color}`}>
                           <Icon className="h-3.5 w-3.5" /> {v.label}
@@ -296,6 +362,56 @@ const AdminRlsAuditPage = () => {
           e <code>pg_policies</code> para cada tabela auditada.
         </p>
       </div>
+
+      <Dialog open={detailTable !== null} onOpenChange={(o) => !o && setDetailTable(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-mono">{detailTable}</DialogTitle>
+            <DialogDescription>
+              Policies registradas em <code>pg_policies</code> para esta tabela.
+            </DialogDescription>
+          </DialogHeader>
+          {detailLoading ? (
+            <div className="py-8 flex justify-center">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            </div>
+          ) : !detailRows || detailRows.length === 0 ? (
+            <p className="py-6 text-sm text-muted-foreground text-center">
+              Nenhuma policy registrada para esta tabela.
+            </p>
+          ) : (
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+              {(["SELECT", "INSERT", "UPDATE", "DELETE", "ALL"] as const).map((cmd) => {
+                const list = detailRows.filter((p) => p.command === cmd);
+                if (list.length === 0) return null;
+                return (
+                  <section key={cmd} className="rounded-lg border p-3">
+                    <p className="text-xs font-bold uppercase tracking-wide text-primary mb-2">
+                      {cmd}
+                    </p>
+                    <ul className="space-y-2">
+                      {list.map((p) => (
+                        <li key={p.policy_name} className="text-[11px] space-y-1">
+                          <p className="font-medium">{p.policy_name}</p>
+                          <p className="text-muted-foreground">
+                            roles: {p.roles?.join(", ") || "—"} • {p.permissive}
+                          </p>
+                          {p.using_expr && (
+                            <pre className="rounded bg-muted/50 p-2 overflow-x-auto"><code>USING: {p.using_expr}</code></pre>
+                          )}
+                          {p.with_check_expr && (
+                            <pre className="rounded bg-muted/50 p-2 overflow-x-auto"><code>WITH CHECK: {p.with_check_expr}</code></pre>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              })}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

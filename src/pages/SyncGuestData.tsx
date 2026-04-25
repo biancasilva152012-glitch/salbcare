@@ -92,6 +92,33 @@ const SyncGuestData = () => {
   });
   const [steps, setSteps] = useState<Steps>(initialSteps);
   const [lastError, setLastError] = useState<string | null>(null);
+  /** Per-step error so we can show "tentar só Pacientes" / "tentar só Agendamentos". */
+  const [stepError, setStepError] = useState<{
+    patients?: string;
+    appointments?: string;
+  }>({});
+
+  // Running summary accumulated across (possibly partial) retries. We use a
+  // single object so the footer can show live counts before the user confirms,
+  // and so retrying only the failed step adds to (not replaces) what already
+  // succeeded.
+  const emptySummary = (): GuestSyncSummary => ({
+    outcome: "merged",
+    patients: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+    appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
+    duplicates: { patients: [], appointments: [] },
+    at: new Date().toISOString(),
+  });
+  const [liveSummary, setLiveSummary] = useState<GuestSyncSummary>(emptySummary);
+  /** Patients/Appointments still pending in localStorage (not yet imported nor
+   *  permanently skipped). After a step succeeds we drop the imported items
+   *  from this list so a retry only re-tries what's left. */
+  const [pendingPatients, setPendingPatients] = useState<GuestPatient[]>(() =>
+    readGuestPatients(),
+  );
+  const [pendingAppointments, setPendingAppointments] = useState<GuestAppointment[]>(
+    () => readGuestAppointments(),
+  );
 
   // ── Guards ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -127,16 +154,203 @@ const SyncGuestData = () => {
 
   // ── Actions ─────────────────────────────────────────────────────────────
   /**
-   * Imports the guest data into the user account. The function is built so it
-   * can be re-invoked by the "Tentar importar novamente" button after a
-   * failure: it always clears the inflight marker on error and re-reads the
-   * SAME guest data from localStorage (we never wipe it until the merge fully
-   * succeeds), so retrying is safe and idempotent.
+   * Each step is a self-contained async function so the UI can retry just the
+   * failed one (e.g. only Pacientes or only Agendamentos). Steps mutate the
+   * `liveSummary` and the local pending lists so the running totals stay
+   * coherent across partial retries.
    */
-  const handleMerge = async () => {
+  type StepKey = "patients" | "appointments";
+
+  const runPatientsStep = async (): Promise<void> => {
+    if (!user) return;
+    setSteps((s) => ({ ...s, patients: "running" }));
+    setStepError((e) => ({ ...e, patients: undefined }));
+
+    if (!importPatients) {
+      setLiveSummary((s) => ({
+        ...s,
+        patients: { ...s.patients, skippedQuota: pendingPatients.length },
+      }));
+      setSteps((s) => ({ ...s, patients: "skipped" }));
+      return;
+    }
+    if (pendingPatients.length === 0) {
+      setSteps((s) => ({ ...s, patients: "done" }));
+      return;
+    }
+
+    const { data: existing, error: exErr } = await supabase
+      .from("patients")
+      .select("name, email");
+    if (exErr) throw exErr;
+    const seenNames = new Set<string>(
+      (existing ?? []).map((r) => normalizeName(r.name)),
+    );
+    const seenEmails = new Set<string>(
+      (existing ?? [])
+        .map((r) => normalizeEmail((r as any).email))
+        .filter((e) => e.length > 0),
+    );
+
+    const accepted: GuestPatient[] = [];
+    const newDuplicates: typeof liveSummary.duplicates.patients = [];
+    let skippedDup = 0;
+    let skippedQuota = 0;
+    for (const p of pendingPatients) {
+      const nameKey = normalizeName(p.name);
+      const emailKey = normalizeEmail(p.email);
+      if (emailKey && seenEmails.has(emailKey)) {
+        skippedDup += 1;
+        newDuplicates.push({ label: `${p.name} <${p.email}>`, reason: "email" });
+        continue;
+      }
+      if (seenNames.has(nameKey)) {
+        skippedDup += 1;
+        newDuplicates.push({ label: p.name, reason: "name" });
+        continue;
+      }
+      if (!isPaid && accepted.length >= patientSlotsLeft) {
+        skippedQuota += 1;
+        continue;
+      }
+      accepted.push(p);
+      seenNames.add(nameKey);
+      if (emailKey) seenEmails.add(emailKey);
+    }
+
+    let importedCount = 0;
+    if (accepted.length > 0) {
+      const rows = accepted.map((p) => ({
+        user_id: user.id,
+        name: p.name,
+        phone: p.phone ?? null,
+        email: p.email ?? null,
+        notes: p.notes ?? null,
+      }));
+      const { error, data } = await supabase
+        .from("patients")
+        .insert(rows)
+        .select("id");
+      if (error) throw error;
+      importedCount = data?.length ?? rows.length;
+    }
+
+    setPendingPatients([]);
+    setLiveSummary((s) => ({
+      ...s,
+      patients: {
+        imported: s.patients.imported + importedCount,
+        skippedDuplicate: s.patients.skippedDuplicate + skippedDup,
+        skippedQuota: s.patients.skippedQuota + skippedQuota,
+      },
+      duplicates: {
+        ...s.duplicates,
+        patients: [...s.duplicates.patients, ...newDuplicates],
+      },
+    }));
+    setSteps((s) => ({ ...s, patients: "done" }));
+  };
+
+  const runAppointmentsStep = async (): Promise<void> => {
+    if (!user) return;
+    setSteps((s) => ({ ...s, appointments: "running" }));
+    setStepError((e) => ({ ...e, appointments: undefined }));
+
+    if (!importAppointments) {
+      setLiveSummary((s) => ({
+        ...s,
+        appointments: { ...s.appointments, skippedQuota: pendingAppointments.length },
+      }));
+      setSteps((s) => ({ ...s, appointments: "skipped" }));
+      return;
+    }
+    if (pendingAppointments.length === 0) {
+      setSteps((s) => ({ ...s, appointments: "done" }));
+      return;
+    }
+
+    const { data: existing, error: exErr } = await supabase
+      .from("appointments")
+      .select("patient_name, date, time");
+    if (exErr) throw exErr;
+    const seen = new Set<string>(
+      (existing ?? []).map((r) =>
+        appointmentKey(r.patient_name as string, r.date as string, r.time as string),
+      ),
+    );
+
+    const accepted: GuestAppointment[] = [];
+    const newDuplicates: typeof liveSummary.duplicates.appointments = [];
+    let skippedDup = 0;
+    let skippedQuota = 0;
+    for (const a of pendingAppointments) {
+      const key = appointmentKey(a.patient_name, a.date, a.time);
+      if (seen.has(key)) {
+        skippedDup += 1;
+        newDuplicates.push({
+          label: `${a.patient_name} — ${a.date.split("-").reverse().slice(0, 2).join("/")} ${a.time}`,
+          reason: "name+date+time",
+        });
+        continue;
+      }
+      if (!isPaid && accepted.length >= appointmentSlotsLeft) {
+        skippedQuota += 1;
+        continue;
+      }
+      accepted.push(a);
+      seen.add(key);
+    }
+
+    let importedCount = 0;
+    if (accepted.length > 0) {
+      const rows = accepted.map((a) => ({
+        user_id: user.id,
+        patient_name: a.patient_name,
+        date: a.date,
+        time: a.time,
+        appointment_type: a.appointment_type,
+        notes: a.notes ?? null,
+        status: "scheduled",
+      }));
+      const { error, data } = await supabase
+        .from("appointments")
+        .insert(rows)
+        .select("id");
+      if (error) throw error;
+      importedCount = data?.length ?? rows.length;
+    }
+
+    setPendingAppointments([]);
+    setLiveSummary((s) => ({
+      ...s,
+      appointments: {
+        imported: s.appointments.imported + importedCount,
+        skippedDuplicate: s.appointments.skippedDuplicate + skippedDup,
+        skippedQuota: s.appointments.skippedQuota + skippedQuota,
+      },
+      duplicates: {
+        ...s.duplicates,
+        appointments: [...s.duplicates.appointments, ...newDuplicates],
+      },
+    }));
+    setSteps((s) => ({ ...s, appointments: "done" }));
+  };
+
+  const finalize = () => {
+    if (!user) return;
+    setSteps((s) => ({ ...s, teleconsultations: "skipped" }));
+    const finalSummary: GuestSyncSummary = { ...liveSummary, at: new Date().toISOString() };
+    clearGuestStorage();
+    markGuestSyncAcknowledged();
+    clearGuestSyncLock();
+    endMerge(user.id);
+    writeGuestSyncSummary(finalSummary);
+    navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
+  };
+
+  const runMerge = async (scope: "all" | StepKey) => {
     if (!user) return;
 
-    // Idempotency: never run twice for the same user_id, even on refresh.
     if (hasMergedFor(user.id)) {
       toast.info("Os dados de visitante já foram importados nesta conta.");
       clearGuestStorage();
@@ -156,191 +370,63 @@ const SyncGuestData = () => {
 
     setMerging(true);
     setLastError(null);
-    setSteps({
-      patients: importPatients && guestPatients.length > 0 ? "running" : "skipped",
-      appointments: "pending",
-      teleconsultations: "pending",
-    });
 
-    const summary: GuestSyncSummary = {
-      outcome: "merged",
-      patients: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
-      appointments: { imported: 0, skippedDuplicate: 0, skippedQuota: 0 },
-      duplicates: { patients: [], appointments: [] },
-      at: new Date().toISOString(),
-    };
+    const stepsToRun: StepKey[] =
+      scope === "all" ? ["patients", "appointments"] : [scope];
 
-    try {
-      // ── PATIENTS ────────────────────────────────────────────────────────
-      if (importPatients && guestPatients.length > 0) {
-        const { data: existing, error: exErr } = await supabase
-          .from("patients")
-          .select("name, email");
-        if (exErr) throw exErr;
-        const seenNames = new Set<string>(
-          (existing ?? []).map((r) => normalizeName(r.name)),
-        );
-        const seenEmails = new Set<string>(
-          (existing ?? [])
-            .map((r) => normalizeEmail((r as any).email))
-            .filter((e) => e.length > 0),
-        );
-
-        const accepted: GuestPatient[] = [];
-        for (const p of guestPatients) {
-          const nameKey = normalizeName(p.name);
-          const emailKey = normalizeEmail(p.email);
-          if (emailKey && seenEmails.has(emailKey)) {
-            summary.patients.skippedDuplicate += 1;
-            summary.duplicates.patients.push({ label: `${p.name} <${p.email}>`, reason: "email" });
-            continue;
-          }
-          if (seenNames.has(nameKey)) {
-            summary.patients.skippedDuplicate += 1;
-            summary.duplicates.patients.push({ label: p.name, reason: "name" });
-            continue;
-          }
-          if (!isPaid && accepted.length >= patientSlotsLeft) {
-            summary.patients.skippedQuota += 1;
-            continue;
-          }
-          accepted.push(p);
-          seenNames.add(nameKey);
-          if (emailKey) seenEmails.add(emailKey);
-        }
-
-        if (accepted.length > 0) {
-          const rows = accepted.map((p) => ({
-            user_id: user.id,
-            name: p.name,
-            phone: p.phone ?? null,
-            email: p.email ?? null,
-            notes: p.notes ?? null,
-          }));
-          const { error, data } = await supabase
-            .from("patients")
-            .insert(rows)
-            .select("id");
-          if (error) throw error;
-          summary.patients.imported = data?.length ?? rows.length;
-        }
-        setSteps((s) => ({ ...s, patients: "done" }));
-      } else if (!importPatients) {
-        summary.patients.skippedQuota = guestPatients.length;
-        setSteps((s) => ({ ...s, patients: "skipped" }));
-      } else {
-        setSteps((s) => ({ ...s, patients: "skipped" }));
-      }
-
-      // ── APPOINTMENTS ────────────────────────────────────────────────────
-      setSteps((s) => ({
-        ...s,
-        appointments: importAppointments && guestAppointments.length > 0 ? "running" : "skipped",
-      }));
-      if (importAppointments && guestAppointments.length > 0) {
-        const { data: existing, error: exErr } = await supabase
-          .from("appointments")
-          .select("patient_name, date, time");
-        if (exErr) throw exErr;
-        const seen = new Set<string>(
-          (existing ?? []).map((r) =>
-            appointmentKey(r.patient_name as string, r.date as string, r.time as string),
-          ),
-        );
-
-        const accepted: GuestAppointment[] = [];
-        for (const a of guestAppointments) {
-          const key = appointmentKey(a.patient_name, a.date, a.time);
-          if (seen.has(key)) {
-            summary.appointments.skippedDuplicate += 1;
-            summary.duplicates.appointments.push({
-              label: `${a.patient_name} — ${a.date.split("-").reverse().slice(0, 2).join("/")} ${a.time}`,
-              reason: "name+date+time",
-            });
-            continue;
-          }
-          if (!isPaid && accepted.length >= appointmentSlotsLeft) {
-            summary.appointments.skippedQuota += 1;
-            continue;
-          }
-          accepted.push(a);
-          seen.add(key);
-        }
-
-        if (accepted.length > 0) {
-          const rows = accepted.map((a) => ({
-            user_id: user.id,
-            patient_name: a.patient_name,
-            date: a.date,
-            time: a.time,
-            appointment_type: a.appointment_type,
-            notes: a.notes ?? null,
-            status: "scheduled",
-          }));
-          const { error, data } = await supabase
-            .from("appointments")
-            .insert(rows)
-            .select("id");
-          if (error) throw error;
-          summary.appointments.imported = data?.length ?? rows.length;
-        }
-        setSteps((s) => ({ ...s, appointments: "done" }));
-      } else if (!importAppointments) {
-        summary.appointments.skippedQuota = guestAppointments.length;
-        setSteps((s) => ({ ...s, appointments: "skipped" }));
-      } else {
-        setSteps((s) => ({ ...s, appointments: "skipped" }));
-      }
-
-      // ── TELECONSULTAS ───────────────────────────────────────────────────
-      // Não há rascunhos guest de teleconsultas hoje (modo guest só salva
-      // pacientes/agenda). Marcamos como "skipped" para que a barra termine
-      // em 100% e o usuário veja todas as etapas.
-      setSteps((s) => ({ ...s, teleconsultations: "skipped" }));
-
-      clearGuestStorage();
-      markGuestSyncAcknowledged();
-      clearGuestSyncLock();
-      endMerge(user.id);
-      writeGuestSyncSummary(summary);
-      navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
-    } catch (err: any) {
-      // Roll back the in-flight marker so the user can retry.
+    let anyStepFailed = false;
+    for (const k of stepsToRun) {
       try {
-        window.localStorage.removeItem("salbcare_guest_sync_inflight");
-      } catch {
-        /* ignore */
+        if (k === "patients") await runPatientsStep();
+        else await runAppointmentsStep();
+      } catch (err: any) {
+        anyStepFailed = true;
+        const msg =
+          err?.message ??
+          `Falha ao importar ${k === "patients" ? "pacientes" : "agendamentos"}.`;
+        setStepError((e) => ({ ...e, [k]: msg }));
+        setLastError(msg);
+        setSteps((s) => ({ ...s, [k]: "failed" }));
+        toast.error(msg);
+        break;
       }
-      const msg = err?.message ?? "Falha ao importar dados do modo guest.";
-      setLastError(msg);
-      setSteps((s) => {
-        // Mark the first non-done step as failed so the UI shows where it broke.
-        const next = { ...s };
-        const order: (keyof Steps)[] = ["patients", "appointments", "teleconsultations"];
-        for (const k of order) {
-          if (next[k] === "running" || next[k] === "pending") {
-            next[k] = "failed";
-            break;
-          }
-        }
-        return next;
-      });
-      toast.error(msg);
-      setMerging(false);
     }
-  };
 
-  /** Resets the inflight lock and re-runs handleMerge with the same data. */
-  const handleRetry = () => {
-    if (!user) return;
     try {
       window.localStorage.removeItem("salbcare_guest_sync_inflight");
     } catch {
       /* ignore */
     }
-    setLastError(null);
+
+    if (anyStepFailed) {
+      setMerging(false);
+      return;
+    }
+
+    setSteps((s) => {
+      const allDoneOrSkipped =
+        (s.patients === "done" || s.patients === "skipped") &&
+        (s.appointments === "done" || s.appointments === "skipped");
+      if (allDoneOrSkipped) {
+        setTimeout(finalize, 0);
+      } else {
+        setMerging(false);
+      }
+      return s;
+    });
+  };
+
+  const handleMerge = () => {
+    void runMerge("all");
+  };
+  const handleRetry = () => {
     setSteps(initialSteps());
-    void handleMerge();
+    setStepError({});
+    setLastError(null);
+    void runMerge("all");
+  };
+  const handleRetryStep = (k: StepKey) => {
+    void runMerge(k);
   };
 
   const handleDiscard = () => {
@@ -544,10 +630,10 @@ const SyncGuestData = () => {
               />
               <ul className="space-y-1.5 text-[12px]">
                 {([
-                  { key: "patients", label: "Pacientes", icon: Users },
-                  { key: "appointments", label: "Agendamentos", icon: Calendar },
-                  { key: "teleconsultations", label: "Teleconsultas", icon: Video },
-                ] as const).map(({ key, label, icon: Icon }) => {
+                  { key: "patients", label: "Pacientes", icon: Users, retryable: true as const },
+                  { key: "appointments", label: "Agendamentos", icon: Calendar, retryable: true as const },
+                  { key: "teleconsultations", label: "Teleconsultas", icon: Video, retryable: false as const },
+                ] as const).map(({ key, label, icon: Icon, retryable }) => {
                   const st = steps[key];
                   const dot =
                     st === "done"
@@ -570,11 +656,32 @@ const SyncGuestData = () => {
                             ? "pulado"
                             : "aguardando";
                   return (
-                    <li key={key} className="flex items-center gap-2" data-testid={`sync-step-${key}`}>
-                      <span className={`inline-block h-2 w-2 rounded-full ${dot}`} aria-hidden />
-                      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="font-medium">{label}</span>
-                      <span className="text-muted-foreground">— {labelSt}</span>
+                    <li key={key} className="space-y-1" data-testid={`sync-step-${key}`}>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-block h-2 w-2 rounded-full ${dot}`} aria-hidden />
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{label}</span>
+                        <span className="text-muted-foreground">— {labelSt}</span>
+                        {retryable && st === "failed" && !merging && (
+                          <Button
+                            onClick={() =>
+                              handleRetryStep(key as "patients" | "appointments")
+                            }
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 px-2 ml-auto text-[11px]"
+                            data-testid={`sync-retry-${key}`}
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Tentar só esta etapa
+                          </Button>
+                        )}
+                      </div>
+                      {retryable && stepError[key as "patients" | "appointments"] && (
+                        <p className="ml-4 text-[11px] text-destructive">
+                          {stepError[key as "patients" | "appointments"]}
+                        </p>
+                      )}
                     </li>
                   );
                 })}
@@ -598,9 +705,86 @@ const SyncGuestData = () => {
                   data-testid="sync-retry-btn"
                 >
                   <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-                  Tentar importar novamente
+                  Tentar importar tudo novamente
                 </Button>
               )}
+            </section>
+          )}
+
+          {/* Resumo ao vivo (antes de confirmar em /sync-guest-data/done) */}
+          {(liveSummary.patients.imported > 0 ||
+            liveSummary.appointments.imported > 0 ||
+            liveSummary.patients.skippedDuplicate > 0 ||
+            liveSummary.appointments.skippedDuplicate > 0) && (
+            <section
+              className="glass-card p-4 space-y-3"
+              data-testid="sync-live-summary"
+              aria-label="Resumo parcial da importação"
+            >
+              <p className="text-xs font-semibold">Resumo parcial</p>
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="rounded-lg border bg-emerald-500/5 border-emerald-500/30 p-2">
+                  <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                    {liveSummary.patients.imported}
+                  </p>
+                  <p className="text-muted-foreground">Pacientes importados</p>
+                </div>
+                <div className="rounded-lg border bg-emerald-500/5 border-emerald-500/30 p-2">
+                  <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                    {liveSummary.appointments.imported}
+                  </p>
+                  <p className="text-muted-foreground">Consultas importadas</p>
+                </div>
+                <div className="rounded-lg border bg-amber-500/5 border-amber-500/30 p-2">
+                  <p className="text-amber-600 dark:text-amber-400 font-semibold">
+                    {liveSummary.patients.skippedDuplicate}
+                  </p>
+                  <p className="text-muted-foreground">Pacientes duplicados</p>
+                </div>
+                <div className="rounded-lg border bg-amber-500/5 border-amber-500/30 p-2">
+                  <p className="text-amber-600 dark:text-amber-400 font-semibold">
+                    {liveSummary.appointments.skippedDuplicate}
+                  </p>
+                  <p className="text-muted-foreground">Consultas duplicadas</p>
+                </div>
+              </div>
+
+              {liveSummary.duplicates.patients.length > 0 && (
+                <details className="text-[11px]">
+                  <summary className="cursor-pointer font-medium text-muted-foreground hover:text-foreground">
+                    Pacientes ignorados ({liveSummary.duplicates.patients.length})
+                  </summary>
+                  <ul className="mt-1.5 space-y-0.5 pl-4 list-disc text-muted-foreground">
+                    {liveSummary.duplicates.patients.map((d, i) => (
+                      <li key={`p-${i}`}>
+                        {d.label}{" "}
+                        <span className="text-[10px] opacity-70">
+                          ({d.reason === "email" ? "mesmo e-mail" : "mesmo nome"})
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+              {liveSummary.duplicates.appointments.length > 0 && (
+                <details className="text-[11px]">
+                  <summary className="cursor-pointer font-medium text-muted-foreground hover:text-foreground">
+                    Consultas ignoradas ({liveSummary.duplicates.appointments.length})
+                  </summary>
+                  <ul className="mt-1.5 space-y-0.5 pl-4 list-disc text-muted-foreground">
+                    {liveSummary.duplicates.appointments.map((d, i) => (
+                      <li key={`a-${i}`}>
+                        {d.label}{" "}
+                        <span className="text-[10px] opacity-70">(mesmo nome, data e horário)</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+              <p className="text-[10px] text-muted-foreground">
+                Confirme em <strong>/sync-guest-data/done</strong> ao final da
+                importação para encerrar.
+              </p>
             </section>
           )}
 
