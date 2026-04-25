@@ -106,8 +106,11 @@ const Upgrade = () => {
   ];
 
   const goCheckout = () => {
-    trackCtaClick("upgrade_essencial", `upgrade_page_${reason || "generic"}`);
-    navigate("/checkout?plan=basic");
+    trackCtaClick("upgrade_essencial", `upgrade_page_${matchedKey || reason || "generic"}`);
+    // Pré-seleciona o plano Essencial e propaga o motivo para o checkout
+    const params = new URLSearchParams({ plan: "basic" });
+    if (matchedKey || reason) params.set("reason", matchedKey || reason || "");
+    navigate(`/checkout?${params.toString()}`);
   };
 
   return (
