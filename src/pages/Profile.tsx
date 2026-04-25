@@ -417,6 +417,8 @@ const Profile = () => {
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
 
+          <button
+            onClick={() => setCorrectOpen(true)}
             className="glass-card flex w-full items-center justify-between p-3 text-left"
           >
             <div className="flex items-center gap-3">
