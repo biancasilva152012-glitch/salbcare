@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@18.5.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const IMPORT_URLS = {
   stripe: "https://esm.sh/stripe@18.5.0",
@@ -9,21 +11,14 @@ const logStep = (step: string, details?: any) => {
   console.log(`[Webhook] ${step}${details ? ` - ${JSON.stringify(details)}` : ""}`);
 };
 
-let Stripe: any;
-let createClient: any;
-try {
-  Stripe = (await import(IMPORT_URLS.stripe)).default;
-  ({ createClient } = await import(IMPORT_URLS.supabase));
-} catch (err) {
+const logInitError = (where: string, err: unknown) => {
   const msg = err instanceof Error ? err.message : String(err);
   const stack = err instanceof Error ? err.stack : undefined;
-  console.error("[Webhook] ❌ Dependency import failed", JSON.stringify({
-    error: msg,
-    stack,
-    imports: IMPORT_URLS,
-  }));
-  throw err;
-}
+  console.error(
+    `[Webhook] ❌ Init failed at ${where}`,
+    JSON.stringify({ error: msg, stack, imports: IMPORT_URLS })
+  );
+};
 
 const PLAN_MAP: Record<string, { plan: string; billing: string }> = {
   // Essencial
