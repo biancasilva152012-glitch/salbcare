@@ -63,7 +63,7 @@ const Financial = () => {
     );
   }
   const { hasAccess } = useFeatureGate();
-  const { canAddFinancial, financialCount, financialLimit, isFree } = useFreemiumLimits();
+  const { canAddFinancial, financialCount, financialLimit, isFree, isPaid } = useFreemiumLimits();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -239,7 +239,14 @@ const Financial = () => {
     <PageContainer backTo="/dashboard">
       <div className="space-y-5">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Financeiro</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">Financeiro</h1>
+            {isPaid && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase tracking-wider">
+                <Crown className="h-3 w-3" /> Premium ilimitado
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             {hasAccess("pdf_export") && (
               <Button size="sm" variant="outline" className="gap-1" onClick={() => exportFinancialPdf(transactions, filterMonth)}>
@@ -497,10 +504,30 @@ const Financial = () => {
             </TabsContent>
           )}
         </Tabs>
-        {isFree && (
+        {isFree ? (
           <p className="text-xs text-center text-muted-foreground mt-2">
             Lançamentos este mês: {financialCount}/{financialLimit} (plano gratuito)
           </p>
+        ) : (
+          transactions.length > 0 && (
+            <button
+              type="button"
+              onClick={() => window.location.assign("/dashboard/mentoria")}
+              className="glass-card mt-3 w-full p-3 text-left flex items-center gap-3 border-primary/20 bg-primary/5 hover:border-primary/50 transition-all active:scale-[0.99]"
+            >
+              <span className="text-xl">🤖</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-semibold text-primary uppercase tracking-wider">
+                  Pergunte para a Mentora IA
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Você já lançou {transactions.length} {transactions.length === 1 ? "transação" : "transações"}.
+                  Quer descobrir para onde está indo seu dinheiro este mês?
+                </p>
+              </div>
+              <ArrowUpRight className="h-4 w-4 text-primary shrink-0" />
+            </button>
+          )
         )}
       </div>
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="lançamentos financeiros" currentUsage={financialCount} limit={financialLimit} />

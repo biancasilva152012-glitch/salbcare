@@ -114,23 +114,67 @@ const Dashboard = () => {
     }
   };
 
-  // Daily AI insight
-  const { data: dailyInsight } = useQuery({
-    queryKey: ["daily-insight", user?.id],
+  // Monthly expenses + transaction count to power the personalized insight
+  const { data: financeStats } = useQuery({
+    queryKey: ["finance-stats", user?.id],
     queryFn: async () => {
-      const insights = [
-        { text: "Registre seus recebimentos de hoje para manter seu diagnóstico financeiro atualizado.", icon: "📊" },
-        { text: "Profissionais que registram receitas semanalmente economizam até 30% em impostos.", icon: "💡" },
-        { text: "Seu perfil público ajuda pacientes a te encontrarem. Mantenha-o atualizado!", icon: "🔍" },
-        { text: "Agende consultas pela plataforma e tenha controle total do seu faturamento.", icon: "📅" },
-        { text: "Use a mentora financeira para entender para onde vai seu dinheiro este mês.", icon: "🤖" },
-      ];
-      const dayIndex = new Date().getDate() % insights.length;
-      return insights[dayIndex];
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      const { data } = await supabase
+        .from("financial_transactions")
+        .select("amount, type")
+        .eq("user_id", user!.id)
+        .gte("date", startOfMonth.toISOString().split("T")[0])
+        .limit(500);
+      const list = data || [];
+      const expense = list.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+      return { expense, total: list.length };
     },
     enabled: !!user,
-    staleTime: 60 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
   });
+
+  // Daily AI insight — usa dados reais para criar um gancho conversacional
+  // que leva o profissional a abrir uma conversa com a Mentora IA.
+  const dailyInsight = (() => {
+    const expense = financeStats?.expense ?? 0;
+    const txCount = financeStats?.total ?? 0;
+    const profit = monthlyIncome - expense;
+
+    if (txCount === 0) {
+      return {
+        icon: "📊",
+        text: "Lance sua primeira receita do mês e a Mentora IA já te mostra um diagnóstico financeiro personalizado.",
+        cta: "Conversar com a Mentora",
+      };
+    }
+    if (monthlyIncome > 0 && expense === 0) {
+      return {
+        icon: "💡",
+        text: `Você já recebeu R$ ${monthlyIncome.toLocaleString("pt-BR")} este mês. Pergunte para a Mentora IA quanto deve guardar para imposto.`,
+        cta: "Perguntar agora",
+      };
+    }
+    if (expense > monthlyIncome && monthlyIncome > 0) {
+      return {
+        icon: "⚠️",
+        text: `Suas despesas (R$ ${expense.toLocaleString("pt-BR")}) passaram das receitas. Quer entender o que está pesando? A Mentora IA te ajuda.`,
+        cta: "Investigar com a IA",
+      };
+    }
+    if (profit > 0) {
+      return {
+        icon: "🤖",
+        text: `Seu lucro este mês é R$ ${profit.toLocaleString("pt-BR")}. Pergunte para a Mentora IA: vale a pena abrir CNPJ ou ainda compensa pessoa física?`,
+        cta: "Tirar essa dúvida",
+      };
+    }
+    return {
+      icon: "🔍",
+      text: `Você lançou ${txCount} ${txCount === 1 ? "movimentação" : "movimentações"} este mês. Quer um resumo inteligente direto da Mentora IA?`,
+      cta: "Pedir resumo",
+    };
+  })();
 
   if (isLoading) return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;
 
@@ -151,12 +195,15 @@ const Dashboard = () => {
           <motion.div variants={item}>
             <button
               onClick={() => navigate("/dashboard/mentoria")}
-              className="glass-card w-full p-3 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-center gap-3 border-primary/20 bg-primary/5"
+              className="glass-card w-full p-3 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-start gap-3 border-primary/20 bg-primary/5"
             >
               <span className="text-xl">{dailyInsight.icon}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-semibold text-primary uppercase tracking-wider">Insight do dia</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">{dailyInsight.text}</p>
+                <p className="text-[11px] font-semibold text-primary mt-1.5 inline-flex items-center gap-1">
+                  {dailyInsight.cta} <Sparkles className="h-3 w-3" />
+                </p>
               </div>
             </button>
           </motion.div>

@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Users, DollarSign, Sparkles, Video, BookOpen, Scale, ArrowRight } from "lucide-react";
+import { Calendar, Users, DollarSign, Sparkles, Video, BookOpen, Scale, ArrowRight, Bell } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
 import GuestBanner from "@/components/GuestBanner";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,46 @@ const GuestDashboard = () => {
       >
         <motion.div variants={item}>
           <GuestBanner />
+        </motion.div>
+
+        {/* Insight do dia (visitante) — leva para login */}
+        <motion.div variants={item}>
+          <button
+            onClick={() => navigate("/login?next=/dashboard")}
+            className="glass-card w-full p-3 text-left transition-all active:scale-[0.98] hover:border-primary/50 flex items-start gap-3 border-primary/20 bg-primary/5"
+          >
+            <span className="text-xl">🤖</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-semibold text-primary uppercase tracking-wider">Insight do dia</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Crie sua conta grátis para receber um diagnóstico financeiro personalizado da Mentora IA todos os dias.
+              </p>
+              <p className="text-[11px] font-semibold text-primary mt-1.5 inline-flex items-center gap-1">
+                Entrar para ver <Sparkles className="h-3 w-3" />
+              </p>
+            </div>
+          </button>
+        </motion.div>
+
+        {/* Ativar lembretes semanais (visitante) — leva para login */}
+        <motion.div variants={item}>
+          <div className="glass-card p-3 flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+              <Bell className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium">Ative lembretes semanais e insights do dia</p>
+              <p className="text-[10px] text-muted-foreground">Disponível para profissionais com conta na SalbCare.</p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="shrink-0 text-xs"
+              onClick={() => navigate("/login?next=/dashboard")}
+            >
+              Ativar
+            </Button>
+          </div>
         </motion.div>
 
         <motion.div variants={item} className="space-y-0.5">
