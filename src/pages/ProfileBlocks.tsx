@@ -494,13 +494,24 @@ const ProfileBlocks = () => {
         </div>
 
         <div className="space-y-2">
-          <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider">
-            Histórico recente
-          </p>
-          {!loading && events.length === 0 && (
-            <p className="text-sm text-muted-foreground">Sem eventos no período.</p>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider">
+              Histórico recente
+            </p>
+            {search && (
+              <p className="text-[11px] text-muted-foreground" data-testid="search-result-count">
+                {visibleEvents.length} de {events.length}
+              </p>
+            )}
+          </div>
+          {!loading && visibleEvents.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              {search || moduleFilter !== "all"
+                ? "Nenhum evento bate com os filtros."
+                : "Sem eventos no período."}
+            </p>
           )}
-          {events.map((e) => (
+          {visibleEvents.map((e) => (
             <button
               key={e.id}
               type="button"
@@ -521,7 +532,9 @@ const ProfileBlocks = () => {
             </button>
           ))}
 
-          {/* Sentinela para infinite scroll */}
+          {/* Sentinela para infinite scroll. Continua ativa mesmo com busca
+              client-side: usuários podem rolar para carregar mais e ampliar
+              o conjunto sobre o qual a busca atua. */}
           <div ref={sentinelRef} aria-hidden className="h-4" />
 
           {loading && (
