@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ShieldAlert, Crown, Lock, Download, FileText } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { ShieldAlert, Crown, Lock, Download, FileText, ChevronRight } from "lucide-react";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -29,7 +36,10 @@ type BlockEvent = {
   module: string;
   reason: string;
   created_at: string;
+  metadata: Record<string, unknown> | null;
 };
+
+const PAGE_SIZE = 50;
 
 /**
  * Converte o input <input type="date" value="YYYY-MM-DD" /> em ISO.
@@ -38,44 +48,83 @@ type BlockEvent = {
  *   evitando que eventos do próprio dia "até" sejam excluídos.
  */
 function toIsoStart(yyyymmdd: string): string {
-  const d = new Date(`${yyyymmdd}T00:00:00`);
-  return d.toISOString();
+  return new Date(`${yyyymmdd}T00:00:00`).toISOString();
 }
 function toIsoEndInclusive(yyyymmdd: string): string {
-  const d = new Date(`${yyyymmdd}T23:59:59.999`);
-  return d.toISOString();
+  return new Date(`${yyyymmdd}T23:59:59.999`).toISOString();
 }
 
 const ProfileBlocks = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [events, setEvents] = useState<BlockEvent[]>([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState<BlockEvent | null>(null);
 
-  useEffect(() => {
-    if (!user) return;
-    let active = true;
-    setLoading(true);
-    (async () => {
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  /**
+   * Busca uma página específica respeitando os filtros.
+   * Página 0 = nova consulta (substitui); demais páginas = anexa.
+   */
+  const fetchPage = useCallback(
+    async (targetPage: number, replace: boolean) => {
+      if (!user) return;
+      setLoading(true);
+      const fromIdx = targetPage * PAGE_SIZE;
+      const toIdx = fromIdx + PAGE_SIZE - 1;
       let q = supabase
         .from("premium_block_attempts")
-        .select("id, module, reason, created_at")
+        .select("id, module, reason, created_at, metadata")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(200);
+        .range(fromIdx, toIdx);
       if (from) q = q.gte("created_at", toIsoStart(from));
       if (to) q = q.lte("created_at", toIsoEndInclusive(to));
-      const { data } = await q;
-      if (active) {
-        setEvents((data as BlockEvent[]) ?? []);
+      const { data, error } = await q;
+      if (error) {
         setLoading(false);
+        return;
       }
-    })();
-    return () => { active = false; };
-  }, [user, from, to]);
+      const rows = (data as BlockEvent[]) ?? [];
+      setEvents((prev) => (replace ? rows : [...prev, ...rows]));
+      setHasMore(rows.length === PAGE_SIZE);
+      setLoading(false);
+    },
+    [user, from, to],
+  );
+
+  // Reset ao mudar usuário ou filtros: busca página 0 substituindo o estado.
+  useEffect(() => {
+    if (!user) return;
+    setPage(0);
+    setHasMore(true);
+    fetchPage(0, true);
+  }, [user, from, to, fetchPage]);
+
+  // Infinite scroll: observer no sentinela carrega próxima página.
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || !hasMore || loading) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          const next = page + 1;
+          setPage(next);
+          fetchPage(next, false);
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, [page, hasMore, loading, fetchPage]);
 
   const counts = useMemo(() => {
     const acc: Record<string, number> = {};
@@ -90,16 +139,44 @@ const ProfileBlocks = () => {
     return `${from || "inicio"}_a_${to || "hoje"}`;
   }, [from, to]);
 
-  const exportCsv = () => {
-    if (events.length === 0) {
+  /**
+   * Para exports: busca TODAS as páginas que casam com os filtros,
+   * não só as carregadas. Limite duro de 5000 para proteção.
+   */
+  const fetchAllForExport = useCallback(async (): Promise<BlockEvent[]> => {
+    if (!user) return [];
+    const all: BlockEvent[] = [];
+    const HARD_CAP = 5000;
+    for (let p = 0; p * PAGE_SIZE < HARD_CAP; p++) {
+      const fromIdx = p * PAGE_SIZE;
+      let q = supabase
+        .from("premium_block_attempts")
+        .select("id, module, reason, created_at, metadata")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .range(fromIdx, fromIdx + PAGE_SIZE - 1);
+      if (from) q = q.gte("created_at", toIsoStart(from));
+      if (to) q = q.lte("created_at", toIsoEndInclusive(to));
+      const { data } = await q;
+      const rows = (data as BlockEvent[]) ?? [];
+      all.push(...rows);
+      if (rows.length < PAGE_SIZE) break;
+    }
+    return all;
+  }, [user, from, to]);
+
+  const exportCsv = async () => {
+    const all = await fetchAllForExport();
+    if (all.length === 0) {
       toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
       return;
     }
-    const rows = events.map((e) => ({
+    const rows = all.map((e) => ({
       data: new Date(e.created_at).toLocaleString("pt-BR"),
       modulo: MODULE_LABEL[e.module] ?? e.module,
       modulo_chave: e.module,
       motivo: e.reason,
+      metadata: e.metadata ? JSON.stringify(e.metadata) : "",
     }));
     const csv = Papa.unparse(rows);
     const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
@@ -113,8 +190,9 @@ const ProfileBlocks = () => {
     URL.revokeObjectURL(url);
   };
 
-  const exportPdf = () => {
-    if (events.length === 0) {
+  const exportPdf = async () => {
+    const all = await fetchAllForExport();
+    if (all.length === 0) {
       toast({ title: "Nada para exportar", description: "Sem eventos no período selecionado." });
       return;
     }
@@ -124,19 +202,23 @@ const ProfileBlocks = () => {
     doc.setFontSize(10);
     const periodo = `${from || "início"} → ${to || "hoje"}`;
     doc.text(`Período: ${periodo}`, 14, 23);
-    doc.text(`Total de eventos: ${events.length}`, 14, 29);
+    doc.text(`Total de eventos: ${all.length}`, 14, 29);
+
+    const exportCounts: Record<string, number> = {};
+    for (const e of all) exportCounts[e.module] = (exportCounts[e.module] ?? 0) + 1;
+    const exportTotals = Object.entries(exportCounts).sort((a, b) => b[1] - a[1]);
 
     autoTable(doc, {
       startY: 36,
       head: [["Módulo", "Quantidade"]],
-      body: totalsList.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
+      body: exportTotals.map(([mod, n]) => [MODULE_LABEL[mod] ?? mod, String(n)]),
       styles: { fontSize: 9 },
       headStyles: { fillColor: [30, 41, 59] },
     });
 
     autoTable(doc, {
       head: [["Data/hora", "Módulo", "Motivo"]],
-      body: events.map((e) => [
+      body: all.map((e) => [
         new Date(e.created_at).toLocaleString("pt-BR"),
         MODULE_LABEL[e.module] ?? e.module,
         e.reason,
@@ -219,21 +301,41 @@ const ProfileBlocks = () => {
           <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider">
             Histórico recente
           </p>
-          {loading && <p className="text-sm text-muted-foreground">Carregando…</p>}
           {!loading && events.length === 0 && (
             <p className="text-sm text-muted-foreground">Sem eventos no período.</p>
           )}
           {events.map((e) => (
-            <div key={e.id} className="glass-card p-3 flex items-center justify-between text-sm">
+            <button
+              key={e.id}
+              type="button"
+              onClick={() => setSelected(e)}
+              data-testid="block-event-row"
+              className="w-full text-left glass-card p-3 flex items-center justify-between text-sm hover:bg-accent/50 transition-colors"
+            >
               <div>
                 <p className="font-medium">{MODULE_LABEL[e.module] ?? e.module}</p>
                 <p className="text-xs text-muted-foreground">
                   {new Date(e.created_at).toLocaleString("pt-BR")} • {e.reason}
                 </p>
               </div>
-              <Badge variant="outline">{e.reason}</Badge>
-            </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">{e.reason}</Badge>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </button>
           ))}
+
+          {/* Sentinela para infinite scroll */}
+          <div ref={sentinelRef} aria-hidden className="h-4" />
+
+          {loading && (
+            <p className="text-xs text-center text-muted-foreground py-2">Carregando…</p>
+          )}
+          {!hasMore && events.length > 0 && (
+            <p className="text-xs text-center text-muted-foreground py-2">
+              Fim do histórico ({events.length} {events.length === 1 ? "evento" : "eventos"}).
+            </p>
+          )}
         </div>
 
         <Button onClick={() => navigate("/upgrade")} className="w-full gradient-primary">
@@ -241,8 +343,64 @@ const ProfileBlocks = () => {
           Assinar plano Essencial por R$ 89/mês
         </Button>
       </div>
+
+      <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+          {selected && (
+            <>
+              <SheetHeader className="text-left">
+                <SheetTitle>{MODULE_LABEL[selected.module] ?? selected.module}</SheetTitle>
+                <SheetDescription>
+                  {new Date(selected.created_at).toLocaleString("pt-BR")}
+                </SheetDescription>
+              </SheetHeader>
+              <div className="mt-4 space-y-4 text-sm">
+                <DetailRow label="ID do evento" value={selected.id} mono />
+                <DetailRow label="Módulo (chave)" value={selected.module} mono />
+                <DetailRow label="Motivo" value={selected.reason} />
+                <DetailRow label="Quando" value={new Date(selected.created_at).toISOString()} mono />
+                <div>
+                  <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider mb-1.5">
+                    Payload / metadados do request
+                  </p>
+                  <pre
+                    data-testid="event-payload"
+                    className="text-[11px] bg-muted/50 border border-border rounded-md p-3 overflow-x-auto whitespace-pre-wrap break-all"
+                  >
+                    {selected.metadata
+                      ? JSON.stringify(selected.metadata, null, 2)
+                      : "(sem metadados registrados)"}
+                  </pre>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Esses dados são privados, visíveis apenas para você (Row-Level Security).
+                </p>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </PageContainer>
   );
 };
+
+function DetailRow({
+  label,
+  value,
+  mono,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div>
+      <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider mb-0.5">
+        {label}
+      </p>
+      <p className={mono ? "font-mono text-xs break-all" : "text-sm"}>{value}</p>
+    </div>
+  );
+}
 
 export default ProfileBlocks;
