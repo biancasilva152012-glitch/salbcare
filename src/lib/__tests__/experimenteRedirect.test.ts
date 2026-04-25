@@ -99,9 +99,11 @@ describe("buildExperimenteRedirect", () => {
         search: "?nextRedirect=/dashboard/pacientes&utm_source=x",
       });
       const u = url(r2);
+      expect(u.pathname).toBe("/dashboard/pacientes");
       expect(u.searchParams.has("nextRedirect")).toBe(false);
       expect(u.searchParams.has("next")).toBe(false);
-      expect(u.searchParams.get("redirect")).toBe("/dashboard/pacientes");
+      expect(u.searchParams.has("redirect")).toBe(false);
+      expect(u.searchParams.get("utm_source")).toBe("x");
     });
 
     it("aceita nextRedirect como sinônimo de next", () => {
