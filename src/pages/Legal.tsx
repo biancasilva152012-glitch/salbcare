@@ -30,4 +30,15 @@ const LegalInner = () => {
   );
 };
 
+const Legal = () => (
+  <PremiumOnlyGuard
+    feature="O Suporte Jurídico"
+    description="Modelos jurídicos e marketplace de advogados são liberados no plano Essencial."
+    reason="legal"
+    redirectAfter="/dashboard/juridico"
+  >
+    <LegalInner />
+  </PremiumOnlyGuard>
+);
+
 export default Legal;
