@@ -46,4 +46,15 @@ const AccountingInner = () => {
   );
 };
 
+const Accounting = () => (
+  <PremiumOnlyGuard
+    feature="A Contabilidade"
+    description="O módulo contábil é incluído no plano Essencial — emita notas, calcule impostos e abra CNPJ."
+    reason="accounting"
+    redirectAfter="/dashboard/contabilidade"
+  >
+    <AccountingInner />
+  </PremiumOnlyGuard>
+);
+
 export default Accounting;
