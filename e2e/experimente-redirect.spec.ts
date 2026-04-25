@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * /experimente é um redirect. Visitantes vão para /register com
- * ?redirect=/dashboard (preservando utm_* e ?next= permitido).
- * Usuários autenticados vão direto para /dashboard.
+ * /experimente é um redirect público.
+ * - Visitantes NÃO autenticados vão DIRETO para /dashboard (modo guest).
+ *   Não passa por /register em nenhum momento.
+ * - Usuários autenticados vão direto para /dashboard.
  *
  * Este spec só cobre o caminho do visitante (não exige sessão).
  * Os fluxos autenticados são cobertos pelos testes unitários
@@ -15,12 +16,11 @@ test.describe("/experimente redirect (visitante)", () => {
     await context.clearCookies();
   });
 
-  test("vai direto para /register?redirect=/dashboard sem tela intermediária", async ({ page }) => {
+  test("vai direto para /dashboard sem passar por /register", async ({ page }) => {
     await page.goto("/experimente");
-    await page.waitForURL(/\/register\?/);
+    await page.waitForURL(/\/dashboard(\?|$)/);
     const url = new URL(page.url());
-    expect(url.pathname).toBe("/register");
-    expect(url.searchParams.get("redirect")).toBe("/dashboard");
+    expect(url.pathname).toBe("/dashboard");
 
     // Garante que nenhum vestígio do antigo modo demo foi renderizado.
     await expect(page.getByText(/modo demonstração/i)).toHaveCount(0);
@@ -30,26 +30,27 @@ test.describe("/experimente redirect (visitante)", () => {
     await page.goto(
       "/experimente?utm_source=hero&utm_campaign=launch&evil=1&next=/dashboard/agenda",
     );
-    await page.waitForURL(/\/register\?/);
+    await page.waitForURL(/\/dashboard\/agenda(\?|$)/);
     const url = new URL(page.url());
+    expect(url.pathname).toBe("/dashboard/agenda");
     expect(url.searchParams.get("utm_source")).toBe("hero");
     expect(url.searchParams.get("utm_campaign")).toBe("launch");
-    expect(url.searchParams.get("redirect")).toBe("/dashboard/agenda");
     expect(url.searchParams.get("evil")).toBeNull();
+    expect(url.searchParams.get("redirect")).toBeNull();
   });
 
   test("ignora ?next= fora da allowlist e cai em /dashboard", async ({ page }) => {
     await page.goto("/experimente?next=/admin/users");
-    await page.waitForURL(/\/register\?/);
-    expect(new URL(page.url()).searchParams.get("redirect")).toBe("/dashboard");
+    await page.waitForURL(/\/dashboard(\?|$)/);
+    expect(new URL(page.url()).pathname).toBe("/dashboard");
   });
 
   test("bloqueia ?next= absoluto (open-redirect)", async ({ page }) => {
     await page.goto("/experimente?next=https://evil.com");
-    await page.waitForURL(/\/register\?/);
-    const redirect = new URL(page.url()).searchParams.get("redirect");
-    expect(redirect).toBe("/dashboard");
-    expect(redirect).not.toContain("evil.com");
+    await page.waitForURL(/\/dashboard(\?|$)/);
+    const url = new URL(page.url());
+    expect(url.pathname).toBe("/dashboard");
+    expect(url.toString()).not.toContain("evil.com");
   });
 
   test("limpa o localStorage do demo (chaves salbcare_demo_*)", async ({ page }) => {
@@ -61,7 +62,7 @@ test.describe("/experimente redirect (visitante)", () => {
     });
 
     await page.goto("/experimente");
-    await page.waitForURL(/\/register\?/);
+    await page.waitForURL(/\/dashboard(\?|$)/);
 
     const remaining = await page.evaluate(() => ({
       demoPatients: localStorage.getItem("salbcare_demo_patients"),
@@ -79,7 +80,7 @@ test.describe("/experimente redirect (visitante)", () => {
       if (msg.text().includes("[experimente]")) logs.push(msg.text());
     });
     await page.goto("/experimente");
-    await page.waitForURL(/\/register\?/);
+    await page.waitForURL(/\/dashboard(\?|$)/);
     expect(logs.length).toBeGreaterThan(0);
     expect(logs.join("\n")).not.toMatch(/@.*\./); // sem e-mail
   });

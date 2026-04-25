@@ -10,11 +10,9 @@ describe("buildExperimenteRedirect", () => {
       expect(r).toBe("/app/dashboard");
     });
 
-    it("aplica prefixo no /register e no ?redirect= do visitante", () => {
+    it("aplica prefixo no destino do visitante (acesso público direto, sem /register)", () => {
       const r = buildExperimenteRedirect({ authenticated: false, basePath: "/app" });
-      const u = url(r);
-      expect(u.pathname).toBe("/app/register");
-      expect(u.searchParams.get("redirect")).toBe("/app/dashboard");
+      expect(r).toBe("/app/dashboard");
     });
 
     it("aplica prefixo combinado com ?next= permitido (logado, deep route)", () => {
@@ -32,9 +30,7 @@ describe("buildExperimenteRedirect", () => {
         basePath: "/app",
         search: "?next=/dashboard/pacientes",
       });
-      const u = url(r);
-      expect(u.pathname).toBe("/app/register");
-      expect(u.searchParams.get("redirect")).toBe("/app/dashboard/pacientes");
+      expect(r).toBe("/app/dashboard/pacientes");
     });
 
     it("normaliza basePath (com/sem barra inicial/final)", () => {
@@ -66,15 +62,15 @@ describe("buildExperimenteRedirect", () => {
       expect(u.searchParams.get("token")).toBeNull();
     });
 
-    it("remove TODOS os parâmetros desconhecidos no fluxo visitante (mantendo redirect)", () => {
+    it("remove TODOS os parâmetros desconhecidos no fluxo visitante (sem redirect)", () => {
       const r = buildExperimenteRedirect({
         authenticated: false,
         search: "?utm_source=hero&ref=abc&evil=1&password=123",
       });
       const u = url(r);
+      expect(u.pathname).toBe("/dashboard");
       const keys = [...u.searchParams.keys()].sort();
-      expect(keys).toEqual(["redirect", "ref", "utm_source"]);
-      expect(u.searchParams.get("redirect")).toBe("/dashboard");
+      expect(keys).toEqual(["ref", "utm_source"]);
       expect(u.searchParams.get("ref")).toBe("abc");
       expect(u.searchParams.get("evil")).toBeNull();
       expect(u.searchParams.get("password")).toBeNull();
@@ -103,9 +99,11 @@ describe("buildExperimenteRedirect", () => {
         search: "?nextRedirect=/dashboard/pacientes&utm_source=x",
       });
       const u = url(r2);
+      expect(u.pathname).toBe("/dashboard/pacientes");
       expect(u.searchParams.has("nextRedirect")).toBe(false);
       expect(u.searchParams.has("next")).toBe(false);
-      expect(u.searchParams.get("redirect")).toBe("/dashboard/pacientes");
+      expect(u.searchParams.has("redirect")).toBe(false);
+      expect(u.searchParams.get("utm_source")).toBe("x");
     });
 
     it("aceita nextRedirect como sinônimo de next", () => {
@@ -130,7 +128,7 @@ describe("buildExperimenteRedirect", () => {
         authenticated: false,
         search: `?next=${encodeURIComponent(bad)}`,
       });
-      expect(url(r).searchParams.get("redirect")).toBe("/dashboard");
+      expect(url(r).pathname).toBe("/dashboard");
     });
   });
 });

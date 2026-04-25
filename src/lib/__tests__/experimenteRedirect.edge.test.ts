@@ -20,10 +20,12 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         authenticated: false,
         search: "?utm_source=a&utm_source=b&ref=x&ref=y",
       });
-      const sp = u(r).searchParams;
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard");
+      const sp = parsed.searchParams;
       expect(sp.getAll("utm_source")).toEqual(["a", "b"]);
       expect(sp.getAll("ref")).toEqual(["x", "y"]);
-      expect(sp.get("redirect")).toBe("/dashboard");
+      expect(sp.has("redirect")).toBe(false);
     });
 
     it("preserva ordem original entre múltiplos utm_*", () => {
@@ -55,7 +57,7 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         authenticated: false,
         search: "?next=",
       });
-      expect(u(r).searchParams.get("redirect")).toBe("/dashboard");
+      expect(u(r).pathname).toBe("/dashboard");
     });
 
     it("query string vazia não quebra", () => {
@@ -68,7 +70,7 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         buildExperimenteRedirect({ authenticated: true, search: "?&&=&" }),
       ).not.toThrow();
       const r = buildExperimenteRedirect({ authenticated: false, search: "?&&=&" });
-      expect(u(r).pathname).toBe("/register");
+      expect(u(r).pathname).toBe("/dashboard");
     });
   });
 
@@ -95,7 +97,7 @@ describe("buildExperimenteRedirect — query edge cases", () => {
         search: "?next=%2F%2Fevil.com",
       });
       // %2F%2F decodifica para "//" → bloqueado pela proteção de open-redirect.
-      expect(u(r).searchParams.get("redirect")).toBe("/dashboard");
+      expect(u(r).pathname).toBe("/dashboard");
     });
 
     it("decodifica `next` percent-encoded válido e respeita allowlist", () => {

@@ -57,14 +57,15 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
       expect(r).toBe("/dashboard");
     });
 
-    it("propaga corretamente para /register?redirect= no fluxo visitante", () => {
+    it("propaga corretamente o destino direto no fluxo visitante", () => {
       const r = buildExperimenteRedirect({
         authenticated: false,
         search: "?next=/admin&next=/dashboard/teleconsulta&utm_source=ads",
       });
-      const sp = u(r).searchParams;
-      expect(sp.get("redirect")).toBe("/dashboard/teleconsulta");
-      expect(sp.get("utm_source")).toBe("ads");
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard/teleconsulta");
+      expect(parsed.searchParams.get("utm_source")).toBe("ads");
+      expect(parsed.searchParams.has("redirect")).toBe(false);
     });
 
     it("nunca vaza next/nextRedirect no querystring final mesmo repetidos", () => {
@@ -110,11 +111,10 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
         authenticated: false,
         search: "?utm_source=hero one&ref=foo bar",
       });
-      // Decodificado pela URL/URLSearchParams deve voltar ao original.
-      const sp = u(r).searchParams;
-      expect(sp.get("utm_source")).toBe("hero one");
-      expect(sp.get("ref")).toBe("foo bar");
-      expect(sp.get("redirect")).toBe("/dashboard");
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard");
+      expect(parsed.searchParams.get("utm_source")).toBe("hero one");
+      expect(parsed.searchParams.get("ref")).toBe("foo bar");
     });
   });
 
@@ -132,17 +132,19 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
       expect(sp.get("utm_campaign")).toBe("e");
     });
 
-    it("visitante: idem + sempre adiciona redirect", () => {
+    it("visitante: idem e vai direto ao destino padrão", () => {
       const r = buildExperimenteRedirect({
         authenticated: false,
         search:
           "?utm_source=a&utm_source=b&ref=x&ref=y&utm_medium=z&garbage=1",
       });
-      const sp = u(r).searchParams;
+      const parsed = u(r);
+      expect(parsed.pathname).toBe("/dashboard");
+      const sp = parsed.searchParams;
       expect(sp.getAll("utm_source")).toEqual(["a", "b"]);
       expect(sp.getAll("ref")).toEqual(["x", "y"]);
       expect(sp.get("utm_medium")).toBe("z");
-      expect(sp.get("redirect")).toBe("/dashboard");
+      expect(sp.has("redirect")).toBe(false);
       expect(sp.has("garbage")).toBe(false);
     });
   });
@@ -156,10 +158,10 @@ describe("buildExperimenteRedirect — repeated next + extra edges", () => {
       "?next=%09/admin", // tab + path
     ])("descarta tentativa %p e cai em /dashboard", (search) => {
       const r = buildExperimenteRedirect({ authenticated: false, search });
-      const redirect = u(r).searchParams.get("redirect");
-      expect(redirect).toBe("/dashboard");
-      expect(redirect).not.toContain("admin");
-      expect(redirect).not.toContain("..");
+      const path = u(r).pathname;
+      expect(path).toBe("/dashboard");
+      expect(path).not.toContain("admin");
+      expect(path).not.toContain("..");
     });
 
     it("redirect final NUNCA contém esquema externo, mesmo com input adversarial", () => {

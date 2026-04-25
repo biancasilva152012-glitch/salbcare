@@ -12,14 +12,14 @@ describe("buildExperimenteRedirect — redirect= como sinônimo de next", () => 
     expect(r).toBe("/dashboard/agenda");
   });
 
-  it("aceita ?redirect= no fluxo visitante e re-emite como /register?redirect=", () => {
+  it("aceita ?redirect= no fluxo visitante e leva direto ao destino", () => {
     const r = buildExperimenteRedirect({
       authenticated: false,
       search: "?redirect=/dashboard/pacientes",
     });
-    const sp = u(r).searchParams;
-    expect(u(r).pathname).toBe("/register");
-    expect(sp.get("redirect")).toBe("/dashboard/pacientes");
+    const parsed = u(r);
+    expect(parsed.pathname).toBe("/dashboard/pacientes");
+    expect(parsed.searchParams.has("redirect")).toBe(false);
   });
 
   it("?redirect= e ?next= concordando → vai para o destino comum", () => {
@@ -64,15 +64,15 @@ describe("buildExperimenteRedirect — redirect= como sinônimo de next", () => 
     expect(sp.get("utm_source")).toBe("ads");
   });
 
-  it("?redirect= no visitante é descartado e SOMENTE o redirect canônico fica", () => {
+  it("?redirect= no visitante é consumido e o destino vai direto na URL", () => {
     const r = buildExperimenteRedirect({
       authenticated: false,
       search: "?redirect=/dashboard/agenda&redirect=/admin",
     });
-    const sp = u(r).searchParams;
-    // Os valores brutos `redirect=...` da query foram consumidos.
-    // O `redirect=` que aparece no output é o canônico, gerado por nós.
-    expect(sp.getAll("redirect")).toEqual(["/dashboard/agenda"]);
+    const parsed = u(r);
+    // O destino válido vira o pathname; nenhum `redirect=` aparece no querystring.
+    expect(parsed.pathname).toBe("/dashboard/agenda");
+    expect(parsed.searchParams.has("redirect")).toBe(false);
   });
 });
 
@@ -122,9 +122,10 @@ describe("buildExperimenteRedirect — basePath em ?next=", () => {
       basePath: "/app",
       search: "?redirect=/dashboard/pacientes&utm_source=a&utm_source=b&ref=x",
     });
-    const sp = u(r).searchParams;
-    expect(u(r).pathname).toBe("/app/register");
-    expect(sp.get("redirect")).toBe("/app/dashboard/pacientes");
+    const parsed = u(r);
+    const sp = parsed.searchParams;
+    expect(parsed.pathname).toBe("/app/dashboard/pacientes");
+    expect(sp.has("redirect")).toBe(false);
     expect(sp.getAll("utm_source")).toEqual(["a", "b"]);
     expect(sp.get("ref")).toBe("x");
   });

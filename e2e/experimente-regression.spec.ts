@@ -58,16 +58,18 @@ const seedAuth = async (page: import("@playwright/test").Page) => {
 };
 
 test.describe("/experimente — regressão utm/ref + robustez", () => {
-  test("visitante: preserva utm_* repetidos e ref repetidos exatamente", async ({ page }) => {
+  test("visitante: preserva utm_* repetidos e ref repetidos exatamente (vai direto a /dashboard)", async ({ page }) => {
     await page.goto(
       "/experimente?utm_source=hero&utm_source=footer&utm_medium=cpc&ref=a&ref=b&evil=1",
     );
-    await page.waitForURL(/\/register\?/);
-    const sp = new URL(page.url()).searchParams;
+    await page.waitForURL(/\/dashboard(\?|$)/);
+    const url = new URL(page.url());
+    expect(url.pathname).toBe("/dashboard");
+    const sp = url.searchParams;
     expect(sp.getAll("utm_source")).toEqual(["hero", "footer"]);
     expect(sp.getAll("ref")).toEqual(["a", "b"]);
     expect(sp.get("utm_medium")).toBe("cpc");
-    expect(sp.get("redirect")).toBe("/dashboard");
+    expect(sp.get("redirect")).toBeNull();
     expect(sp.get("evil")).toBeNull();
   });
 
@@ -126,7 +128,7 @@ test.describe("/experimente — regressão utm/ref + robustez", () => {
     }, DEMO_KEYS);
 
     await page.goto("/experimente");
-    await page.waitForURL(/\/register\?/);
+    await page.waitForURL(/\/dashboard(\?|$)/);
 
     const state = await page.evaluate((keys) => ({
       demo: keys.map((k) => [k, localStorage.getItem(k)] as const),
