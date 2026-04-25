@@ -1547,6 +1547,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      audit_rls_coverage: {
+        Args: never
+        Returns: {
+          has_delete: boolean
+          has_insert: boolean
+          has_select: boolean
+          has_update: boolean
+          notes: string
+          rls_enabled: boolean
+          status: string
+          table_name: string
+          user_scoped: boolean
+        }[]
+      }
       check_and_apply_suspension: {
         Args: { _user_id: string }
         Returns: boolean

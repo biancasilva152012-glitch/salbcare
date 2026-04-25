@@ -29,6 +29,10 @@ import {
   normalizeName,
   normalizeEmail,
   appointmentKey,
+  beginMerge,
+  endMerge,
+  hasMergedFor,
+  isMergeInFlight,
   type GuestPatient,
   type GuestAppointment,
   type GuestSyncSummary,
@@ -103,6 +107,25 @@ const SyncGuestData = () => {
   // ── Actions ─────────────────────────────────────────────────────────────
   const handleMerge = async () => {
     if (!user) return;
+
+    // Idempotency: never run twice for the same user_id, even on refresh.
+    if (hasMergedFor(user.id)) {
+      toast.info("Os dados de visitante já foram importados nesta conta.");
+      clearGuestStorage();
+      markGuestSyncAcknowledged();
+      clearGuestSyncLock();
+      navigate(next, { replace: true });
+      return;
+    }
+    if (isMergeInFlight(user.id)) {
+      toast.info("Importação já em andamento — aguarde…");
+      return;
+    }
+    if (!beginMerge(user.id)) {
+      toast.error("Não foi possível iniciar a importação. Tente novamente.");
+      return;
+    }
+
     setMerging(true);
 
     const summary: GuestSyncSummary = {
@@ -116,7 +139,6 @@ const SyncGuestData = () => {
     try {
       // ── PATIENTS ────────────────────────────────────────────────────────
       if (importPatients && guestPatients.length > 0) {
-        // Existing names + emails in Supabase (RLS-scoped to this user)
         const { data: existing, error: exErr } = await supabase
           .from("patients")
           .select("name, email");
@@ -134,7 +156,6 @@ const SyncGuestData = () => {
         for (const p of guestPatients) {
           const nameKey = normalizeName(p.name);
           const emailKey = normalizeEmail(p.email);
-          // Email match wins as the more specific criterion
           if (emailKey && seenEmails.has(emailKey)) {
             summary.patients.skippedDuplicate += 1;
             summary.duplicates.patients.push({ label: `${p.name} <${p.email}>`, reason: "email" });
@@ -228,9 +249,16 @@ const SyncGuestData = () => {
       clearGuestStorage();
       markGuestSyncAcknowledged();
       clearGuestSyncLock();
+      endMerge(user.id);
       writeGuestSyncSummary(summary);
       navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
     } catch (err: any) {
+      // Roll back the in-flight marker so the user can retry.
+      try {
+        window.localStorage.removeItem("salbcare_guest_sync_inflight");
+      } catch {
+        /* ignore */
+      }
       toast.error(err?.message ?? "Falha ao importar dados do modo guest.");
       setMerging(false);
     }
@@ -247,8 +275,33 @@ const SyncGuestData = () => {
     clearGuestStorage();
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    if (user) endMerge(user.id);
     writeGuestSyncSummary(summary);
     navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
+  };
+
+  /**
+   * "Limpar manualmente" — wipes the local guest data without going through the
+   * import/discard flow. Useful when the user just wants the guest cache gone
+   * (e.g. fixed on another device) and stays on the same page so they can
+   * confirm the counters dropped to zero.
+   */
+  const handleManualClear = () => {
+    const totalP = guestPatients.length;
+    const totalA = guestAppointments.length;
+    if (totalP === 0 && totalA === 0) {
+      toast.info("Não há dados de visitante para limpar.");
+      return;
+    }
+    const ok = window.confirm(
+      `Apagar ${totalP} paciente(s) e ${totalA} consulta(s) do visitante neste navegador? Esta ação não pode ser desfeita.`,
+    );
+    if (!ok) return;
+    clearGuestStorage();
+    markGuestSyncAcknowledged();
+    clearGuestSyncLock();
+    toast.success("Dados de visitante removidos deste navegador.");
+    navigate(next, { replace: true });
   };
 
   const handleLater = () => {
@@ -257,6 +310,7 @@ const SyncGuestData = () => {
     toast.info("Você pode voltar nesta tela manualmente em /sync-guest-data.");
     navigate(next, { replace: true });
   };
+
 
   if (authLoading || limitsLoading) {
     return (
@@ -409,6 +463,17 @@ const SyncGuestData = () => {
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Descartar rascunhos
+            </Button>
+            <Button
+              onClick={handleManualClear}
+              disabled={merging}
+              variant="ghost"
+              size="sm"
+              className="w-full text-destructive hover:text-destructive"
+              data-testid="sync-manual-clear-btn"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-2" />
+              Limpar manualmente os dados deste navegador
             </Button>
             <Button
               onClick={handleLater}
