@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { trackCtaClick } from "@/hooks/useTracking";
 import type { FinancialHealthState } from "@/hooks/useFinancialHealth";
+import { useFinancialSuggestions } from "@/hooks/useFinancialSuggestions";
 
 const DISMISS_KEY = "salbcare_financial_onboarding_dismissed";
 
