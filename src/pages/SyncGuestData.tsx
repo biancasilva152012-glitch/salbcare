@@ -179,6 +179,7 @@ const SyncGuestData = () => {
       // Nothing to merge — just acknowledge so the toast/route stops firing.
       markGuestSyncAcknowledged();
       clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
       clearGuestSyncCheckpoint();
       navigate(next, { replace: true });
     }
@@ -392,6 +393,7 @@ const SyncGuestData = () => {
     clearGuestStorage();
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     endMerge(user.id);
     writeGuestSyncSummary(finalSummary);
     navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
@@ -405,6 +407,7 @@ const SyncGuestData = () => {
       clearGuestStorage();
       markGuestSyncAcknowledged();
       clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
       navigate(next, { replace: true });
       return;
     }
@@ -489,6 +492,7 @@ const SyncGuestData = () => {
     clearGuestStorage();
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     if (user) endMerge(user.id);
     writeGuestSyncSummary(summary);
     navigate(`/sync-guest-data/done?next=${encodeURIComponent(next)}`, { replace: true });
@@ -514,6 +518,7 @@ const SyncGuestData = () => {
     clearGuestStorage();
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     toast.success("Dados de visitante removidos deste navegador.");
     navigate(next, { replace: true });
   };
@@ -521,6 +526,7 @@ const SyncGuestData = () => {
   const handleLater = () => {
     markGuestSyncAcknowledged();
     clearGuestSyncLock();
+    clearGuestSyncCheckpoint();
     toast.info("Você pode voltar nesta tela manualmente em /sync-guest-data.");
     navigate(next, { replace: true });
   };
