@@ -91,13 +91,18 @@ const Financial = () => {
     const type = searchParams.get("type");
     const category = searchParams.get("category");
     const description = searchParams.get("description");
+    const dateParam = searchParams.get("date");
     const autoOpen = searchParams.get("autoOpen") === "1";
-    if (!type && !category && !description && !autoOpen) return;
+    if (!type && !category && !description && !dateParam && !autoOpen) return;
     setForm((prev) => ({
       ...prev,
       type: type === "expense" ? "expense" : type === "income" ? "income" : prev.type,
       category: category || prev.category,
       description: description || prev.description,
+      // Aceita "next-bd" como atalho dinâmico (próximo dia útil) ou ISO yyyy-MM-dd direto.
+      date: dateParam === "next-bd"
+        ? suggestions.nextBusinessDay()
+        : (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : prev.date),
     }));
     if (autoOpen) {
       setOpen(true);
@@ -105,6 +110,7 @@ const Financial = () => {
       next.delete("type");
       next.delete("category");
       next.delete("description");
+      next.delete("date");
       next.delete("autoOpen");
       setSearchParams(next, { replace: true });
     }
