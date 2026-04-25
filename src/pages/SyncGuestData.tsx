@@ -630,10 +630,10 @@ const SyncGuestData = () => {
               />
               <ul className="space-y-1.5 text-[12px]">
                 {([
-                  { key: "patients", label: "Pacientes", icon: Users },
-                  { key: "appointments", label: "Agendamentos", icon: Calendar },
-                  { key: "teleconsultations", label: "Teleconsultas", icon: Video },
-                ] as const).map(({ key, label, icon: Icon }) => {
+                  { key: "patients", label: "Pacientes", icon: Users, retryable: true as const },
+                  { key: "appointments", label: "Agendamentos", icon: Calendar, retryable: true as const },
+                  { key: "teleconsultations", label: "Teleconsultas", icon: Video, retryable: false as const },
+                ] as const).map(({ key, label, icon: Icon, retryable }) => {
                   const st = steps[key];
                   const dot =
                     st === "done"
@@ -656,11 +656,32 @@ const SyncGuestData = () => {
                             ? "pulado"
                             : "aguardando";
                   return (
-                    <li key={key} className="flex items-center gap-2" data-testid={`sync-step-${key}`}>
-                      <span className={`inline-block h-2 w-2 rounded-full ${dot}`} aria-hidden />
-                      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="font-medium">{label}</span>
-                      <span className="text-muted-foreground">— {labelSt}</span>
+                    <li key={key} className="space-y-1" data-testid={`sync-step-${key}`}>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-block h-2 w-2 rounded-full ${dot}`} aria-hidden />
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{label}</span>
+                        <span className="text-muted-foreground">— {labelSt}</span>
+                        {retryable && st === "failed" && !merging && (
+                          <Button
+                            onClick={() =>
+                              handleRetryStep(key as "patients" | "appointments")
+                            }
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 px-2 ml-auto text-[11px]"
+                            data-testid={`sync-retry-${key}`}
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Tentar só esta etapa
+                          </Button>
+                        )}
+                      </div>
+                      {retryable && stepError[key as "patients" | "appointments"] && (
+                        <p className="ml-4 text-[11px] text-destructive">
+                          {stepError[key as "patients" | "appointments"]}
+                        </p>
+                      )}
                     </li>
                   );
                 })}
@@ -684,9 +705,86 @@ const SyncGuestData = () => {
                   data-testid="sync-retry-btn"
                 >
                   <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-                  Tentar importar novamente
+                  Tentar importar tudo novamente
                 </Button>
               )}
+            </section>
+          )}
+
+          {/* Resumo ao vivo (antes de confirmar em /sync-guest-data/done) */}
+          {(liveSummary.patients.imported > 0 ||
+            liveSummary.appointments.imported > 0 ||
+            liveSummary.patients.skippedDuplicate > 0 ||
+            liveSummary.appointments.skippedDuplicate > 0) && (
+            <section
+              className="glass-card p-4 space-y-3"
+              data-testid="sync-live-summary"
+              aria-label="Resumo parcial da importação"
+            >
+              <p className="text-xs font-semibold">Resumo parcial</p>
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="rounded-lg border bg-emerald-500/5 border-emerald-500/30 p-2">
+                  <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                    {liveSummary.patients.imported}
+                  </p>
+                  <p className="text-muted-foreground">Pacientes importados</p>
+                </div>
+                <div className="rounded-lg border bg-emerald-500/5 border-emerald-500/30 p-2">
+                  <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                    {liveSummary.appointments.imported}
+                  </p>
+                  <p className="text-muted-foreground">Consultas importadas</p>
+                </div>
+                <div className="rounded-lg border bg-amber-500/5 border-amber-500/30 p-2">
+                  <p className="text-amber-600 dark:text-amber-400 font-semibold">
+                    {liveSummary.patients.skippedDuplicate}
+                  </p>
+                  <p className="text-muted-foreground">Pacientes duplicados</p>
+                </div>
+                <div className="rounded-lg border bg-amber-500/5 border-amber-500/30 p-2">
+                  <p className="text-amber-600 dark:text-amber-400 font-semibold">
+                    {liveSummary.appointments.skippedDuplicate}
+                  </p>
+                  <p className="text-muted-foreground">Consultas duplicadas</p>
+                </div>
+              </div>
+
+              {liveSummary.duplicates.patients.length > 0 && (
+                <details className="text-[11px]">
+                  <summary className="cursor-pointer font-medium text-muted-foreground hover:text-foreground">
+                    Pacientes ignorados ({liveSummary.duplicates.patients.length})
+                  </summary>
+                  <ul className="mt-1.5 space-y-0.5 pl-4 list-disc text-muted-foreground">
+                    {liveSummary.duplicates.patients.map((d, i) => (
+                      <li key={`p-${i}`}>
+                        {d.label}{" "}
+                        <span className="text-[10px] opacity-70">
+                          ({d.reason === "email" ? "mesmo e-mail" : "mesmo nome"})
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+              {liveSummary.duplicates.appointments.length > 0 && (
+                <details className="text-[11px]">
+                  <summary className="cursor-pointer font-medium text-muted-foreground hover:text-foreground">
+                    Consultas ignoradas ({liveSummary.duplicates.appointments.length})
+                  </summary>
+                  <ul className="mt-1.5 space-y-0.5 pl-4 list-disc text-muted-foreground">
+                    {liveSummary.duplicates.appointments.map((d, i) => (
+                      <li key={`a-${i}`}>
+                        {d.label}{" "}
+                        <span className="text-[10px] opacity-70">(mesmo nome, data e horário)</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+              <p className="text-[10px] text-muted-foreground">
+                Confirme em <strong>/sync-guest-data/done</strong> ao final da
+                importação para encerrar.
+              </p>
             </section>
           )}
 
