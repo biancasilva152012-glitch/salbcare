@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import PageSkeleton from "@/components/PageSkeleton";
 import ListPagination from "@/components/ListPagination";
 import { usePagination } from "@/hooks/usePagination";
@@ -75,6 +76,41 @@ const Financial = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [filterMonth, setFilterMonth] = useState(new Date());
   const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const descriptionRef = useRef<HTMLInputElement | null>(null);
+  const onboardingParam = searchParams.get("onboarding");
+
+  // Pré-preenche o formulário a partir de query params (?type=...&category=...&autoOpen=1)
+  // disparados pelo wizard / CTAs contextuais do dashboard. Limpa os params depois
+  // para que o estado não "trave" ao fechar o dialog.
+  useEffect(() => {
+    const type = searchParams.get("type");
+    const category = searchParams.get("category");
+    const autoOpen = searchParams.get("autoOpen") === "1";
+    if (!type && !category && !autoOpen) return;
+    setForm((prev) => ({
+      ...prev,
+      type: type === "expense" ? "expense" : type === "income" ? "income" : prev.type,
+      category: category || prev.category,
+    }));
+    if (autoOpen) {
+      setOpen(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("type");
+      next.delete("category");
+      next.delete("autoOpen");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Foca o campo Descrição quando o dialog abre via autoOpen.
+  useEffect(() => {
+    if (open) {
+      const id = setTimeout(() => descriptionRef.current?.focus(), 80);
+      return () => clearTimeout(id);
+    }
+  }, [open]);
 
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ["financial", user?.id],
@@ -204,7 +240,7 @@ const Financial = () => {
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
         <Label>Descrição</Label>
-        <Input placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" />
+        <Input ref={descriptionRef} placeholder="Ex: Consulta particular" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-accent border-border" />
         <p className="text-[10px] text-muted-foreground leading-relaxed">
           {form.type === "income"
             ? "Cada consulta registrada ajuda a IA a entender seu potencial real."

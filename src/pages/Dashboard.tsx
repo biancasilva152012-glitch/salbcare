@@ -21,6 +21,7 @@ import FinancialDiagnosisBanner from "@/components/financial/FinancialDiagnosisB
 import FinancialHealthProgress from "@/components/financial/FinancialHealthProgress";
 import AIPreviewLockedCard from "@/components/financial/AIPreviewLockedCard";
 import SmartTrialNotification from "@/components/financial/SmartTrialNotification";
+import FinancialOnboardingWizard from "@/components/financial/FinancialOnboardingWizard";
 import UpgradeModal from "@/components/UpgradeModal";
 
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -215,12 +216,22 @@ const Dashboard = () => {
               </motion.div>
             )}
 
+            {financialHealth.onboardingStep !== null && (
+              <motion.div variants={item}>
+                <FinancialOnboardingWizard
+                  health={financialHealth}
+                  onOpenMentor={() => navigate("/dashboard/mentoria")}
+                />
+              </motion.div>
+            )}
+
             {!financialHealth.isEmpty && (
               <motion.div variants={item}>
                 <FinancialHealthProgress
                   steps={financialHealth.steps}
                   progressPercent={financialHealth.progressPercent}
                   onPremiumStepClick={openUpgrade}
+                  mentorUnlocks={financialHealth.mentorUnlocks}
                 />
               </motion.div>
             )}
