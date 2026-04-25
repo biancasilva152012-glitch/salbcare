@@ -31,6 +31,7 @@ import TaxSimulatorWidget from "@/components/financial/TaxSimulatorWidget";
 import FeatureGate from "@/components/FeatureGate";
 import EmptyState from "@/components/EmptyState";
 import ConsultationPaymentsTab from "@/components/financial/ConsultationPayments";
+import GuestPaywall from "@/components/GuestPaywall";
 
 const chartConfig = {
   income: { label: "Receitas", color: "hsl(var(--success, 142 71% 45%))" },
@@ -52,6 +53,15 @@ const emptyForm = { description: "", amount: "", type: "income" as "income" | "e
 
 const Financial = () => {
   const { user } = useAuth();
+  if (!user) {
+    return (
+      <GuestPaywall
+        feature="o módulo Financeiro"
+        description="O controle financeiro precisa de uma conta para guardar suas receitas e despesas com segurança. Cadastro grátis em menos de 1 minuto."
+        redirectAfterSignup="/dashboard/financial"
+      />
+    );
+  }
   const { hasAccess } = useFeatureGate();
   const { canAddFinancial, financialCount, financialLimit, isFree } = useFreemiumLimits();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
