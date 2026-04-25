@@ -156,7 +156,7 @@ const Telehealth = () => {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Teleconsulta</h1>
-          {canCreateTelehealth ? (
+          {canCreateTeleconsultation ? (
             <Button
               size="sm"
               onClick={() => setCreateOpen(true)}
@@ -172,7 +172,7 @@ const Telehealth = () => {
               className="gap-1 text-xs gradient-primary"
               data-testid="telehealth-new-btn-blocked"
             >
-              <Plus className="h-3.5 w-3.5" /> Nova Consulta
+              <Lock className="h-3.5 w-3.5" /> Nova Consulta
             </Button>
           )}
         </div>
