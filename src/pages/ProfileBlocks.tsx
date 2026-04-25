@@ -179,6 +179,33 @@ const ProfileBlocks = () => {
     fetchPage(0, true);
   }, [user, fetchPage]);
 
+  // Conta total de eventos no servidor (mesmos filtros de servidor),
+  // usado para mostrar "carregados X de Y total" e prévia do export.
+  useEffect(() => {
+    if (!user) {
+      setServerTotal(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      let q = supabase
+        .from("premium_block_attempts")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      q = applyServerFilters(q);
+      const { count, error } = await q;
+      if (cancelled) return;
+      if (error) {
+        setServerTotal(null);
+        return;
+      }
+      setServerTotal(count ?? 0);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, applyServerFilters]);
+
   // Infinite scroll: observer no sentinela carrega próxima página.
   useEffect(() => {
     const node = sentinelRef.current;
