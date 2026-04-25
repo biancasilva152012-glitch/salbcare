@@ -64,15 +64,15 @@ describe("buildExperimenteRedirect — redirect= como sinônimo de next", () => 
     expect(sp.get("utm_source")).toBe("ads");
   });
 
-  it("?redirect= no visitante é descartado e SOMENTE o redirect canônico fica", () => {
+  it("?redirect= no visitante é consumido e o destino vai direto na URL", () => {
     const r = buildExperimenteRedirect({
       authenticated: false,
       search: "?redirect=/dashboard/agenda&redirect=/admin",
     });
-    const sp = u(r).searchParams;
-    // Os valores brutos `redirect=...` da query foram consumidos.
-    // O `redirect=` que aparece no output é o canônico, gerado por nós.
-    expect(sp.getAll("redirect")).toEqual(["/dashboard/agenda"]);
+    const parsed = u(r);
+    // O destino válido vira o pathname; nenhum `redirect=` aparece no querystring.
+    expect(parsed.pathname).toBe("/dashboard/agenda");
+    expect(parsed.searchParams.has("redirect")).toBe(false);
   });
 });
 
