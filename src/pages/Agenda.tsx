@@ -448,13 +448,13 @@ const Agenda = () => {
               <FileDown className="h-3.5 w-3.5" /> Modelo
             </Button>
             <label>
-              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing} asChild>
+              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing || guestSyncLocked} asChild>
                 <span>
                   {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
                   {importing ? "..." : "Importar"}
                 </span>
               </Button>
-              <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" />
+              <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" disabled={guestSyncLocked} />
             </label>
             <Dialog open={blockOpen} onOpenChange={(v) => { setBlockOpen(v); if (v) setBlockData(blockForm); }}>
               <DialogTrigger asChild>
@@ -748,10 +748,30 @@ const Agenda = () => {
                                   Entrar agora
                                 </a>
                               )}
-                              <button onClick={() => openEdit(apt)} className="text-xs text-primary hover:underline"><Pencil className="h-3.5 w-3.5" /></button>
+                              <button
+                                onClick={() => guestSyncLocked
+                                  ? toast.info("Sincronize seus rascunhos do modo guest antes de editar.")
+                                  : openEdit(apt)
+                                }
+                                disabled={guestSyncLocked}
+                                className="text-xs text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <button className="text-xs text-destructive hover:underline"><Trash2 className="h-3.5 w-3.5" /></button>
+                                  <button
+                                    disabled={guestSyncLocked}
+                                    className="text-xs text-destructive hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline"
+                                    onClick={(e) => {
+                                      if (guestSyncLocked) {
+                                        e.preventDefault();
+                                        toast.info("Sincronize seus rascunhos do modo guest antes de cancelar.");
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="bg-card border-border">
                                   <AlertDialogHeader>
@@ -760,7 +780,7 @@ const Agenda = () => {
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+                                    <AlertDialogAction onClick={() => deleteMutation.mutate(apt.id)} className="bg-destructive text-destructive-foreground" disabled={guestSyncLocked}>Excluir</AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
