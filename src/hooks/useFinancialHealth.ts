@@ -118,28 +118,52 @@ export function useFinancialHealth(): FinancialHealthState {
     const completed = steps.filter((s) => s.done).length;
     const progressPercent = Math.round((completed / steps.length) * 100);
 
-    // Receita do mês corrente (para a notificação inteligente).
+    // Receita / despesa do mês corrente (alimenta cards e Mentora IA).
     const now = new Date();
     const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     const monthlyIncome = incomeRows
       .filter((t) => String(t.date).startsWith(monthKey))
       .reduce((sum, t) => sum + Number(t.amount), 0);
+    const monthlyExpense = expenseRows
+      .filter((t) => String(t.date).startsWith(monthKey))
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    const monthlyProfit = monthlyIncome - monthlyExpense;
 
     const trialExpiredNotConverted =
       !subscription.isLoading &&
       subscription.trialExpired &&
       !subscription.isActive;
 
+    // Desbloqueio progressivo da Mentora IA. Cada nível de análise
+    // libera quando o usuário cumpre as pré-condições mínimas para
+    // que a resposta seja útil (não vamos liberar projeção sem ter
+    // pelo menos uma despesa para projetar custo).
+    const mentorUnlocks: MentorUnlocks = {
+      monthlyView: hasFirstIncome,
+      projection: hasFirstIncome && hasFirstFixedExpense,
+      recommendations: transactionCount >= 5,
+    };
+
+    // Próxima etapa do wizard (1 = receita, 2 = gasto fixo, 3 = resumo).
+    let onboardingStep: 1 | 2 | 3 | null;
+    if (!hasFirstIncome) onboardingStep = 1;
+    else if (!hasFirstFixedExpense) onboardingStep = 2;
+    else onboardingStep = 3;
+
     return {
       isLoading: isLoading || subscription.isLoading,
       transactionCount,
       monthlyIncome,
+      monthlyExpense,
+      monthlyProfit,
       isEmpty,
       hasMinimumForPreview: transactionCount >= 3,
       hasMinimumForSmartNotification: transactionCount >= 5,
       progressPercent,
       steps,
       trialExpiredNotConverted,
+      mentorUnlocks,
+      onboardingStep,
     };
   }, [rows, isLoading, subscription]);
 }
