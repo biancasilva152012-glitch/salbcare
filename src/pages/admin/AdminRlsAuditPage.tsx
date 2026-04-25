@@ -191,11 +191,38 @@ const AdminRlsAuditPage = () => {
               proteção por linha (RLS) ativa e se as policies isolam cada
               usuário aos próprios dados (<code>auth.uid() = user_id</code>).
             </p>
+            {lastRunAt && (
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Última verificação: {lastRunAt.toLocaleString("pt-BR")}
+              </p>
+            )}
           </div>
-          <Button onClick={run} disabled={loading} size="sm" variant="outline">
-            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? "animate-spin" : ""}`} />
-            Reexecutar
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={run} disabled={loading} size="sm" variant="outline">
+              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? "animate-spin" : ""}`} />
+              Reexecutar
+            </Button>
+            <Button
+              onClick={downloadCsv}
+              disabled={!rows || rows.length === 0}
+              size="sm"
+              variant="outline"
+              data-testid="rls-export-csv"
+            >
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              CSV
+            </Button>
+            <Button
+              onClick={downloadPdf}
+              disabled={!rows || rows.length === 0}
+              size="sm"
+              variant="outline"
+              data-testid="rls-export-pdf"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+          </div>
         </header>
 
         {summary && (
