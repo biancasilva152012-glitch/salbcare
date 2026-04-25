@@ -170,3 +170,30 @@ export function clearGuestStorage() {
     }
   }
 }
+
+/** Marker stored after the post-login sync screen runs (regardless of the
+ * user's choice). Prevents the sync screen from showing on every navigation. */
+export const GUEST_SYNC_ACK_KEY = "salbcare_guest_sync_ack";
+
+export function markGuestSyncAcknowledged() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(GUEST_SYNC_ACK_KEY, new Date().toISOString());
+  } catch {
+    /* ignore */
+  }
+}
+
+export function hasGuestSyncBeenAcknowledged(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    return Boolean(window.localStorage.getItem(GUEST_SYNC_ACK_KEY));
+  } catch {
+    return true;
+  }
+}
+
+export function hasGuestData(): boolean {
+  return readGuestPatients().length > 0 || readGuestAppointments().length > 0;
+}
+
