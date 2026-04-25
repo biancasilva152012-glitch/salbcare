@@ -89,17 +89,60 @@ function buildPreservedSearch(rawSearch: string): string {
   return out.toString();
 }
 
+/**
+ * Resolve the deep target from `next` / `nextRedirect`, accepting the FIRST
+ * value that passes the allowlist (deterministic when repeated).
+ *
+ * - Multiple `next=` values: each one is checked in order; the first that
+ *   matches the allowlist wins. If none matches, falls back to /dashboard.
+ * - This guarantees `?next=/admin&next=/dashboard/agenda` deterministically
+ *   resolves to `/dashboard/agenda` instead of silently using `/dashboard`.
+ */
+function resolveDeepTarget(params: URLSearchParams): string {
+  const candidates = [
+    ...params.getAll("next"),
+    ...params.getAll("nextRedirect"),
+  ];
+  for (const c of candidates) {
+    if (isAllowedRedirect(c)) return c;
+  }
+  return "/dashboard";
+}
+
+/**
+ * Lightweight telemetry helper: returns the SORTED list of preserved keys
+ * (utm_*, ref) actually present in the query string. No values are returned —
+ * just the key names — so the caller can log it without leaking PII.
+ */
+export function getPreservedKeysFromSearch(search: string): string[] {
+  let params: URLSearchParams;
+  try {
+    params = new URLSearchParams(search);
+  } catch {
+    return [];
+  }
+  const seen = new Set<string>();
+  for (const k of params.keys()) {
+    if (k === "next" || k === "nextRedirect") continue;
+    if (PRESERVED_QUERY_PARAMS.has(k)) seen.add(k);
+  }
+  return [...seen].sort();
+}
+
 export function buildExperimenteRedirect({
   authenticated,
   search = "",
   basePath,
 }: BuildRedirectInput): string {
   const prefix = normalizeBasePath(basePath);
-  const params = new URLSearchParams(search);
+  let params: URLSearchParams;
+  try {
+    params = new URLSearchParams(search);
+  } catch {
+    params = new URLSearchParams();
+  }
 
-  const requestedNext = params.get("next") ?? params.get("nextRedirect");
-  const deepTarget = isAllowedRedirect(requestedNext) ? requestedNext! : "/dashboard";
-
+  const deepTarget = resolveDeepTarget(params);
   const preserved = buildPreservedSearch(search);
 
   if (authenticated) {
@@ -113,3 +156,4 @@ export function buildExperimenteRedirect({
   registerParams.set("redirect", `${prefix}${deepTarget}`);
   return `${prefix}/register?${registerParams.toString()}`;
 }
+
