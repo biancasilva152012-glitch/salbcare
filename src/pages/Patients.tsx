@@ -444,7 +444,7 @@ const Patients = () => {
           />
         </motion.div>
       </div>
-      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} feature="pacientes" currentUsage={patientsCount} limit={patientsLimit} />
+      {/* O bloqueio é exibido pelo PatientLimitWarning (modo modal) acima */}
     </PageContainer>
   );
 };
