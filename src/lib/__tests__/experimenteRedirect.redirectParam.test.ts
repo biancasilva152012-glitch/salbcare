@@ -12,14 +12,14 @@ describe("buildExperimenteRedirect — redirect= como sinônimo de next", () => 
     expect(r).toBe("/dashboard/agenda");
   });
 
-  it("aceita ?redirect= no fluxo visitante e re-emite como /register?redirect=", () => {
+  it("aceita ?redirect= no fluxo visitante e leva direto ao destino", () => {
     const r = buildExperimenteRedirect({
       authenticated: false,
       search: "?redirect=/dashboard/pacientes",
     });
-    const sp = u(r).searchParams;
-    expect(u(r).pathname).toBe("/register");
-    expect(sp.get("redirect")).toBe("/dashboard/pacientes");
+    const parsed = u(r);
+    expect(parsed.pathname).toBe("/dashboard/pacientes");
+    expect(parsed.searchParams.has("redirect")).toBe(false);
   });
 
   it("?redirect= e ?next= concordando → vai para o destino comum", () => {
