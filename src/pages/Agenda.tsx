@@ -32,12 +32,14 @@ import { downloadCsvTemplate, AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE } 
 import { Badge } from "@/components/ui/badge";
 import { useQueryClient as useQC } from "@tanstack/react-query";
 import ServiceRequestsPanel from "@/components/agenda/ServiceRequestsPanel";
+import GuestAgenda from "@/components/guest/GuestAgenda";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 const blockForm = { date: "", time: "", reason: "" };
 
 const Agenda = () => {
   const { user } = useAuth();
+  if (!user) return <GuestAgenda />;
   const { hasAccess } = useFeatureGate();
   const {
     isFree,
