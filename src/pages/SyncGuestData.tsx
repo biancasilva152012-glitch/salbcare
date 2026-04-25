@@ -128,11 +128,27 @@ const SyncGuestData = () => {
   // ── Restore checkpoint on mount so a refresh mid-sync resumes where it
   //    stopped (steps + live summary + pending lists). Only matches when the
   //    saved userId equals the current user.
+  //
+  //    Quando o checkpoint está EXPIRADO (>1h sem progresso), NÃO restauramos
+  //    automaticamente — exibimos um banner com o resumo parcial preservado e
+  //    botões para "Recomeçar do zero" ou "Descartar resumo". Isso evita que
+  //    um checkpoint velho confunda o usuário ou re-tente importações
+  //    obsoletas contra dados que já podem ter mudado no Supabase.
   const [restoredFromCheckpoint, setRestoredFromCheckpoint] = useState(false);
+  const [expiredCheckpoint, setExpiredCheckpoint] = useState<GuestSyncCheckpoint | null>(null);
   useEffect(() => {
     if (!user) return;
-    const cp = readGuestSyncCheckpoint(user.id);
-    if (!cp) return;
+    const result = readGuestSyncCheckpointDetailed(user.id);
+    if (result.status === "missing") return;
+
+    if (result.status === "expired") {
+      // Preserva o resumo parcial para o usuário ver — mas NÃO restaura
+      // os steps/pending para que ele decida o que fazer.
+      setExpiredCheckpoint(result.checkpoint);
+      return;
+    }
+
+    const cp = result.checkpoint;
     setSteps(cp.steps);
     setLiveSummary(cp.liveSummary);
     setImportPatients(cp.importPatients);
@@ -145,6 +161,45 @@ const SyncGuestData = () => {
     toast.info("Retomando importação de onde você parou.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  /** Aceita o checkpoint expirado: importa o estado salvo (steps + summary)
+   *  e tenta retomar. Útil quando o usuário sabe que abandonou ali e quer
+   *  só continuar. */
+  const handleResumeExpired = () => {
+    if (!expiredCheckpoint) return;
+    const cp = expiredCheckpoint;
+    setSteps(cp.steps);
+    setLiveSummary(cp.liveSummary);
+    setImportPatients(cp.importPatients);
+    setImportAppointments(cp.importAppointments);
+    const allPatients = readGuestPatients();
+    const allAppts = readGuestAppointments();
+    setPendingPatients(allPatients.filter((p) => cp.pendingPatientIds.includes(p.id)));
+    setPendingAppointments(allAppts.filter((a) => cp.pendingAppointmentIds.includes(a.id)));
+    setRestoredFromCheckpoint(true);
+    setExpiredCheckpoint(null);
+    toast.success("Sessão retomada. Você pode continuar a importação.");
+  };
+
+  /** Recomeça do zero, mas mantém o resumo parcial visível para referência
+   *  (o usuário pode comparar antes vs depois). */
+  const handleRestartExpired = () => {
+    setSteps(initialSteps());
+    setStepError({});
+    setLastError(null);
+    setPendingPatients(readGuestPatients());
+    setPendingAppointments(readGuestAppointments());
+    clearGuestSyncCheckpoint();
+    setExpiredCheckpoint(null);
+    toast.info("Recomeçando importação. Resumo anterior preservado abaixo.");
+  };
+
+  /** Descarta o resumo expirado por completo. */
+  const handleDiscardExpired = () => {
+    clearGuestSyncCheckpoint();
+    setExpiredCheckpoint(null);
+    toast.info("Resumo anterior descartado.");
+  };
 
   // Persist a checkpoint every time progress changes so a refresh resumes
   // cleanly. We persist to localStorage (not session) so it survives a
