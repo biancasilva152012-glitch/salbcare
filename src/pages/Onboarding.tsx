@@ -38,7 +38,7 @@ const Onboarding = () => {
         })
         .eq("user_id", user.id);
       if (error) throw error;
-      toast.success("Plano Essencial ativado com 7 dias grátis!");
+      toast.success("Plano Essencial ativado!");
       navigate("/dashboard");
     } catch {
       toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
@@ -90,7 +90,7 @@ const Onboarding = () => {
           className="text-center mb-5"
         >
           <p className="text-xs text-muted-foreground">
-            Plano Essencial com <span className="text-primary font-semibold">7 dias grátis</span> • Cancele quando quiser
+            Plano Essencial • <span className="text-primary font-semibold">cancele quando quiser</span>
           </p>
         </motion.div>
 

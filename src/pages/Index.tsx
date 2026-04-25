@@ -23,7 +23,7 @@ const Index = () => {
     <>
       <SEOHead
         title="SalbCare | Gestão e Saúde"
-        description="Consultório digital para profissionais de saúde autônomos. Agenda, prontuário, teleconsulta e mentoria financeira. Sem comissão. 7 dias grátis."
+        description="Consultório digital para profissionais de saúde autônomos. Agenda, prontuário, teleconsulta e mentoria financeira. Sem comissão. Cancele quando quiser."
         canonical="/"
         jsonLd={{
           "@context": "https://schema.org",

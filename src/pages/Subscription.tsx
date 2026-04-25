@@ -72,7 +72,7 @@ const Subscription = () => {
           <motion.div variants={fadeUp} className="glass-card p-6 sm:p-8 space-y-5 ring-1 ring-primary/30">
             <div>
               <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
-                {hasDiscount ? "Cobrança imediata" : "7 dias grátis"}
+                {hasDiscount ? "Cobrança imediata" : "Cancele quando quiser"}
               </span>
               <h2 className="text-lg font-bold">SalbCare Essencial</h2>
               {partner && (
@@ -119,14 +119,14 @@ const Subscription = () => {
 
             <Button asChild size="lg" className="w-full text-base py-6 rounded-xl font-bold gradient-primary">
               <Link to="/cadastro">
-                {hasDiscount ? "Assinar com desconto" : "Começar 7 dias grátis"}
+                {hasDiscount ? "Assinar com desconto" : "Assinar agora"}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <p className="text-xs text-muted-foreground">
               {hasDiscount
                 ? "Cobrança imediata via Stripe. Cancele quando quiser."
-                : "Sem cartão de crédito para começar. Cancele quando quiser."}
+                : "Cobrança via Stripe. Cancele quando quiser."}
             </p>
           </motion.div>
 

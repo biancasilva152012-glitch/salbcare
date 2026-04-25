@@ -59,7 +59,7 @@ const Upgrade = () => {
 
   const headline = matchedKey
     ? reasonLabels[matchedKey]
-    : { title: "Desbloqueie tudo no Essencial", subtitle: "R$ 89/mês • 7 dias grátis • Cancele quando quiser." };
+    : { title: "Desbloqueie tudo no Essencial", subtitle: "R$ 89/mês • Cancele quando quiser." };
 
   const planName = subscription.subscribed ? "Essencial" : (subscription.trialDaysRemaining > 0 ? "Trial" : "Grátis");
 
@@ -188,7 +188,7 @@ const Upgrade = () => {
             <div className="pt-3 border-t border-border/40 flex items-baseline gap-2">
               <span className="text-3xl font-bold text-primary">R$ 89</span>
               <span className="text-sm text-muted-foreground">/mês</span>
-              <span className="ml-auto text-[11px] text-muted-foreground">7 dias grátis</span>
+              <span className="ml-auto text-[11px] text-muted-foreground">cancele quando quiser</span>
             </div>
 
             <Button
