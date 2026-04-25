@@ -418,7 +418,20 @@ const Profile = () => {
           </button>
 
           <button
-            onClick={() => setCorrectOpen(true)}
+            onClick={() => navigate("/profile/audit")}
+            className="glass-card flex w-full items-center justify-between p-3 text-left"
+            data-testid="profile-audit-link"
+          >
+            <div className="flex items-center gap-3">
+              <Shield className="h-5 w-5 text-primary" />
+              <div>
+                <span className="text-sm font-medium">Auditoria de redirecionamentos</span>
+                <p className="text-[10px] text-muted-foreground">Histórico dos redirects seguros vinculados à sua conta</p>
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+
             className="glass-card flex w-full items-center justify-between p-3 text-left"
           >
             <div className="flex items-center gap-3">
