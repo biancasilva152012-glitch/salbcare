@@ -59,9 +59,33 @@ const Yes = () => <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" aria-la
 const No = () => <XCircle className="h-3.5 w-3.5 text-destructive" aria-label="não" />;
 
 const AdminRlsAuditPage = () => {
+  const { user } = useAuth();
   const [rows, setRows] = useState<AuditRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastRunAt, setLastRunAt] = useState<Date | null>(null);
+
+  // Per-table policy detail dialog
+  const [detailTable, setDetailTable] = useState<string | null>(null);
+  const [detailRows, setDetailRows] = useState<PolicyRow[] | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  const openDetail = async (table: string) => {
+    setDetailTable(table);
+    setDetailRows(null);
+    setDetailLoading(true);
+    try {
+      const { data, error } = await supabase.rpc("get_rls_policies_for_table", {
+        _table: table,
+      });
+      if (error) throw error;
+      setDetailRows((data ?? []) as PolicyRow[]);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Falha ao carregar policies.");
+      setDetailRows([]);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
 
   const run = async () => {
     setLoading(true);
