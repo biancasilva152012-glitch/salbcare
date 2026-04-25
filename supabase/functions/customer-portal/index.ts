@@ -76,7 +76,12 @@ serve(async (req) => {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: msg }), {
+    const stack = error instanceof Error ? error.stack : undefined;
+    console.error(
+      "[customer-portal] ❌ Request failed",
+      JSON.stringify({ error: msg, stack, imports: IMPORT_URLS })
+    );
+    return new Response(JSON.stringify({ error: msg, imports: IMPORT_URLS }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
