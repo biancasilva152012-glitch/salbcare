@@ -111,101 +111,115 @@ const AdminRlsAuditPage = () => {
 
   const yn = (v: boolean) => (v ? "sim" : "não");
 
-  const downloadCsv = () => {
+  /** Short, traceable user-id slice used in filenames (first 8 chars of UUID). */
+  const userSlug = () => (user?.id ? user.id.replace(/-/g, "").slice(0, 8) : "anon");
+
+  /** SHA-256 of the canonical body, used as a tamper-evident signature. */
+  const sha256Hex = async (text: string): Promise<string> => {
+    const buf = new TextEncoder().encode(text);
+    const digest = await crypto.subtle.digest("SHA-256", buf);
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  };
+
+  const downloadCsv = async () => {
     if (!rows || !lastRunAt) return;
     const header = [
-      "tabela",
-      "status",
-      "rls_ativo",
-      "select",
-      "insert",
-      "update",
-      "delete",
-      "user_scoped",
-      "observacao",
+      "tabela", "status", "rls_ativo", "select", "insert",
+      "update", "delete", "user_scoped", "observacao",
     ];
     const escape = (s: string) => `"${String(s).replace(/"/g, '""')}"`;
-    const lines = [header.join(",")];
+    const body = [header.join(",")];
     for (const r of rows) {
-      lines.push(
+      body.push(
         [
-          r.table_name,
-          r.status,
-          yn(r.rls_enabled),
-          yn(r.has_select),
-          yn(r.has_insert),
-          yn(r.has_update),
-          yn(r.has_delete),
-          yn(r.user_scoped),
-          r.notes,
-        ]
-          .map(escape)
-          .join(","),
+          r.table_name, r.status, yn(r.rls_enabled), yn(r.has_select),
+          yn(r.has_insert), yn(r.has_update), yn(r.has_delete),
+          yn(r.user_scoped), r.notes,
+        ].map(escape).join(","),
       );
     }
-    // Header comment line with timestamp for traceability
-    const csv = `# SALBCARE — Auditoria RLS — ${lastRunAt.toLocaleString("pt-BR")}\n${lines.join("\n")}\n`;
+    const bodyText = body.join("\n");
+    const hash = await sha256Hex(bodyText);
+    const csv =
+      `# SALBCARE — Auditoria RLS\n` +
+      `# Gerado em: ${lastRunAt.toISOString()}\n` +
+      `# Executado por: ${user?.id ?? "desconhecido"} (${user?.email ?? "—"})\n` +
+      `# SHA-256 (corpo): ${hash}\n` +
+      `${bodyText}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `salbcare-rls-audit-${stamp(lastRunAt)}.csv`;
+    a.download = `salbcare-rls-audit-${stamp(lastRunAt)}-${userSlug()}-${hash.slice(0, 8)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("CSV exportado.");
+    toast.success("CSV exportado com assinatura SHA-256.");
   };
 
-  const downloadPdf = () => {
+  const downloadPdf = async () => {
     if (!rows || !lastRunAt) return;
+    const counts = rows.reduce(
+      (acc, r) => { acc[r.status] += 1; return acc; },
+      { ok: 0, warning: 0, fail: 0 } as Record<AuditRow["status"], number>,
+    );
+
+    // Canonical body → hash → embed back in the PDF for tamper evidence.
+    const canonical = rows
+      .map((r) =>
+        [r.table_name, r.status, r.rls_enabled, r.has_select, r.has_insert,
+          r.has_update, r.has_delete, r.user_scoped, r.notes].join("|"),
+      )
+      .join("\n");
+    const hash = await sha256Hex(
+      `${lastRunAt.toISOString()}|${user?.id ?? ""}|${canonical}`,
+    );
+
     const doc = new jsPDF({ orientation: "landscape" });
     doc.setFontSize(14);
     doc.text("SALBCARE — Auditoria de RLS", 14, 14);
     doc.setFontSize(9);
     doc.setTextColor(120);
     doc.text(`Gerado em ${lastRunAt.toLocaleString("pt-BR")}`, 14, 20);
-    const counts = rows.reduce(
-      (acc, r) => {
-        acc[r.status] += 1;
-        return acc;
-      },
-      { ok: 0, warning: 0, fail: 0 } as Record<AuditRow["status"], number>,
-    );
+    doc.text(`Executado por: ${user?.email ?? "—"} (${user?.id ?? "—"})`, 14, 25);
     doc.text(
       `Resumo: ${counts.ok} OK • ${counts.warning} atenção • ${counts.fail} falha(s)`,
-      14,
-      25,
+      14, 30,
     );
 
     autoTable(doc, {
-      startY: 30,
+      startY: 35,
       head: [[
-        "Tabela",
-        "Status",
-        "RLS",
-        "SELECT",
-        "INSERT",
-        "UPDATE",
-        "DELETE",
-        "user_id?",
-        "Observação",
+        "Tabela", "Status", "RLS", "SELECT", "INSERT",
+        "UPDATE", "DELETE", "user_id?", "Observação",
       ]],
       body: rows.map((r) => [
-        r.table_name,
-        r.status,
-        yn(r.rls_enabled),
-        yn(r.has_select),
-        yn(r.has_insert),
-        yn(r.has_update),
-        yn(r.has_delete),
-        yn(r.user_scoped),
-        r.notes,
+        r.table_name, r.status, yn(r.rls_enabled), yn(r.has_select),
+        yn(r.has_insert), yn(r.has_update), yn(r.has_delete),
+        yn(r.user_scoped), r.notes,
       ]),
       styles: { fontSize: 8 },
       headStyles: { fillColor: [30, 64, 175] },
     });
 
-    doc.save(`salbcare-rls-audit-${stamp(lastRunAt)}.pdf`);
-    toast.success("PDF exportado.");
+    // Signature footer on every page
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7);
+      doc.setTextColor(140);
+      doc.text(
+        `Assinatura SHA-256: ${hash}`,
+        14,
+        doc.internal.pageSize.getHeight() - 6,
+      );
+    }
+
+    doc.save(
+      `salbcare-rls-audit-${stamp(lastRunAt)}-${userSlug()}-${hash.slice(0, 8)}.pdf`,
+    );
+    toast.success("PDF exportado com assinatura SHA-256.");
   };
 
   const summary = (() => {
