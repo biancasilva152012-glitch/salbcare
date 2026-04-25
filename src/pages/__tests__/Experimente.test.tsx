@@ -144,19 +144,27 @@ describe("/experimente redirect", () => {
     expect(window.localStorage.getItem("auth-token")).toBe("keep");
   });
 
-  it("emite log leve sem dados sensíveis", async () => {
+  it("emite log leve com flow + preservedKeys (sem dados sensíveis)", async () => {
     const spy = vi.spyOn(console, "info").mockImplementation(() => {});
     mockAuth = { user: { id: "u1" }, loading: false };
-    renderAt("/experimente");
+    renderAt("/experimente?utm_source=hero&ref=abc&token=secret");
     await waitFor(() => expect(screen.getByTestId("dashboard")).toBeInTheDocument());
     const calls = spy.mock.calls.filter((c) => String(c[0]).includes("[experimente]"));
     expect(calls.length).toBeGreaterThan(0);
-    const payload = calls[0][1] as { authenticated: boolean; cleanedKeys: number };
-    expect(payload).toMatchObject({ authenticated: true });
+    const payload = calls[0][1] as {
+      flow: "authed" | "visitor";
+      cleanedKeys: number;
+      preservedKeys: string[];
+    };
+    expect(payload.flow).toBe("authed");
     expect(typeof payload.cleanedKeys).toBe("number");
-    // garante que nenhum dado sensível (id, email) vaza
+    expect(payload.preservedKeys.sort()).toEqual(["ref", "utm_source"]);
+    // garante que nenhum dado sensível (id, email, valor de token) vaza
     const serialized = JSON.stringify(calls);
     expect(serialized).not.toContain("u1");
+    expect(serialized).not.toContain("secret");
+    expect(serialized).not.toContain("hero"); // valores não são logados
+    expect(serialized).not.toContain("abc");
     spy.mockRestore();
   });
 });
