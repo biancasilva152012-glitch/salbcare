@@ -476,23 +476,45 @@ export function writeGuestSyncCheckpoint(c: GuestSyncCheckpoint) {
   }
 }
 
-export function readGuestSyncCheckpoint(userId: string): GuestSyncCheckpoint | null {
-  if (typeof window === "undefined") return null;
+/** Tempo máximo para um checkpoint ser considerado "fresco". Após esse
+ *  intervalo o checkpoint é tratado como EXPIRADO — não restauramos
+ *  silenciosamente, mas oferecemos a opção de recomeçar preservando o
+ *  resumo parcial do que foi importado. */
+export const GUEST_SYNC_CHECKPOINT_TTL_MS = 60 * 60 * 1000; // 1h
+
+export type ReadCheckpointResult =
+  | { status: "fresh"; checkpoint: GuestSyncCheckpoint }
+  | { status: "expired"; checkpoint: GuestSyncCheckpoint }
+  | { status: "missing" };
+
+/**
+ * Lê o checkpoint atual e classifica como `fresh` (restauração silenciosa),
+ * `expired` (mostra fallback de "recomeçar" com resumo preservado) ou
+ * `missing`. NUNCA apaga automaticamente: a tela de sync decide o que fazer.
+ */
+export function readGuestSyncCheckpointDetailed(userId: string): ReadCheckpointResult {
+  if (typeof window === "undefined") return { status: "missing" };
   try {
     const raw = window.localStorage.getItem(GUEST_SYNC_CHECKPOINT_KEY);
-    if (!raw) return null;
+    if (!raw) return { status: "missing" };
     const parsed = JSON.parse(raw) as GuestSyncCheckpoint;
-    if (parsed.userId !== userId) return null;
-    // Expire after 1h so a stale checkpoint doesn't haunt a clean session
+    if (parsed.userId !== userId) return { status: "missing" };
     const ts = Date.parse(parsed.updatedAt);
-    if (!Number.isFinite(ts) || Date.now() - ts > 60 * 60 * 1000) {
-      clearGuestSyncCheckpoint();
-      return null;
+    if (!Number.isFinite(ts)) return { status: "missing" };
+    const age = Date.now() - ts;
+    if (age > GUEST_SYNC_CHECKPOINT_TTL_MS) {
+      return { status: "expired", checkpoint: parsed };
     }
-    return parsed;
+    return { status: "fresh", checkpoint: parsed };
   } catch {
-    return null;
+    return { status: "missing" };
   }
+}
+
+/** API legada — retorna apenas checkpoints frescos. */
+export function readGuestSyncCheckpoint(userId: string): GuestSyncCheckpoint | null {
+  const r = readGuestSyncCheckpointDetailed(userId);
+  return r.status === "fresh" ? r.checkpoint : null;
 }
 
 export function clearGuestSyncCheckpoint() {
