@@ -38,6 +38,9 @@ const Dashboard = () => {
     return <GuestDashboard />;
   }
   const { isSupported, isSubscribed, isLoading: pushLoading, subscribe } = usePushNotifications();
+  const financialHealth = useFinancialHealth();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const openUpgrade = () => setUpgradeOpen(true);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
