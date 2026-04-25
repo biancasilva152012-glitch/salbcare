@@ -68,7 +68,9 @@ const Upgrade = () => {
     },
   };
 
-  const matchedKey = resolveUpgradeReason(reason) ?? (reason && reasonLabels[reason] ? reason : null);
+  const canonicalKey = resolveUpgradeReason(reason);
+  const extraKey = reason && reasonLabels[reason] ? reason : null;
+  const matchedKey = canonicalKey ?? extraKey;
 
   const headline = matchedKey
     ? reasonLabels[matchedKey]
@@ -113,7 +115,7 @@ const Upgrade = () => {
   const goCheckout = () => {
     trackCtaClick("upgrade_essencial", `upgrade_page_${matchedKey || reason || "generic"}`);
     // Pré-seleciona o plano Essencial e propaga o motivo para o checkout
-    navigate(`/checkout?${buildCheckoutQuery(matchedKey, reason)}`);
+    navigate(`/checkout?${buildCheckoutQuery(canonicalKey, reason)}`);
   };
 
   return (
