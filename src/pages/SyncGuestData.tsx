@@ -75,6 +75,24 @@ const SyncGuestData = () => {
   const [importAppointments, setImportAppointments] = useState(true);
   const [merging, setMerging] = useState(false);
 
+  // Per-step progress used by the progress bar. "pending" → "running" → "done"
+  // (or "failed"). Teleconsultas é uma etapa apenas de placeholder por
+  // enquanto (não há rascunhos guest delas), mas mostramos o status para o
+  // usuário ter visibilidade.
+  type StepStatus = "pending" | "running" | "done" | "failed" | "skipped";
+  type Steps = {
+    patients: StepStatus;
+    appointments: StepStatus;
+    teleconsultations: StepStatus;
+  };
+  const initialSteps = (): Steps => ({
+    patients: "pending",
+    appointments: "pending",
+    teleconsultations: "pending",
+  });
+  const [steps, setSteps] = useState<Steps>(initialSteps);
+  const [lastError, setLastError] = useState<string | null>(null);
+
   // ── Guards ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (authLoading) return;
