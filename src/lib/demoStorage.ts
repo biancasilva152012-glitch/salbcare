@@ -82,6 +82,31 @@ export const DEMO_STORAGE = {
 } as const;
 
 /**
+ * Removes only the localStorage keys owned by the demo experience.
+ * Used by the /experimente redirect to make sure no anonymous demo data
+ * survives into the user's first authenticated session (which would
+ * otherwise trigger the migration modal).
+ *
+ * Returns the list of keys that were actually present (and removed),
+ * useful for lightweight telemetry. Never throws.
+ */
+export function clearDemoStorage(): string[] {
+  if (typeof window === "undefined") return [];
+  const removed: string[] = [];
+  for (const key of Object.values(DEMO_STORAGE)) {
+    try {
+      if (window.localStorage.getItem(key) !== null) {
+        window.localStorage.removeItem(key);
+        removed.push(key);
+      }
+    } catch {
+      /* ignore individual key failures */
+    }
+  }
+  return removed;
+}
+
+/**
  * Stable opaque id for the anonymous demo session — created once per browser
  * and reused across visits so the backend can sync usage counters with the
  * eventual user account when the visitor signs up.
