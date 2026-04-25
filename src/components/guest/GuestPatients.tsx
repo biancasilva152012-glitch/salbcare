@@ -193,6 +193,13 @@ const GuestPatients = () => {
           </div>
         )}
       </motion.div>
+
+      <GuestLimitDialog
+        open={limitOpen}
+        onOpenChange={setLimitOpen}
+        scope="patients"
+        limit={GUEST_LIMITS.patients}
+      />
     </PageContainer>
   );
 };
