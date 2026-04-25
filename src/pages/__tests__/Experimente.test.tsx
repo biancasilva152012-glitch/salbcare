@@ -62,10 +62,11 @@ describe("/experimente redirect", () => {
     mockAuth = { user: null, loading: false };
   });
 
-  it("visitante → /register?redirect=/dashboard", async () => {
+  it("visitante → /dashboard direto (sem /register)", async () => {
     renderAt("/experimente");
-    await waitFor(() => expect(screen.getByTestId("register")).toBeInTheDocument());
-    expect(screen.getByTestId("search").textContent).toBe("?redirect=%2Fdashboard");
+    await waitFor(() => expect(screen.getByTestId("dashboard")).toBeInTheDocument());
+    expect(screen.getByTestId("path").textContent).toBe("/dashboard");
+    expect(screen.queryByTestId("register")).not.toBeInTheDocument();
   });
 
   it("logado → /dashboard", async () => {
@@ -83,11 +84,11 @@ describe("/experimente redirect", () => {
 
   it("preserva utm_* e descarta params inesperados", async () => {
     renderAt("/experimente?utm_source=hero&utm_campaign=launch&evil=1");
-    await waitFor(() => expect(screen.getByTestId("register")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId("dashboard")).toBeInTheDocument());
     const search = screen.getByTestId("search").textContent ?? "";
     expect(search).toContain("utm_source=hero");
     expect(search).toContain("utm_campaign=launch");
-    expect(search).toContain("redirect=%2Fdashboard");
+    expect(search).not.toContain("redirect=");
     expect(search).not.toContain("evil");
   });
 
@@ -105,21 +106,23 @@ describe("/experimente redirect", () => {
     expect(screen.getByTestId("path").textContent).toBe("/dashboard");
   });
 
-  it("bloqueia ?next= absoluto/protocol-relative (open-redirect)", async () => {
+  it("bloqueia ?next= absoluto/protocol-relative (open-redirect) e cai em /dashboard", async () => {
     renderAt("/experimente?next=https://evil.com");
-    await waitFor(() => expect(screen.getByTestId("register")).toBeInTheDocument());
-    expect(screen.getByTestId("search").textContent).toContain("redirect=%2Fdashboard");
+    await waitFor(() => expect(screen.getByTestId("dashboard")).toBeInTheDocument());
+    expect(screen.getByTestId("path").textContent).toBe("/dashboard");
+    expect(screen.queryByTestId("register")).not.toBeInTheDocument();
 
     renderAt("/experimente?next=//evil.com");
-    await waitFor(() => expect(screen.getAllByTestId("register").length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getAllByTestId("dashboard").length).toBeGreaterThan(0));
   });
 
-  it("propaga ?next= permitido para /register?redirect=", async () => {
+  it("propaga ?next= permitido direto para o destino (visitante)", async () => {
     renderAt("/experimente?next=/dashboard/pacientes&utm_source=ads");
-    await waitFor(() => expect(screen.getByTestId("register")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId("dashboard")).toBeInTheDocument());
+    expect(screen.getByTestId("path").textContent).toBe("/dashboard/pacientes");
     const search = screen.getByTestId("search").textContent ?? "";
-    expect(search).toContain("redirect=%2Fdashboard%2Fpacientes");
     expect(search).toContain("utm_source=ads");
+    expect(search).not.toContain("redirect=");
   });
 
   it("limpa todas as chaves do DEMO_STORAGE no redirect", async () => {
