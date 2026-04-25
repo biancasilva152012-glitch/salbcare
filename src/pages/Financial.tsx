@@ -82,6 +82,7 @@ const Financial = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const descriptionRef = useRef<HTMLInputElement | null>(null);
   const onboardingParam = searchParams.get("onboarding");
+  const suggestions = useFinancialSuggestions();
 
   // Pré-preenche o formulário a partir de query params (?type=...&category=...&autoOpen=1)
   // disparados pelo wizard / CTAs contextuais do dashboard. Limpa os params depois
