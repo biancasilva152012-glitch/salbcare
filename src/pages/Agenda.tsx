@@ -33,6 +33,8 @@ import { Badge } from "@/components/ui/badge";
 import { useQueryClient as useQC } from "@tanstack/react-query";
 import ServiceRequestsPanel from "@/components/agenda/ServiceRequestsPanel";
 import GuestAgenda from "@/components/guest/GuestAgenda";
+import GuestSyncLockBanner from "@/components/GuestSyncLockBanner";
+import { isGuestSyncLocked, hasGuestData } from "@/lib/guestStorage";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 const blockForm = { date: "", time: "", reason: "" };
@@ -507,7 +509,7 @@ const Agenda = () => {
                 </div>
               </DialogContent>
             </Dialog>
-            {canAddAppointment ? (
+            {canAddAppointment && !guestSyncLocked ? (
               <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
                 <DialogTrigger asChild>
                   <Button size="sm" className="gradient-primary gap-1" data-testid="agenda-new-btn">
@@ -524,13 +526,15 @@ const Agenda = () => {
                 size="sm"
                 className="gradient-primary gap-1"
                 data-testid="agenda-new-btn-blocked"
-                onClick={() => setUpgradeOpen(true)}
+                onClick={() => guestSyncLocked ? toast.info("Sincronize seus rascunhos do modo guest antes de criar novas consultas.") : setUpgradeOpen(true)}
               >
                 <Plus className="h-4 w-4" /> Nova
               </Button>
             )}
           </div>
         </div>
+
+        {guestSyncLocked && <GuestSyncLockBanner section="agenda" />}
 
         <FreemiumQuotaBanner
           label="Consultas"
