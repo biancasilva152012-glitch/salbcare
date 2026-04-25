@@ -67,6 +67,7 @@ const Financial = () => {
   const { hasAccess } = useFeatureGate();
   const { canAddFinancial, financialCount, financialLimit, isFree, isPaid } = useFreemiumLimits();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [explainerOpen, setExplainerOpen] = useState(false);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
