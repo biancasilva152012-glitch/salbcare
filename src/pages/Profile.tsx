@@ -38,7 +38,20 @@ const professionalTypeLabels: Record<string, string> = {
 const Profile = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, signOut, subscription } = useAuth();
+  const { user, loading: authLoading, signOut, subscription } = useAuth();
+
+  // While auth status is being determined, show a quick skeleton so the
+  // page never flashes the guest CTA before resolving to the real profile.
+  if (authLoading) {
+    return (
+      <PageContainer>
+        <div className="mx-auto max-w-md py-10" data-testid="profile-auth-loading">
+          <PageSkeleton variant="list" />
+        </div>
+      </PageContainer>
+    );
+  }
+
   if (!user) {
     return (
       <PageContainer>
