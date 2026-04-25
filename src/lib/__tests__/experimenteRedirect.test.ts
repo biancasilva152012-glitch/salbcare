@@ -62,15 +62,15 @@ describe("buildExperimenteRedirect", () => {
       expect(u.searchParams.get("token")).toBeNull();
     });
 
-    it("remove TODOS os parâmetros desconhecidos no fluxo visitante (mantendo redirect)", () => {
+    it("remove TODOS os parâmetros desconhecidos no fluxo visitante (sem redirect)", () => {
       const r = buildExperimenteRedirect({
         authenticated: false,
         search: "?utm_source=hero&ref=abc&evil=1&password=123",
       });
       const u = url(r);
+      expect(u.pathname).toBe("/dashboard");
       const keys = [...u.searchParams.keys()].sort();
-      expect(keys).toEqual(["redirect", "ref", "utm_source"]);
-      expect(u.searchParams.get("redirect")).toBe("/dashboard");
+      expect(keys).toEqual(["ref", "utm_source"]);
       expect(u.searchParams.get("ref")).toBe("abc");
       expect(u.searchParams.get("evil")).toBeNull();
       expect(u.searchParams.get("password")).toBeNull();
