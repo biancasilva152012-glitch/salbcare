@@ -1595,6 +1595,7 @@ export type Database = {
           profile_slug: string
         }[]
       }
+      has_active_paid_plan: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
