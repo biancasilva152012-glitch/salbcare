@@ -10,6 +10,7 @@ import PageContainer from "@/components/PageContainer";
 import BackButton from "@/components/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { SALBSCORE_ACTION_MESSAGES, SALBSCORE_STATUS_CLASSES, SALBSCORE_STATUS_LABELS } from "@/lib/salbscoreStatus";
 
 /**
  * Página /perfil/salbscore/selo-exemplo
@@ -199,12 +200,15 @@ const SalbScoreSeloPreview = () => {
         <div className="rounded-xl border border-border/60 p-5 space-y-3 text-center" style={{ background: "rgba(0,180,160,0.05)" }}>
           <Lock className="h-5 w-5 mx-auto text-muted-foreground" />
           <h3 className="text-sm font-semibold" style={{ color: "#0D1B2A" }}>
-            {isPaid ? "Sua URL pública pode estar pronta" : "Seu selo ainda não está ativo"}
+            {isPaid ? `${SALBSCORE_STATUS_LABELS.ok}: sua URL pública pode estar pronta` : `${SALBSCORE_STATUS_LABELS.warn}: seu selo ainda não está ativo`}
           </h3>
+          <div className={`inline-flex mx-auto rounded-full border px-2.5 py-1 text-[11px] ${isPaid ? SALBSCORE_STATUS_CLASSES.ok : SALBSCORE_STATUS_CLASSES.warn}`}>
+            {isPaid ? SALBSCORE_STATUS_LABELS.ok : SALBSCORE_STATUS_LABELS.warn}
+          </div>
           <p className="text-xs text-muted-foreground">
             {isPaid
               ? "Acesse seu SalbScore para conferir a URL real do seu selo verificado."
-              : "Para liberar sua URL pública verificada, ative o plano Essencial e mantenha seu histórico de atendimentos."}
+              : SALBSCORE_ACTION_MESSAGES.upgradeRequired.description}
           </p>
           <div className="flex flex-col gap-2 pt-1">
             {profile?.profile_slug && isPaid && (
@@ -219,7 +223,7 @@ const SalbScoreSeloPreview = () => {
             </Button>
             {!isPaid && (
               <Button onClick={() => navigate("/upgrade")} className="w-full" variant="outline">
-                Fazer upgrade para Essencial
+                {SALBSCORE_ACTION_MESSAGES.upgradeRequired.cta}
               </Button>
             )}
           </div>
