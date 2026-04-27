@@ -262,10 +262,7 @@ async function handleCheckoutCompleted(
     updateObj.trial_ends_at = trialEnd;
   }
 
-  if (plan === "essencial") {
-    updateObj.had_trial = true;
-    logStep("Trial registrado para user_id", { userId });
-  }
+  // Trial removido — não marcamos mais had_trial automaticamente
 
   const { error: profError } = await supabase
     .from("professionals")
