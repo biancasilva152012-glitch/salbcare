@@ -41,26 +41,55 @@ const Checkout = () => {
   const periodLabel = annual ? "ano" : "mês";
   const hasDiscount = !!partner;
 
+  const fireTrackingEvent = (eventName: string, extras: Record<string, unknown> = {}) => {
+    const payload = {
+      plan: planKey,
+      plan_name: plan.name,
+      value: displayPrice,
+      currency: "BRL",
+      source: sourceParam,
+      period: annual ? "annual" : "monthly",
+      ...extras,
+    };
+    if (window.gtag) {
+      window.gtag("event", eventName, { ...payload, send_to: "G-117MVSM8LG" });
+    }
+    if (window.fbq) {
+      window.fbq("trackCustom", eventName, payload);
+    }
+  };
+
   const handleCheckout = async () => {
     if (!user) {
       toast.error("Faça login para continuar.");
+      fireTrackingEvent("checkout_blocked", { reason: "not_authenticated" });
       return;
     }
 
     setLoading(true);
     setStatus("starting");
+    fireTrackingEvent("checkout_started");
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { priceId, skipTrial: hasDiscount },
+        body: {
+          priceId,
+          skipTrial: hasDiscount,
+          // Redireciona para a página dedicada que confirma o plano e dispara
+          // o evento `purchase` final com plan + value.
+          successUrl: `/subscription-success?plan=${planKey}&source=${encodeURIComponent(sourceParam)}`,
+          cancelUrl: `/checkout?plan=${planKey}&source=${encodeURIComponent(sourceParam)}`,
+        },
       });
 
       if (error) throw error;
       if (data?.url) {
         trackCheckoutStart(plan.name, displayPrice);
+        // Persiste o source para a página de sucesso reusar no evento purchase
         sessionStorage.setItem("salbcare_from_checkout", "true");
+        sessionStorage.setItem("salbcare_checkout_source", sourceParam);
+        sessionStorage.setItem("salbcare_checkout_plan", planKey);
+        fireTrackingEvent("checkout_redirecting");
         setStatus("redirecting");
-        // Small delay so the user actually sees the "Redirecionando…" overlay
-        // before the browser navigates away to Stripe.
         setTimeout(() => {
           window.location.href = data.url;
         }, 350);
@@ -68,8 +97,10 @@ const Checkout = () => {
         throw new Error("URL de checkout não retornada");
       }
     } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
       console.error("[Checkout] Erro:", err);
       toast.error("Erro ao iniciar o pagamento. Tente novamente.");
+      fireTrackingEvent("checkout_error", { error_message: message });
       setStatus("error");
       setLoading(false);
     }
