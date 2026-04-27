@@ -44,6 +44,8 @@ const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 
 const ProfileBlocks = lazyWithRetry(() => import("./pages/ProfileBlocks"), "ProfileBlocks");
 const SalbScore = lazyWithRetry(() => import("./pages/SalbScore"), "SalbScore");
+const SalbScoreDiagnostico = lazyWithRetry(() => import("./pages/SalbScoreDiagnostico"), "SalbScoreDiagnostico");
+const SalbScoreSeloPreview = lazyWithRetry(() => import("./pages/SalbScoreSeloPreview"), "SalbScoreSeloPreview");
 const PublicSalbScore = lazyWithRetry(() => import("./pages/PublicSalbScore"), "PublicSalbScore");
 const SalbScoreSelo = lazyWithRetry(() => import("./pages/SalbScoreSelo"), "SalbScoreSelo");
 const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"), "VerifyDocument");
@@ -192,6 +194,8 @@ const App = () => (
               
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
               <Route path="/perfil/salbscore" element={<ProfessionalRoute><SalbScore /></ProfessionalRoute>} />
+              <Route path="/perfil/salbscore/diagnostico" element={<ProfessionalRoute><SalbScoreDiagnostico /></ProfessionalRoute>} />
+              <Route path="/perfil/salbscore/selo-exemplo" element={<ProfessionalRoute><SalbScoreSeloPreview /></ProfessionalRoute>} />
               <Route path="/salbscore" element={<PublicSalbScore />} />
               <Route path="/verificar" element={<VerifyDocument />} />
               <Route path="/verificar/:hash" element={<VerifyDocument />} />

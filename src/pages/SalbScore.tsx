@@ -102,19 +102,45 @@ const SalbScore = () => {
   }, [user]);
 
   const handleGenerate = async (tipo: "comprovante_renda") => {
+    // Fallback 1 — usuário não-Premium
     if (!hasFullAccess) {
-      toast.error("Comprovantes oficiais são exclusivos do plano pago.");
-      navigate("/upgrade");
+      toast.error("Comprovante de Renda exige plano Essencial.", {
+        description: "Liberamos a emissão imediatamente após o upgrade.",
+        action: { label: "Fazer upgrade", onClick: () => navigate("/upgrade") },
+      });
       return;
     }
+    // Fallback 2 — sem dados suficientes
+    const minMeses = (data?.meses_ativo ?? 0) >= 1;
+    const minRecebimentos = (data?.media_mensal_12m ?? 0) > 0;
+    if (!data || data.primeira_vez || !minMeses || !minRecebimentos) {
+      toast.warning("Dados insuficientes para emitir o comprovante.", {
+        description: "Você precisa de pelo menos 1 mês de atividade e recebimentos registrados no Financeiro.",
+        action: { label: "Ir ao Financeiro", onClick: () => navigate("/dashboard/financial") },
+      });
+      return;
+    }
+
     setGenerating(tipo);
+    const loadingId = toast.loading("Gerando comprovante…", {
+      description: "Calculando seu histórico verificado e assinando o PDF.",
+    });
     try {
       const { data: result, error } = await supabase.functions.invoke("gerar-documento-salbscore", {
         body: { tipo },
       });
       if (error) throw error;
-      const r = result as { pdf_base64: string; hash: string };
-      // Trigger download
+      const r = result as { pdf_base64?: string; hash?: string; error?: string };
+      if (r?.error === "premium_required") {
+        toast.dismiss(loadingId);
+        toast.error("Plano Essencial necessário para emitir.", {
+          action: { label: "Fazer upgrade", onClick: () => navigate("/upgrade") },
+        });
+        return;
+      }
+      if (!r?.pdf_base64 || !r?.hash) {
+        throw new Error("Resposta sem PDF.");
+      }
       const blob = new Blob([Uint8Array.from(atob(r.pdf_base64), (c) => c.charCodeAt(0))], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -122,10 +148,16 @@ const SalbScore = () => {
       a.download = `comprovante-renda-salbcare-${r.hash}.pdf`;
       document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
-      toast.success("Comprovante emitido com sucesso.");
+      toast.dismiss(loadingId);
+      toast.success("Comprovante emitido.", { description: `Verificável em /verificar/${r.hash}` });
     } catch (err) {
-      console.error(err);
-      toast.error("Não foi possível emitir o documento.");
+      toast.dismiss(loadingId);
+      const msg = err instanceof Error ? err.message : "Erro desconhecido.";
+      console.error("[gerar-documento-salbscore]", err);
+      toast.error("Não foi possível emitir o documento.", {
+        description: msg.slice(0, 140),
+        action: { label: "Diagnóstico", onClick: () => navigate("/perfil/salbscore/diagnostico") },
+      });
     } finally {
       setGenerating(null);
     }
