@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Loader2, CreditCard, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { trackCheckoutStart } from "@/hooks/useTracking";
+import { trackCheckoutStart, trackUnified } from "@/hooks/useTracking";
 import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
 import { PartnerDiscountBadge } from "@/components/PartnerDiscountBadge";
 
@@ -41,8 +41,10 @@ const Checkout = () => {
   const periodLabel = annual ? "ano" : "mês";
   const hasDiscount = !!partner;
 
+  // Mesmo nome + payload disparado em GA4 e Meta Pixel para garantir
+  // paridade 1:1 do funil de checkout entre as duas plataformas.
   const fireTrackingEvent = (eventName: string, extras: Record<string, unknown> = {}) => {
-    const payload = {
+    trackUnified(eventName, {
       plan: planKey,
       plan_name: plan.name,
       value: displayPrice,
@@ -50,13 +52,7 @@ const Checkout = () => {
       source: sourceParam,
       period: annual ? "annual" : "monthly",
       ...extras,
-    };
-    if (window.gtag) {
-      window.gtag("event", eventName, { ...payload, send_to: "G-117MVSM8LG" });
-    }
-    if (window.fbq) {
-      window.fbq("trackCustom", eventName, payload);
-    }
+    });
   };
 
   const handleCheckout = async () => {

@@ -89,16 +89,28 @@ export function trackPurchase(value: number) {
   }
 }
 
-export function trackCtaClick(ctaName: string, location: string) {
+export function trackCtaClick(ctaName: string, location: string, extras: Record<string, unknown> = {}) {
+  const payload = { cta_name: ctaName, cta_location: location, ...extras };
   if (window.gtag) {
-    window.gtag("event", "cta_click", {
-      cta_name: ctaName,
-      cta_location: location,
-      send_to: "G-117MVSM8LG",
-    });
+    window.gtag("event", "cta_click", { ...payload, send_to: "G-117MVSM8LG" });
   }
   if (window.fbq) {
-    window.fbq("trackCustom", "CtaClick", { cta_name: ctaName, cta_location: location });
+    window.fbq("trackCustom", "CtaClick", payload);
+  }
+}
+
+/**
+ * Unified event helper — fires the SAME event name with the SAME payload
+ * to BOTH GA4 (gtag) and Meta Pixel (fbq trackCustom). Use for funnel
+ * events that need 1:1 parity across platforms (checkout_started,
+ * checkout_redirecting, checkout_error, subscription_confirmed, etc.).
+ */
+export function trackUnified(eventName: string, payload: Record<string, unknown> = {}) {
+  if (window.gtag) {
+    window.gtag("event", eventName, { ...payload, send_to: "G-117MVSM8LG" });
+  }
+  if (window.fbq) {
+    window.fbq("trackCustom", eventName, payload);
   }
 }
 
