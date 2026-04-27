@@ -22,6 +22,8 @@ type ScoreData = {
   media_mensal_12m: number;
   total_atendimentos_12m: number;
   meses_ativo: number;
+  primeira_vez?: boolean;
+  mensagem?: string;
 };
 
 const COMPONENT_LABELS: Record<string, string> = {
