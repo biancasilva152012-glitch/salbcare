@@ -1484,11 +1484,12 @@ const Index = () => {
             </motion.h2>
             <Accordion type="single" collapsible className="space-y-3">
               {[
-                { q: "O que é a SalbCare?", a: "A SalbCare é uma plataforma de gestão integrada para profissionais de saúde autônomos, unindo prontuário digital, teleconsulta via Google Meet e mentoria financeira." },
-                { q: "Preciso pagar para começar?", a: "Não. Você pode cadastrar até 10 pacientes gratuitamente, sem cartão de crédito. O upgrade é opcional e só acontece quando você precisar." },
-                { q: "A plataforma cobra comissão por consulta?", a: "Não. Cobramos apenas uma assinatura mensal fixa. 100% do valor das suas consultas vai direto para você." },
-                { q: "Preciso instalar algum software?", a: "Não, a SalbCare é 100% baseada na nuvem e pode ser acessada de qualquer navegador ou dispositivo móvel." },
-                { q: "Meus dados e dos meus pacientes estão seguros?", a: "Sim, utilizamos criptografia e seguimos rigorosamente as normas da LGPD para garantir a segurança total das informações." },
+                { q: "O que é o SalbScore?", a: "É uma pontuação de 0 a 1000 que reflete sua saúde financeira como profissional autônomo da saúde — calculada com seu volume de atendimentos, recebimentos confirmados, regularidade no conselho e tempo de prática. Saiba mais em /salbscore." },
+                { q: "Quais planos existem hoje?", a: "Dois: o Grátis (até 10 pacientes, agenda e prontuário básico) e o Essencial a R$ 89/mês (pacientes ilimitados, teleconsulta, receita e atestado digital, controle financeiro completo e IA Mentora). O Premium, com Comprovante de Renda e Selo Verificado, está em lista de espera." },
+                { q: "Preciso de cartão para começar?", a: "Não. O cadastro é grátis e não pede cartão. Você só paga quando decidir assinar o Essencial — a cobrança é imediata, sem período de teste pago." },
+                { q: "O Comprovante de Renda Oficial SalbCare já está disponível?", a: "Ainda não. Está em desenvolvimento e faz parte do roadmap 2026 do SalbScore. Profissionais com score ativo terão prioridade no acesso. Comece agora a registrar consultas para que seu histórico já esteja maduro no lançamento." },
+                { q: "A SalbCare cobra comissão por consulta?", a: "Não. Cobramos apenas a assinatura mensal fixa. 100% do valor das suas consultas vai direto para você — combinado e recebido fora da plataforma." },
+                { q: "Meus dados e dos meus pacientes estão seguros?", a: "Sim. Usamos criptografia e seguimos as normas da LGPD. Cada profissional só vê seus próprios dados (Row Level Security)." },
               ].map((item, i) => (
                 <AccordionItem key={i} value={`faq-${i}`} className="salb-faq-item">
                   <AccordionTrigger
