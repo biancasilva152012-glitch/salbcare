@@ -11,6 +11,7 @@ import SEOHead from "@/components/SEOHead";
 import PageContainer from "@/components/PageContainer";
 import BackButton from "@/components/BackButton";
 import { useNavigate } from "react-router-dom";
+import { SALBSCORE_ACTION_MESSAGES } from "@/lib/salbscoreStatus";
 
 type Componente = { score: number; peso: number; teto: number; detalhe: string; sugestao: string };
 type ScoreData = {
@@ -104,9 +105,9 @@ const SalbScore = () => {
   const handleGenerate = async (tipo: "comprovante_renda") => {
     // Fallback 1 — usuário não-Premium
     if (!hasFullAccess) {
-      toast.error("Comprovante de Renda exige plano Essencial.", {
-        description: "Liberamos a emissão imediatamente após o upgrade.",
-        action: { label: "Fazer upgrade", onClick: () => navigate("/upgrade") },
+      toast.warning(SALBSCORE_ACTION_MESSAGES.upgradeRequired.title, {
+        description: SALBSCORE_ACTION_MESSAGES.upgradeRequired.description,
+        action: { label: SALBSCORE_ACTION_MESSAGES.upgradeRequired.cta, onClick: () => navigate("/upgrade") },
       });
       return;
     }
@@ -114,9 +115,9 @@ const SalbScore = () => {
     const minMeses = (data?.meses_ativo ?? 0) >= 1;
     const minRecebimentos = (data?.media_mensal_12m ?? 0) > 0;
     if (!data || data.primeira_vez || !minMeses || !minRecebimentos) {
-      toast.warning("Dados insuficientes para emitir o comprovante.", {
-        description: "Você precisa de pelo menos 1 mês de atividade e recebimentos registrados no Financeiro.",
-        action: { label: "Ir ao Financeiro", onClick: () => navigate("/dashboard/financial") },
+      toast.warning(SALBSCORE_ACTION_MESSAGES.insufficientData.title, {
+        description: SALBSCORE_ACTION_MESSAGES.insufficientData.description,
+        action: { label: SALBSCORE_ACTION_MESSAGES.insufficientData.cta, onClick: () => navigate("/dashboard/financial") },
       });
       return;
     }
@@ -133,8 +134,9 @@ const SalbScore = () => {
       const r = result as { pdf_base64?: string; hash?: string; error?: string };
       if (r?.error === "premium_required") {
         toast.dismiss(loadingId);
-        toast.error("Plano Essencial necessário para emitir.", {
-          action: { label: "Fazer upgrade", onClick: () => navigate("/upgrade") },
+        toast.warning(SALBSCORE_ACTION_MESSAGES.upgradeRequired.title, {
+          description: SALBSCORE_ACTION_MESSAGES.upgradeRequired.description,
+          action: { label: SALBSCORE_ACTION_MESSAGES.upgradeRequired.cta, onClick: () => navigate("/upgrade") },
         });
         return;
       }
@@ -154,9 +156,9 @@ const SalbScore = () => {
       toast.dismiss(loadingId);
       const msg = err instanceof Error ? err.message : "Erro desconhecido.";
       console.error("[gerar-documento-salbscore]", err);
-      toast.error("Não foi possível emitir o documento.", {
+      toast.error(SALBSCORE_ACTION_MESSAGES.diagnostic.title, {
         description: msg.slice(0, 140),
-        action: { label: "Diagnóstico", onClick: () => navigate("/perfil/salbscore/diagnostico") },
+        action: { label: SALBSCORE_ACTION_MESSAGES.diagnostic.cta, onClick: () => navigate("/perfil/salbscore/diagnostico") },
       });
     } finally {
       setGenerating(null);
@@ -218,7 +220,7 @@ const SalbScore = () => {
               <li className="flex gap-2"><span>⏳</span><span className="text-muted-foreground">Atenda seus primeiros pacientes pela plataforma</span></li>
               <li className="flex gap-2"><span>🎯</span><span className="text-muted-foreground">Em 30 dias seu SalbScore estará pronto para emitir comprovantes</span></li>
             </ol>
-            <Button onClick={() => navigate("/patients")} className="mt-2">
+            <Button onClick={() => navigate("/dashboard/pacientes")} className="mt-2">
               Cadastrar primeiro paciente →
             </Button>
           </section>
