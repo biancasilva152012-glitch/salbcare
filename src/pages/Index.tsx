@@ -797,6 +797,120 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── Invisível para os bancos ── */}
+        <section style={{ background: C.bg }} className={S.sectionY}>
+          <div className="mx-auto max-w-2xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="flex flex-col"
+              style={{ gap: 28 }}
+            >
+              <motion.div variants={reveal}><Mark /></motion.div>
+
+              <motion.h2
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1.15 }}
+              >
+                Chega de ser invisível para os bancos.
+              </motion.h2>
+
+              <motion.p
+                variants={reveal}
+                style={{ color: C.text, fontSize: 17, lineHeight: 1.7, fontWeight: 400 }}
+              >
+                Você rala o dia inteiro, atende dezenas de pacientes e vê o dinheiro entrar
+                no Pix ou em dinheiro. Mas, na hora de alugar um imóvel, trocar de carro
+                ou pedir crédito, parece que você não ganha nada. Sem contracheque, o
+                sistema te ignora.
+              </motion.p>
+
+              <motion.p
+                variants={reveal}
+                style={{ color: C.text, fontSize: 17, lineHeight: 1.7, fontWeight: 400 }}
+              >
+                A SalbCare resolve isso de um jeito prático. Cada atendimento que você
+                registra vira um dado real de faturamento. Nós organizamos seus ganhos e
+                geramos os documentos que você precisa para provar sua renda para o mundo.
+              </motion.p>
+
+              <motion.ul
+                variants={reveal}
+                className="flex flex-col"
+                style={{ gap: 14, paddingLeft: 0, listStyle: "none", marginTop: 4 }}
+              >
+                {[
+                  "Prove sua renda sem precisar de um contracheque fixo.",
+                  "Saiba exatamente quanto você ganha (de verdade) no final do mês.",
+                  "Tenha documentos organizados e aceitos em instituições financeiras.",
+                  "Perfil verificado com SalbScore: sua credibilidade traduzida em números.",
+                  "Mantenha o controle de 100% das suas consultas em um só lugar.",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    style={{
+                      color: C.text,
+                      fontSize: 16,
+                      lineHeight: 1.6,
+                      display: "flex",
+                      gap: 12,
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        flexShrink: 0,
+                        width: 6,
+                        height: 6,
+                        borderRadius: 999,
+                        background: C.teal,
+                        marginTop: 10,
+                      }}
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </motion.ul>
+
+              <motion.blockquote
+                variants={reveal}
+                style={{
+                  borderLeft: `2px solid ${C.teal}`,
+                  paddingLeft: 18,
+                  margin: 0,
+                  marginTop: 8,
+                  color: C.text,
+                  fontSize: 17,
+                  lineHeight: 1.65,
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                }}
+              >
+                “Hoje você recebe R$ 10 mil no Pix, mas para o banco sua renda é zero.
+                Com a SalbCare, esses mesmos R$ 10 mil viram um comprovante oficial.”
+              </motion.blockquote>
+
+              <motion.p
+                variants={reveal}
+                style={{
+                  color: C.text,
+                  fontSize: 18,
+                  lineHeight: 1.55,
+                  fontWeight: 600,
+                  marginTop: 4,
+                }}
+              >
+                Retome o controle da sua vida financeira. Seja reconhecido pelo que você
+                realmente produz.
+              </motion.p>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ── CTA Final ── */}
         <section
           style={{ background: C.card, borderTop: `1px solid ${C.borderTeal}` }}
