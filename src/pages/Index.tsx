@@ -14,6 +14,7 @@ import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
 import testimonialMayara from "@/assets/testimonial-mayara.jpeg";
 import testimonialCinara from "@/assets/testimonial-cinara.jpeg";
 
+
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — única fonte de verdade
  * Contraste validado AA sobre C.bg #0B1623:
