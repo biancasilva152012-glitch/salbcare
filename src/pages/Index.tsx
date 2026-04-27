@@ -93,50 +93,85 @@ const initialsOf = (name: string) =>
     .join("")
     .toUpperCase();
 
-const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => (
-  <Avatar
-    style={{
-      width: 56,
-      height: 56,
-      border: `2px solid ${C.teal}`,
-      background: C.cardElev,
-      flexShrink: 0,
-      borderRadius: "9999px",
-      overflow: "hidden",
-    }}
-  >
-    <AvatarImage
-      src={src}
-      alt={`Foto de ${name}`}
-      loading="lazy"
-      decoding="async"
+const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => {
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+
+  return (
+    <div
       style={{
-        objectFit: "cover",
-        objectPosition: "center top",
-        width: "100%",
-        height: "100%",
+        position: "relative",
+        width: 56,
+        height: 56,
         borderRadius: "9999px",
-      }}
-      onError={(e) => {
-        // Esconde a img quebrada para o AvatarFallback assumir
-        (e.currentTarget as HTMLImageElement).style.display = "none";
-      }}
-    />
-    <AvatarFallback
-      delayMs={0}
-      style={{
+        border: `2px solid ${C.teal}`,
         background: C.cardElev,
-        color: C.teal,
-        fontWeight: 700,
-        fontSize: 14,
-        letterSpacing: "0.02em",
-        borderRadius: "9999px",
+        flexShrink: 0,
+        overflow: "hidden",
       }}
     >
-      {initialsOf(name)}
-    </AvatarFallback>
-  </Avatar>
-);
+      {/* Skeleton circular pulsante — visível enquanto loading */}
+      {status === "loading" && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: "9999px",
+            background: `linear-gradient(90deg, ${C.cardElev} 0%, ${C.cardHover} 50%, ${C.cardElev} 100%)`,
+            backgroundSize: "200% 100%",
+            animation: "salbShimmer 1.4s ease-in-out infinite",
+          }}
+        />
+      )}
+
+      {/* Imagem real — só aparece com fade quando carregada */}
+      {status !== "error" && (
+        <img
+          src={src}
+          alt={`Foto de ${name}`}
+          loading="lazy"
+          decoding="async"
+          width={56}
+          height={56}
+          onLoad={() => setStatus("loaded")}
+          onError={() => setStatus("error")}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            borderRadius: "9999px",
+            opacity: status === "loaded" ? 1 : 0,
+            transition: "opacity 220ms ease",
+          }}
+        />
+      )}
+
+      {/* Fallback de iniciais — só se imagem falhar de verdade */}
+      {status === "error" && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: C.teal,
+            fontWeight: 700,
+            fontSize: 14,
+            letterSpacing: "0.02em",
+            background: C.cardElev,
+            borderRadius: "9999px",
+          }}
+        >
+          {initialsOf(name)}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
