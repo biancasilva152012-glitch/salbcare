@@ -362,6 +362,29 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── Callout proposta de valor (frase âncora SalbScore) ── */}
+        <section style={{ background: C.bg }} aria-label="Proposta de valor SalbCare">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6 pt-8 pb-2 sm:pt-10 sm:pb-4">
+            <motion.p
+              initial={reveal.hidden}
+              whileInView={reveal.show}
+              viewport={{ once: true, margin: "-40px" }}
+              className="salb-h"
+              style={{
+                color: C.text,
+                fontSize: "clamp(18px, 2.4vw, 24px)",
+                lineHeight: 1.4,
+                fontWeight: 600,
+                textAlign: "center",
+                borderLeft: `3px solid ${C.teal}`,
+                paddingLeft: 16,
+              }}
+            >
+              A SalbCare é a primeira plataforma que prova que profissional autônomo da saúde também tem renda, e gera os documentos pra você comprovar isso pro mundo.
+            </motion.p>
+          </div>
+        </section>
+
         {/* ── Feature Strip ── */}
         <section
           style={{
@@ -668,9 +691,9 @@ const Index = () => {
               </motion.h3>
 
               <motion.p variants={reveal} style={{ color: C.text, fontSize: 16, lineHeight: 1.7 }}>
-                Você registra seus atendimentos. A plataforma organiza seus ganhos.
-                E gera <strong>comprovantes oficiais</strong> que você pode mostrar pra qualquer banco,
-                imobiliária ou consulado. Tudo automático. Tudo no seu nome.
+                Você anota seus atendimentos. A gente organiza tudo pra você.
+                E gera <strong>comprovantes oficiais</strong> pra mostrar pro banco,
+                pra imobiliária, pro consulado. Pronto, no seu nome.
               </motion.p>
 
               <motion.ul
@@ -678,26 +701,40 @@ const Index = () => {
                 style={{ color: C.text, fontSize: 15, lineHeight: 1.9 }}
                 className="space-y-1 pl-1"
               >
-                <li>✓ Provar sua renda <strong>sem precisar de contracheque</strong></li>
-                <li>✓ Saber exatamente <strong>quanto você ganha de verdade</strong> todo mês</li>
-                <li>✓ Documentos com <strong>código de verificação</strong> aceitos por bancos e imobiliárias</li>
-                <li>✓ Perfil verificado com <strong>SalbScore</strong> — sua reputação financeira</li>
-                <li>✓ Você continua com <strong>100% do que ganha</strong>. Zero comissão.</li>
+                <li>✓ Comprove sua renda <strong>sem holerite</strong></li>
+                <li>✓ Veja <strong>quanto você ganha de verdade</strong> todo mês</li>
+                <li>✓ Documentos com <strong>código de verificação</strong> que banco aceita</li>
+                <li>✓ Seu <strong>SalbScore</strong> mostra que você tem renda real</li>
+                <li>✓ <strong>100% do que ganha é seu</strong>. Zero comissão.</li>
               </motion.ul>
 
               <motion.p
                 variants={reveal}
                 style={{
                   color: C.text,
-                  fontSize: "clamp(17px, 2.2vw, 20px)",
-                  lineHeight: 1.5,
-                  fontWeight: 600,
-                  marginTop: 12,
+                  fontSize: "clamp(18px, 2.4vw, 22px)",
+                  lineHeight: 1.45,
+                  fontWeight: 700,
+                  marginTop: 16,
                 }}
               >
-                Pela primeira vez, profissional autônomo da saúde tem como provar pro mundo
-                o que sempre soube: que trabalha, que fatura, e que merece ser tratado como tal.
+                Se você é da saúde e cansou de "não comprovar renda", é por isso que a SalbCare existe.
               </motion.p>
+
+              <motion.div variants={reveal} className="pt-2">
+                <Link
+                  to="/register"
+                  data-track="manifesto_cta_cadastro"
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-transform active:scale-[0.98]"
+                  style={{ background: C.teal, color: "#fff", fontSize: 15 }}
+                >
+                  Começar agora — é grátis
+                  <ArrowRight size={16} />
+                </Link>
+                <p style={{ color: C.textMuted, fontSize: 13, marginTop: 10 }}>
+                  Sem cartão. Em 2 minutos você já tem seu primeiro comprovante.
+                </p>
+              </motion.div>
             </motion.div>
           </div>
         </section>
