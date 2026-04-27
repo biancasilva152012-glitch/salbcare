@@ -77,6 +77,7 @@ const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnost
 const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
 const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"), "PaymentSuccess");
 const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
+const SubscriptionSuccess = lazyWithRetry(() => import("./pages/SubscriptionSuccess"), "SubscriptionSuccess");
 const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
 const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
 const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
@@ -170,6 +171,7 @@ const App = () => (
               <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
               <Route path="/payment-success" element={<ProfessionalRoute><PaymentSuccess /></ProfessionalRoute>} />
               <Route path="/sucesso" element={<ProfessionalRoute><Sucesso /></ProfessionalRoute>} />
+              <Route path="/subscription-success" element={<ProfessionalRoute><SubscriptionSuccess /></ProfessionalRoute>} />
               <Route path="/cancelado" element={<ProfessionalRoute><Cancelado /></ProfessionalRoute>} />
               {/* Guest-friendly: localStorage-backed UI when !user */}
               <Route path="/dashboard" element={<ProfessionalRoute allowGuest><Dashboard /></ProfessionalRoute>} />
