@@ -1231,7 +1231,7 @@ const Index = () => {
                   <ArrowRight size={16} />
                 </Link>
                 <span style={{ color: C.textMuted, fontSize: 13 }}>
-                  7 dias grátis · sem cartão de crédito
+                  Cadastro grátis · sem cartão de crédito
                 </span>
               </motion.div>
 
