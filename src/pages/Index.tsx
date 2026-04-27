@@ -295,6 +295,22 @@ const Index = () => {
           .salb-card,
           .salb-faq-item { transition: none !important; }
         }
+
+        /* SalbScore ring fill animation (0 → 720 ≈ 80% of 578) */
+        @keyframes salbScoreRing {
+          to { stroke-dashoffset: 116; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          @keyframes salbScoreRing { to { stroke-dashoffset: 116; } }
+        }
+
+        /* Plan card popular badge pulse */
+        .salb-plan-popular {
+          position: relative;
+          border-color: ${C.teal} !important;
+          background: ${C.cardElev} !important;
+          box-shadow: 0 0 0 1px ${C.teal}, 0 20px 60px -20px ${C.teal}55;
+        }
       `}</style>
 
       <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
