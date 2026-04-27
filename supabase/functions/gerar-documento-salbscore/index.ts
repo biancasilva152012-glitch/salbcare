@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { PDFDocument, StandardFonts, rgb } from "https://esm.sh/pdf-lib@1.17.1";
+import QRCode from "https://esm.sh/qrcode@1.5.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -252,11 +253,25 @@ serve(async (req) => {
       cursorY -= 12;
     }
 
-    // QR Code (texto simples como placeholder visual; URL real sempre no rodapé)
+    // QR Code real apontando para /verificar/{hash}
     const verifyUrl = `https://salbcare.com.br/verificar/${hash}`;
-    page.drawRectangle({ x: width - 130, y: 90, width: 90, height: 90, borderColor: navy, borderWidth: 1 });
-    page.drawText("QR", { x: width - 95, y: 130, size: 10, font: fontBold, color: muted });
-    page.drawText("verificação", { x: width - 110, y: 115, size: 7, font, color: muted });
+    try {
+      const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+        margin: 1,
+        width: 240,
+        color: { dark: "#0D1B2A", light: "#FFFFFF" },
+      });
+      const qrBytes = Uint8Array.from(
+        atob(qrDataUrl.split(",")[1]),
+        (c) => c.charCodeAt(0),
+      );
+      const qrImg = await pdf.embedPng(qrBytes);
+      page.drawImage(qrImg, { x: width - 130, y: 90, width: 90, height: 90 });
+    } catch (qrErr) {
+      console.error("QR generation failed:", qrErr);
+      page.drawRectangle({ x: width - 130, y: 90, width: 90, height: 90, borderColor: navy, borderWidth: 1 });
+      page.drawText("verificação", { x: width - 120, y: 130, size: 8, font, color: muted });
+    }
 
     // Rodapé legal
     const rodape = `Este documento é emitido pela SalbCare Tecnologia em Saúde Ltda. com base em dados informados e operações registradas pelo titular dentro da plataforma. Não constitui declaração contábil/fiscal nem substitui documentos emitidos por contador (CRC). Para fins legais, deve ser apresentado em conjunto com declaração contábil quando aplicável.`;
