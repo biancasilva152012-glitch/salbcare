@@ -39,7 +39,7 @@ const Index = () => {
 
       <div className="min-h-screen bg-background">
         {/* ── Navbar ── */}
-        <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+        <nav className="sticky top-0 z-50 bg-white/85 backdrop-blur-[12px] border-b border-black/[0.06]">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link to="/" className="flex items-center gap-2">
               <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-8 w-8" width={32} height={32} />
