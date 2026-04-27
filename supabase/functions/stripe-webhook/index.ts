@@ -78,6 +78,30 @@ serve(async (req) => {
 
   logStep("Evento recebido", { type: event.type, id: event.id });
 
+  // ── Idempotência: evita reprocessar reentregas do Stripe ──────────────
+  // Inserimos o event.id em processed_stripe_events com PRIMARY KEY.
+  // Se já existir, ignoramos o evento e retornamos 200 (Stripe não reentrega).
+  try {
+    const { error: dupeErr } = await supabase
+      .from("processed_stripe_events")
+      .insert({ event_id: event.id, event_type: event.type });
+
+    if (dupeErr) {
+      // 23505 = unique_violation → já processado
+      if ((dupeErr as any).code === "23505") {
+        logStep("Evento duplicado ignorado (idempotência)", { id: event.id, type: event.type });
+        return new Response(JSON.stringify({ received: true, duplicate: true }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      // Outros erros: loga mas continua processando para não perder eventos
+      logStep("Aviso ao gravar idempotência (continuando)", { error: (dupeErr as any).message });
+    }
+  } catch (err) {
+    logStep("Falha não-crítica em idempotência", { error: err instanceof Error ? err.message : String(err) });
+  }
+
   try {
     switch (event.type) {
       case "checkout.session.completed": {
@@ -106,6 +130,8 @@ serve(async (req) => {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     logStep("Erro ao processar evento", { type: event.type, error: msg });
+    // Remove o registro para permitir reprocessamento na próxima reentrega
+    await supabase.from("processed_stripe_events").delete().eq("event_id", event.id);
     return new Response("Internal error", { status: 500 });
   }
 
@@ -236,10 +262,7 @@ async function handleCheckoutCompleted(
     updateObj.trial_ends_at = trialEnd;
   }
 
-  if (plan === "essencial") {
-    updateObj.had_trial = true;
-    logStep("Trial registrado para user_id", { userId });
-  }
+  // Trial removido — não marcamos mais had_trial automaticamente
 
   const { error: profError } = await supabase
     .from("professionals")

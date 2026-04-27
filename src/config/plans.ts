@@ -1,6 +1,7 @@
 export const PLANS = {
   basic: {
     name: "Essencial",
+    alias: "Plus",
     subtitle: "Gestão completa da sua prática",
     price: 89,
     annualPrice: 69,
@@ -19,7 +20,7 @@ export const PLANS = {
       "Perfil público e link de indicação",
       "Você fica com 100% do valor das consultas",
     ],
-    hasTrial: true,
+    hasTrial: false,
   },
 } as const;
 

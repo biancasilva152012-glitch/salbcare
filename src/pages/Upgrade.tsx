@@ -212,11 +212,11 @@ const Upgrade = () => {
               className="w-full gradient-primary font-bold py-6 text-base"
             >
               <Crown className="h-4 w-4 mr-2" />
-              Fazer upgrade agora
+              Virar Plus agora
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <p className="text-[10px] text-center text-muted-foreground">
-              Sem cartão para começar • Cancele quando quiser
+              Apple Pay, Google Pay, cartão, boleto e Pix • Cancele quando quiser
             </p>
           </motion.div>
 

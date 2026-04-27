@@ -117,11 +117,9 @@ const Checkout = () => {
               R$ 828/ano • Economia de R$ 240
             </p>
           )}
-          {hasDiscount && (
-            <p className="text-xs text-primary font-semibold mt-1">
-              Cobrança imediata, sem período de teste
-            </p>
-          )}
+          <p className="text-xs text-primary font-semibold mt-1">
+            Cobrança imediata, sem período de teste
+          </p>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
@@ -160,7 +158,7 @@ const Checkout = () => {
             ) : (
               <>
                 <CreditCard className="h-4 w-4" />
-                Pagar com Stripe
+                Virar Plus — pagar agora
               </>
             )}
           </Button>
@@ -193,7 +191,9 @@ const Checkout = () => {
           )}
 
           <p className="text-[10px] text-center text-muted-foreground">
-            Pagamento seguro processado pelo Stripe. Você será redirecionado para a página de pagamento.
+            Pagamento seguro pelo Stripe • Apple Pay, Google Pay, cartão e boleto.
+            <br />
+            Prefere Pix? Envie para a chave <strong>(88) 99692-4700</strong> e seu acesso é liberado manualmente.
           </p>
         </motion.div>
       </div>
