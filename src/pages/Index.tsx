@@ -389,7 +389,7 @@ const Index = () => {
                   >
                     <div>
                       <div className="flex items-center gap-3 mb-5">
-                        <span className="salb-icon-box"><items[0].icon /></span>
+                        <span className="salb-icon-box">{(() => { const I = items[0].icon; return <I />; })()}</span>
                         <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
                           PASSO {items[0].step}
                         </span>
@@ -412,7 +412,7 @@ const Index = () => {
                     className="salb-card"
                   >
                     <div className="flex items-center gap-3 mb-5">
-                      <span className="salb-icon-box"><items[1].icon /></span>
+                      <span className="salb-icon-box">{(() => { const I = items[1].icon; return <I />; })()}</span>
                       <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
                         PASSO {items[1].step}
                       </span>
@@ -434,7 +434,7 @@ const Index = () => {
                     className="salb-card md:col-start-1"
                   >
                     <div className="flex items-center gap-3 mb-5">
-                      <span className="salb-icon-box"><items[2].icon /></span>
+                      <span className="salb-icon-box">{(() => { const I = items[2].icon; return <I />; })()}</span>
                       <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
                         PASSO {items[2].step}
                       </span>
