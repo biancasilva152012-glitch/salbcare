@@ -260,7 +260,43 @@ const PublicSalbScore = () => {
           </div>
         </section>
 
-        {/* CTA Final */}
+        {/* FAQ */}
+        <section style={{ background: C.bg }} className="py-20">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6">
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 36px)", fontWeight: 800, letterSpacing: "-0.02em", textAlign: "center" }}>
+              Perguntas frequentes
+            </h2>
+            <div className="mt-10 space-y-3">
+              {[
+                {
+                  q: "O SalbScore já está funcionando hoje?",
+                  a: "O cálculo público está em desenvolvimento — entra em produção no roadmap 2026. Mas seu histórico já começa a contar a partir do primeiro atendimento registrado. Quanto antes você começar, mais maduro seu score quando ele estiver disponível.",
+                },
+                {
+                  q: "Quais ações já alimentam meu histórico?",
+                  a: "Cinco ações dentro da plataforma: cadastrar seu conselho (CRM, CRP, CRN, CRO etc.) com número e UF, marcar consultas na agenda, lançar recebimentos no módulo financeiro, confirmar atendimentos realizados e atualizar despesas mensais. Tudo isso já fica registrado e será considerado no cálculo.",
+                },
+                {
+                  q: "Preciso de cartão de crédito para começar a construir meu score?",
+                  a: "Não. O cadastro é grátis e não pede cartão. O Comprovante de Renda Oficial SalbCare e o score público fazem parte do roadmap — você só assina o Essencial (R$ 89/mês) quando quiser usar gestão completa, teleconsulta e IA Mentora.",
+                },
+                {
+                  q: "Quem terá prioridade no Comprovante de Renda Oficial?",
+                  a: "Profissionais com histórico ativo na plataforma — ou seja, quem já vem registrando consultas e recebimentos consistentemente — terão prioridade no acesso quando o produto for lançado.",
+                },
+              ].map((item) => (
+                <div key={item.q} style={{
+                  background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22,
+                }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{item.q}</h3>
+                  <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.65, marginTop: 8 }}>{item.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+
         <section style={{ background: C.card, borderTop: `1px solid ${C.borderTeal}` }} className="py-20">
           <div className="mx-auto max-w-2xl px-5 sm:px-6 text-center">
             <h2 style={{ fontSize: "clamp(26px, 3.5vw, 38px)", fontWeight: 800, letterSpacing: "-0.02em" }}>
