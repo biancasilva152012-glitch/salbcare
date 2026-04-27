@@ -110,7 +110,7 @@ const PublicSalbScore = () => {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/register?source=salbscore-hero"
-                  onClick={() => trackCtaClick("register_hero", "salbscore_page")}
+                  onClick={() => trackCtaClick("register", "salbscore_hero", { source: "salbscore-hero" })}
                   style={{
                     background: C.teal, color: C.tealOnDark, padding: "14px 24px", borderRadius: 12,
                     fontWeight: 600, fontSize: 15, textDecoration: "none", display: "inline-flex",
@@ -121,7 +121,7 @@ const PublicSalbScore = () => {
                 </Link>
                 <Link
                   to="/checkout?plan=basic&source=salbscore-hero"
-                  onClick={() => trackCtaClick("checkout_essencial", "salbscore_page")}
+                  onClick={() => trackCtaClick("checkout_essencial", "salbscore_hero", { source: "salbscore-hero", plan: "basic" })}
                   style={{
                     background: "transparent", color: C.text, padding: "14px 24px", borderRadius: 12,
                     fontWeight: 600, fontSize: 15, textDecoration: "none", border: `1px solid ${C.borderStrong}`,
