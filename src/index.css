@@ -267,3 +267,9 @@ body[data-scroll-locked] {
     transition-duration: 320ms;
   }
 }
+
+/* Skeleton shimmer — usado em avatares de depoimentos */
+@keyframes salbShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
