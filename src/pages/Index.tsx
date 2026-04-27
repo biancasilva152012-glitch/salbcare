@@ -7,7 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
 import SEOHead from "@/components/SEOHead";
 import { useState } from "react";
 import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
