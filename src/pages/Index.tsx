@@ -449,6 +449,7 @@ const Index = () => {
               >
                 <Link
                   to="/register?source=landing-hero"
+                  onClick={() => trackCtaClick("register", "landing_hero")}
                   className="salb-btn-primary"
                   style={{ minHeight: 56, padding: "16px 36px", fontSize: 16, width: "100%", maxWidth: 340 }}
                   data-track="hero_cta_register"
@@ -1028,7 +1029,8 @@ const Index = () => {
 
               <motion.div variants={reveal} className="pt-2">
                 <Link
-                  to="/register"
+                  to="/register?source=landing-manifesto"
+                  onClick={() => trackCtaClick("register", "landing_manifesto")}
                   data-track="manifesto_cta_cadastro"
                   className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-transform active:scale-[0.98]"
                   style={{ background: C.teal, color: "#fff", fontSize: 15 }}
@@ -1219,7 +1221,8 @@ const Index = () => {
                 style={{ gap: 14, marginTop: 8 }}
               >
                 <Link
-                  to="/register"
+                  to="/register?source=landing-invisivel"
+                  onClick={() => trackCtaClick("register", "landing_invisivel_bancos")}
                   className="salb-btn-primary"
                   style={{ padding: "16px 32px", justifyContent: "center" }}
                   data-track="cta_invisivel_bancos_register"
