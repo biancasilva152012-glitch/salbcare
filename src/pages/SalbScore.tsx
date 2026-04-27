@@ -158,7 +158,39 @@ const SalbScore = () => {
           </p>
         </header>
 
-        {/* Bloco 1 — Score visual */}
+        {/* Bloco 1 — Score visual / Boas-vindas para novos usuários */}
+        {semDados && hasFullAccess ? (
+          <section
+            className="rounded-2xl p-8 flex flex-col items-center text-center space-y-5"
+            style={{ background: "rgba(0,180,160,0.06)", border: "1px solid rgba(0,180,160,0.2)" }}
+          >
+            <div className="relative w-[200px] h-[200px] flex items-center justify-center">
+              <svg width="200" height="200" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="84" stroke="rgba(0,180,160,0.2)" strokeWidth="12" fill="none" strokeDasharray="6 8" />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="text-5xl font-bold tracking-tight text-muted-foreground">—</div>
+                <div className="text-xs text-muted-foreground mt-1">Em construção</div>
+              </div>
+            </div>
+            <div className="space-y-2 max-w-md">
+              <h2 className="text-xl font-bold" style={{ color: "#0D1B2A" }}>
+                Seu SalbScore está prestes a começar
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Como você acaba de chegar, seu histórico ainda está vazio. A cada paciente atendido pela SalbCare, sua nota cresce.
+              </p>
+            </div>
+            <ol className="text-left text-sm space-y-2 w-full max-w-sm">
+              <li className="flex gap-2"><span>✅</span><span className="text-muted-foreground">Cadastre-se (feito!)</span></li>
+              <li className="flex gap-2"><span>⏳</span><span className="text-muted-foreground">Atenda seus primeiros pacientes pela plataforma</span></li>
+              <li className="flex gap-2"><span>🎯</span><span className="text-muted-foreground">Em 30 dias seu SalbScore estará pronto para emitir comprovantes</span></li>
+            </ol>
+            <Button onClick={() => navigate("/patients")} className="mt-2">
+              Cadastrar primeiro paciente →
+            </Button>
+          </section>
+        ) : (
         <section
           className="rounded-2xl p-8 flex flex-col items-center text-center space-y-4"
           style={{ background: faixaInfo.bg, border: `1px solid ${faixaInfo.color}33` }}
@@ -171,15 +203,9 @@ const SalbScore = () => {
               {hasFullAccess ? faixaInfo.label : "Bloqueado"}
             </div>
             {hasFullAccess ? (
-              semDados ? (
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Ainda não há dados suficientes para calcular sua nota. Registre seus primeiros atendimentos e recebimentos no Financeiro — seu SalbScore começa a subir automaticamente em 24h.
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Você construiu <strong>{data?.score ?? 0} pontos</strong>. {faixaInfo.descricao}.
-                </p>
-              )
+              <p className="text-sm text-muted-foreground max-w-md">
+                Você construiu <strong>{data?.score ?? 0} pontos</strong>. {faixaInfo.descricao}.
+              </p>
             ) : (
               <div className="space-y-2 max-w-md">
                 <p className="text-sm text-muted-foreground">
@@ -200,6 +226,7 @@ const SalbScore = () => {
             </Button>
           )}
         </section>
+        )}
 
         {/* Bloco 2 — Componentes */}
         {data && hasFullAccess && (
