@@ -362,6 +362,29 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── Callout proposta de valor (frase âncora SalbScore) ── */}
+        <section style={{ background: C.bg }} aria-label="Proposta de valor SalbCare">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6 pt-8 pb-2 sm:pt-10 sm:pb-4">
+            <motion.p
+              initial={reveal.hidden}
+              whileInView={reveal.show}
+              viewport={{ once: true, margin: "-40px" }}
+              className="salb-h"
+              style={{
+                color: C.text,
+                fontSize: "clamp(18px, 2.4vw, 24px)",
+                lineHeight: 1.4,
+                fontWeight: 600,
+                textAlign: "center",
+                borderLeft: `3px solid ${C.teal}`,
+                paddingLeft: 16,
+              }}
+            >
+              A SalbCare é a primeira plataforma que prova que profissional autônomo da saúde também tem renda, e gera os documentos pra você comprovar isso pro mundo.
+            </motion.p>
+          </div>
+        </section>
+
         {/* ── Feature Strip ── */}
         <section
           style={{
