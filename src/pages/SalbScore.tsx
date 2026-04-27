@@ -352,7 +352,7 @@ const DocCard = ({
     {!comingSoon && (
       <Button
         onClick={onAction}
-        disabled={loading || locked}
+        disabled={loading}
         size="sm"
         variant={locked ? "outline" : "default"}
         className="w-full"
