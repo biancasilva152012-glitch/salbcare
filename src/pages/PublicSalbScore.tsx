@@ -375,7 +375,7 @@ const PublicSalbScore = () => {
             <div className="mt-8 flex flex-wrap gap-3 justify-center">
               <Link
                 to="/register?source=salbscore-final"
-                onClick={() => trackCtaClick("register_final", "salbscore_page")}
+                onClick={() => trackCtaClick("register", "salbscore_final", { source: "salbscore-final" })}
                 style={{
                   background: C.teal, color: C.tealOnDark, padding: "16px 28px", borderRadius: 12,
                   fontWeight: 600, fontSize: 15, textDecoration: "none", display: "inline-flex",
@@ -386,7 +386,7 @@ const PublicSalbScore = () => {
               </Link>
               <Link
                 to="/checkout?plan=basic&source=salbscore-final"
-                onClick={() => trackCtaClick("checkout_essencial_final", "salbscore_page")}
+                onClick={() => trackCtaClick("checkout_essencial", "salbscore_final", { source: "salbscore-final", plan: "basic" })}
                 style={{
                   background: "transparent", color: C.text, padding: "16px 28px", borderRadius: 12,
                   fontWeight: 600, fontSize: 15, textDecoration: "none", border: `1px solid ${C.borderStrong}`,
