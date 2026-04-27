@@ -232,14 +232,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session: initSession } }) => {
       sessionRef.current = initSession;
       setSession(initSession);
-      setLoading(false);
       initialCheckDone = true;
       if (initSession?.user) {
-        fetchUserType(initSession.user.id);
+        fetchUserType(initSession.user.id).finally(() => setLoading(false));
         checkSubscription();
       } else {
         setUserTypeLoading(false);
         setSubscription((s) => ({ ...s, loading: false }));
+        setLoading(false);
       }
     });
 
