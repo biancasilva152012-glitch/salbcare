@@ -477,6 +477,202 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── SalbScore Hero (diferencial visual) ── */}
+        <section
+          id="salbscore"
+          style={{
+            background: `linear-gradient(135deg, ${C.bg} 0%, #0E2235 60%, rgba(0,180,160,0.12) 100%)`,
+            borderTop: `1px solid ${C.border}`,
+            borderBottom: `1px solid ${C.border}`,
+          }}
+          className={S.sectionY}
+          aria-label="SalbScore — diferencial da SalbCare"
+        >
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="text-center"
+              style={{ marginBottom: 40 }}
+            >
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.p
+                variants={reveal}
+                style={{
+                  color: C.teal, fontSize: 11, fontWeight: 700,
+                  letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12,
+                }}
+              >
+                O diferencial SalbCare
+              </motion.p>
+              <motion.h2
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(28px, 4.5vw, 44px)" }}
+              >
+                O que existe na SalbCare
+                <br />
+                e em mais lugar nenhum.
+              </motion.h2>
+            </motion.div>
+
+            <motion.div
+              initial={reveal.hidden}
+              whileInView={reveal.show}
+              viewport={{ once: true, margin: "-60px" }}
+              className="grid gap-8 sm:gap-10 items-center"
+              style={{
+                gridTemplateColumns: "1fr",
+                background: C.card,
+                border: `1px solid ${C.borderTeal}`,
+                borderRadius: 24,
+                padding: "clamp(24px, 4vw, 48px)",
+              }}
+            >
+              <div className="grid gap-10 md:gap-14" style={{ gridTemplateColumns: "1fr", alignItems: "center" }}>
+                <div className="grid gap-10 md:gap-14 md:grid-cols-[auto_1fr]" style={{ alignItems: "center" }}>
+                  {/* Score Ring */}
+                  <div className="flex justify-center">
+                    <div
+                      style={{
+                        position: "relative",
+                        width: 220,
+                        height: 220,
+                      }}
+                    >
+                      <svg width="220" height="220" viewBox="0 0 220 220" aria-hidden="true">
+                        <circle
+                          cx="110" cy="110" r="92"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.06)"
+                          strokeWidth="14"
+                        />
+                        <circle
+                          cx="110" cy="110" r="92"
+                          fill="none"
+                          stroke={C.teal}
+                          strokeWidth="14"
+                          strokeLinecap="round"
+                          strokeDasharray="578"
+                          strokeDashoffset="578"
+                          transform="rotate(-90 110 110)"
+                          style={{
+                            animation: "salbScoreRing 1.6s cubic-bezier(0.22,1,0.36,1) forwards",
+                            animationDelay: "0.2s",
+                            filter: `drop-shadow(0 0 12px ${C.teal}55)`,
+                          }}
+                        />
+                      </svg>
+                      <div
+                        style={{
+                          position: "absolute", inset: 0,
+                          display: "flex", flexDirection: "column",
+                          alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        <span style={{
+                          color: C.teal, fontSize: 11, fontWeight: 700,
+                          letterSpacing: "0.16em", textTransform: "uppercase",
+                        }}>
+                          SalbScore
+                        </span>
+                        <span style={{
+                          color: C.text, fontSize: 56, fontWeight: 800,
+                          letterSpacing: "-0.04em", lineHeight: 1, marginTop: 4,
+                        }}>
+                          720
+                        </span>
+                        <span style={{ color: C.textMuted, fontSize: 12, marginTop: 6 }}>
+                          Estabelecido
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bullets */}
+                  <div>
+                    <h3
+                      className="salb-h"
+                      style={{ fontSize: "clamp(22px, 3vw, 30px)", marginBottom: 18 }}
+                    >
+                      SalbScore — sua nota de saúde financeira profissional.
+                    </h3>
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                      {[
+                        {
+                          t: "Comprovante de Renda em construção",
+                          d: "Plataforma já organiza seus atendimentos e recebimentos. Geração de comprovantes oficiais para imobiliárias e bancos está em rollout.",
+                        },
+                        {
+                          t: "Selo Verificado Público",
+                          d: "Use no Instagram, no consultório, no WhatsApp. Pacientes veem que você é profissional ativo na SalbCare.",
+                        },
+                        {
+                          t: "Pontuação que sobe com o tempo",
+                          d: "Quanto mais você usa — atendimentos, recebimentos, organização — mais valioso fica seu histórico financeiro.",
+                        },
+                      ].map((b) => (
+                        <li
+                          key={b.t}
+                          style={{
+                            display: "flex",
+                            gap: 14,
+                            padding: "14px 0",
+                            borderBottom: `1px solid ${C.border}`,
+                          }}
+                        >
+                          <span
+                            aria-hidden="true"
+                            style={{
+                              flexShrink: 0,
+                              width: 8, height: 8,
+                              borderRadius: 999,
+                              background: C.teal,
+                              marginTop: 8,
+                              boxShadow: `0 0 0 4px ${C.tealTint}`,
+                            }}
+                          />
+                          <div>
+                            <p style={{ color: C.text, fontWeight: 600, fontSize: 15, lineHeight: 1.4 }}>
+                              {b.t}
+                            </p>
+                            <p style={{ color: C.textMuted, fontSize: 13.5, lineHeight: 1.55, marginTop: 4 }}>
+                              {b.d}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      to="/salbscore"
+                      className="inline-flex items-center gap-1.5"
+                      style={{
+                        color: C.teal, fontSize: 14, fontWeight: 600,
+                        marginTop: 18, textDecoration: "none",
+                      }}
+                    >
+                      Entender como o SalbScore funciona
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <p
+              style={{
+                color: C.textMuted, fontSize: 12, textAlign: "center",
+                marginTop: 16, maxWidth: 640, marginInline: "auto", lineHeight: 1.5,
+              }}
+            >
+              A SalbCare é uma plataforma de gestão e organização financeira. Não é instituição
+              financeira. Comprovantes refletem dados registrados pelo próprio profissional.
+            </p>
+          </div>
+        </section>
+
         {/* ── Feature Strip ── */}
         <section
           style={{
