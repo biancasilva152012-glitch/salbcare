@@ -43,6 +43,8 @@ const Telehealth = lazyWithRetry(() => import("./pages/Telehealth"), "Telehealth
 const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 
 const ProfileBlocks = lazyWithRetry(() => import("./pages/ProfileBlocks"), "ProfileBlocks");
+const SalbScore = lazyWithRetry(() => import("./pages/SalbScore"), "SalbScore");
+const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"), "VerifyDocument");
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
 const Upgrade = lazyWithRetry(() => import("./pages/Upgrade"), "Upgrade");
 const DashboardLimits = lazyWithRetry(() => import("./pages/DashboardLimits"), "DashboardLimits");
@@ -185,6 +187,9 @@ const App = () => (
               <Route path="/profile" element={<ProfessionalRoute allowGuest><Profile /></ProfessionalRoute>} />
               
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
+              <Route path="/perfil/salbscore" element={<ProfessionalRoute><SalbScore /></ProfessionalRoute>} />
+              <Route path="/verificar" element={<VerifyDocument />} />
+              <Route path="/verificar/:hash" element={<VerifyDocument />} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<AdminOverviewPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />

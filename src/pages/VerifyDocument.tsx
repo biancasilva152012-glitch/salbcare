@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useSearchParams, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useSearchParams, useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShieldCheck, ShieldX, Search, Loader2 } from "lucide-react";
+import { ShieldCheck, ShieldX, Search, Loader2, FileText, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,41 +18,78 @@ interface DocumentResult {
   created_at: string;
 }
 
+interface SalbScoreDocResult {
+  tipo: string;
+  professional_name_partial: string;
+  conselho: string;
+  score_emissao: number;
+  faixa_emissao: string;
+  emitido_em: string;
+  valido_ate: string;
+  is_valid: boolean;
+  dados_publicos: Record<string, unknown> | null;
+}
+
+const FAIXA_LABELS: Record<string, string> = {
+  iniciante: "Iniciante",
+  desenvolvimento: "Em desenvolvimento",
+  estabelecido: "Estabelecido",
+  premium: "Premium",
+  elite: "Elite",
+};
+
+const TIPO_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
+  comprovante_renda: { label: "Comprovante de Renda SalbCare", icon: <FileText className="h-4 w-4" /> },
+  certidao_atividade: { label: "Certidão de Atividade Profissional", icon: <ShieldCheck className="h-4 w-4" /> },
+  selo_publico: { label: "Selo Verificado Público", icon: <Award className="h-4 w-4" /> },
+};
+
 const VerifyDocument = () => {
   const [searchParams] = useSearchParams();
   const params = useParams();
   const initialHash = params.hash || searchParams.get("hash") || "";
   const [hash, setHash] = useState(initialHash);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<DocumentResult | null>(null);
+  const [docResult, setDocResult] = useState<DocumentResult | null>(null);
+  const [salbResult, setSalbResult] = useState<SalbScoreDocResult | null>(null);
   const [searched, setSearched] = useState(false);
 
-  const handleVerify = async () => {
-    if (!hash.trim()) return;
+  const handleVerify = async (h?: string) => {
+    const target = (h ?? hash).trim().toUpperCase();
+    if (!target) return;
     setLoading(true);
     setSearched(true);
+    setDocResult(null);
+    setSalbResult(null);
     try {
-      const { data } = await supabase
-        .rpc("verify_document_by_hash", { _hash: hash.trim().toUpperCase() });
-      const row = Array.isArray(data) ? data[0] ?? null : data;
-      setResult(row as DocumentResult | null);
+      // SalbScore docs começam com SALB-
+      if (target.startsWith("SALB-")) {
+        const { data } = await supabase.rpc("verify_salbscore_document_by_hash", { _hash: target });
+        const row = Array.isArray(data) ? data[0] ?? null : data;
+        setSalbResult(row as SalbScoreDocResult | null);
+      } else {
+        const { data } = await supabase.rpc("verify_document_by_hash", { _hash: target });
+        const row = Array.isArray(data) ? data[0] ?? null : data;
+        setDocResult(row as DocumentResult | null);
+      }
     } catch {
-      setResult(null);
+      setDocResult(null);
+      setSalbResult(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Auto-verify if hash in URL
-  useState(() => {
-    if (initialHash) handleVerify();
-  });
+  useEffect(() => {
+    if (initialHash) handleVerify(initialHash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialHash]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <SEOHead
         title="Verificar Documento | SALBCARE"
-        description="Verifique a autenticidade de receitas e atestados digitais emitidos pela plataforma SALBCARE."
+        description="Verifique a autenticidade de documentos digitais e comprovantes SalbScore emitidos pela plataforma SalbCare."
       />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -65,7 +102,7 @@ const VerifyDocument = () => {
           </div>
           <h1 className="text-xl font-bold">Verificar Documento</h1>
           <p className="text-sm text-muted-foreground">
-            Insira o código hash do documento para verificar sua autenticidade.
+            Insira o código do documento para confirmar sua autenticidade junto à SalbCare.
           </p>
         </div>
 
@@ -77,40 +114,60 @@ const VerifyDocument = () => {
             className="bg-accent border-border font-mono text-sm"
             onKeyDown={(e) => e.key === "Enter" && handleVerify()}
           />
-          <Button onClick={handleVerify} disabled={loading || !hash.trim()} className="gradient-primary shrink-0">
+          <Button onClick={() => handleVerify()} disabled={loading || !hash.trim()} className="gradient-primary shrink-0">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
           </Button>
         </div>
 
         {searched && !loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {result ? (
+            {salbResult ? (
+              <div className="glass-card p-5 space-y-4">
+                <div className="flex items-center gap-2" style={{ color: salbResult.is_valid ? "#00B4A0" : "#9CA3AF" }}>
+                  {TIPO_LABELS[salbResult.tipo]?.icon ?? <ShieldCheck className="h-5 w-5" />}
+                  <span className="font-semibold text-sm">
+                    {salbResult.is_valid ? "Documento autêntico ✅" : "Documento autêntico, porém vencido"}
+                  </span>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <Row label="Tipo" value={TIPO_LABELS[salbResult.tipo]?.label ?? salbResult.tipo} />
+                  <Row label="Profissional" value={salbResult.professional_name_partial} />
+                  <Row label="Conselho" value={salbResult.conselho || "—"} />
+                  <Row label="SalbScore na emissão" value={`${salbResult.score_emissao} (${FAIXA_LABELS[salbResult.faixa_emissao] ?? salbResult.faixa_emissao})`} />
+                  <Row label="Emitido em" value={new Date(salbResult.emitido_em).toLocaleDateString("pt-BR")} />
+                  <Row label="Válido até" value={new Date(salbResult.valido_ate).toLocaleDateString("pt-BR")} />
+                </div>
+                <p className="text-[10px] text-muted-foreground break-all">
+                  Hash: {hash}
+                </p>
+                <Link to="/profissionais" className="block">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Ver outros profissionais SalbCare
+                  </Button>
+                </Link>
+              </div>
+            ) : docResult ? (
               <div className="glass-card p-5 space-y-4">
                 <div className="flex items-center gap-2 text-primary">
                   <ShieldCheck className="h-5 w-5" />
                   <span className="font-semibold text-sm">Documento Verificado ✅</span>
                 </div>
                 <div className="space-y-2 text-sm">
-                  <Row label="Tipo" value={result.document_type === "prescription" ? "Receita Digital" : "Atestado Digital"} />
-                  <Row label="Profissional" value={result.professional_name} />
-                  <Row label="Conselho" value={result.council_number || "—"} />
-                  <Row label="Paciente" value={result.patient_name} />
-                  <Row label="Emitido em" value={new Date(result.created_at).toLocaleString("pt-BR")} />
-                  <Row
-                    label="Assinatura ICP-Brasil"
-                    value={result.signed_icp ? "✅ Assinado digitalmente" : "⚠️ Sem assinatura ICP-Brasil"}
-                  />
+                  <Row label="Tipo" value={docResult.document_type === "prescription" ? "Receita Digital" : "Atestado Digital"} />
+                  <Row label="Profissional" value={docResult.professional_name} />
+                  <Row label="Conselho" value={docResult.council_number || "—"} />
+                  <Row label="Paciente" value={docResult.patient_name} />
+                  <Row label="Emitido em" value={new Date(docResult.created_at).toLocaleString("pt-BR")} />
+                  <Row label="Assinatura ICP-Brasil" value={docResult.signed_icp ? "✅ Assinado digitalmente" : "⚠️ Sem assinatura ICP-Brasil"} />
                 </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Hash: {hash}
-                </p>
+                <p className="text-[10px] text-muted-foreground">Hash: {hash}</p>
               </div>
             ) : (
               <div className="glass-card p-5 text-center space-y-2">
                 <ShieldX className="h-8 w-8 text-destructive mx-auto" />
                 <p className="font-semibold text-sm">Documento não encontrado</p>
                 <p className="text-xs text-muted-foreground">
-                  O código informado não corresponde a nenhum documento emitido pela plataforma SALBCARE.
+                  O código informado não corresponde a nenhum documento emitido pela plataforma SalbCare.
                 </p>
               </div>
             )}
@@ -126,8 +183,8 @@ const VerifyDocument = () => {
 };
 
 const Row = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex justify-between">
-    <span className="text-muted-foreground">{label}</span>
+  <div className="flex justify-between gap-4">
+    <span className="text-muted-foreground shrink-0">{label}</span>
     <span className="font-medium text-right">{value}</span>
   </div>
 );
