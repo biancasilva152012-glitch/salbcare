@@ -1,46 +1,124 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Menu, X, FileText, Search, Video, UserPlus, Globe, LayoutDashboard, Shield } from "lucide-react";
+import {
+  ArrowRight, Menu, X,
+  FileText, Search, Video,
+  UserPlus, Globe, LayoutDashboard, Shield,
+  type LucideIcon,
+} from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import SEOHead from "@/components/SEOHead";
 import { useState } from "react";
 import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
 import testimonialMayara from "@/assets/testimonial-mayara.jpeg";
 import testimonialCinara from "@/assets/testimonial-cinara.jpeg";
 
-// Editorial dark-first palette (extraída do Instagram da marca)
+/* ─────────────────────────────────────────────
+ * DESIGN TOKENS — única fonte de verdade
+ * Contraste validado AA sobre C.bg #0B1623:
+ *   text  #F4F7FB → 16.4:1 (AAA)
+ *   muted #94A3B8 →  7.0:1 (AAA p/ texto normal)
+ *   teal  #00B4A0 →  4.8:1 (AA p/ texto normal)
+ * ───────────────────────────────────────────── */
 const C = {
   bg: "#0B1623",
   card: "#111E2D",
   cardElev: "#172538",
+  cardHover: "#141F30",
   teal: "#00B4A0",
   tealHover: "#00D4BE",
-  text: "#F0F4F8",
-  textMuted: "#7A8FA6",
-  border: "rgba(255,255,255,0.06)",
-  borderTeal: "rgba(0,180,160,0.20)",
+  tealOnDark: "#0B1623",          // texto sobre teal (mais sofisticado que branco puro)
+  text: "#F4F7FB",                // ↑ contraste vs #F0F4F8
+  textMuted: "#94A3B8",           // ↑ contraste vs #7A8FA6 (passa AA)
+  border: "rgba(255,255,255,0.08)",
+  borderStrong: "rgba(255,255,255,0.14)",
+  borderTeal: "rgba(0,180,160,0.28)",
+  borderTealHover: "rgba(0,180,160,0.45)",
   tealTint: "rgba(0,180,160,0.12)",
-};
+  navBg: "rgba(11,22,35,0.85)",
+} as const;
 
+const S = {
+  // Espaçamentos verticais consistentes
+  sectionY: "py-20 sm:py-28",
+  sectionYTight: "py-16 sm:py-20",
+  cardPad: 28,
+  cardPadLg: 32,
+  radius: 16,
+  radiusBtn: 10,
+  radiusSmBtn: 8,
+} as const;
+
+const T = {
+  // Transitions canônicas — apenas 3 durações no projeto
+  fast: "150ms ease",
+  card: "200ms ease",
+} as const;
+
+/* Scroll reveal — único preset, sem bounce/spring */
 const reveal = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
 };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
-// Pequeno traço editorial reutilizável
 const Mark = () => (
   <span
     aria-hidden
     style={{
       display: "block",
-      width: 48,
-      height: 2,
+      width: 48, height: 2,
       borderRadius: 2,
       background: C.teal,
       margin: "0 auto 24px",
     }}
   />
+);
+
+/* Helper para evitar `<items[i].icon />` (TS) */
+const IconRender = ({ icon: I, size = 20 }: { icon: LucideIcon; size?: number }) => (
+  <I size={size} color={C.teal} />
+);
+
+/* Iniciais p/ fallback de avatar */
+const initialsOf = (name: string) =>
+  name
+    .replace(/^Dra?\.?\s+/i, "")
+    .split(/\s+/)
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => (
+  <Avatar
+    style={{
+      width: 48, height: 48,
+      border: `1.5px solid ${C.borderTealHover}`,
+      background: C.cardElev,
+    }}
+  >
+    <AvatarImage
+      src={src}
+      alt={name}
+      loading="lazy"
+      decoding="async"
+      style={{ objectFit: "cover" }}
+    />
+    <AvatarFallback
+      style={{
+        background: C.cardElev,
+        color: C.teal,
+        fontWeight: 700,
+        fontSize: 13,
+        letterSpacing: "0.02em",
+      }}
+    >
+      {initialsOf(name)}
+    </AvatarFallback>
+  </Avatar>
 );
 
 const Index = () => {
@@ -67,34 +145,56 @@ const Index = () => {
       <style>{`
         .salb-h { font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; color: ${C.text}; }
         .salb-sub { font-weight: 400; line-height: 1.65; color: ${C.textMuted}; }
-        .salb-nav-link { color: ${C.textMuted}; opacity: 0.85; transition: color 150ms ease, opacity 150ms ease; }
-        .salb-nav-link:hover { color: ${C.text}; opacity: 1; }
-        .salb-btn-outline {
-          display: inline-flex; align-items: center;
-          background: transparent; color: ${C.teal};
-          border: 1px solid rgba(0,180,160,0.25);
-          border-radius: 8px; padding: 8px 18px;
-          font-size: 14px; font-weight: 600;
-          transition: all 150ms ease;
+
+        .salb-nav-link {
+          color: ${C.textMuted};
+          font-weight: 500;
+          transition: color ${T.fast};
         }
-        .salb-btn-outline:hover { border-color: ${C.teal}; background: rgba(0,180,160,0.08); }
+        .salb-nav-link:hover, .salb-nav-link:focus-visible { color: ${C.text}; }
+
+        .salb-btn-outline {
+          display: inline-flex; align-items: center; justify-content: center;
+          background: transparent; color: ${C.teal};
+          border: 1px solid ${C.borderTeal};
+          border-radius: ${S.radiusSmBtn}px; padding: 8px 18px;
+          font-size: 14px; font-weight: 600;
+          transition: background ${T.fast}, border-color ${T.fast}, color ${T.fast};
+        }
+        .salb-btn-outline:hover, .salb-btn-outline:focus-visible {
+          border-color: ${C.teal};
+          background: ${C.tealTint};
+        }
+
         .salb-btn-primary {
-          display: inline-flex; align-items: center; gap: 8px;
-          background: ${C.teal}; color: ${C.bg};
-          border-radius: 10px; padding: 15px 32px;
+          display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+          background: ${C.teal}; color: ${C.tealOnDark};
+          border-radius: ${S.radiusBtn}px; padding: 15px 32px;
           font-size: 15px; font-weight: 700;
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
-          transition: background 150ms ease;
+          transition: background ${T.fast};
         }
-        .salb-btn-primary:hover { background: ${C.tealHover}; }
+        .salb-btn-primary:hover, .salb-btn-primary:focus-visible { background: ${C.tealHover}; }
+
+        .salb-btn-primary-sm {
+          display: inline-flex; align-items: center; justify-content: center;
+          background: ${C.teal}; color: ${C.tealOnDark};
+          border-radius: ${S.radiusSmBtn}px; padding: 8px 18px;
+          font-size: 14px; font-weight: 700;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+          transition: background ${T.fast};
+        }
+        .salb-btn-primary-sm:hover, .salb-btn-primary-sm:focus-visible { background: ${C.tealHover}; }
+
         .salb-card {
           background: ${C.card};
           border: 1px solid ${C.border};
-          border-radius: 16px;
-          padding: 32px;
-          transition: border-color 200ms ease, background 200ms ease;
+          border-radius: ${S.radius}px;
+          padding: ${S.cardPadLg}px;
+          transition: border-color ${T.card}, background ${T.card};
         }
-        .salb-card:hover { border-color: rgba(0,180,160,0.30); background: #141F30; }
+        .salb-card:hover { border-color: ${C.borderTealHover}; background: ${C.cardHover}; }
+
         .salb-icon-box {
           width: 40px; height: 40px;
           border-radius: 10px;
@@ -103,29 +203,46 @@ const Index = () => {
           display: inline-flex; align-items: center; justify-content: center;
           color: ${C.teal};
         }
-        .salb-icon-box svg { width: 20px; height: 20px; }
-        .salb-divider-v {
-          background: ${C.border};
-          width: 1px;
-          align-self: stretch;
-        }
+
+        .salb-divider-v { background: ${C.border}; width: 1px; align-self: stretch; }
+
         .salb-grid-bg {
           background-color: ${C.bg};
           background-image: repeating-linear-gradient(
             0deg,
             transparent,
             transparent 79px,
-            rgba(255,255,255,0.015) 79px,
-            rgba(255,255,255,0.015) 80px
+            rgba(255,255,255,0.018) 79px,
+            rgba(255,255,255,0.018) 80px
           );
         }
+
         .salb-faq-item {
           background: ${C.card};
           border: 1px solid ${C.border};
           border-radius: 12px;
           padding: 0 20px;
+          transition: border-color ${T.card};
         }
         .salb-faq-item[data-state="open"] { border-color: ${C.borderTeal}; }
+
+        /* Modo alto contraste — reforça bordas e texto */
+        @media (prefers-contrast: more) {
+          .salb-card,
+          .salb-faq-item { border-color: ${C.borderStrong}; }
+          .salb-nav-link { color: ${C.text}; }
+          .salb-btn-outline { border-color: ${C.teal}; }
+        }
+
+        /* Respeita reduced-motion — desabilita transitions */
+        @media (prefers-reduced-motion: reduce) {
+          .salb-nav-link,
+          .salb-btn-outline,
+          .salb-btn-primary,
+          .salb-btn-primary-sm,
+          .salb-card,
+          .salb-faq-item { transition: none !important; }
+        }
       `}</style>
 
       <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
@@ -133,7 +250,7 @@ const Index = () => {
         <nav
           style={{
             position: "sticky", top: 0, zIndex: 100,
-            background: "rgba(11,22,35,0.85)",
+            background: C.navBg,
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             borderBottom: `1px solid ${C.border}`,
@@ -141,42 +258,30 @@ const Index = () => {
         >
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link to="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5" style={{ color: C.teal }} strokeWidth={2.4} />
+              <Shield size={20} color={C.teal} strokeWidth={2.4} />
               <span style={{ fontWeight: 800, color: C.text, letterSpacing: "-0.02em", fontSize: 17 }}>
                 SalbCare
               </span>
             </Link>
 
             <div className="hidden md:flex items-center gap-8">
-              <Link to="/para-profissionais" className="salb-nav-link text-sm font-medium">Para Profissionais</Link>
-              <Link to="/planos" className="salb-nav-link text-sm font-medium">Planos</Link>
+              <Link to="/para-profissionais" className="salb-nav-link text-sm">Para Profissionais</Link>
+              <Link to="/planos" className="salb-nav-link text-sm">Planos</Link>
             </div>
 
             <div className="hidden md:flex items-center gap-3">
               <Link to="/login" className="salb-btn-outline">Já tenho conta</Link>
-              <Link
-                to="/experimente"
-                style={{
-                  background: C.teal, color: C.bg,
-                  borderRadius: 8, padding: "8px 18px",
-                  fontSize: 14, fontWeight: 700,
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
-                  transition: "background 150ms ease",
-                }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = C.tealHover)}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = C.teal)}
-              >
-                Testar agora
-              </Link>
+              <Link to="/experimente" className="salb-btn-primary-sm">Testar agora</Link>
             </div>
 
             <button
               className="md:hidden p-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Menu"
-              style={{ color: C.text }}
+              aria-expanded={mobileMenuOpen}
+              style={{ color: C.text, background: "transparent" }}
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
 
@@ -184,25 +289,15 @@ const Index = () => {
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
               className="md:hidden px-4 py-4 space-y-3"
               style={{ borderTop: `1px solid ${C.border}`, background: C.bg }}
             >
-              <Link to="/para-profissionais" onClick={() => setMobileMenuOpen(false)} className="block text-sm" style={{ color: C.textMuted }}>Para Profissionais</Link>
-              <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="block text-sm" style={{ color: C.textMuted }}>Planos</Link>
+              <Link to="/para-profissionais" onClick={() => setMobileMenuOpen(false)} className="salb-nav-link block text-sm">Para Profissionais</Link>
+              <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="salb-nav-link block text-sm">Planos</Link>
               <div className="flex flex-col gap-2 pt-2">
-                <Link to="/login" className="salb-btn-outline" style={{ justifyContent: "center" }}>Já tenho conta</Link>
-                <Link
-                  to="/experimente"
-                  style={{
-                    background: C.teal, color: C.bg,
-                    borderRadius: 10, padding: "12px 24px",
-                    fontSize: 15, fontWeight: 700, textAlign: "center",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
-                  }}
-                >
-                  Testar agora
-                </Link>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="salb-btn-outline">Já tenho conta</Link>
+                <Link to="/experimente" onClick={() => setMobileMenuOpen(false)} className="salb-btn-primary-sm">Testar agora</Link>
               </div>
             </motion.div>
           )}
@@ -217,14 +312,12 @@ const Index = () => {
               animate="show"
               className="text-center max-w-3xl mx-auto"
             >
-              <motion.div variants={reveal}>
-                <Mark />
-              </motion.div>
+              <motion.div variants={reveal}><Mark /></motion.div>
 
               <motion.h1
                 variants={reveal}
                 className="salb-h"
-                style={{ fontSize: "clamp(44px, 7vw, 72px)" }}
+                style={{ fontSize: "clamp(40px, 7vw, 72px)" }}
               >
                 Sua <span style={{ color: C.teal }}>vitrine</span> para pacientes.
                 <br />
@@ -234,7 +327,7 @@ const Index = () => {
               <motion.p
                 variants={reveal}
                 className="salb-sub mx-auto"
-                style={{ fontSize: 18, maxWidth: 520, marginTop: 24 }}
+                style={{ fontSize: 17, maxWidth: 520, marginTop: 24, paddingInline: 8 }}
               >
                 Organize seus primeiros 10 pacientes sem custo. Gestão completa, mentoria financeira e visibilidade para pacientes.
               </motion.p>
@@ -246,12 +339,13 @@ const Index = () => {
               >
                 <Link to="/experimente" className="salb-btn-primary">
                   Testar agora
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight size={16} />
                 </Link>
                 <button
+                  type="button"
                   onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
-                  className="salb-nav-link text-sm font-medium"
-                  style={{ padding: "12px 16px", background: "transparent" }}
+                  className="salb-nav-link text-sm"
+                  style={{ padding: "12px 16px", background: "transparent", border: "none", cursor: "pointer" }}
                 >
                   Como funciona?
                 </button>
@@ -284,7 +378,7 @@ const Index = () => {
               ].map((f, i, arr) => (
                 <div key={f.title} className="flex items-stretch flex-1">
                   <div className="flex items-start gap-3 flex-1 sm:px-6">
-                    <f.icon className="shrink-0 mt-0.5" style={{ width: 20, height: 20, color: C.teal }} />
+                    <f.icon size={20} color={C.teal} style={{ flexShrink: 0, marginTop: 2 }} />
                     <div>
                       <p style={{ color: C.text, fontWeight: 600, fontSize: 14 }}>{f.title}</p>
                       <p style={{ color: C.textMuted, fontSize: 13, marginTop: 2 }}>{f.sub}</p>
@@ -297,30 +391,35 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── IA Mentora preview (single editorial card) ── */}
-        <section style={{ background: C.bg }} className="py-20 sm:py-24">
+        {/* ── IA Mentora preview ── */}
+        <section style={{ background: C.bg }} className={S.sectionY}>
           <div className="mx-auto max-w-2xl px-5 sm:px-6">
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              initial={reveal.hidden}
+              whileInView={reveal.show}
+              viewport={{ once: true, margin: "-80px" }}
             >
-              <p style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16 }}>
+              <p style={{
+                color: C.teal, fontSize: 11, fontWeight: 700,
+                letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
+              }}>
                 IA Mentora em ação
               </p>
               <div className="salb-card" style={{ padding: 24 }}>
                 <div className="flex gap-3 items-start">
-                  <div className="salb-icon-box" style={{ width: 32, height: 32, fontSize: 11, fontWeight: 700 }}>
+                  <span
+                    className="salb-icon-box"
+                    style={{ width: 32, height: 32, fontSize: 11 }}
+                  >
                     <span style={{ color: C.teal, fontSize: 11, fontWeight: 700 }}>IA</span>
-                  </div>
+                  </span>
                   <p style={{ color: C.text, fontSize: 15, lineHeight: 1.6, flex: 1 }}>
                     Você teve mais consultas esse mês! Quer que eu mostre onde investir o dinheiro extra para lucrar ainda mais?
                   </p>
                 </div>
                 <div className="flex justify-end mt-3">
                   <p style={{
-                    color: C.bg, background: C.teal,
+                    color: C.tealOnDark, background: C.teal,
                     fontSize: 14, fontWeight: 600,
                     padding: "8px 14px", borderRadius: 10,
                   }}>
@@ -332,8 +431,11 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── Stats Bar (editorial, sem cards) ── */}
-        <section style={{ background: C.card, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }} className="py-12">
+        {/* ── Stats ── */}
+        <section
+          style={{ background: C.card, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}
+          className="py-12"
+        >
           <div className="mx-auto max-w-4xl px-5 sm:px-6 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
             {[
               { value: "9+", label: "especialidades" },
@@ -342,30 +444,35 @@ const Index = () => {
             ].map((s, i) => (
               <motion.div
                 key={s.label}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                initial={reveal.hidden}
+                whileInView={reveal.show}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: i * 0.08 }}
               >
-                <p style={{ fontSize: "clamp(32px, 4vw, 44px)", fontWeight: 800, color: C.teal, letterSpacing: "-0.03em" }}>{s.value}</p>
+                <p style={{
+                  fontSize: "clamp(32px, 4vw, 44px)",
+                  fontWeight: 800, color: C.teal, letterSpacing: "-0.03em",
+                }}>
+                  {s.value}
+                </p>
                 <p style={{ color: C.textMuted, fontSize: 14, marginTop: 6 }}>{s.label}</p>
               </motion.div>
             ))}
           </div>
         </section>
 
-        {/* ── Como Funciona — grid assimétrico 2/3 + 1/3 ── */}
-        <section id="como-funciona" style={{ background: C.bg }} className="py-20 sm:py-28">
+        {/* ── Como Funciona — assimetria mantida em todas as larguras ── */}
+        <section id="como-funciona" style={{ background: C.bg }} className={S.sectionY}>
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
             <motion.div
               initial="hidden"
               whileInView="show"
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-60px" }}
               variants={stagger}
               className="text-center mb-14"
             >
               <motion.div variants={reveal}><Mark /></motion.div>
-              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(32px, 4.5vw, 48px)" }}>
+              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(30px, 4.5vw, 48px)" }}>
                 Como funciona
               </motion.h2>
             </motion.div>
@@ -376,91 +483,121 @@ const Index = () => {
                 { step: "2", icon: Globe, title: "Pacientes te encontram", desc: "Seu perfil aparece no diretório público da SalbCare sem custo por lead" },
                 { step: "3", icon: LayoutDashboard, title: "Gerencie tudo em um lugar", desc: "Agenda, prontuário, receitas e financeiro na mesma plataforma" },
               ];
-              // Layout assimétrico: linha 1 = 2/3 + 1/3 ; linha 2 = full do item 3 num span 2/3 deslocado
-              return (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Item 1 — wide (2/3) */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="salb-card md:col-span-2 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center gap-3 mb-5">
-                        <span className="salb-icon-box">{(() => { const I = items[0].icon; return <I />; })()}</span>
-                        <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
-                          PASSO {items[0].step}
-                        </span>
-                      </div>
-                      <h3 style={{ color: C.text, fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em", lineHeight: 1.25 }}>
-                        {items[0].title}
-                      </h3>
-                      <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.6, marginTop: 12, maxWidth: 420 }}>
-                        {items[0].desc}
-                      </p>
-                    </div>
-                  </motion.div>
 
-                  {/* Item 2 — narrow (1/3) */}
+              return (
+                /* grid 3 colunas em TODAS as larguras (asymmetry preserved):
+                   item1 = 2 cols (wide), item2 = 1 col (narrow),
+                   item3 = 1 col (narrow), highlight = 2 cols (wide) */
+                <div
+                  className="grid gap-4 sm:gap-5"
+                  style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}
+                >
+                  {/* Item 1 — wide */}
                   <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    initial={reveal.hidden}
+                    whileInView={reveal.show}
+                    viewport={{ once: true, margin: "-60px" }}
                     className="salb-card"
+                    style={{ gridColumn: "span 2", padding: S.cardPad }}
                   >
-                    <div className="flex items-center gap-3 mb-5">
-                      <span className="salb-icon-box">{(() => { const I = items[1].icon; return <I />; })()}</span>
-                      <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
-                        PASSO {items[1].step}
+                    <div className="flex items-center gap-3" style={{ marginBottom: 18 }}>
+                      <span className="salb-icon-box"><IconRender icon={items[0].icon} /></span>
+                      <span style={{ color: C.textMuted, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em" }}>
+                        PASSO {items[0].step}
                       </span>
                     </div>
-                    <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", lineHeight: 1.3 }}>
+                    <h3 style={{
+                      color: C.text, fontWeight: 700, lineHeight: 1.25, letterSpacing: "-0.02em",
+                      fontSize: "clamp(15px, 2.4vw, 22px)",
+                    }}>
+                      {items[0].title}
+                    </h3>
+                    <p style={{
+                      color: C.textMuted, lineHeight: 1.6, marginTop: 10, maxWidth: 420,
+                      fontSize: "clamp(12px, 1.6vw, 15px)",
+                    }}>
+                      {items[0].desc}
+                    </p>
+                  </motion.div>
+
+                  {/* Item 2 — narrow */}
+                  <motion.div
+                    initial={reveal.hidden}
+                    whileInView={reveal.show}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: 0.08 }}
+                    className="salb-card"
+                    style={{ gridColumn: "span 1", padding: S.cardPad }}
+                  >
+                    <div className="flex items-center gap-3" style={{ marginBottom: 18 }}>
+                      <span className="salb-icon-box"><IconRender icon={items[1].icon} /></span>
+                    </div>
+                    <p style={{ color: C.textMuted, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", marginBottom: 6 }}>
+                      PASSO {items[1].step}
+                    </p>
+                    <h3 style={{
+                      color: C.text, fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em",
+                      fontSize: "clamp(13px, 1.7vw, 17px)",
+                    }}>
                       {items[1].title}
                     </h3>
-                    <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginTop: 10 }}>
+                    <p style={{
+                      color: C.textMuted, lineHeight: 1.6, marginTop: 8,
+                      fontSize: "clamp(11px, 1.4vw, 14px)",
+                    }}>
                       {items[1].desc}
                     </p>
                   </motion.div>
 
-                  {/* Item 3 — narrow first (1/3) */}
+                  {/* Item 3 — narrow first */}
                   <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="salb-card md:col-start-1"
+                    initial={reveal.hidden}
+                    whileInView={reveal.show}
+                    viewport={{ once: true, margin: "-60px" }}
+                    className="salb-card"
+                    style={{ gridColumn: "span 1", padding: S.cardPad }}
                   >
-                    <div className="flex items-center gap-3 mb-5">
-                      <span className="salb-icon-box">{(() => { const I = items[2].icon; return <I />; })()}</span>
-                      <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
-                        PASSO {items[2].step}
-                      </span>
+                    <div className="flex items-center gap-3" style={{ marginBottom: 18 }}>
+                      <span className="salb-icon-box"><IconRender icon={items[2].icon} /></span>
                     </div>
-                    <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", lineHeight: 1.3 }}>
+                    <p style={{ color: C.textMuted, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", marginBottom: 6 }}>
+                      PASSO {items[2].step}
+                    </p>
+                    <h3 style={{
+                      color: C.text, fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em",
+                      fontSize: "clamp(13px, 1.7vw, 17px)",
+                    }}>
                       {items[2].title}
                     </h3>
-                    <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginTop: 10 }}>
+                    <p style={{
+                      color: C.textMuted, lineHeight: 1.6, marginTop: 8,
+                      fontSize: "clamp(11px, 1.4vw, 14px)",
+                    }}>
                       {items[2].desc}
                     </p>
                   </motion.div>
 
-                  {/* Espaço editorial 2/3 com mensagem-âncora — quebra o ritmo de grid */}
+                  {/* Highlight — wide */}
                   <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-                    className="salb-card md:col-span-2 flex items-center"
-                    style={{ background: C.cardElev }}
+                    initial={reveal.hidden}
+                    whileInView={reveal.show}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: 0.08 }}
+                    className="salb-card flex items-center"
+                    style={{ gridColumn: "span 2", background: C.cardElev, padding: S.cardPad }}
                   >
                     <div>
-                      <p style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                      <p style={{
+                        color: C.teal, fontSize: 11, fontWeight: 700,
+                        letterSpacing: "0.12em", textTransform: "uppercase",
+                      }}>
                         Sem comissão
                       </p>
-                      <p style={{ color: C.text, fontSize: 18, fontWeight: 600, lineHeight: 1.5, marginTop: 10, letterSpacing: "-0.01em" }}>
+                      <p style={{
+                        color: C.text, fontWeight: 600, lineHeight: 1.5, marginTop: 8,
+                        letterSpacing: "-0.01em",
+                        fontSize: "clamp(13px, 1.9vw, 18px)",
+                      }}>
                         Você fica com 100% do valor das suas consultas. A SalbCare não toca no seu dinheiro.
                       </p>
                     </div>
@@ -472,17 +609,20 @@ const Index = () => {
         </section>
 
         {/* ── Depoimentos ── */}
-        <section style={{ background: C.card, borderTop: `1px solid ${C.border}` }} className="py-20 sm:py-28">
+        <section
+          style={{ background: C.card, borderTop: `1px solid ${C.border}` }}
+          className={S.sectionY}
+        >
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
             <motion.div
               initial="hidden"
               whileInView="show"
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-60px" }}
               variants={stagger}
               className="text-center mb-14"
             >
               <motion.div variants={reveal}><Mark /></motion.div>
-              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(30px, 4vw, 44px)" }}>
+              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(28px, 4vw, 44px)" }}>
                 O que dizem nossos profissionais
               </motion.h2>
             </motion.div>
@@ -495,37 +635,26 @@ const Index = () => {
               ].map((t, i) => (
                 <motion.div
                   key={t.name}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  initial={reveal.hidden}
+                  whileInView={reveal.show}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.08 }}
+                  className="flex flex-col gap-6"
                   style={{
                     background: C.bg,
                     border: `1px solid ${C.border}`,
-                    borderRadius: 16,
-                    padding: 28,
-                    transition: "border-color 200ms ease",
+                    borderRadius: S.radius,
+                    padding: S.cardPad,
+                    transition: `border-color ${T.card}`,
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(0,180,160,0.30)")}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = C.borderTealHover)}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = C.border)}
-                  className="flex flex-col gap-6"
                 >
                   <p style={{ color: C.text, fontSize: 15, fontWeight: 400, lineHeight: 1.65 }}>
                     {t.quote}
                   </p>
                   <div className="flex items-center gap-3 mt-auto">
-                    <img
-                      src={t.photo}
-                      alt={t.name}
-                      width={48}
-                      height={48}
-                      style={{
-                        width: 48, height: 48,
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        border: "1.5px solid rgba(0,180,160,0.40)",
-                      }}
-                    />
+                    <TestimonialAvatar src={t.photo} name={t.name} />
                     <div className="flex flex-col">
                       <span style={{ color: C.text, fontWeight: 600, fontSize: 14 }}>{t.name}</span>
                       <span style={{ color: C.textMuted, fontSize: 13 }}>{t.role}</span>
@@ -538,26 +667,29 @@ const Index = () => {
         </section>
 
         {/* ── CTA Final ── */}
-        <section style={{ background: C.card, borderTop: "1px solid rgba(0,180,160,0.15)" }} className="py-20 sm:py-28">
+        <section
+          style={{ background: C.card, borderTop: "1px solid rgba(0,180,160,0.15)" }}
+          className={S.sectionY}
+        >
           <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center">
             <motion.div
               initial="hidden"
               whileInView="show"
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-60px" }}
               variants={stagger}
             >
               <motion.div variants={reveal}><Mark /></motion.div>
               <motion.h2
                 variants={reveal}
                 className="salb-h"
-                style={{ fontSize: "clamp(30px, 4vw, 44px)" }}
+                style={{ fontSize: "clamp(28px, 4vw, 44px)" }}
               >
                 Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
               </motion.h2>
               <motion.div variants={reveal} className="mt-10">
                 <Link to="/planos" className="salb-btn-primary" style={{ padding: "16px 36px" }}>
                   Começar grátis por 7 dias
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight size={16} />
                 </Link>
               </motion.div>
             </motion.div>
@@ -565,15 +697,14 @@ const Index = () => {
         </section>
 
         {/* ── FAQ ── */}
-        <section style={{ background: C.bg }} className="py-20 sm:py-24">
+        <section style={{ background: C.bg }} className={S.sectionYTight}>
           <div className="mx-auto max-w-2xl px-5 sm:px-6">
             <motion.h2
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              initial={reveal.hidden}
+              whileInView={reveal.show}
+              viewport={{ once: true, margin: "-60px" }}
               className="salb-h text-center mb-12"
-              style={{ fontSize: "clamp(28px, 3.5vw, 38px)" }}
+              style={{ fontSize: "clamp(26px, 3.5vw, 38px)" }}
             >
               Perguntas frequentes
             </motion.h2>
@@ -609,7 +740,7 @@ const Index = () => {
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
             <div className="flex flex-col items-center gap-5 text-center">
               <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4" style={{ color: C.teal }} strokeWidth={2.4} />
+                <Shield size={16} color={C.teal} strokeWidth={2.4} />
                 <span style={{ fontWeight: 800, color: C.text, letterSpacing: "-0.02em", fontSize: 15 }}>SalbCare</span>
               </div>
               <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
