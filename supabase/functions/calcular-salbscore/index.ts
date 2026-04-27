@@ -86,10 +86,31 @@ serve(async (req) => {
     const historico = histR.data ?? [];
 
     if (!profile) {
-      return new Response(JSON.stringify({ error: "profile_not_found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      // Novo usuário sem perfil ainda — retorna estado vazio em vez de erro
+      const emptyComp: Componente = { score: 0, peso: 0, teto: 100, detalhe: "Sem dados ainda", sugestao: "Complete seu cadastro para começar." };
+      return new Response(
+        JSON.stringify({
+          score: 0,
+          faixa: "iniciante",
+          componentes: {
+            tempo_atividade: { ...emptyComp, peso: PESOS.tempo_atividade },
+            consistencia_atendimentos: { ...emptyComp, peso: PESOS.consistencia_atendimentos },
+            volume_pacientes: { ...emptyComp, peso: PESOS.volume_pacientes },
+            recebimentos_comprovados: { ...emptyComp, peso: PESOS.recebimentos_comprovados },
+            conformidade_regulatoria: { ...emptyComp, peso: PESOS.conformidade_regulatoria },
+            organizacao_financeira: { ...emptyComp, peso: PESOS.organizacao_financeira },
+            retencao_pacientes: { ...emptyComp, peso: PESOS.retencao_pacientes },
+          },
+          evolucao: [],
+          media_mensal_6m: 0,
+          media_mensal_12m: 0,
+          total_atendimentos_12m: 0,
+          meses_ativo: 0,
+          primeira_vez: true,
+          mensagem: "Complete seu cadastro para começar a construir seu SalbScore.",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 },
+      );
     }
 
     const now = new Date();
