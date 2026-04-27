@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick } from "@/hooks/useTracking";
 import { resolveUpgradeReason, buildCheckoutQuery } from "@/lib/upgradeReason";
+import { deriveSubscriptionStatus } from "@/lib/subscriptionStatus";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -76,7 +77,12 @@ const Upgrade = () => {
     ? reasonLabels[matchedKey]
     : { title: "Desbloqueie tudo no Essencial", subtitle: "R$ 89/mês • Cancele quando quiser." };
 
-  const planName = subscription.subscribed ? "Essencial" : (subscription.trialDaysRemaining > 0 ? "Trial" : "Grátis");
+  const planStatus = deriveSubscriptionStatus({
+    paymentStatus: subscription.paymentStatus,
+    trialDaysRemaining: subscription.trialDaysRemaining,
+    subscribed: subscription.subscribed,
+  });
+  const planName = planStatus.isActive ? "Plus (Essencial)" : (planStatus.kind === "free" ? "Grátis" : planStatus.label);
 
   const usageItems = [
     {
@@ -149,10 +155,11 @@ const Upgrade = () => {
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Seu plano atual</p>
                   <p className="text-base font-bold">{planName}</p>
                 </div>
-                <span className={`text-xs font-medium px-2 py-1 rounded-full ${planName === "Essencial" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
-                  {planName === "Essencial" ? "Ativo" : "Limitado"}
+                <span className={`text-xs font-medium px-2 py-1 rounded-full ${planStatus.badgeClass}`}>
+                  {planStatus.label}
                 </span>
               </div>
+              <p className="text-[11px] text-muted-foreground">{planStatus.description}</p>
 
               {limits.isFree && (
                 <div className="space-y-3 pt-2 border-t border-border/40">

@@ -1,8 +1,10 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Crown, Check, X } from "lucide-react";
+import { Crown, Check, X, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { PLANS } from "@/config/plans";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { deriveSubscriptionStatus } from "@/lib/subscriptionStatus";
 
 interface UpgradeModalProps {
   open: boolean;
@@ -14,7 +16,20 @@ interface UpgradeModalProps {
 
 const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeModalProps) => {
   const navigate = useNavigate();
+  const { subscription } = useAuth();
   const plan = PLANS.basic;
+  const status = deriveSubscriptionStatus({
+    paymentStatus: subscription.paymentStatus,
+    trialDaysRemaining: subscription.trialDaysRemaining,
+    subscribed: subscription.subscribed,
+  });
+
+  const StatusIcon =
+    status.kind === "active"
+      ? CheckCircle
+      : status.kind === "trial" || status.kind === "pending"
+        ? Clock
+        : AlertCircle;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -31,6 +46,15 @@ const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeMo
           <p className="text-sm text-muted-foreground mt-1">
             Você usou <span className="text-primary font-semibold">{currentUsage}/{limit}</span> {feature} do plano gratuito este mês.
           </p>
+        </div>
+
+
+        {/* Status atual da assinatura */}
+        <div className="px-6 pt-4">
+          <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs ${status.badgeClass}`}>
+            <StatusIcon className="h-4 w-4 shrink-0" />
+            <span className="font-medium">Status atual: {status.label}</span>
+          </div>
         </div>
 
         {/* Benefits */}
@@ -61,10 +85,11 @@ const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeMo
               onClose();
               navigate(`/upgrade?reason=${encodeURIComponent(feature)}`);
             }}
+            disabled={status.isActive}
             className="w-full gradient-primary font-semibold py-5"
           >
             <Crown className="h-4 w-4 mr-2" />
-            Virar Plus por R$ {plan.price}/mês
+            {status.isActive ? "Você já é Plus" : `Virar Plus por R$ ${plan.price}/mês`}
           </Button>
           <p className="text-[10px] text-center text-muted-foreground">
             Pagamento imediato • Apple Pay, Google Pay, cartão, boleto e Pix • Cancele quando quiser

@@ -10,6 +10,7 @@ import PageContainer from "@/components/PageContainer";
 import PageSkeleton from "@/components/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { deriveSubscriptionStatus } from "@/lib/subscriptionStatus";
 
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
 import ConsultationSettings from "@/components/profile/ConsultationSettings";
@@ -241,43 +242,39 @@ const Profile = () => {
     }
   };
 
-  const getStatusBadge = () => {
-    const { paymentStatus, trialDaysRemaining, subscribed } = subscription;
+  const statusInfo = deriveSubscriptionStatus({
+    paymentStatus: subscription.paymentStatus,
+    trialDaysRemaining: subscription.trialDaysRemaining,
+    subscribed: subscription.subscribed,
+  });
 
-    if (paymentStatus === "active" || subscribed) {
-      return (
-        <div className="bg-success/10 text-success flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
-          <CheckCircle className="h-4 w-4" />
-          <span className="font-medium">Assinatura Ativa</span>
-        </div>
-      );
-    }
+  const StatusIcon =
+    statusInfo.kind === "active"
+      ? CheckCircle
+      : statusInfo.kind === "trial" || statusInfo.kind === "pending"
+        ? Clock
+        : statusInfo.kind === "free"
+          ? CreditCard
+          : AlertCircle;
 
-    if (trialDaysRemaining > 0) {
-      return (
-        <div className="bg-primary/10 text-primary flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
-          <Clock className="h-4 w-4" />
-          <span className="font-medium">Teste Grátis: {trialDaysRemaining} {trialDaysRemaining === 1 ? "dia restante" : "dias restantes"}</span>
-        </div>
-      );
-    }
-
-    if (paymentStatus === "pending_approval") {
-      return (
-        <div className="flex items-center gap-2 rounded-lg bg-yellow-400/10 px-3 py-2 text-xs text-yellow-400">
-          <Clock className="h-4 w-4" />
-          <span className="font-medium">Aguardando Aprovação do Pagamento</span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
-        <AlertCircle className="h-4 w-4" />
-        <span className="font-medium">Assinatura Expirada</span>
+  const getStatusBadge = () => (
+    <div className="space-y-1.5">
+      <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs ${statusInfo.badgeClass}`}>
+        <StatusIcon className="h-4 w-4" />
+        <span className="font-medium">{statusInfo.label}</span>
       </div>
-    );
-  };
+      <p className="text-[11px] text-muted-foreground px-1">{statusInfo.description}</p>
+      {!statusInfo.isActive && (
+        <Button
+          size="sm"
+          className="w-full gradient-primary font-semibold"
+          onClick={() => navigate("/upgrade?reason=profile_status")}
+        >
+          {statusInfo.ctaLabel}
+        </Button>
+      )}
+    </div>
+  );
 
   if (profileLoading) {
     return <PageContainer backTo="/dashboard"><PageSkeleton variant="list" /></PageContainer>;
