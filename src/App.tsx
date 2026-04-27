@@ -187,6 +187,9 @@ const App = () => (
               <Route path="/profile" element={<ProfessionalRoute allowGuest><Profile /></ProfessionalRoute>} />
               
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
+              <Route path="/perfil/salbscore" element={<ProfessionalRoute><SalbScore /></ProfessionalRoute>} />
+              <Route path="/verificar" element={<VerifyDocument />} />
+              <Route path="/verificar/:hash" element={<VerifyDocument />} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin" element={<AdminOverviewPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
