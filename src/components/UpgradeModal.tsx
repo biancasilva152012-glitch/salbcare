@@ -48,6 +48,15 @@ const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeMo
           </p>
         </div>
 
+
+        {/* Status atual da assinatura */}
+        <div className="px-6 pt-4">
+          <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs ${status.badgeClass}`}>
+            <StatusIcon className="h-4 w-4 shrink-0" />
+            <span className="font-medium">Status atual: {status.label}</span>
+          </div>
+        </div>
+
         {/* Benefits */}
         <div className="px-6 py-4 space-y-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -76,10 +85,11 @@ const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeMo
               onClose();
               navigate(`/upgrade?reason=${encodeURIComponent(feature)}`);
             }}
+            disabled={status.isActive}
             className="w-full gradient-primary font-semibold py-5"
           >
             <Crown className="h-4 w-4 mr-2" />
-            Virar Plus por R$ {plan.price}/mês
+            {status.isActive ? "Você já é Plus" : `Virar Plus por R$ ${plan.price}/mês`}
           </Button>
           <p className="text-[10px] text-center text-muted-foreground">
             Pagamento imediato • Apple Pay, Google Pay, cartão, boleto e Pix • Cancele quando quiser
