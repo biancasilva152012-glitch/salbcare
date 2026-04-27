@@ -95,9 +95,10 @@ const initialsOf = (name: string) =>
 const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => (
   <Avatar
     style={{
-      width: 48, height: 48,
-      border: `1.5px solid ${C.borderTealHover}`,
+      width: 56, height: 56,
+      border: `2px solid ${C.teal}`,
       background: C.cardElev,
+      flexShrink: 0,
     }}
   >
     <AvatarImage
@@ -105,14 +106,14 @@ const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => (
       alt={name}
       loading="lazy"
       decoding="async"
-      style={{ objectFit: "cover" }}
+      style={{ objectFit: "cover", objectPosition: "center top" }}
     />
     <AvatarFallback
       style={{
         background: C.cardElev,
         color: C.teal,
         fontWeight: 700,
-        fontSize: 13,
+        fontSize: 14,
         letterSpacing: "0.02em",
       }}
     >
