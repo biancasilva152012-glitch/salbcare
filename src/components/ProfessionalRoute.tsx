@@ -1,5 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface ProfessionalRouteProps {
   children: React.ReactNode;
@@ -13,6 +13,7 @@ interface ProfessionalRouteProps {
 
 const ProfessionalRoute = ({ children, allowGuest = false }: ProfessionalRouteProps) => {
   const { user, loading, userType, userTypeLoading } = useAuth();
+  const location = useLocation();
 
   if (loading || (user && userTypeLoading)) {
     return (
@@ -24,7 +25,7 @@ const ProfessionalRoute = ({ children, allowGuest = false }: ProfessionalRoutePr
 
   if (!user) {
     if (allowGuest) return <>{children}</>;
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
   if (userType === "patient") return <Navigate to="/patient-dashboard" replace />;
 
