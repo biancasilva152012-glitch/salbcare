@@ -76,7 +76,8 @@ const Mark = () => (
 );
 
 /* Helper para evitar `<items[i].icon />` (TS) */
-const IconRender = ({ icon: I, size = 20 }: { icon: ComponentType<{ size?: number; color?: string }>; size?: number }) => (
+type LucideIcon = ComponentType<{ size?: number | string; color?: string; strokeWidth?: number }>;
+const IconRender = ({ icon: I, size = 20 }: { icon: LucideIcon; size?: number }) => (
   <I size={size} color={C.teal} />
 );
 
