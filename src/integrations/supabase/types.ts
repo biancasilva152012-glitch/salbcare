@@ -1767,6 +1767,22 @@ export type Database = {
           profile_slug: string
         }[]
       }
+      get_public_salbscore_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          calculado_em: string
+          council_number: string
+          council_state: string
+          faixa: string
+          meses_ativo: number
+          professional_name: string
+          professional_type: string
+          profile_slug: string
+          score: number
+        }[]
+      }
       get_rls_policies_for_table: {
         Args: { _table: string }
         Returns: {
