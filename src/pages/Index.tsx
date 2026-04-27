@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { ArrowRight, Menu, X, FileText, Search, Video, UserPlus, Globe, LayoutDashboard, Shield } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import SEOHead from "@/components/SEOHead";
@@ -9,15 +8,40 @@ import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
 import testimonialMayara from "@/assets/testimonial-mayara.jpeg";
 import testimonialCinara from "@/assets/testimonial-cinara.jpeg";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
+// Editorial dark-first palette (extraída do Instagram da marca)
+const C = {
+  bg: "#0B1623",
+  card: "#111E2D",
+  cardElev: "#172538",
+  teal: "#00B4A0",
+  tealHover: "#00D4BE",
+  text: "#F0F4F8",
+  textMuted: "#7A8FA6",
+  border: "rgba(255,255,255,0.06)",
+  borderTeal: "rgba(0,180,160,0.20)",
+  tealTint: "rgba(0,180,160,0.12)",
 };
 
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
+const reveal = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
 };
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+
+// Pequeno traço editorial reutilizável
+const Mark = () => (
+  <span
+    aria-hidden
+    style={{
+      display: "block",
+      width: 48,
+      height: 2,
+      borderRadius: 2,
+      background: C.teal,
+      margin: "0 auto 24px",
+    }}
+  />
+);
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,93 +65,117 @@ const Index = () => {
       />
 
       <style>{`
-        .salb-headline { font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-        .salb-sub { font-weight: 500; letter-spacing: -0.01em; }
-        .salb-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
-        .salb-nav-link { position: relative; color: #374151; transition: color 200ms ease; }
-        .salb-nav-link:hover { color: #00B4A0; }
-        .salb-nav-link::after {
-          content: ''; position: absolute; left: 0; bottom: -4px;
-          width: 100%; height: 2px; background: #00B4A0;
-          transform: scaleX(0); transform-origin: left center;
-          transition: transform 250ms ease;
+        .salb-h { font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; color: ${C.text}; }
+        .salb-sub { font-weight: 400; line-height: 1.65; color: ${C.textMuted}; }
+        .salb-nav-link { color: ${C.textMuted}; opacity: 0.85; transition: color 150ms ease, opacity 150ms ease; }
+        .salb-nav-link:hover { color: ${C.text}; opacity: 1; }
+        .salb-btn-outline {
+          display: inline-flex; align-items: center;
+          background: transparent; color: ${C.teal};
+          border: 1px solid rgba(0,180,160,0.25);
+          border-radius: 8px; padding: 8px 18px;
+          font-size: 14px; font-weight: 600;
+          transition: all 150ms ease;
         }
-        .salb-nav-link:hover::after { transform: scaleX(1); }
-        .salb-cta-primary {
-          background: #00B4A0; color: #fff; font-weight: 700;
-          border-radius: 12px; padding: 16px 32px;
-          box-shadow: 0 8px 24px rgba(0,180,160,0.30);
-          transition: all 200ms ease;
+        .salb-btn-outline:hover { border-color: ${C.teal}; background: rgba(0,180,160,0.08); }
+        .salb-btn-primary {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: ${C.teal}; color: ${C.bg};
+          border-radius: 10px; padding: 15px 32px;
+          font-size: 15px; font-weight: 700;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+          transition: background 150ms ease;
         }
-        .salb-cta-primary:hover {
-          background: #00CDB8; transform: translateY(-2px);
-          box-shadow: 0 12px 28px rgba(0,180,160,0.36);
+        .salb-btn-primary:hover { background: ${C.tealHover}; }
+        .salb-card {
+          background: ${C.card};
+          border: 1px solid ${C.border};
+          border-radius: 16px;
+          padding: 32px;
+          transition: border-color 200ms ease, background 200ms ease;
         }
-        .salb-feature-card {
-          background: #fff; border-radius: 16px; padding: 28px;
-          border: 1px solid #F0F0F0;
-          box-shadow: 0 2px 8px rgba(0,180,160,0.06);
-          transition: all 250ms ease;
+        .salb-card:hover { border-color: rgba(0,180,160,0.30); background: #141F30; }
+        .salb-icon-box {
+          width: 40px; height: 40px;
+          border-radius: 10px;
+          background: ${C.tealTint};
+          border: 1px solid ${C.borderTeal};
+          display: inline-flex; align-items: center; justify-content: center;
+          color: ${C.teal};
         }
-        .salb-feature-card:hover {
-          border-color: #00B4A0;
-          box-shadow: 0 8px 32px rgba(0,180,160,0.12);
-          transform: translateY(-4px);
+        .salb-icon-box svg { width: 20px; height: 20px; }
+        .salb-divider-v {
+          background: ${C.border};
+          width: 1px;
+          align-self: stretch;
         }
-        .salb-feature-icon {
-          width: 48px; height: 48px; border-radius: 12px;
-          background: #E6F7F6; display: flex; align-items: center; justify-content: center;
+        .salb-grid-bg {
+          background-color: ${C.bg};
+          background-image: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 79px,
+            rgba(255,255,255,0.015) 79px,
+            rgba(255,255,255,0.015) 80px
+          );
         }
-        .salb-feature-icon svg { width: 24px; height: 24px; color: #00B4A0; }
-        .salb-testimonial-avatar {
-          width: 52px; height: 52px; border-radius: 50%;
-          border: 2px solid #00B4A0; object-fit: cover;
-          box-shadow: 0 2px 8px rgba(0,180,160,0.20);
+        .salb-faq-item {
+          background: ${C.card};
+          border: 1px solid ${C.border};
+          border-radius: 12px;
+          padding: 0 20px;
         }
+        .salb-faq-item[data-state="open"] { border-color: ${C.borderTeal}; }
       `}</style>
 
-      <div className="min-h-screen" style={{ background: '#FFFFFF' }}>
+      <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
         {/* ── Navbar ── */}
         <nav
-          className="sticky top-0 z-50"
           style={{
-            background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            borderBottom: '1px solid #F0F0F0',
+            position: "sticky", top: 0, zIndex: 100,
+            background: "rgba(11,22,35,0.85)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderBottom: `1px solid ${C.border}`,
           }}
         >
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link to="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5" style={{ color: '#00B4A0' }} strokeWidth={2.5} />
-              <span style={{ fontWeight: 800, color: '#0D1B2A', letterSpacing: '-0.01em' }} className="text-lg">SALBCARE</span>
+              <Shield className="h-5 w-5" style={{ color: C.teal }} strokeWidth={2.4} />
+              <span style={{ fontWeight: 800, color: C.text, letterSpacing: "-0.02em", fontSize: 17 }}>
+                SalbCare
+              </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-7">
+            <div className="hidden md:flex items-center gap-8">
               <Link to="/para-profissionais" className="salb-nav-link text-sm font-medium">Para Profissionais</Link>
               <Link to="/planos" className="salb-nav-link text-sm font-medium">Planos</Link>
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                to="/login"
-                className="text-sm font-semibold rounded-[12px] px-5 py-2 transition-all duration-200"
-                style={{ border: '1.5px solid #00B4A0', color: '#00B4A0' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#00B4A0'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#00B4A0'; }}
-              >
-                Já tenho conta
-              </Link>
+              <Link to="/login" className="salb-btn-outline">Já tenho conta</Link>
               <Link
                 to="/experimente"
-                className="salb-cta-primary text-sm"
-                style={{ padding: '10px 22px', display: 'inline-flex', alignItems: 'center' }}
+                style={{
+                  background: C.teal, color: C.bg,
+                  borderRadius: 8, padding: "8px 18px",
+                  fontSize: 14, fontWeight: 700,
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
+                  transition: "background 150ms ease",
+                }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = C.tealHover)}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = C.teal)}
               >
                 Testar agora
               </Link>
             </div>
 
-            <button className="md:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu" style={{ color: '#0D1B2A' }}>
+            <button
+              className="md:hidden p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Menu"
+              style={{ color: C.text }}
+            >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -136,20 +184,23 @@ const Index = () => {
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.2 }}
               className="md:hidden px-4 py-4 space-y-3"
-              style={{ borderTop: '1px solid #F0F0F0', background: '#fff' }}
+              style={{ borderTop: `1px solid ${C.border}`, background: C.bg }}
             >
-              <Link to="/para-profissionais" onClick={() => setMobileMenuOpen(false)} className="block text-sm" style={{ color: '#374151' }}>Para Profissionais</Link>
-              <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="block text-sm" style={{ color: '#374151' }}>Planos</Link>
+              <Link to="/para-profissionais" onClick={() => setMobileMenuOpen(false)} className="block text-sm" style={{ color: C.textMuted }}>Para Profissionais</Link>
+              <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="block text-sm" style={{ color: C.textMuted }}>Planos</Link>
               <div className="flex flex-col gap-2 pt-2">
+                <Link to="/login" className="salb-btn-outline" style={{ justifyContent: "center" }}>Já tenho conta</Link>
                 <Link
-                  to="/login"
-                  className="text-sm font-semibold rounded-[12px] px-5 py-3 text-center"
-                  style={{ border: '1.5px solid #00B4A0', color: '#00B4A0' }}
+                  to="/experimente"
+                  style={{
+                    background: C.teal, color: C.bg,
+                    borderRadius: 10, padding: "12px 24px",
+                    fontSize: 15, fontWeight: 700, textAlign: "center",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
+                  }}
                 >
-                  Já tenho conta
-                </Link>
-                <Link to="/experimente" className="salb-cta-primary text-sm text-center" style={{ padding: '12px 22px' }}>
                   Testar agora
                 </Link>
               </div>
@@ -157,257 +208,327 @@ const Index = () => {
           )}
         </nav>
 
-        {/* ── Hero Section ── */}
-        <section
-          className="relative overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, #F0FAFA 0%, #FFFFFF 70%)',
-          }}
-        >
-          {/* Decorative blur circle */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              top: '-100px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '500px',
-              height: '500px',
-              background: 'radial-gradient(circle, rgba(0,180,160,0.13), transparent 70%)',
-              filter: 'blur(80px)',
-              zIndex: 0,
-              pointerEvents: 'none',
-            }}
-          />
-
-          <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-6 pt-16 pb-16 sm:pt-28 sm:pb-24">
+        {/* ── Hero ── */}
+        <section className="salb-grid-bg">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6 pt-20 pb-20 sm:pt-32 sm:pb-28">
             <motion.div
               variants={stagger}
               initial="hidden"
               animate="show"
-              className="text-center max-w-2xl mx-auto space-y-6"
+              className="text-center max-w-3xl mx-auto"
             >
-              <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
-                <img src="/pwa-icon-512.png" alt="SalbCare" className="h-14 w-14 object-contain" />
+              <motion.div variants={reveal}>
+                <Mark />
               </motion.div>
+
               <motion.h1
-                variants={fadeUp}
-                className="salb-headline"
-                style={{ fontSize: 'clamp(40px, 6vw, 64px)', color: '#0D1B2A' }}
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(44px, 7vw, 72px)" }}
               >
-                Sua <span style={{ color: '#00B4A0' }}>vitrine</span> para pacientes.
+                Sua <span style={{ color: C.teal }}>vitrine</span> para pacientes.
                 <br />
-                Seu <span style={{ color: '#00B4A0' }}>controle</span> para gestão.
+                Seu <span style={{ color: C.teal }}>controle</span> para gestão.
               </motion.h1>
+
               <motion.p
-                variants={fadeUp}
+                variants={reveal}
                 className="salb-sub mx-auto"
-                style={{ fontSize: '17px', color: '#374151', maxWidth: '480px', lineHeight: 1.6 }}
+                style={{ fontSize: 18, maxWidth: 520, marginTop: 24 }}
               >
                 Organize seus primeiros 10 pacientes sem custo. Gestão completa, mentoria financeira e visibilidade para pacientes.
               </motion.p>
 
-              {/* Three value props as cards */}
-              <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-left">
-                {[
-                  { icon: FileText, label: "Carnê-Leão preenchido automático" },
-                  { icon: Search, label: "Pacientes te encontram sem comissão" },
-                  { icon: Video, label: "Teleconsulta legal pelo Google Meet" },
-                ].map((f) => (
-                  <div key={f.label} className="salb-feature-card flex flex-col gap-3">
-                    <div className="salb-feature-icon">
-                      <f.icon />
-                    </div>
-                    <span style={{ fontWeight: 700, color: '#0D1B2A', fontSize: '14px', lineHeight: 1.4 }}>{f.label}</span>
-                  </div>
-                ))}
-              </motion.div>
-
-              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                <Link to="/experimente" className="salb-cta-primary inline-flex items-center gap-2 text-base">
+              <motion.div
+                variants={reveal}
+                className="flex flex-col sm:flex-row items-center justify-center gap-3"
+                style={{ marginTop: 36 }}
+              >
+                <Link to="/experimente" className="salb-btn-primary">
                   Testar agora
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <button
-                  className="text-sm font-medium px-4 py-3 rounded-[12px] transition-colors"
-                  style={{ color: '#374151' }}
-                  onClick={() => {
-                    document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
+                  onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
+                  className="salb-nav-link text-sm font-medium"
+                  style={{ padding: "12px 16px", background: "transparent" }}
                 >
                   Como funciona?
                 </button>
               </motion.div>
-              <motion.p variants={fadeUp} className="text-xs" style={{ color: '#9CA3AF' }}>
+
+              <motion.p
+                variants={reveal}
+                style={{ color: C.textMuted, fontSize: 14, marginTop: 20 }}
+              >
                 Sem login. Sem cartão. Use a plataforma agora e crie conta quando gostar.
               </motion.p>
-
-              {/* IA Mentora Preview */}
-              <motion.div variants={fadeUp} className="pt-6 max-w-xs mx-auto">
-                <p className="salb-label mb-3" style={{ color: '#00B4A0' }}>IA Mentora em ação</p>
-                <div
-                  className="p-4 space-y-3 text-left"
-                  style={{
-                    background: '#fff',
-                    border: '1px solid #F0F0F0',
-                    borderRadius: '16px',
-                    boxShadow: '0 8px 32px rgba(13,27,42,0.06)',
-                  }}
-                >
-                  <div className="flex gap-2 items-start">
-                    <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0" style={{ background: '#E6F7F6' }}>
-                      <span className="text-[10px] font-bold" style={{ color: '#00B4A0' }}>IA</span>
-                    </div>
-                    <p className="text-xs leading-relaxed px-3 py-2 rounded-xl rounded-tl-none" style={{ color: '#374151', background: '#F7F9FA' }}>
-                      Você teve mais consultas esse mês! Quer que eu mostre onde investir o dinheiro extra para lucrar ainda mais?
-                    </p>
-                  </div>
-                  <div className="flex justify-end">
-                    <p className="text-xs px-3 py-2 rounded-xl rounded-tr-none" style={{ color: '#0D1B2A', background: '#E6F7F6' }}>
-                      Sim, me mostre
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
             </motion.div>
           </div>
         </section>
 
-        {/* ── Stats Bar ── */}
-        <section style={{ background: '#00B4A0' }} className="py-12">
-          <div className="mx-auto max-w-4xl px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        {/* ── Feature Strip ── */}
+        <section
+          style={{
+            background: C.card,
+            borderTop: `1px solid ${C.border}`,
+            borderBottom: `1px solid ${C.border}`,
+          }}
+        >
+          <div className="mx-auto max-w-6xl px-5 sm:px-6 py-6">
+            <div className="flex flex-col sm:flex-row items-stretch gap-6 sm:gap-0">
+              {[
+                { icon: FileText, title: "Carnê-Leão automático", sub: "Preenchimento contínuo do mês" },
+                { icon: Search, title: "Pacientes te encontram", sub: "Diretório público sem comissão" },
+                { icon: Video, title: "Teleconsulta legal", sub: "Integrada ao Google Meet" },
+              ].map((f, i, arr) => (
+                <div key={f.title} className="flex items-stretch flex-1">
+                  <div className="flex items-start gap-3 flex-1 sm:px-6">
+                    <f.icon className="shrink-0 mt-0.5" style={{ width: 20, height: 20, color: C.teal }} />
+                    <div>
+                      <p style={{ color: C.text, fontWeight: 600, fontSize: 14 }}>{f.title}</p>
+                      <p style={{ color: C.textMuted, fontSize: 13, marginTop: 2 }}>{f.sub}</p>
+                    </div>
+                  </div>
+                  {i < arr.length - 1 && <div className="hidden sm:block salb-divider-v" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── IA Mentora preview (single editorial card) ── */}
+        <section style={{ background: C.bg }} className="py-20 sm:py-24">
+          <div className="mx-auto max-w-2xl px-5 sm:px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <p style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16 }}>
+                IA Mentora em ação
+              </p>
+              <div className="salb-card" style={{ padding: 24 }}>
+                <div className="flex gap-3 items-start">
+                  <div className="salb-icon-box" style={{ width: 32, height: 32, fontSize: 11, fontWeight: 700 }}>
+                    <span style={{ color: C.teal, fontSize: 11, fontWeight: 700 }}>IA</span>
+                  </div>
+                  <p style={{ color: C.text, fontSize: 15, lineHeight: 1.6, flex: 1 }}>
+                    Você teve mais consultas esse mês! Quer que eu mostre onde investir o dinheiro extra para lucrar ainda mais?
+                  </p>
+                </div>
+                <div className="flex justify-end mt-3">
+                  <p style={{
+                    color: C.bg, background: C.teal,
+                    fontSize: 14, fontWeight: 600,
+                    padding: "8px 14px", borderRadius: 10,
+                  }}>
+                    Sim, me mostre
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── Stats Bar (editorial, sem cards) ── */}
+        <section style={{ background: C.card, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }} className="py-12">
+          <div className="mx-auto max-w-4xl px-5 sm:px-6 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
             {[
               { value: "9+", label: "especialidades" },
               { value: "100%", label: "Você fica com 100% do valor. Sem comissão." },
               { value: "Grátis", label: "para começar, sem cartão" },
-            ].map((s) => (
+            ].map((s, i) => (
               <motion.div
                 key={s.label}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
-                className="space-y-1"
+                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
-                <p style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>{s.value}</p>
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.85)' }}>{s.label}</p>
+                <p style={{ fontSize: "clamp(32px, 4vw, 44px)", fontWeight: 800, color: C.teal, letterSpacing: "-0.03em" }}>{s.value}</p>
+                <p style={{ color: C.textMuted, fontSize: 14, marginTop: 6 }}>{s.label}</p>
               </motion.div>
             ))}
           </div>
         </section>
 
-        {/* ── Como Funciona ── */}
-        <section id="como-funciona" className="py-16 sm:py-24" style={{ background: '#F7F9FA' }}>
-          <div className="mx-auto max-w-5xl px-5 sm:px-6">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+        {/* ── Como Funciona — grid assimétrico 2/3 + 1/3 ── */}
+        <section id="como-funciona" style={{ background: C.bg }} className="py-20 sm:py-28">
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
               viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="salb-headline text-center mb-12"
-              style={{ fontSize: 'clamp(28px, 3.5vw, 40px)', color: '#0D1B2A' }}
+              variants={stagger}
+              className="text-center mb-14"
             >
-              Como funciona
-            </motion.h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {[
-                {
-                  step: "1",
-                  icon: UserPlus,
-                  title: "Cadastre seus dados de forma prática",
-                  desc: "Tenha todo o seu diagnóstico financeiro na palma da mão",
-                },
-                {
-                  step: "2",
-                  icon: Globe,
-                  title: "Pacientes te encontram",
-                  desc: "Seu perfil aparece no diretório público da SalbCare sem custo por lead",
-                },
-                {
-                  step: "3",
-                  icon: LayoutDashboard,
-                  title: "Gerencie tudo em um lugar",
-                  desc: "Agenda, prontuário, receitas e financeiro na mesma plataforma",
-                },
-              ].map((item) => (
-                <motion.div
-                  key={item.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: Number(item.step) * 0.1, duration: 0.4 }}
-                  className="salb-feature-card space-y-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-sm"
-                      style={{ background: '#E6F7F6', color: '#00B4A0', fontWeight: 800 }}
-                    >
-                      {item.step}
-                    </span>
-                    <div className="salb-feature-icon" style={{ width: 40, height: 40 }}>
-                      <item.icon />
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(32px, 4.5vw, 48px)" }}>
+                Como funciona
+              </motion.h2>
+            </motion.div>
+
+            {(() => {
+              const items = [
+                { step: "1", icon: UserPlus, title: "Cadastre seus dados de forma prática", desc: "Tenha todo o seu diagnóstico financeiro na palma da mão" },
+                { step: "2", icon: Globe, title: "Pacientes te encontram", desc: "Seu perfil aparece no diretório público da SalbCare sem custo por lead" },
+                { step: "3", icon: LayoutDashboard, title: "Gerencie tudo em um lugar", desc: "Agenda, prontuário, receitas e financeiro na mesma plataforma" },
+              ];
+              // Layout assimétrico: linha 1 = 2/3 + 1/3 ; linha 2 = full do item 3 num span 2/3 deslocado
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Item 1 — wide (2/3) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="salb-card md:col-span-2 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center gap-3 mb-5">
+                        <span className="salb-icon-box"><items[0].icon /></span>
+                        <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
+                          PASSO {items[0].step}
+                        </span>
+                      </div>
+                      <h3 style={{ color: C.text, fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em", lineHeight: 1.25 }}>
+                        {items[0].title}
+                      </h3>
+                      <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.6, marginTop: 12, maxWidth: 420 }}>
+                        {items[0].desc}
+                      </p>
                     </div>
-                  </div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0D1B2A', letterSpacing: '-0.01em' }}>{item.title}</h3>
-                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: 1.6 }}>{item.desc}</p>
-                </motion.div>
-              ))}
-            </div>
+                  </motion.div>
+
+                  {/* Item 2 — narrow (1/3) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    className="salb-card"
+                  >
+                    <div className="flex items-center gap-3 mb-5">
+                      <span className="salb-icon-box"><items[1].icon /></span>
+                      <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
+                        PASSO {items[1].step}
+                      </span>
+                    </div>
+                    <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", lineHeight: 1.3 }}>
+                      {items[1].title}
+                    </h3>
+                    <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginTop: 10 }}>
+                      {items[1].desc}
+                    </p>
+                  </motion.div>
+
+                  {/* Item 3 — narrow first (1/3) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="salb-card md:col-start-1"
+                  >
+                    <div className="flex items-center gap-3 mb-5">
+                      <span className="salb-icon-box"><items[2].icon /></span>
+                      <span style={{ color: C.textMuted, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em" }}>
+                        PASSO {items[2].step}
+                      </span>
+                    </div>
+                    <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", lineHeight: 1.3 }}>
+                      {items[2].title}
+                    </h3>
+                    <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginTop: 10 }}>
+                      {items[2].desc}
+                    </p>
+                  </motion.div>
+
+                  {/* Espaço editorial 2/3 com mensagem-âncora — quebra o ritmo de grid */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    className="salb-card md:col-span-2 flex items-center"
+                    style={{ background: C.cardElev }}
+                  >
+                    <div>
+                      <p style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                        Sem comissão
+                      </p>
+                      <p style={{ color: C.text, fontSize: 18, fontWeight: 600, lineHeight: 1.5, marginTop: 10, letterSpacing: "-0.01em" }}>
+                        Você fica com 100% do valor das suas consultas. A SalbCare não toca no seu dinheiro.
+                      </p>
+                    </div>
+                  </motion.div>
+                </div>
+              );
+            })()}
           </div>
         </section>
 
-        {/* ── Prova Social ── */}
-        <section className="py-16 sm:py-24" style={{ background: '#FFFFFF' }}>
-          <div className="mx-auto max-w-5xl px-5 sm:px-6">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+        {/* ── Depoimentos ── */}
+        <section style={{ background: C.card, borderTop: `1px solid ${C.border}` }} className="py-20 sm:py-28">
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
               viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="salb-headline text-center mb-12"
-              style={{ fontSize: 'clamp(28px, 3.5vw, 40px)', color: '#0D1B2A' }}
+              variants={stagger}
+              className="text-center mb-14"
             >
-              O que dizem nossos profissionais
-            </motion.h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(30px, 4vw, 44px)" }}>
+                O que dizem nossos profissionais
+              </motion.h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                {
-                  photo: testimonialSarah,
-                  name: "Dra. Sarah T.",
-                  role: "Médica",
-                  quote: "Finalmente uma plataforma que não fica com parte das minhas consultas.",
-                },
-                {
-                  photo: testimonialMayara,
-                  name: "Vitória F.",
-                  role: "Dentista",
-                  quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes.",
-                },
-                {
-                  photo: testimonialCinara,
-                  name: "Cinara C.",
-                  role: "Nutricionista",
-                  quote: "O Carnê-Leão sozinho já vale a assinatura inteira.",
-                },
+                { photo: testimonialSarah, name: "Dra. Sarah T.", role: "Médica", quote: "Finalmente uma plataforma que não fica com parte das minhas consultas." },
+                { photo: testimonialMayara, name: "Vitória F.", role: "Dentista", quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes." },
+                { photo: testimonialCinara, name: "Cinara C.", role: "Nutricionista", quote: "O Carnê-Leão sozinho já vale a assinatura inteira." },
               ].map((t, i) => (
                 <motion.div
                   key={t.name}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.4 }}
-                  className="salb-feature-card space-y-5"
+                  transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    background: C.bg,
+                    border: `1px solid ${C.border}`,
+                    borderRadius: 16,
+                    padding: 28,
+                    transition: "border-color 200ms ease",
+                  }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(0,180,160,0.30)")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = C.border)}
+                  className="flex flex-col gap-6"
                 >
-                  <p style={{ fontSize: '15px', color: '#374151', lineHeight: 1.6, fontStyle: 'italic' }}>
-                    "{t.quote}"
+                  <p style={{ color: C.text, fontSize: 15, fontWeight: 400, lineHeight: 1.65 }}>
+                    {t.quote}
                   </p>
-                  <div className="flex items-center gap-3">
-                    <img src={t.photo} alt={t.name} className="salb-testimonial-avatar" />
+                  <div className="flex items-center gap-3 mt-auto">
+                    <img
+                      src={t.photo}
+                      alt={t.name}
+                      width={48}
+                      height={48}
+                      style={{
+                        width: 48, height: 48,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        border: "1.5px solid rgba(0,180,160,0.40)",
+                      }}
+                    />
                     <div className="flex flex-col">
-                      <span style={{ fontWeight: 700, color: '#0D1B2A', fontSize: '14px' }}>{t.name}</span>
-                      <span style={{ fontSize: '13px', color: '#9CA3AF' }}>{t.role}</span>
+                      <span style={{ color: C.text, fontWeight: 600, fontSize: 14 }}>{t.name}</span>
+                      <span style={{ color: C.textMuted, fontSize: 13 }}>{t.role}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -416,109 +537,65 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── Prova Social Final / CTA ── */}
-        <section className="relative overflow-hidden py-20 sm:py-28" style={{ background: '#0D1B2A' }}>
-          {/* Decorative teal blurs */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute', top: '-150px', left: '-150px',
-              width: '400px', height: '400px',
-              background: 'radial-gradient(circle, rgba(0,180,160,0.45), transparent 70%)',
-              opacity: 0.15, filter: 'blur(80px)', pointerEvents: 'none',
-            }}
-          />
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute', bottom: '-150px', right: '-150px',
-              width: '400px', height: '400px',
-              background: 'radial-gradient(circle, rgba(0,180,160,0.45), transparent 70%)',
-              opacity: 0.15, filter: 'blur(80px)', pointerEvents: 'none',
-            }}
-          />
-          <div className="relative z-10 mx-auto max-w-3xl px-5 sm:px-6 text-center space-y-8">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="salb-headline"
-              style={{ fontSize: 'clamp(26px, 3.5vw, 38px)', color: '#FFFFFF' }}
-            >
-              Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
-            </motion.h2>
+        {/* ── CTA Final ── */}
+        <section style={{ background: C.card, borderTop: "1px solid rgba(0,180,160,0.15)" }} className="py-20 sm:py-28">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial="hidden"
+              whileInView="show"
               viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
+              variants={stagger}
             >
-              <Link
-                to="/planos"
-                className="inline-flex items-center gap-2 text-base"
-                style={{
-                  background: '#00B4A0', color: '#fff', fontWeight: 700,
-                  borderRadius: '12px', padding: '16px 32px',
-                  boxShadow: '0 8px 32px rgba(0,180,160,0.40)',
-                  transition: 'all 200ms ease',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#00CDB8'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = '#00B4A0'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.h2
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(30px, 4vw, 44px)" }}
               >
-                Começar grátis por 7 dias
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+                Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
+              </motion.h2>
+              <motion.div variants={reveal} className="mt-10">
+                <Link to="/planos" className="salb-btn-primary" style={{ padding: "16px 36px" }}>
+                  Começar grátis por 7 dias
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </motion.div>
             </motion.div>
           </div>
         </section>
 
         {/* ── FAQ ── */}
-        <section className="py-16 sm:py-24" style={{ background: '#FFFFFF' }}>
+        <section style={{ background: C.bg }} className="py-20 sm:py-24">
           <div className="mx-auto max-w-2xl px-5 sm:px-6">
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="salb-headline text-center mb-10"
-              style={{ fontSize: 'clamp(28px, 3.5vw, 40px)', color: '#0D1B2A' }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="salb-h text-center mb-12"
+              style={{ fontSize: "clamp(28px, 3.5vw, 38px)" }}
             >
               Perguntas frequentes
             </motion.h2>
             <Accordion type="single" collapsible className="space-y-3">
               {[
-                {
-                  q: "O que é a SalbCare?",
-                  a: "A SalbCare é uma plataforma de gestão integrada para profissionais de saúde autônomos, unindo prontuário digital, teleconsulta via Google Meet e mentoria financeira.",
-                },
-                {
-                  q: "Preciso pagar para começar?",
-                  a: "Não. Você pode cadastrar até 10 pacientes gratuitamente, sem cartão de crédito. O upgrade é opcional e só acontece quando você precisar.",
-                },
-                {
-                  q: "A plataforma cobra comissão por consulta?",
-                  a: "Não. Cobramos apenas uma assinatura mensal fixa. 100% do valor das suas consultas vai direto para você.",
-                },
-                {
-                  q: "Preciso instalar algum software?",
-                  a: "Não, a SalbCare é 100% baseada na nuvem e pode ser acessada de qualquer navegador ou dispositivo móvel.",
-                },
-                {
-                  q: "Meus dados e dos meus pacientes estão seguros?",
-                  a: "Sim, utilizamos criptografia e seguimos rigorosamente as normas da LGPD para garantir a segurança total das informações.",
-                },
+                { q: "O que é a SalbCare?", a: "A SalbCare é uma plataforma de gestão integrada para profissionais de saúde autônomos, unindo prontuário digital, teleconsulta via Google Meet e mentoria financeira." },
+                { q: "Preciso pagar para começar?", a: "Não. Você pode cadastrar até 10 pacientes gratuitamente, sem cartão de crédito. O upgrade é opcional e só acontece quando você precisar." },
+                { q: "A plataforma cobra comissão por consulta?", a: "Não. Cobramos apenas uma assinatura mensal fixa. 100% do valor das suas consultas vai direto para você." },
+                { q: "Preciso instalar algum software?", a: "Não, a SalbCare é 100% baseada na nuvem e pode ser acessada de qualquer navegador ou dispositivo móvel." },
+                { q: "Meus dados e dos meus pacientes estão seguros?", a: "Sim, utilizamos criptografia e seguimos rigorosamente as normas da LGPD para garantir a segurança total das informações." },
               ].map((item, i) => (
-                <AccordionItem
-                  key={i}
-                  value={`faq-${i}`}
-                  className="px-5"
-                  style={{ border: '1px solid #F0F0F0', borderRadius: '16px', background: '#fff' }}
-                >
-                  <AccordionTrigger className="text-left hover:no-underline py-4" style={{ fontSize: '15px', fontWeight: 700, color: '#0D1B2A' }}>
+                <AccordionItem key={i} value={`faq-${i}`} className="salb-faq-item">
+                  <AccordionTrigger
+                    className="text-left hover:no-underline py-4"
+                    style={{ fontSize: 15, fontWeight: 600, color: C.text }}
+                  >
                     {item.q}
                   </AccordionTrigger>
-                  <AccordionContent className="pb-4" style={{ fontSize: '14px', color: '#374151', lineHeight: 1.6 }}>
+                  <AccordionContent
+                    className="pb-4"
+                    style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.65 }}
+                  >
                     {item.a}
                   </AccordionContent>
                 </AccordionItem>
@@ -528,17 +605,24 @@ const Index = () => {
         </section>
 
         {/* ── Footer ── */}
-        <footer className="py-10" style={{ background: '#0D1B2A' }}>
-          <div className="mx-auto max-w-6xl px-4 text-center space-y-4">
-            <p style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>SALBCARE</p>
-            <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs" style={{ color: '#9CA3AF' }}>
-              <Link to="/terms" className="transition-colors hover:text-white">Termos</Link>
-              <Link to="/privacy" className="transition-colors hover:text-white">Privacidade</Link>
-              <Link to="/planos" className="transition-colors hover:text-white">Planos</Link>
-              <Link to="/para-profissionais" className="transition-colors hover:text-white">Para Profissionais</Link>
-              <Link to="/blog" className="transition-colors hover:text-white">Blog</Link>
+        <footer style={{ background: C.bg, borderTop: `1px solid ${C.border}` }} className="py-12">
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <div className="flex flex-col items-center gap-5 text-center">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4" style={{ color: C.teal }} strokeWidth={2.4} />
+                <span style={{ fontWeight: 800, color: C.text, letterSpacing: "-0.02em", fontSize: 15 }}>SalbCare</span>
+              </div>
+              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+                <Link to="/terms" className="salb-nav-link">Termos</Link>
+                <Link to="/privacy" className="salb-nav-link">Privacidade</Link>
+                <Link to="/planos" className="salb-nav-link">Planos</Link>
+                <Link to="/para-profissionais" className="salb-nav-link">Para Profissionais</Link>
+                <Link to="/blog" className="salb-nav-link">Blog</Link>
+              </div>
+              <p style={{ color: C.textMuted, fontSize: 13 }}>
+                © {new Date().getFullYear()} SalbCare. Todos os direitos reservados.
+              </p>
             </div>
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>© {new Date().getFullYear()} SalbCare. Todos os direitos reservados.</p>
           </div>
         </footer>
       </div>
