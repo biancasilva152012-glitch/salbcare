@@ -9,6 +9,7 @@ import {
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import SEOHead from "@/components/SEOHead";
+import { trackCtaClick } from "@/hooks/useTracking";
 import { useState } from "react";
 import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
 import testimonialMayara from "@/assets/testimonial-mayara.jpeg";
@@ -448,6 +449,7 @@ const Index = () => {
               >
                 <Link
                   to="/register?source=landing-hero"
+                  onClick={() => trackCtaClick("register", "landing_hero")}
                   className="salb-btn-primary"
                   style={{ minHeight: 56, padding: "16px 36px", fontSize: 16, width: "100%", maxWidth: 340 }}
                   data-track="hero_cta_register"
@@ -1027,7 +1029,8 @@ const Index = () => {
 
               <motion.div variants={reveal} className="pt-2">
                 <Link
-                  to="/register"
+                  to="/register?source=landing-manifesto"
+                  onClick={() => trackCtaClick("register", "landing_manifesto")}
                   data-track="manifesto_cta_cadastro"
                   className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-transform active:scale-[0.98]"
                   style={{ background: C.teal, color: "#fff", fontSize: 15 }}
@@ -1218,7 +1221,8 @@ const Index = () => {
                 style={{ gap: 14, marginTop: 8 }}
               >
                 <Link
-                  to="/register"
+                  to="/register?source=landing-invisivel"
+                  onClick={() => trackCtaClick("register", "landing_invisivel_bancos")}
                   className="salb-btn-primary"
                   style={{ padding: "16px 32px", justifyContent: "center" }}
                   data-track="cta_invisivel_bancos_register"
@@ -1227,7 +1231,7 @@ const Index = () => {
                   <ArrowRight size={16} />
                 </Link>
                 <span style={{ color: C.textMuted, fontSize: 13 }}>
-                  7 dias grátis · sem cartão de crédito
+                  Cadastro grátis · sem cartão de crédito
                 </span>
               </motion.div>
 
@@ -1298,8 +1302,8 @@ const Index = () => {
                     "IA Mentora financeira",
                     "Perfil público e link de indicação",
                   ],
-                  cta: "Começar grátis 7 dias",
-                  to: "/checkout?source=landing-planos-essencial",
+                  cta: "Assinar Essencial",
+                  to: "/checkout?plan=basic&source=landing-planos-essencial",
                   variant: "primary" as const,
                   popular: true,
                 },
@@ -1403,6 +1407,7 @@ const Index = () => {
 
                   <Link
                     to={plan.to}
+                    onClick={() => trackCtaClick(`plano_${plan.name.toLowerCase()}`, "landing_planos")}
                     className={plan.variant === "primary" ? "salb-btn-primary" : "salb-btn-outline"}
                     style={{
                       width: "100%",
@@ -1451,8 +1456,13 @@ const Index = () => {
                 Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
               </motion.h2>
               <motion.div variants={reveal} className="mt-10">
-                <Link to="/planos" className="salb-btn-primary" style={{ padding: "16px 36px" }}>
-                  Começar grátis por 7 dias
+                <Link
+                  to="/register?source=landing-cta-final"
+                  onClick={() => trackCtaClick("register", "landing_cta_final")}
+                  className="salb-btn-primary"
+                  style={{ padding: "16px 36px" }}
+                >
+                  Criar conta grátis
                   <ArrowRight size={16} />
                 </Link>
               </motion.div>
@@ -1474,11 +1484,12 @@ const Index = () => {
             </motion.h2>
             <Accordion type="single" collapsible className="space-y-3">
               {[
-                { q: "O que é a SalbCare?", a: "A SalbCare é uma plataforma de gestão integrada para profissionais de saúde autônomos, unindo prontuário digital, teleconsulta via Google Meet e mentoria financeira." },
-                { q: "Preciso pagar para começar?", a: "Não. Você pode cadastrar até 10 pacientes gratuitamente, sem cartão de crédito. O upgrade é opcional e só acontece quando você precisar." },
-                { q: "A plataforma cobra comissão por consulta?", a: "Não. Cobramos apenas uma assinatura mensal fixa. 100% do valor das suas consultas vai direto para você." },
-                { q: "Preciso instalar algum software?", a: "Não, a SalbCare é 100% baseada na nuvem e pode ser acessada de qualquer navegador ou dispositivo móvel." },
-                { q: "Meus dados e dos meus pacientes estão seguros?", a: "Sim, utilizamos criptografia e seguimos rigorosamente as normas da LGPD para garantir a segurança total das informações." },
+                { q: "O que é o SalbScore?", a: "É uma pontuação de 0 a 1000 que reflete sua saúde financeira como profissional autônomo da saúde — calculada com seu volume de atendimentos, recebimentos confirmados, regularidade no conselho e tempo de prática. Saiba mais em /salbscore." },
+                { q: "Quais planos existem hoje?", a: "Dois: o Grátis (até 10 pacientes, agenda e prontuário básico) e o Essencial a R$ 89/mês (pacientes ilimitados, teleconsulta, receita e atestado digital, controle financeiro completo e IA Mentora). O Premium, com Comprovante de Renda e Selo Verificado, está em lista de espera." },
+                { q: "Preciso de cartão para começar?", a: "Não. O cadastro é grátis e não pede cartão. Você só paga quando decidir assinar o Essencial — a cobrança é imediata, sem período de teste pago." },
+                { q: "O Comprovante de Renda Oficial SalbCare já está disponível?", a: "Ainda não. Está em desenvolvimento e faz parte do roadmap 2026 do SalbScore. Profissionais com score ativo terão prioridade no acesso. Comece agora a registrar consultas para que seu histórico já esteja maduro no lançamento." },
+                { q: "A SalbCare cobra comissão por consulta?", a: "Não. Cobramos apenas a assinatura mensal fixa. 100% do valor das suas consultas vai direto para você — combinado e recebido fora da plataforma." },
+                { q: "Meus dados e dos meus pacientes estão seguros?", a: "Sim. Usamos criptografia e seguimos as normas da LGPD. Cada profissional só vê seus próprios dados (Row Level Security)." },
               ].map((item, i) => (
                 <AccordionItem key={i} value={`faq-${i}`} className="salb-faq-item">
                   <AccordionTrigger
