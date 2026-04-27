@@ -142,8 +142,8 @@ const SalbScore = () => {
   }
 
   const faixaInfo = data ? FAIXA_INFO[data.faixa] ?? FAIXA_INFO.iniciante : FAIXA_INFO.iniciante;
-  const blurScore = !hasFullAccess && data;
-  const semDados = !data || (data.score === 0 && data.meses_ativo < 1);
+  const blurScore = !hasFullAccess && data && !data.primeira_vez && data.score > 0;
+  const semDados = !data || data.primeira_vez || (data.score === 0 && data.meses_ativo < 1);
 
   return (
     <PageContainer>
