@@ -1,10 +1,12 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ShieldCheck, Loader2, Award, ExternalLink } from "lucide-react";
+import { ShieldCheck, Loader2, Award, ExternalLink, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/SEOHead";
+import { toast } from "sonner";
+import { SALBSCORE_ACTION_MESSAGES } from "@/lib/salbscoreStatus";
 
 interface PublicSalbScore {
   professional_name: string;
@@ -37,6 +39,12 @@ async function fetchPublicSalbScore(slug: string): Promise<PublicSalbScore | nul
 
 const SalbScoreSelo = () => {
   const { slug } = useParams<{ slug: string }>();
+
+  const blockWriteAttempt = () => {
+    toast.error(SALBSCORE_ACTION_MESSAGES.readOnly.title, {
+      description: SALBSCORE_ACTION_MESSAGES.readOnly.description,
+    });
+  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["public-salbscore", slug],
@@ -83,7 +91,22 @@ const SalbScoreSelo = () => {
       : (data.professional_type || "").toUpperCase();
 
   return (
-    <div className="min-h-screen bg-background py-10 px-4">
+    <div
+      className="min-h-screen bg-background py-10 px-4"
+      onSubmitCapture={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        blockWriteAttempt();
+      }}
+      onClickCapture={(event) => {
+        const target = event.target as HTMLElement | null;
+        if (target?.closest("[data-write-action='true']")) {
+          event.preventDefault();
+          event.stopPropagation();
+          blockWriteAttempt();
+        }
+      }}
+    >
       <SEOHead
         title={`${data.professional_name} — Selo Verificado SalbCare`}
         description={`SalbScore verificado de ${data.professional_name}. ${faixa?.desc ?? ""}`}
@@ -92,6 +115,11 @@ const SalbScoreSelo = () => {
         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
         className="max-w-md mx-auto space-y-6"
       >
+        <div className="rounded-xl border border-border/60 bg-muted/40 p-3 flex items-start gap-2 text-xs text-muted-foreground">
+          <Lock className="h-4 w-4 shrink-0 text-primary" />
+          <span>Esta página é somente leitura. Ela valida dados públicos do SalbScore e não permite cadastro, edição ou emissão de documentos.</span>
+        </div>
+
         {/* Header credencial */}
         <div className="rounded-2xl border border-border bg-card p-6 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">

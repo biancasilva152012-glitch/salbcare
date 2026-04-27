@@ -213,7 +213,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
                   const currentPath = window.location.pathname;
                   const publicPaths = ["/", "/pronto-atendimento", "/login", "/register", "/complete-profile", "/como-funciona", "/terms", "/privacy", "/consulta-online", "/especialidades", "/patient-dashboard"];
-                  const isPublicPath = publicPaths.some(p => currentPath === p || currentPath.startsWith("/pronto-atendimento") || currentPath.startsWith("/patient-dashboard") || currentPath.startsWith("/acompanhamento"));
+                  const isPublicPath = publicPaths.some(p => currentPath === p || currentPath.startsWith("/pronto-atendimento") || currentPath.startsWith("/patient-dashboard") || currentPath.startsWith("/acompanhamento") || currentPath.startsWith("/perfil/salbscore"));
                   if (!isPublicPath) {
                     navigate("/complete-profile");
                   }
@@ -232,14 +232,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session: initSession } }) => {
       sessionRef.current = initSession;
       setSession(initSession);
-      setLoading(false);
       initialCheckDone = true;
       if (initSession?.user) {
-        fetchUserType(initSession.user.id);
+        fetchUserType(initSession.user.id).finally(() => setLoading(false));
         checkSubscription();
       } else {
         setUserTypeLoading(false);
         setSubscription((s) => ({ ...s, loading: false }));
+        setLoading(false);
       }
     });
 

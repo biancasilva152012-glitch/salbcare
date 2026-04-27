@@ -8,8 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/SEOHead";
 import PageContainer from "@/components/PageContainer";
 import BackButton from "@/components/BackButton";
+import { SALBSCORE_STATUS_CLASSES, SALBSCORE_STATUS_LABELS, type SalbScoreCheckStatus } from "@/lib/salbscoreStatus";
 
-type CheckStatus = "pending" | "ok" | "warn" | "fail";
+type CheckStatus = SalbScoreCheckStatus;
 type Check = {
   id: string;
   label: string;
@@ -34,11 +35,17 @@ const FIX_ACTIONS: Record<string, { title: string; desc: string; cta: string; to
   auth: [
     { title: "Faça login novamente", desc: "Sua sessão expirou ou está ausente.", cta: "Ir para login", to: "/login" },
   ],
+  route_private_salbscore: [
+    { title: "Revisar sessão e rota", desc: "A página deve abrir para qualquer usuário logado, sem exigir plano pago.", cta: "Abrir SalbScore", to: "/perfil/salbscore" },
+  ],
+  route_public_seal: [
+    { title: "Validar selo público", desc: "A URL pública deve exibir apenas dados verificados e nenhuma ação de edição.", cta: "Ver selo exemplo", to: "/perfil/salbscore/selo-exemplo" },
+  ],
   profile: [
-    { title: "Configurar perfil profissional", desc: "Adicione conselho (CRP/CRM), bio e dados básicos.", cta: "Configurar perfil", to: "/dashboard/perfil" },
+    { title: "Configurar perfil profissional", desc: "Adicione conselho (CRP/CRM), bio e dados básicos.", cta: "Configurar perfil", to: "/profile" },
   ],
   table_historico: [
-    { title: "Registrar primeiro atendimento", desc: "Sem histórico, o SalbScore não tem base de cálculo.", cta: "Cadastrar paciente", to: "/dashboard/patients" },
+    { title: "Registrar primeiro atendimento", desc: "Sem histórico, o SalbScore não tem base de cálculo.", cta: "Cadastrar paciente", to: "/dashboard/pacientes" },
     { title: "Lançar receita no financeiro", desc: "Receitas validam atividade real e elevam seu score.", cta: "Abrir financeiro", to: "/dashboard/financial" },
   ],
   edge_calcular: [
@@ -46,6 +53,12 @@ const FIX_ACTIONS: Record<string, { title: string; desc: string; cta: string; to
   ],
   edge_documento: [
     { title: "Ative o plano Essencial", desc: "Emissão de Comprovante de Renda exige assinatura ativa.", cta: "Fazer upgrade", to: "/upgrade" },
+  ],
+  rls_history_write: [
+    { title: "Bloquear escrita direta", desc: "O histórico deve ser gerado apenas pelo backend verificado da SalbCare.", cta: "Re-executar diagnóstico", to: "/perfil/salbscore/diagnostico" },
+  ],
+  rls_documents_write: [
+    { title: "Revisar emissão segura", desc: "Documentos devem exigir plano ativo e nunca aceitar escrita pública.", cta: "Fazer upgrade", to: "/upgrade" },
   ],
 };
 
@@ -57,14 +70,7 @@ const StatusIcon = ({ status }: { status: CheckStatus }) => {
 };
 
 const StatusBadge = ({ status }: { status: CheckStatus }) => {
-  const map: Record<CheckStatus, { label: string; className: string }> = {
-    pending: { label: "Verificando", className: "bg-muted text-muted-foreground" },
-    ok: { label: "OK", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-    warn: { label: "Atenção", className: "bg-amber-50 text-amber-700 border-amber-200" },
-    fail: { label: "Falha", className: "bg-red-50 text-red-700 border-red-200" },
-  };
-  const c = map[status];
-  return <Badge variant="outline" className={c.className}>{c.label}</Badge>;
+  return <Badge variant="outline" className={SALBSCORE_STATUS_CLASSES[status]}>{SALBSCORE_STATUS_LABELS[status]}</Badge>;
 };
 
 function loadHistory(): HistoryEntry[] {
@@ -91,8 +97,12 @@ const SalbScoreDiagnostico = () => {
     setRunning(true);
     const initial: Check[] = [
       { id: "auth", label: "Sessão autenticada", description: "Token Supabase ativo do usuário atual.", status: "pending" },
+      { id: "route_private_salbscore", label: "Rota /perfil/salbscore", description: "Protegida por login, sem bloqueio por plano no roteador.", status: "pending" },
+      { id: "route_public_seal", label: "Rota /verificado/:slug", description: "Pública, somente leitura e com dados controlados.", status: "pending" },
       { id: "profile", label: "Perfil profissional", description: "Registro em profiles vinculado ao seu usuário.", status: "pending" },
       { id: "table_historico", label: "Tabela salbscore_historico", description: "Acesso de leitura ao histórico do seu SalbScore.", status: "pending" },
+      { id: "rls_history_write", label: "RLS histórico sem escrita direta", description: "Bloqueia criação/edição do histórico pelo navegador.", status: "pending" },
+      { id: "rls_documents_write", label: "RLS documentos por plano", description: "Permite emissão apenas por conta autorizada e bloqueia visitantes.", status: "pending" },
       { id: "edge_calcular", label: "Edge function calcular-salbscore", description: "Endpoint de cálculo deployado e respondendo.", status: "pending" },
       { id: "edge_documento", label: "Edge function gerar-documento-salbscore", description: "Endpoint de emissão de comprovante deployado (verificação leve).", status: "pending" },
     ];
@@ -170,6 +180,24 @@ const SalbScoreDiagnostico = () => {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       update("edge_documento", { status: "fail", detail: msg });
+    }
+
+    // 6. Checklist automático de rotas e RLS do SalbScore
+    try {
+      const { data: securityRows, error: securityErr } = await (supabase as any).rpc("check_salbscore_security_health");
+      if (securityErr) throw securityErr;
+      (securityRows as Array<{ check_key: string; status: CheckStatus; message: string; action_hint: string }> | null)?.forEach((row) => {
+        if (row.check_key === "rls_history_read") return;
+        update(row.check_key, {
+          status: row.status,
+          detail: `${row.message} Próximo passo: ${row.action_hint}`,
+        });
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      ["route_private_salbscore", "route_public_seal", "rls_history_write", "rls_documents_write"].forEach((id) => {
+        update(id, { status: "fail", detail: `Checklist automático indisponível: ${msg}` });
+      });
     }
 
     setRunning(false);
