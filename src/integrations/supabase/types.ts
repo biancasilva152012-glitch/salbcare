@@ -1450,6 +1450,78 @@ export type Database = {
         }
         Relationships: []
       }
+      salbscore_documentos: {
+        Row: {
+          created_at: string
+          dados_documento: Json
+          emitido_em: string
+          faixa_emissao: string
+          file_path: string | null
+          hash_code: string
+          id: string
+          score_emissao: number
+          tipo: string
+          user_id: string
+          valido_ate: string
+        }
+        Insert: {
+          created_at?: string
+          dados_documento?: Json
+          emitido_em?: string
+          faixa_emissao: string
+          file_path?: string | null
+          hash_code: string
+          id?: string
+          score_emissao: number
+          tipo: string
+          user_id: string
+          valido_ate?: string
+        }
+        Update: {
+          created_at?: string
+          dados_documento?: Json
+          emitido_em?: string
+          faixa_emissao?: string
+          file_path?: string | null
+          hash_code?: string
+          id?: string
+          score_emissao?: number
+          tipo?: string
+          user_id?: string
+          valido_ate?: string
+        }
+        Relationships: []
+      }
+      salbscore_historico: {
+        Row: {
+          calculado_em: string
+          componentes: Json
+          created_at: string
+          faixa: string
+          id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          calculado_em?: string
+          componentes?: Json
+          created_at?: string
+          faixa: string
+          id?: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          calculado_em?: string
+          componentes?: Json
+          created_at?: string
+          faixa?: string
+          id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           consultation_price: number | null
@@ -1747,6 +1819,20 @@ export type Database = {
           professional_name: string
           professional_type: string
           signed_icp: boolean
+        }[]
+      }
+      verify_salbscore_document_by_hash: {
+        Args: { _hash: string }
+        Returns: {
+          conselho: string
+          dados_publicos: Json
+          emitido_em: string
+          faixa_emissao: string
+          is_valid: boolean
+          professional_name_partial: string
+          score_emissao: number
+          tipo: string
+          valido_ate: string
         }[]
       }
     }
