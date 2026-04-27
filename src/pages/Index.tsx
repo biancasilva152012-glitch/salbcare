@@ -609,6 +609,99 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── Prova de renda (manifesto SalbScore) ── */}
+        <section
+          style={{ background: C.bg, borderTop: `1px solid ${C.border}` }}
+          className={S.sectionY}
+        >
+          <div className="mx-auto max-w-3xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="space-y-6"
+            >
+              <motion.div variants={reveal}><Mark /></motion.div>
+
+              <motion.h2
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(26px, 4vw, 40px)", lineHeight: 1.15 }}
+              >
+                Você ganha bem. Mas no papel, parece que ganha nada.
+              </motion.h2>
+
+              <motion.p variants={reveal} style={{ color: C.text, fontSize: 16, lineHeight: 1.7 }}>
+                Você atende todo dia. Recebe no Pix, no dinheiro, às vezes no cartão.
+                O mês fecha, o dinheiro entra — mas quando você precisa <strong>alugar um apartamento,
+                pedir um cartão de crédito ou financiar alguma coisa</strong>, o banco olha pra você e diz:
+                "você não comprova renda".
+              </motion.p>
+
+              <motion.p variants={reveal} style={{ color: C.text, fontSize: 16, lineHeight: 1.7 }}>
+                Sem contracheque. Sem holerite. Sem ninguém pra dizer no papel que você trabalha de verdade.
+                Você sabe o quanto fatura. Mas o mundo lá fora não enxerga.
+              </motion.p>
+
+              <motion.div
+                variants={reveal}
+                style={{
+                  background: C.card,
+                  border: `1px solid ${C.border}`,
+                  borderRadius: S.radius,
+                  padding: S.cardPad,
+                }}
+              >
+                <p style={{ color: C.text, fontSize: 15, lineHeight: 1.7, fontStyle: "italic" }}>
+                  "Atendi 80 pacientes esse mês, recebi tudo no Pix, e o banco me trata
+                  como se eu não tivesse renda nenhuma."
+                </p>
+              </motion.div>
+
+              <motion.h3
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(20px, 2.6vw, 26px)", marginTop: 8 }}
+              >
+                A SalbCare resolve isso de um jeito simples.
+              </motion.h3>
+
+              <motion.p variants={reveal} style={{ color: C.text, fontSize: 16, lineHeight: 1.7 }}>
+                Você registra seus atendimentos. A plataforma organiza seus ganhos.
+                E gera <strong>comprovantes oficiais</strong> que você pode mostrar pra qualquer banco,
+                imobiliária ou consulado. Tudo automático. Tudo no seu nome.
+              </motion.p>
+
+              <motion.ul
+                variants={reveal}
+                style={{ color: C.text, fontSize: 15, lineHeight: 1.9 }}
+                className="space-y-1 pl-1"
+              >
+                <li>✓ Provar sua renda <strong>sem precisar de contracheque</strong></li>
+                <li>✓ Saber exatamente <strong>quanto você ganha de verdade</strong> todo mês</li>
+                <li>✓ Documentos com <strong>código de verificação</strong> aceitos por bancos e imobiliárias</li>
+                <li>✓ Perfil verificado com <strong>SalbScore</strong> — sua reputação financeira</li>
+                <li>✓ Você continua com <strong>100% do que ganha</strong>. Zero comissão.</li>
+              </motion.ul>
+
+              <motion.p
+                variants={reveal}
+                style={{
+                  color: C.text,
+                  fontSize: "clamp(17px, 2.2vw, 20px)",
+                  lineHeight: 1.5,
+                  fontWeight: 600,
+                  marginTop: 12,
+                }}
+              >
+                Pela primeira vez, profissional autônomo da saúde tem como provar pro mundo
+                o que sempre soube: que trabalha, que fatura, e que merece ser tratado como tal.
+              </motion.p>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ── Depoimentos ── */}
         <section
           style={{ background: C.card, borderTop: `1px solid ${C.border}` }}
