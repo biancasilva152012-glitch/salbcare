@@ -339,7 +339,13 @@ const Index = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link to="/login" className="salb-btn-outline">Já tenho conta</Link>
+              <Link
+                to="/login?source=landing-nav"
+                onClick={() => trackCtaClick("login", "landing_nav", { source: "landing-nav" })}
+                className="salb-btn-outline"
+              >
+                Já tenho conta
+              </Link>
               <Link to="/register?source=landing-nav" className="salb-btn-primary-sm">Começar grátis</Link>
             </div>
 
@@ -365,7 +371,16 @@ const Index = () => {
               <Link to="/para-profissionais" onClick={() => setMobileMenuOpen(false)} className="salb-nav-link block text-sm">Para Profissionais</Link>
               <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="salb-nav-link block text-sm">Planos</Link>
               <div className="flex flex-col gap-2 pt-2">
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="salb-btn-outline">Já tenho conta</Link>
+                <Link
+                  to="/login?source=landing-nav-mobile"
+                  onClick={() => {
+                    trackCtaClick("login", "landing_nav_mobile", { source: "landing-nav-mobile" });
+                    setMobileMenuOpen(false);
+                  }}
+                  className="salb-btn-outline"
+                >
+                  Já tenho conta
+                </Link>
                 <Link to="/register?source=landing-nav" onClick={() => setMobileMenuOpen(false)} className="salb-btn-primary-sm">Começar grátis</Link>
               </div>
             </motion.div>
