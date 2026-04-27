@@ -105,28 +105,63 @@
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1647046726471853&ev=PageView&noscript=1" alt="" /></noscript>
 
     <script>
-      // Force service worker update on every page load
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for (var i = 0; i < registrations.length; i++) {
-            registrations[i].update();
+      // Defer SW + cache maintenance off the critical path to avoid forced reflows
+      // and main-thread contention during initial render.
+      (function () {
+        var scheduled = false;
+        function runMaintenance() {
+          if (scheduled) return;
+          scheduled = true;
+          var run = function () {
+            try {
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                  for (var i = 0; i < registrations.length; i++) {
+                    registrations[i].update();
+                  }
+                }).catch(function () {});
+                // Reload on new SW activation, but only when the page is hidden
+                // to avoid disrupting the user and triggering layout work mid-session.
+                navigator.serviceWorker.addEventListener('controllerchange', function () {
+                  if (document.visibilityState === 'hidden') {
+                    window.location.reload();
+                  } else {
+                    document.addEventListener('visibilitychange', function onHide() {
+                      if (document.visibilityState === 'hidden') {
+                        document.removeEventListener('visibilitychange', onHide);
+                        window.location.reload();
+                      }
+                    });
+                  }
+                });
+              }
+              if ('caches' in window) {
+                caches.keys().then(function (names) {
+                  for (var i = 0; i < names.length; i++) {
+                    if (
+                      names[i].indexOf('workbox-precache') === -1 &&
+                      names[i].indexOf('google-fonts') === -1 &&
+                      names[i].indexOf('gstatic-fonts') === -1
+                    ) {
+                      caches.delete(names[i]);
+                    }
+                  }
+                }).catch(function () {});
+              }
+            } catch (e) {}
+          };
+          if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(run, { timeout: 4000 });
+          } else {
+            setTimeout(run, 2000);
           }
-        });
-        // Listen for new SW and auto-activate it
-        navigator.serviceWorker.addEventListener('controllerchange', function() {
-          window.location.reload();
-        });
-      }
-      // Purge old caches on load
-      if ('caches' in window) {
-        caches.keys().then(function(names) {
-          for (var i = 0; i < names.length; i++) {
-            if (names[i].indexOf('workbox-precache') === -1 && names[i].indexOf('google-fonts') === -1 && names[i].indexOf('gstatic-fonts') === -1) {
-              caches.delete(names[i]);
-            }
-          }
-        });
-      }
+        }
+        if (document.readyState === 'complete') {
+          runMaintenance();
+        } else {
+          window.addEventListener('load', runMaintenance, { once: true });
+        }
+      })();
     </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
