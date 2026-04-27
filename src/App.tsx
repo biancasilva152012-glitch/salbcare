@@ -43,6 +43,8 @@ const Telehealth = lazyWithRetry(() => import("./pages/Telehealth"), "Telehealth
 const Profile = lazyWithRetry(() => import("./pages/Profile"), "Profile");
 
 const ProfileBlocks = lazyWithRetry(() => import("./pages/ProfileBlocks"), "ProfileBlocks");
+const SalbScore = lazyWithRetry(() => import("./pages/SalbScore"), "SalbScore");
+const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"), "VerifyDocument");
 const Subscription = lazyWithRetry(() => import("./pages/Subscription"), "Subscription");
 const Upgrade = lazyWithRetry(() => import("./pages/Upgrade"), "Upgrade");
 const DashboardLimits = lazyWithRetry(() => import("./pages/DashboardLimits"), "DashboardLimits");
