@@ -1302,8 +1302,8 @@ const Index = () => {
                     "IA Mentora financeira",
                     "Perfil público e link de indicação",
                   ],
-                  cta: "Começar grátis 7 dias",
-                  to: "/checkout?source=landing-planos-essencial",
+                  cta: "Assinar Essencial",
+                  to: "/checkout?plan=basic&source=landing-planos-essencial",
                   variant: "primary" as const,
                   popular: true,
                 },
@@ -1407,6 +1407,7 @@ const Index = () => {
 
                   <Link
                     to={plan.to}
+                    onClick={() => trackCtaClick(`plano_${plan.name.toLowerCase()}`, "landing_planos")}
                     className={plan.variant === "primary" ? "salb-btn-primary" : "salb-btn-outline"}
                     style={{
                       width: "100%",
