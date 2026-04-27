@@ -1235,6 +1235,201 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── Planos ── */}
+        <section
+          id="planos"
+          style={{ background: C.bg, borderTop: `1px solid ${C.border}` }}
+          className={S.sectionY}
+          aria-label="Planos SalbCare"
+        >
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="text-center"
+              style={{ marginBottom: 40 }}
+            >
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.h2
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(28px, 4vw, 44px)" }}
+              >
+                Escolha o plano que combina com seu momento.
+              </motion.h2>
+              <motion.p
+                variants={reveal}
+                className="salb-sub mx-auto"
+                style={{ fontSize: 16, maxWidth: 540, marginTop: 16 }}
+              >
+                Comece grátis. Faça upgrade quando quiser. Sem fidelidade, sem comissão.
+              </motion.p>
+            </motion.div>
+
+            <div className="grid gap-5 md:grid-cols-3">
+              {[
+                {
+                  name: "Grátis",
+                  price: "R$ 0",
+                  cadence: "para começar",
+                  desc: "Pra quem está conhecendo a plataforma.",
+                  features: [
+                    "Até 10 pacientes",
+                    "Agenda + Prontuário básico",
+                    "Vitrine pública",
+                    "Suporte por e-mail",
+                  ],
+                  cta: "Criar conta grátis",
+                  to: "/register?source=landing-planos-free",
+                  variant: "outline" as const,
+                },
+                {
+                  name: "Essencial",
+                  price: "R$ 89",
+                  cadence: "por mês",
+                  desc: "Pra quem quer crescer com gestão completa.",
+                  features: [
+                    "Pacientes ilimitados",
+                    "Teleconsulta integrada",
+                    "Receita e Atestado Digital",
+                    "Controle financeiro completo",
+                    "IA Mentora financeira",
+                    "Perfil público e link de indicação",
+                  ],
+                  cta: "Começar grátis 7 dias",
+                  to: "/checkout?source=landing-planos-essencial",
+                  variant: "primary" as const,
+                  popular: true,
+                },
+                {
+                  name: "Premium",
+                  price: "Em breve",
+                  cadence: "lista de espera",
+                  desc: "Comprovante de Renda, Selo Verificado e prioridade no diretório.",
+                  features: [
+                    "Tudo do Essencial",
+                    "Comprovante de Renda SalbScore",
+                    "Selo Verificado Público",
+                    "Prioridade no diretório",
+                    "Suporte humano prioritário",
+                  ],
+                  cta: "Entrar na lista",
+                  to: "/parcerias?source=landing-planos-premium",
+                  variant: "outline" as const,
+                },
+              ].map((plan, i) => (
+                <motion.div
+                  key={plan.name}
+                  initial={reveal.hidden}
+                  whileInView={reveal.show}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.08 }}
+                  className={`salb-card flex flex-col ${plan.popular ? "salb-plan-popular" : ""}`}
+                  style={{ padding: 28, position: "relative" }}
+                >
+                  {plan.popular && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -12,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        background: C.teal,
+                        color: C.tealOnDark,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        padding: "4px 12px",
+                        borderRadius: 999,
+                      }}
+                    >
+                      Mais escolhido
+                    </span>
+                  )}
+
+                  <p style={{ color: C.text, fontSize: 14, fontWeight: 700, letterSpacing: "0.04em" }}>
+                    {plan.name}
+                  </p>
+                  <div style={{ marginTop: 12, display: "flex", alignItems: "baseline", gap: 8 }}>
+                    <span style={{ color: C.text, fontSize: 36, fontWeight: 800, letterSpacing: "-0.03em" }}>
+                      {plan.price}
+                    </span>
+                    <span style={{ color: C.textMuted, fontSize: 13 }}>{plan.cadence}</span>
+                  </div>
+                  <p style={{ color: C.textMuted, fontSize: 14, marginTop: 10, lineHeight: 1.5 }}>
+                    {plan.desc}
+                  </p>
+
+                  <ul style={{ listStyle: "none", padding: 0, margin: "20px 0 24px", flex: 1 }}>
+                    {plan.features.map((f) => (
+                      <li
+                        key={f}
+                        style={{
+                          color: C.text,
+                          fontSize: 14,
+                          lineHeight: 1.5,
+                          padding: "7px 0",
+                          display: "flex",
+                          gap: 10,
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            flexShrink: 0,
+                            width: 16, height: 16,
+                            borderRadius: 999,
+                            background: C.tealTint,
+                            border: `1px solid ${C.borderTeal}`,
+                            color: C.teal,
+                            fontSize: 10,
+                            fontWeight: 800,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: 2,
+                          }}
+                        >
+                          ✓
+                        </span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    to={plan.to}
+                    className={plan.variant === "primary" ? "salb-btn-primary" : "salb-btn-outline"}
+                    style={{
+                      width: "100%",
+                      minHeight: 48,
+                      ...(plan.variant === "primary"
+                        ? { padding: "14px 20px", fontSize: 15 }
+                        : { padding: "12px 20px", fontSize: 14 }),
+                    }}
+                    data-track={`planos_cta_${plan.name.toLowerCase()}`}
+                  >
+                    {plan.cta}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <p
+              style={{
+                color: C.textMuted, fontSize: 13, textAlign: "center",
+                marginTop: 24, lineHeight: 1.6,
+              }}
+            >
+              Sem cartão no cadastro · Cancele quando quiser · 100% das suas consultas continuam suas
+            </p>
+          </div>
+        </section>
+
         {/* ── CTA Final ── */}
         <section
           style={{ background: C.card, borderTop: `1px solid ${C.borderTeal}` }}
