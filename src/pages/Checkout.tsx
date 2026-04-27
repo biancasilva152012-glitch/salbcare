@@ -16,6 +16,10 @@ const Checkout = () => {
   const [searchParams] = useSearchParams();
   const planKey = (searchParams.get("plan") || "basic") as PlanKey;
   const periodParam = searchParams.get("period");
+  // Origem do clique que trouxe o usuário até aqui (ex: landing-planos-essencial,
+  // salbscore-hero). Usado nos eventos GA4/Meta Pixel para correlacionar
+  // conversão com seção da landing.
+  const sourceParam = searchParams.get("source") || "direct";
   const plan = PLANS[planKey] || PLANS.basic;
   const { user } = useAuth();
 
