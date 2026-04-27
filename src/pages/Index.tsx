@@ -295,6 +295,22 @@ const Index = () => {
           .salb-card,
           .salb-faq-item { transition: none !important; }
         }
+
+        /* SalbScore ring fill animation (0 → 720 ≈ 80% of 578) */
+        @keyframes salbScoreRing {
+          to { stroke-dashoffset: 116; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          @keyframes salbScoreRing { to { stroke-dashoffset: 116; } }
+        }
+
+        /* Plan card popular badge pulse */
+        .salb-plan-popular {
+          position: relative;
+          border-color: ${C.teal} !important;
+          background: ${C.cardElev} !important;
+          box-shadow: 0 0 0 1px ${C.teal}, 0 20px 60px -20px ${C.teal}55;
+        }
       `}</style>
 
       <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
@@ -323,7 +339,7 @@ const Index = () => {
 
             <div className="hidden md:flex items-center gap-3">
               <Link to="/login" className="salb-btn-outline">Já tenho conta</Link>
-              <Link to="/experimente" className="salb-btn-primary-sm">Testar agora</Link>
+              <Link to="/register?source=landing-nav" className="salb-btn-primary-sm">Começar grátis</Link>
             </div>
 
             <button
@@ -349,7 +365,7 @@ const Index = () => {
               <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="salb-nav-link block text-sm">Planos</Link>
               <div className="flex flex-col gap-2 pt-2">
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="salb-btn-outline">Já tenho conta</Link>
-                <Link to="/experimente" onClick={() => setMobileMenuOpen(false)} className="salb-btn-primary-sm">Testar agora</Link>
+                <Link to="/register?source=landing-nav" onClick={() => setMobileMenuOpen(false)} className="salb-btn-primary-sm">Começar grátis</Link>
               </div>
             </motion.div>
           )}
@@ -357,7 +373,7 @@ const Index = () => {
 
         {/* ── Hero ── */}
         <section className="salb-grid-bg">
-          <div className="mx-auto max-w-5xl px-5 sm:px-6 pt-20 pb-20 sm:pt-32 sm:pb-28">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6 pt-16 pb-16 sm:pt-28 sm:pb-24">
             <motion.div
               variants={stagger}
               initial="hidden"
@@ -369,7 +385,7 @@ const Index = () => {
               <motion.h1
                 variants={reveal}
                 className="salb-h"
-                style={{ fontSize: "clamp(40px, 7vw, 72px)" }}
+                style={{ fontSize: "clamp(36px, 7vw, 64px)" }}
               >
                 Sua <span style={{ color: C.teal }}>vitrine</span> para pacientes.
                 <br />
@@ -378,37 +394,78 @@ const Index = () => {
 
               <motion.p
                 variants={reveal}
-                className="salb-sub mx-auto"
-                style={{ fontSize: 17, maxWidth: 520, marginTop: 24, paddingInline: 8 }}
+                style={{
+                  fontSize: "clamp(16px, 2.2vw, 20px)",
+                  maxWidth: 620,
+                  margin: "24px auto 0",
+                  paddingInline: 8,
+                  color: C.text,
+                  opacity: 0.85,
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                }}
               >
-                Organize seus primeiros 10 pacientes sem custo. Gestão completa, mentoria financeira e visibilidade para pacientes.
+                A plataforma que organiza sua renda de profissional autônomo da saúde
+                e prepara o caminho pro seu <strong style={{ color: C.teal, opacity: 1 }}>SalbScore</strong> —
+                o histórico financeiro que vai te abrir portas em imobiliárias, bancos e consulados.
               </motion.p>
+
+              <motion.ul
+                variants={reveal}
+                className="flex flex-wrap items-center justify-center"
+                style={{ gap: "10px 18px", marginTop: 24, listStyle: "none", padding: 0 }}
+              >
+                {[
+                  "100% das consultas no seu bolso",
+                  "IA financeira no WhatsApp",
+                  "Construa seu SalbScore",
+                ].map((b) => (
+                  <li
+                    key={b}
+                    style={{
+                      color: C.text,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      background: C.tealTint,
+                      border: `1px solid ${C.borderTeal}`,
+                      borderRadius: 999,
+                      padding: "6px 12px",
+                    }}
+                  >
+                    <span style={{ width: 5, height: 5, borderRadius: 999, background: C.teal }} />
+                    {b}
+                  </li>
+                ))}
+              </motion.ul>
 
               <motion.div
                 variants={reveal}
-                className="flex flex-col sm:flex-row items-center justify-center gap-3"
-                style={{ marginTop: 36 }}
+                className="flex flex-col items-center"
+                style={{ marginTop: 32, gap: 12 }}
               >
-                <Link to="/experimente" className="salb-btn-primary">
-                  Testar agora
-                  <ArrowRight size={16} />
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
-                  className="salb-nav-link text-sm"
-                  style={{ padding: "12px 16px", background: "transparent", border: "none", cursor: "pointer" }}
+                <Link
+                  to="/register?source=landing-hero"
+                  className="salb-btn-primary"
+                  style={{ minHeight: 56, padding: "16px 36px", fontSize: 16, width: "100%", maxWidth: 340 }}
+                  data-track="hero_cta_register"
                 >
-                  Como funciona?
-                </button>
+                  Começar grátis
+                  <ArrowRight size={18} />
+                </Link>
+                <p style={{ color: C.textMuted, fontSize: 13 }}>
+                  Sem cartão de crédito · Cancele quando quiser
+                </p>
+                <Link
+                  to="/login"
+                  className="salb-nav-link"
+                  style={{ fontSize: 13, marginTop: 4, textDecoration: "underline", textUnderlineOffset: 4 }}
+                >
+                  Já tenho conta · Fazer login
+                </Link>
               </motion.div>
-
-              <motion.p
-                variants={reveal}
-                style={{ color: C.textMuted, fontSize: 14, marginTop: 20 }}
-              >
-                Sem login. Sem cartão. Use a plataforma agora e crie conta quando gostar.
-              </motion.p>
             </motion.div>
           </div>
         </section>
@@ -433,6 +490,202 @@ const Index = () => {
             >
               A SalbCare é a primeira plataforma que prova que profissional autônomo da saúde também tem renda, e gera os documentos pra você comprovar isso pro mundo.
             </motion.p>
+          </div>
+        </section>
+
+        {/* ── SalbScore Hero (diferencial visual) ── */}
+        <section
+          id="salbscore"
+          style={{
+            background: `linear-gradient(135deg, ${C.bg} 0%, #0E2235 60%, rgba(0,180,160,0.12) 100%)`,
+            borderTop: `1px solid ${C.border}`,
+            borderBottom: `1px solid ${C.border}`,
+          }}
+          className={S.sectionY}
+          aria-label="SalbScore — diferencial da SalbCare"
+        >
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="text-center"
+              style={{ marginBottom: 40 }}
+            >
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.p
+                variants={reveal}
+                style={{
+                  color: C.teal, fontSize: 11, fontWeight: 700,
+                  letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12,
+                }}
+              >
+                O diferencial SalbCare
+              </motion.p>
+              <motion.h2
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(28px, 4.5vw, 44px)" }}
+              >
+                O que existe na SalbCare
+                <br />
+                e em mais lugar nenhum.
+              </motion.h2>
+            </motion.div>
+
+            <motion.div
+              initial={reveal.hidden}
+              whileInView={reveal.show}
+              viewport={{ once: true, margin: "-60px" }}
+              className="grid gap-8 sm:gap-10 items-center"
+              style={{
+                gridTemplateColumns: "1fr",
+                background: C.card,
+                border: `1px solid ${C.borderTeal}`,
+                borderRadius: 24,
+                padding: "clamp(24px, 4vw, 48px)",
+              }}
+            >
+              <div className="grid gap-10 md:gap-14" style={{ gridTemplateColumns: "1fr", alignItems: "center" }}>
+                <div className="grid gap-10 md:gap-14 md:grid-cols-[auto_1fr]" style={{ alignItems: "center" }}>
+                  {/* Score Ring */}
+                  <div className="flex justify-center">
+                    <div
+                      style={{
+                        position: "relative",
+                        width: 220,
+                        height: 220,
+                      }}
+                    >
+                      <svg width="220" height="220" viewBox="0 0 220 220" aria-hidden="true">
+                        <circle
+                          cx="110" cy="110" r="92"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.06)"
+                          strokeWidth="14"
+                        />
+                        <circle
+                          cx="110" cy="110" r="92"
+                          fill="none"
+                          stroke={C.teal}
+                          strokeWidth="14"
+                          strokeLinecap="round"
+                          strokeDasharray="578"
+                          strokeDashoffset="578"
+                          transform="rotate(-90 110 110)"
+                          style={{
+                            animation: "salbScoreRing 1.6s cubic-bezier(0.22,1,0.36,1) forwards",
+                            animationDelay: "0.2s",
+                            filter: `drop-shadow(0 0 12px ${C.teal}55)`,
+                          }}
+                        />
+                      </svg>
+                      <div
+                        style={{
+                          position: "absolute", inset: 0,
+                          display: "flex", flexDirection: "column",
+                          alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        <span style={{
+                          color: C.teal, fontSize: 11, fontWeight: 700,
+                          letterSpacing: "0.16em", textTransform: "uppercase",
+                        }}>
+                          SalbScore
+                        </span>
+                        <span style={{
+                          color: C.text, fontSize: 56, fontWeight: 800,
+                          letterSpacing: "-0.04em", lineHeight: 1, marginTop: 4,
+                        }}>
+                          720
+                        </span>
+                        <span style={{ color: C.textMuted, fontSize: 12, marginTop: 6 }}>
+                          Estabelecido
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bullets */}
+                  <div>
+                    <h3
+                      className="salb-h"
+                      style={{ fontSize: "clamp(22px, 3vw, 30px)", marginBottom: 18 }}
+                    >
+                      SalbScore — sua nota de saúde financeira profissional.
+                    </h3>
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                      {[
+                        {
+                          t: "Comprovante de Renda em construção",
+                          d: "Plataforma já organiza seus atendimentos e recebimentos. Geração de comprovantes oficiais para imobiliárias e bancos está em rollout.",
+                        },
+                        {
+                          t: "Selo Verificado Público",
+                          d: "Use no Instagram, no consultório, no WhatsApp. Pacientes veem que você é profissional ativo na SalbCare.",
+                        },
+                        {
+                          t: "Pontuação que sobe com o tempo",
+                          d: "Quanto mais você usa — atendimentos, recebimentos, organização — mais valioso fica seu histórico financeiro.",
+                        },
+                      ].map((b) => (
+                        <li
+                          key={b.t}
+                          style={{
+                            display: "flex",
+                            gap: 14,
+                            padding: "14px 0",
+                            borderBottom: `1px solid ${C.border}`,
+                          }}
+                        >
+                          <span
+                            aria-hidden="true"
+                            style={{
+                              flexShrink: 0,
+                              width: 8, height: 8,
+                              borderRadius: 999,
+                              background: C.teal,
+                              marginTop: 8,
+                              boxShadow: `0 0 0 4px ${C.tealTint}`,
+                            }}
+                          />
+                          <div>
+                            <p style={{ color: C.text, fontWeight: 600, fontSize: 15, lineHeight: 1.4 }}>
+                              {b.t}
+                            </p>
+                            <p style={{ color: C.textMuted, fontSize: 13.5, lineHeight: 1.55, marginTop: 4 }}>
+                              {b.d}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      to="/salbscore"
+                      className="inline-flex items-center gap-1.5"
+                      style={{
+                        color: C.teal, fontSize: 14, fontWeight: 600,
+                        marginTop: 18, textDecoration: "none",
+                      }}
+                    >
+                      Entender como o SalbScore funciona
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <p
+              style={{
+                color: C.textMuted, fontSize: 12, textAlign: "center",
+                marginTop: 16, maxWidth: 640, marginInline: "auto", lineHeight: 1.5,
+              }}
+            >
+              A SalbCare é uma plataforma de gestão e organização financeira. Não é instituição
+              financeira. Comprovantes refletem dados registrados pelo próprio profissional.
+            </p>
           </div>
         </section>
 
@@ -979,6 +1232,201 @@ const Index = () => {
               </motion.div>
 
             </motion.div>
+          </div>
+        </section>
+
+        {/* ── Planos ── */}
+        <section
+          id="planos"
+          style={{ background: C.bg, borderTop: `1px solid ${C.border}` }}
+          className={S.sectionY}
+          aria-label="Planos SalbCare"
+        >
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="text-center"
+              style={{ marginBottom: 40 }}
+            >
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.h2
+                variants={reveal}
+                className="salb-h"
+                style={{ fontSize: "clamp(28px, 4vw, 44px)" }}
+              >
+                Escolha o plano que combina com seu momento.
+              </motion.h2>
+              <motion.p
+                variants={reveal}
+                className="salb-sub mx-auto"
+                style={{ fontSize: 16, maxWidth: 540, marginTop: 16 }}
+              >
+                Comece grátis. Faça upgrade quando quiser. Sem fidelidade, sem comissão.
+              </motion.p>
+            </motion.div>
+
+            <div className="grid gap-5 md:grid-cols-3">
+              {[
+                {
+                  name: "Grátis",
+                  price: "R$ 0",
+                  cadence: "para começar",
+                  desc: "Pra quem está conhecendo a plataforma.",
+                  features: [
+                    "Até 10 pacientes",
+                    "Agenda + Prontuário básico",
+                    "Vitrine pública",
+                    "Suporte por e-mail",
+                  ],
+                  cta: "Criar conta grátis",
+                  to: "/register?source=landing-planos-free",
+                  variant: "outline" as const,
+                },
+                {
+                  name: "Essencial",
+                  price: "R$ 89",
+                  cadence: "por mês",
+                  desc: "Pra quem quer crescer com gestão completa.",
+                  features: [
+                    "Pacientes ilimitados",
+                    "Teleconsulta integrada",
+                    "Receita e Atestado Digital",
+                    "Controle financeiro completo",
+                    "IA Mentora financeira",
+                    "Perfil público e link de indicação",
+                  ],
+                  cta: "Começar grátis 7 dias",
+                  to: "/checkout?source=landing-planos-essencial",
+                  variant: "primary" as const,
+                  popular: true,
+                },
+                {
+                  name: "Premium",
+                  price: "Em breve",
+                  cadence: "lista de espera",
+                  desc: "Comprovante de Renda, Selo Verificado e prioridade no diretório.",
+                  features: [
+                    "Tudo do Essencial",
+                    "Comprovante de Renda SalbScore",
+                    "Selo Verificado Público",
+                    "Prioridade no diretório",
+                    "Suporte humano prioritário",
+                  ],
+                  cta: "Entrar na lista",
+                  to: "/parcerias?source=landing-planos-premium",
+                  variant: "outline" as const,
+                },
+              ].map((plan, i) => (
+                <motion.div
+                  key={plan.name}
+                  initial={reveal.hidden}
+                  whileInView={reveal.show}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.08 }}
+                  className={`salb-card flex flex-col ${plan.popular ? "salb-plan-popular" : ""}`}
+                  style={{ padding: 28, position: "relative" }}
+                >
+                  {plan.popular && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -12,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        background: C.teal,
+                        color: C.tealOnDark,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        padding: "4px 12px",
+                        borderRadius: 999,
+                      }}
+                    >
+                      Mais escolhido
+                    </span>
+                  )}
+
+                  <p style={{ color: C.text, fontSize: 14, fontWeight: 700, letterSpacing: "0.04em" }}>
+                    {plan.name}
+                  </p>
+                  <div style={{ marginTop: 12, display: "flex", alignItems: "baseline", gap: 8 }}>
+                    <span style={{ color: C.text, fontSize: 36, fontWeight: 800, letterSpacing: "-0.03em" }}>
+                      {plan.price}
+                    </span>
+                    <span style={{ color: C.textMuted, fontSize: 13 }}>{plan.cadence}</span>
+                  </div>
+                  <p style={{ color: C.textMuted, fontSize: 14, marginTop: 10, lineHeight: 1.5 }}>
+                    {plan.desc}
+                  </p>
+
+                  <ul style={{ listStyle: "none", padding: 0, margin: "20px 0 24px", flex: 1 }}>
+                    {plan.features.map((f) => (
+                      <li
+                        key={f}
+                        style={{
+                          color: C.text,
+                          fontSize: 14,
+                          lineHeight: 1.5,
+                          padding: "7px 0",
+                          display: "flex",
+                          gap: 10,
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            flexShrink: 0,
+                            width: 16, height: 16,
+                            borderRadius: 999,
+                            background: C.tealTint,
+                            border: `1px solid ${C.borderTeal}`,
+                            color: C.teal,
+                            fontSize: 10,
+                            fontWeight: 800,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: 2,
+                          }}
+                        >
+                          ✓
+                        </span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    to={plan.to}
+                    className={plan.variant === "primary" ? "salb-btn-primary" : "salb-btn-outline"}
+                    style={{
+                      width: "100%",
+                      minHeight: 48,
+                      ...(plan.variant === "primary"
+                        ? { padding: "14px 20px", fontSize: 15 }
+                        : { padding: "12px 20px", fontSize: 14 }),
+                    }}
+                    data-track={`planos_cta_${plan.name.toLowerCase()}`}
+                  >
+                    {plan.cta}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <p
+              style={{
+                color: C.textMuted, fontSize: 13, textAlign: "center",
+                marginTop: 24, lineHeight: 1.6,
+              }}
+            >
+              Sem cartão no cadastro · Cancele quando quiser · 100% das suas consultas continuam suas
+            </p>
           </div>
         </section>
 
