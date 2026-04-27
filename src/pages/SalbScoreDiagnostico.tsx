@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { Loader2, CheckCircle2, XCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Loader2, CheckCircle2, XCircle, AlertCircle, RefreshCw, ArrowRight, Sparkles, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +16,37 @@ type Check = {
   description: string;
   status: CheckStatus;
   detail?: string;
+};
+
+type HistoryEntry = {
+  at: string; // ISO
+  ok: number;
+  warn: number;
+  fail: number;
+  overall: CheckStatus;
+};
+
+const HISTORY_KEY = "salbscore_diag_history_v1";
+const MAX_HISTORY = 10;
+
+// Ações guiadas por id de check em falha/atenção
+const FIX_ACTIONS: Record<string, { title: string; desc: string; cta: string; to: string }[]> = {
+  auth: [
+    { title: "Faça login novamente", desc: "Sua sessão expirou ou está ausente.", cta: "Ir para login", to: "/login" },
+  ],
+  profile: [
+    { title: "Configurar perfil profissional", desc: "Adicione conselho (CRP/CRM), bio e dados básicos.", cta: "Configurar perfil", to: "/dashboard/perfil" },
+  ],
+  table_historico: [
+    { title: "Registrar primeiro atendimento", desc: "Sem histórico, o SalbScore não tem base de cálculo.", cta: "Cadastrar paciente", to: "/dashboard/patients" },
+    { title: "Lançar receita no financeiro", desc: "Receitas validam atividade real e elevam seu score.", cta: "Abrir financeiro", to: "/dashboard/financial" },
+  ],
+  edge_calcular: [
+    { title: "Tente recalcular em alguns minutos", desc: "Pode ser uma instabilidade temporária do servidor.", cta: "Ver meu SalbScore", to: "/perfil/salbscore" },
+  ],
+  edge_documento: [
+    { title: "Ative o plano Essencial", desc: "Emissão de Comprovante de Renda exige assinatura ativa.", cta: "Fazer upgrade", to: "/upgrade" },
+  ],
 };
 
 const StatusIcon = ({ status }: { status: CheckStatus }) => {
@@ -35,10 +67,24 @@ const StatusBadge = ({ status }: { status: CheckStatus }) => {
   return <Badge variant="outline" className={c.className}>{c.label}</Badge>;
 };
 
+function loadHistory(): HistoryEntry[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.slice(0, MAX_HISTORY) : [];
+  } catch { return []; }
+}
+function saveHistory(entries: HistoryEntry[]) {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(entries.slice(0, MAX_HISTORY))); } catch {}
+}
+
 const SalbScoreDiagnostico = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [checks, setChecks] = useState<Check[]>([]);
   const [running, setRunning] = useState(false);
+  const [history, setHistory] = useState<HistoryEntry[]>(() => loadHistory());
 
   const run = async () => {
     if (!user) return;
@@ -75,7 +121,7 @@ const SalbScoreDiagnostico = () => {
       update("profile", { status: "ok", detail: `${profile.name} · ${profile.professional_type}${profile.council_number ? " · " + profile.council_number : ""}` });
     }
 
-    // 3. salbscore_historico (RLS leitura)
+    // 3. salbscore_historico
     const { error: histErr, count } = await supabase
       .from("salbscore_historico")
       .select("id", { count: "exact", head: true })
@@ -84,8 +130,8 @@ const SalbScoreDiagnostico = () => {
       update("table_historico", { status: "fail", detail: `RLS/acesso: ${histErr.message}` });
     } else {
       update("table_historico", {
-        status: "ok",
-        detail: count && count > 0 ? `${count} snapshots históricos encontrados.` : "Sem snapshots ainda — normal para usuários novos.",
+        status: count && count > 0 ? "ok" : "warn",
+        detail: count && count > 0 ? `${count} snapshots históricos encontrados.` : "Sem snapshots ainda — registre atividade para construir histórico.",
       });
     }
 
@@ -105,12 +151,11 @@ const SalbScoreDiagnostico = () => {
       update("edge_calcular", { status: "fail", detail: msg });
     }
 
-    // 5. gerar-documento-salbscore (verificação leve — chama com tipo inválido só pra checar 4xx vs 5xx)
+    // 5. gerar-documento-salbscore (ping leve)
     try {
       const { error: docErr } = await supabase.functions.invoke("gerar-documento-salbscore", {
         body: { tipo: "__diagnostic_ping__" },
       });
-      // Esperamos 4xx (tipo inválido / premium_required). 5xx ou network = fail.
       if (docErr) {
         const msg = (docErr as any)?.message ?? String(docErr);
         const lower = msg.toLowerCase();
@@ -130,18 +175,45 @@ const SalbScoreDiagnostico = () => {
     setRunning(false);
   };
 
+  // Persistir histórico quando uma execução termina
+  useEffect(() => {
+    if (running) return;
+    if (checks.length === 0) return;
+    if (checks.some((c) => c.status === "pending")) return;
+    const ok = checks.filter((c) => c.status === "ok").length;
+    const warn = checks.filter((c) => c.status === "warn").length;
+    const fail = checks.filter((c) => c.status === "fail").length;
+    const overall: CheckStatus = fail > 0 ? "fail" : warn > 0 ? "warn" : "ok";
+    const entry: HistoryEntry = { at: new Date().toISOString(), ok, warn, fail, overall };
+    setHistory((prev) => {
+      const next = [entry, ...prev].slice(0, MAX_HISTORY);
+      saveHistory(next);
+      return next;
+    });
+  }, [running, checks]);
+
   useEffect(() => {
     if (user) void run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const summary = checks.reduce(
-    (acc, c) => {
-      acc[c.status] = (acc[c.status] ?? 0) + 1;
-      return acc;
-    },
+    (acc, c) => { acc[c.status] = (acc[c.status] ?? 0) + 1; return acc; },
     {} as Record<CheckStatus, number>,
   );
+
+  const failingActions = useMemo(() => {
+    const items: { checkLabel: string; actions: typeof FIX_ACTIONS[string] }[] = [];
+    checks.forEach((c) => {
+      if ((c.status === "fail" || c.status === "warn") && FIX_ACTIONS[c.id]) {
+        items.push({ checkLabel: c.label, actions: FIX_ACTIONS[c.id] });
+      }
+    });
+    return items;
+  }, [checks]);
+
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (
     <PageContainer>
@@ -180,12 +252,88 @@ const SalbScoreDiagnostico = () => {
                 <StatusBadge status={c.status} />
               </div>
               {c.detail && (
-                <div className="text-xs font-mono bg-muted/50 rounded-md p-2 break-all">
-                  {c.detail}
-                </div>
+                <div className="text-xs font-mono bg-muted/50 rounded-md p-2 break-all">{c.detail}</div>
               )}
             </div>
           ))}
+        </div>
+
+        {/* O que fazer agora */}
+        {failingActions.length > 0 && (
+          <section className="rounded-xl border border-border/60 p-4 space-y-3" style={{ background: "rgba(212,160,23,0.05)" }}>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" style={{ color: "#D4A017" }} />
+              <h2 className="text-sm font-semibold" style={{ color: "#0D1B2A" }}>O que fazer agora</h2>
+            </div>
+            <div className="space-y-2">
+              {failingActions.map((group, gi) =>
+                group.actions.map((a, ai) => (
+                  <div key={`${gi}-${ai}`} className="rounded-lg border border-border/60 bg-card p-3 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{group.checkLabel}</div>
+                      <div className="text-sm font-medium" style={{ color: "#0D1B2A" }}>{a.title}</div>
+                      <div className="text-xs text-muted-foreground">{a.desc}</div>
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => navigate(a.to)} className="shrink-0">
+                      {a.cta} <ArrowRight className="h-3 w-3 ml-1" />
+                    </Button>
+                  </div>
+                )),
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Upgrade CTA persistente */}
+        <section className="rounded-xl border border-border/60 p-4 flex items-center justify-between gap-3" style={{ background: "rgba(0,180,160,0.06)" }}>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold" style={{ color: "#0D1B2A" }}>Liberar SalbScore completo</div>
+            <div className="text-xs text-muted-foreground">Plano Essencial libera Comprovante de Renda, Selo Público e histórico verificado.</div>
+          </div>
+          <Button size="sm" onClick={() => navigate("/upgrade")} style={{ background: "#00B4A0" }} className="shrink-0">
+            Upgrade
+          </Button>
+        </section>
+
+        {/* Histórico */}
+        {history.length > 0 && (
+          <section className="rounded-xl border border-border/60 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <History className="h-4 w-4 text-muted-foreground" />
+                <h2 className="text-sm font-semibold" style={{ color: "#0D1B2A" }}>Últimas verificações</h2>
+              </div>
+              <button
+                type="button"
+                className="text-[11px] text-muted-foreground hover:text-foreground underline"
+                onClick={() => { localStorage.removeItem(HISTORY_KEY); setHistory([]); }}
+              >
+                Limpar
+              </button>
+            </div>
+            <ul className="divide-y divide-border/60">
+              {history.map((h, i) => (
+                <li key={i} className="py-2 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <StatusIcon status={h.overall} />
+                    <span className="font-mono text-muted-foreground">{fmt(h.at)}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-muted-foreground">
+                    <span><strong className="text-emerald-700">{h.ok}</strong> ok</span>
+                    <span><strong className="text-amber-700">{h.warn}</strong> atenção</span>
+                    <span><strong className="text-red-700">{h.fail}</strong> falha</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="text-[10px] text-muted-foreground">Salvo localmente neste navegador (últimas {MAX_HISTORY}).</p>
+          </section>
+        )}
+
+        <div className="flex justify-center">
+          <Link to="/perfil/salbscore/selo-exemplo" className="text-[11px] text-muted-foreground hover:text-foreground underline">
+            Ver exemplo do Selo Verificado Público
+          </Link>
         </div>
 
         <div className="text-[11px] text-muted-foreground text-center">

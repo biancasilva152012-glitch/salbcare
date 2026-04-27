@@ -1,17 +1,37 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Award, ExternalLink, Eye, Lock } from "lucide-react";
+import QRCode from "qrcode";
+import { Award, ExternalLink, Eye, Lock, QrCode, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import PageContainer from "@/components/PageContainer";
 import BackButton from "@/components/BackButton";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Página /perfil/salbscore/selo-exemplo
- * Read-only preview do Selo Verificado Público para o profissional ver
- * como ficaria sua URL antes de ter o selo emitido publicamente.
+ * Read-only preview do Selo Verificado Público + QR Code da URL.
  */
 const SalbScoreSeloPreview = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<{ profile_slug: string | null; payment_status: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    void supabase
+      .from("profiles")
+      .select("profile_slug, payment_status")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setProfile(data as any));
+  }, [user]);
+
+  const isPaid = profile?.payment_status === "active" || profile?.payment_status === "trialing" || profile?.payment_status === "paid";
+
   const exemplo = {
     nome: "Dra. Marina Albuquerque",
     conselho: "PSICOLOGA CRP 06 234567",
@@ -19,7 +39,49 @@ const SalbScoreSeloPreview = () => {
     faixa: { label: "Premium", color: "#00B4A0", bg: "rgba(0,180,160,0.12)", desc: "Alta confiabilidade comprovada" },
     meses: 18,
     bio: "Psicóloga clínica com foco em ansiedade e relacionamentos. Atendimento online e presencial.",
-    slug: "marina-albuquerque",
+    slug: profile?.profile_slug || "marina-albuquerque",
+  };
+
+  const publicUrl = `https://salbcare.com.br/verificado/${exemplo.slug}`;
+
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleGenerateQR = async () => {
+    setGenerating(true);
+    try {
+      const dataUrl = await QRCode.toDataURL(publicUrl, {
+        width: 320,
+        margin: 1,
+        color: { dark: "#0D1B2A", light: "#FFFFFF" },
+        errorCorrectionLevel: "M",
+      });
+      setQrDataUrl(dataUrl);
+    } catch {
+      toast.error("Não foi possível gerar o QR Code agora.");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setCopied(true);
+      toast.success("URL copiada!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Não foi possível copiar.");
+    }
+  };
+
+  const handleDownloadQR = () => {
+    if (!qrDataUrl) return;
+    const a = document.createElement("a");
+    a.href = qrDataUrl;
+    a.download = `salbscore-${exemplo.slug}.png`;
+    a.click();
   };
 
   return (
@@ -36,7 +98,7 @@ const SalbScoreSeloPreview = () => {
           </p>
           <h1 className="text-2xl font-bold" style={{ color: "#0D1B2A" }}>Seu Selo Verificado Público</h1>
           <p className="text-sm text-muted-foreground">
-            Esta é uma pré-visualização real de como sua página pública aparece para pacientes, bancos e parceiros quando você compartilha o link do selo.
+            Veja como sua página pública aparece para pacientes, bancos e parceiros quando você compartilha o link do selo.
           </p>
         </header>
 
@@ -94,31 +156,72 @@ const SalbScoreSeloPreview = () => {
             {exemplo.bio}
           </div>
 
-          <div className="text-[10px] text-muted-foreground pt-1">
-            URL pública: <span className="font-mono">salbcare.com.br/verificado/{exemplo.slug}</span>
+          <div className="text-[10px] text-muted-foreground pt-1 break-all">
+            URL pública: <span className="font-mono">{publicUrl.replace("https://", "")}</span>
           </div>
         </motion.div>
+
+        {/* QR Code */}
+        <section className="rounded-xl border border-border/60 p-5 space-y-3 text-center">
+          <div className="flex items-center justify-center gap-2 text-sm font-semibold" style={{ color: "#0D1B2A" }}>
+            <QrCode className="h-4 w-4" /> QR Code do seu selo
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Compartilhe rapidamente sua URL pública com pacientes, bancos e parceiros.
+          </p>
+
+          {qrDataUrl ? (
+            <div className="space-y-3">
+              <img
+                src={qrDataUrl}
+                alt={`QR Code do selo verificado ${exemplo.nome}`}
+                className="mx-auto w-48 h-48 rounded-lg border border-border/60 bg-white p-2"
+              />
+              <div className="flex flex-col gap-2">
+                <Button size="sm" variant="outline" onClick={handleDownloadQR}>
+                  Baixar QR Code (PNG)
+                </Button>
+                <Button size="sm" variant="ghost" onClick={handleCopy}>
+                  {copied ? <Check className="h-3.5 w-3.5 mr-1" /> : <Copy className="h-3.5 w-3.5 mr-1" />}
+                  {copied ? "URL copiada" : "Copiar URL"}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button onClick={handleGenerateQR} disabled={generating} className="w-full" style={{ background: "#0D1B2A" }}>
+              <QrCode className="h-4 w-4 mr-2" />
+              {generating ? "Gerando..." : "Gerar QR Code"}
+            </Button>
+          )}
+        </section>
 
         {/* CTA próximo passo */}
         <div className="rounded-xl border border-border/60 p-5 space-y-3 text-center" style={{ background: "rgba(0,180,160,0.05)" }}>
           <Lock className="h-5 w-5 mx-auto text-muted-foreground" />
           <h3 className="text-sm font-semibold" style={{ color: "#0D1B2A" }}>
-            Seu selo ainda não está ativo
+            {isPaid ? "Sua URL pública pode estar pronta" : "Seu selo ainda não está ativo"}
           </h3>
           <p className="text-xs text-muted-foreground">
-            Para liberar sua URL pública verificada, complete os primeiros atendimentos na plataforma e mantenha o plano Essencial ativo.
+            {isPaid
+              ? "Acesse seu SalbScore para conferir a URL real do seu selo verificado."
+              : "Para liberar sua URL pública verificada, ative o plano Essencial e mantenha seu histórico de atendimentos."}
           </p>
           <div className="flex flex-col gap-2 pt-1">
-            <Link to="/perfil/salbscore">
-              <Button className="w-full" style={{ background: "#00B4A0" }}>
-                Ver meu SalbScore atual <ExternalLink className="h-3.5 w-3.5 ml-1" />
+            {profile?.profile_slug && isPaid && (
+              <Link to={`/verificado/${profile.profile_slug}`} target="_blank" rel="noopener">
+                <Button className="w-full" variant="outline">
+                  Abrir minha URL pública <ExternalLink className="h-3.5 w-3.5 ml-1" />
+                </Button>
+              </Link>
+            )}
+            <Button onClick={() => navigate("/perfil/salbscore")} className="w-full" style={{ background: "#00B4A0" }}>
+              Ver meu SalbScore atual
+            </Button>
+            {!isPaid && (
+              <Button onClick={() => navigate("/upgrade")} className="w-full" variant="outline">
+                Fazer upgrade para Essencial
               </Button>
-            </Link>
-            <Link to="/upgrade">
-              <Button className="w-full" variant="outline">
-                Conhecer plano Essencial
-              </Button>
-            </Link>
+            )}
           </div>
         </div>
 
