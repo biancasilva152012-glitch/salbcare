@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ShieldCheck, Loader2, Award, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,30 +28,29 @@ const FAIXA_INFO: Record<string, { label: string; color: string; bg: string; des
   elite: { label: "Elite", color: "#D4A017", bg: "rgba(212,160,23,0.14)", desc: "Topo da plataforma SalbCare" },
 };
 
+async function fetchPublicSalbScore(slug: string): Promise<PublicSalbScore | null> {
+  const { data: rows, error } = await supabase.rpc("get_public_salbscore_by_slug", { _slug: slug });
+  if (error) throw error;
+  const row = Array.isArray(rows) ? rows[0] ?? null : rows;
+  return (row as PublicSalbScore) ?? null;
+}
+
 const SalbScoreSelo = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [data, setData] = useState<PublicSalbScore | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
 
-  useEffect(() => {
-    if (!slug) { setLoading(false); setNotFound(true); return; }
-    (async () => {
-      try {
-        const { data: rows, error } = await supabase.rpc("get_public_salbscore_by_slug", { _slug: slug });
-        if (error) throw error;
-        const row = Array.isArray(rows) ? rows[0] ?? null : rows;
-        if (!row) setNotFound(true);
-        else setData(row as PublicSalbScore);
-      } catch {
-        setNotFound(true);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [slug]);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["public-salbscore", slug],
+    queryFn: () => fetchPublicSalbScore(slug!),
+    enabled: !!slug,
+    // Mantém score/faixa consistentes por 5min sem nova chamada RPC
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -59,7 +58,7 @@ const SalbScoreSelo = () => {
     );
   }
 
-  if (notFound || !data) {
+  if (isError || !data) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <SEOHead title="Selo não encontrado | SalbCare" description="Este selo público não foi encontrado." />

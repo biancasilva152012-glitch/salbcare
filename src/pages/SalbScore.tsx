@@ -141,6 +141,7 @@ const SalbScore = () => {
 
   const faixaInfo = data ? FAIXA_INFO[data.faixa] ?? FAIXA_INFO.iniciante : FAIXA_INFO.iniciante;
   const blurScore = !hasFullAccess && data;
+  const semDados = !data || (data.score === 0 && data.meses_ativo < 1);
 
   return (
     <PageContainer>
@@ -160,18 +161,36 @@ const SalbScore = () => {
           className="rounded-2xl p-8 flex flex-col items-center text-center space-y-4"
           style={{ background: faixaInfo.bg, border: `1px solid ${faixaInfo.color}33` }}
         >
-          <div className={blurScore ? "blur-md select-none" : ""}>
-            {data ? <ScoreRing score={data.score} color={faixaInfo.color} /> : null}
+          <div className={blurScore ? "blur-md select-none pointer-events-none" : ""} aria-hidden={blurScore ? true : undefined}>
+            {data ? <ScoreRing score={data.score} color={faixaInfo.color} /> : <ScoreRing score={0} color={faixaInfo.color} />}
           </div>
           <div className="space-y-1">
             <div className="text-sm font-semibold uppercase tracking-wider" style={{ color: faixaInfo.color }}>
-              {faixaInfo.label}
+              {hasFullAccess ? faixaInfo.label : "Bloqueado"}
             </div>
-            <p className="text-sm text-muted-foreground max-w-md">
-              {hasFullAccess
-                ? `Você construiu ${data?.score ?? 0} pontos. ${faixaInfo.descricao}.`
-                : "Faça upgrade para descobrir sua nota e desbloquear comprovantes oficiais."}
-            </p>
+            {hasFullAccess ? (
+              semDados ? (
+                <p className="text-sm text-muted-foreground max-w-md">
+                  Ainda não há dados suficientes para calcular sua nota. Registre seus primeiros atendimentos e recebimentos no Financeiro — seu SalbScore começa a subir automaticamente em 24h.
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground max-w-md">
+                  Você construiu <strong>{data?.score ?? 0} pontos</strong>. {faixaInfo.descricao}.
+                </p>
+              )
+            ) : (
+              <div className="space-y-2 max-w-md">
+                <p className="text-sm text-muted-foreground">
+                  Seu SalbScore está bloqueado. O plano pago libera:
+                </p>
+                <ul className="text-xs text-left text-muted-foreground space-y-1 mx-auto inline-block">
+                  <li>✓ Sua nota completa de 0 a 1000 pontos</li>
+                  <li>✓ Insights de cada componente e como melhorar</li>
+                  <li>✓ Emissão de Comprovante de Renda oficial em PDF</li>
+                  <li>✓ Selo público verificável (em breve)</li>
+                </ul>
+              </div>
+            )}
           </div>
           {!hasFullAccess && (
             <Button onClick={() => navigate("/upgrade")} className="mt-2">
