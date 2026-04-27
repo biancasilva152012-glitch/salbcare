@@ -269,6 +269,63 @@ const PublicSalbScore = () => {
           </div>
         </section>
 
+        {/* Mini-FAQ direto: o que já conta */}
+        <section style={{ background: C.card, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }} className="py-16">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6">
+            <span style={{
+              display: "inline-block", background: C.tealTint, color: C.teal,
+              fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+              padding: "5px 10px", borderRadius: 999, border: `1px solid ${C.borderTeal}`,
+            }}>
+              O que já conta para o histórico
+            </span>
+            <h2 style={{ fontSize: "clamp(22px, 3vw, 30px)", fontWeight: 800, letterSpacing: "-0.02em", marginTop: 14, lineHeight: 1.25 }}>
+              Cinco ações dentro da plataforma já alimentam seu score.
+            </h2>
+            <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.65, marginTop: 12 }}>
+              O cálculo público do SalbScore entra em produção em 2026, mas seu histórico começa
+              a contar a partir do primeiro registro. Quanto antes você começar, mais maduro
+              seu score no lançamento.
+            </p>
+            <ol style={{ listStyle: "none", padding: 0, marginTop: 22, counterReset: "salb-step" }}>
+              {[
+                "Cadastrar seu conselho (CRM, CRP, CRN, CRO etc.) com número e UF",
+                "Marcar consultas — presenciais e teleconsulta — na agenda",
+                "Lançar recebimentos (Pix, cartão, boleto) no módulo financeiro",
+                "Confirmar atendimentos realizados (acontece no fluxo padrão)",
+                "Atualizar despesas mensais e separar pró-labore",
+              ].map((step, i) => (
+                <li key={step} style={{
+                  display: "flex", gap: 14, alignItems: "flex-start",
+                  padding: "12px 0", borderBottom: `1px solid ${C.border}`,
+                  color: C.text, fontSize: 15, lineHeight: 1.55,
+                }}>
+                  <span style={{
+                    flexShrink: 0, width: 26, height: 26, borderRadius: 999,
+                    background: C.teal, color: C.tealOnDark,
+                    fontSize: 12, fontWeight: 800, display: "inline-flex",
+                    alignItems: "center", justifyContent: "center", marginTop: 1,
+                  }}>{i + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+            <div style={{ marginTop: 22 }}>
+              <Link
+                to="/register?source=salbscore-historico"
+                onClick={() => trackCtaClick("register", "salbscore_historico", { source: "salbscore-historico" })}
+                style={{
+                  background: C.teal, color: C.tealOnDark, padding: "12px 22px", borderRadius: 10,
+                  fontWeight: 600, fontSize: 14, textDecoration: "none", display: "inline-flex",
+                  alignItems: "center", gap: 8,
+                }}
+              >
+                Começar a registrar agora <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section style={{ background: C.bg }} className="py-20">
           <div className="mx-auto max-w-3xl px-5 sm:px-6">
