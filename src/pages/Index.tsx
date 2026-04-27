@@ -357,7 +357,7 @@ const Index = () => {
 
         {/* ── Hero ── */}
         <section className="salb-grid-bg">
-          <div className="mx-auto max-w-5xl px-5 sm:px-6 pt-20 pb-20 sm:pt-32 sm:pb-28">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6 pt-16 pb-16 sm:pt-28 sm:pb-24">
             <motion.div
               variants={stagger}
               initial="hidden"
@@ -369,7 +369,7 @@ const Index = () => {
               <motion.h1
                 variants={reveal}
                 className="salb-h"
-                style={{ fontSize: "clamp(40px, 7vw, 72px)" }}
+                style={{ fontSize: "clamp(36px, 7vw, 64px)" }}
               >
                 Sua <span style={{ color: C.teal }}>vitrine</span> para pacientes.
                 <br />
@@ -378,37 +378,78 @@ const Index = () => {
 
               <motion.p
                 variants={reveal}
-                className="salb-sub mx-auto"
-                style={{ fontSize: 17, maxWidth: 520, marginTop: 24, paddingInline: 8 }}
+                style={{
+                  fontSize: "clamp(16px, 2.2vw, 20px)",
+                  maxWidth: 620,
+                  margin: "24px auto 0",
+                  paddingInline: 8,
+                  color: C.text,
+                  opacity: 0.85,
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                }}
               >
-                Organize seus primeiros 10 pacientes sem custo. Gestão completa, mentoria financeira e visibilidade para pacientes.
+                A plataforma que organiza sua renda de profissional autônomo da saúde
+                e prepara o caminho pro seu <strong style={{ color: C.teal, opacity: 1 }}>SalbScore</strong> —
+                o histórico financeiro que vai te abrir portas em imobiliárias, bancos e consulados.
               </motion.p>
+
+              <motion.ul
+                variants={reveal}
+                className="flex flex-wrap items-center justify-center"
+                style={{ gap: "10px 18px", marginTop: 24, listStyle: "none", padding: 0 }}
+              >
+                {[
+                  "100% das consultas no seu bolso",
+                  "IA financeira no WhatsApp",
+                  "Construa seu SalbScore",
+                ].map((b) => (
+                  <li
+                    key={b}
+                    style={{
+                      color: C.text,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      background: C.tealTint,
+                      border: `1px solid ${C.borderTeal}`,
+                      borderRadius: 999,
+                      padding: "6px 12px",
+                    }}
+                  >
+                    <span style={{ width: 5, height: 5, borderRadius: 999, background: C.teal }} />
+                    {b}
+                  </li>
+                ))}
+              </motion.ul>
 
               <motion.div
                 variants={reveal}
-                className="flex flex-col sm:flex-row items-center justify-center gap-3"
-                style={{ marginTop: 36 }}
+                className="flex flex-col items-center"
+                style={{ marginTop: 32, gap: 12 }}
               >
-                <Link to="/experimente" className="salb-btn-primary">
-                  Testar agora
-                  <ArrowRight size={16} />
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
-                  className="salb-nav-link text-sm"
-                  style={{ padding: "12px 16px", background: "transparent", border: "none", cursor: "pointer" }}
+                <Link
+                  to="/register?source=landing-hero"
+                  className="salb-btn-primary"
+                  style={{ minHeight: 56, padding: "16px 36px", fontSize: 16, width: "100%", maxWidth: 340 }}
+                  data-track="hero_cta_register"
                 >
-                  Como funciona?
-                </button>
+                  Começar grátis
+                  <ArrowRight size={18} />
+                </Link>
+                <p style={{ color: C.textMuted, fontSize: 13 }}>
+                  Sem cartão de crédito · Cancele quando quiser
+                </p>
+                <Link
+                  to="/login"
+                  className="salb-nav-link"
+                  style={{ fontSize: 13, marginTop: 4, textDecoration: "underline", textUnderlineOffset: 4 }}
+                >
+                  Já tenho conta · Fazer login
+                </Link>
               </motion.div>
-
-              <motion.p
-                variants={reveal}
-                style={{ color: C.textMuted, fontSize: 14, marginTop: 20 }}
-              >
-                Sem login. Sem cartão. Use a plataforma agora e crie conta quando gostar.
-              </motion.p>
             </motion.div>
           </div>
         </section>
