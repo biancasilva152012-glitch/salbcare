@@ -37,52 +37,53 @@ body[data-scroll-locked] {
 
 @layer base {
   :root {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    /* Silicon Valley light theme — Linear / Vercel / Stripe inspired */
+    --background: 210 17% 98%;          /* #F8F9FA */
+    --foreground: 212 53% 11%;          /* #0D1B2A */
 
-    --card: 217 33% 17%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;                  /* #FFFFFF */
+    --card-foreground: 212 53% 11%;
 
-    --popover: 217 33% 17%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 212 53% 11%;
 
-    --primary: 173 58% 39%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 173 100% 35%;            /* #00B4A0 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 188 78% 41%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 173 100% 35%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 210 17% 96%;
+    --muted-foreground: 220 9% 46%;     /* #6B7280 */
 
-    --accent: 217 33% 22%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 180 50% 96%;              /* #F0FAFA — teal tint container */
+    --accent-foreground: 173 100% 25%;
 
     --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 160 60% 45%;
-    --success-foreground: 210 40% 98%;
+    --success: 160 60% 40%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 217 20% 24%;
-    --input: 217 20% 24%;
-    --ring: 173 58% 39%;
+    --border: 210 14% 92%;              /* #E8ECEF */
+    --input: 220 13% 83%;               /* #D1D5DB */
+    --ring: 173 100% 35%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 215 20% 65%;
-    --sidebar-primary: 173 58% 39%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 20% 24%;
-    --sidebar-ring: 173 58% 39%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 9% 46%;
+    --sidebar-primary: 173 100% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 17% 96%;
+    --sidebar-accent-foreground: 212 53% 11%;
+    --sidebar-border: 210 14% 92%;
+    --sidebar-ring: 173 100% 35%;
 
-    /* Enhanced tokens */
-    --shadow-card: 0 4px 24px -4px hsl(222 47% 6% / 0.5);
-    --shadow-card-hover: 0 8px 32px -4px hsl(222 47% 6% / 0.6);
-    --shadow-glow: 0 0 20px -4px hsl(173 58% 39% / 0.15);
+    /* Enhanced tokens — soft, airy shadows (no heavy grays) */
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
+    --shadow-card-hover: 0 8px 30px rgba(15, 23, 42, 0.08);
+    --shadow-glow: 0 4px 14px rgba(0, 180, 160, 0.30);
   }
 }
 
@@ -180,7 +181,8 @@ body[data-scroll-locked] {
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl;
+    @apply bg-card border rounded-2xl;
+    border-color: #E8ECEF;
     box-shadow: var(--shadow-card);
   }
 
@@ -190,18 +192,25 @@ body[data-scroll-locked] {
 
   .glass-card-interactive:hover {
     box-shadow: var(--shadow-card-hover);
-    border-color: hsl(var(--border) / 0.7);
+    transform: translateY(-2px);
   }
 
+  /* Solid teal CTA with colored shadow — no heavy gradients */
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(173 58% 39%), hsl(188 78% 41%));
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 4px 14px rgba(0, 180, 160, 0.30);
+    transition: filter 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  }
+  .gradient-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 6px 20px rgba(0, 180, 160, 0.36);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, hsl(173 58% 39%), hsl(188 78% 41%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: hsl(var(--primary));
+    background: none;
+    -webkit-text-fill-color: currentColor;
   }
 
   .bottom-nav-safe {
