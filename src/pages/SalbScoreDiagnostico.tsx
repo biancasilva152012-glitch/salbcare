@@ -85,8 +85,12 @@ const SalbScoreDiagnostico = () => {
     setRunning(true);
     const initial: Check[] = [
       { id: "auth", label: "Sessão autenticada", description: "Token Supabase ativo do usuário atual.", status: "pending" },
+      { id: "route_private_salbscore", label: "Rota /perfil/salbscore", description: "Protegida por login, sem bloqueio por plano no roteador.", status: "pending" },
+      { id: "route_public_seal", label: "Rota /verificado/:slug", description: "Pública, somente leitura e com dados controlados.", status: "pending" },
       { id: "profile", label: "Perfil profissional", description: "Registro em profiles vinculado ao seu usuário.", status: "pending" },
       { id: "table_historico", label: "Tabela salbscore_historico", description: "Acesso de leitura ao histórico do seu SalbScore.", status: "pending" },
+      { id: "rls_history_write", label: "RLS histórico sem escrita direta", description: "Bloqueia criação/edição do histórico pelo navegador.", status: "pending" },
+      { id: "rls_documents_write", label: "RLS documentos por plano", description: "Permite emissão apenas por conta autorizada e bloqueia visitantes.", status: "pending" },
       { id: "edge_calcular", label: "Edge function calcular-salbscore", description: "Endpoint de cálculo deployado e respondendo.", status: "pending" },
       { id: "edge_documento", label: "Edge function gerar-documento-salbscore", description: "Endpoint de emissão de comprovante deployado (verificação leve).", status: "pending" },
     ];
@@ -164,6 +168,24 @@ const SalbScoreDiagnostico = () => {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       update("edge_documento", { status: "fail", detail: msg });
+    }
+
+    // 6. Checklist automático de rotas e RLS do SalbScore
+    try {
+      const { data: securityRows, error: securityErr } = await (supabase as any).rpc("check_salbscore_security_health");
+      if (securityErr) throw securityErr;
+      (securityRows as Array<{ check_key: string; status: CheckStatus; message: string; action_hint: string }> | null)?.forEach((row) => {
+        if (row.check_key === "rls_history_read") return;
+        update(row.check_key, {
+          status: row.status,
+          detail: `${row.message} Próximo passo: ${row.action_hint}`,
+        });
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      ["route_private_salbscore", "route_public_seal", "rls_history_write", "rls_documents_write"].forEach((id) => {
+        update(id, { status: "fail", detail: `Checklist automático indisponível: ${msg}` });
+      });
     }
 
     setRunning(false);
