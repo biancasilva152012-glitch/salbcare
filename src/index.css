@@ -181,7 +181,8 @@ body[data-scroll-locked] {
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl;
+    @apply bg-card border rounded-2xl;
+    border-color: #E8ECEF;
     box-shadow: var(--shadow-card);
   }
 
@@ -191,18 +192,25 @@ body[data-scroll-locked] {
 
   .glass-card-interactive:hover {
     box-shadow: var(--shadow-card-hover);
-    border-color: hsl(var(--border) / 0.7);
+    transform: translateY(-2px);
   }
 
+  /* Solid teal CTA with colored shadow — no heavy gradients */
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(173 58% 39%), hsl(188 78% 41%));
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 4px 14px rgba(0, 180, 160, 0.30);
+    transition: filter 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  }
+  .gradient-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 6px 20px rgba(0, 180, 160, 0.36);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, hsl(173 58% 39%), hsl(188 78% 41%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: hsl(var(--primary));
+    background: none;
+    -webkit-text-fill-color: currentColor;
   }
 
   .bottom-nav-safe {
