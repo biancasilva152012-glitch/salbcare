@@ -668,7 +668,7 @@ const Index = () => {
 
         {/* ── CTA Final ── */}
         <section
-          style={{ background: C.card, borderTop: "1px solid rgba(0,180,160,0.15)" }}
+          style={{ background: C.card, borderTop: `1px solid ${C.borderTeal}` }}
           className={S.sectionY}
         >
           <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center">
