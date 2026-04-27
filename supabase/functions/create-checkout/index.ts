@@ -51,10 +51,7 @@ serve(async (req) => {
       ? requestedPriceId
       : DEFAULT_PRICE_ID;
 
-    // Force-disable trial when user came via partner referral
-    const skipTrial = body?.skipTrial === true;
-
-    logStep("Price validated", { priceId, planName: ALLOWED_PRICES[priceId], skipTrial });
+    logStep("Price validated", { priceId, planName: ALLOWED_PRICES[priceId] });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 
@@ -73,16 +70,8 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    const { data: prof } = await supabaseService
-      .from("professionals")
-      .select("had_trial")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    const hadTrial = (prof as any)?.had_trial ?? false;
-    const isTrialEligible = !skipTrial && priceId === DEFAULT_PRICE_ID && !hadTrial;
-
-    logStep("Trial check", { priceId, hadTrial, skipTrial, isTrialEligible });
+    // Trial removido: cobrança imediata para todos os usuários
+    logStep("Cobrança imediata — sem trial");
 
     // Validate optional success_url/cancel_url paths from client through allowlist.
     const allowedOrigins = [origin, "https://salbcare.lovable.app", "https://salbcare.com.br", "https://www.salbcare.com.br"];
@@ -120,6 +109,10 @@ serve(async (req) => {
       });
     }
 
+    // Métodos de pagamento:
+    // - "card" habilita Apple Pay e Google Pay automaticamente em devices compatíveis
+    // - "boleto" para clientes BR sem cartão
+    // (Pix é tratado fora do Stripe Checkout — chave Pix exibida na página de sucesso)
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -132,16 +125,10 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
       },
+      subscription_data: {
+        metadata: { user_id: user.id },
+      },
     };
-
-    if (isTrialEligible) {
-      sessionParams.subscription_data = {
-        trial_period_days: 7,
-      };
-      logStep("Trial de 7 dias adicionado ao checkout");
-    } else {
-      logStep("Sem trial — cobrança imediata", { reason: skipTrial ? "partner referral" : (hadTrial ? "had_trial" : "non-default price") });
-    }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
     logStep("Session criada", { sessionId: session.id, url: session.url });
