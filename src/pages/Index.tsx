@@ -4,11 +4,12 @@ import {
   ArrowRight, Menu, X,
   FileText, Search, Video,
   UserPlus, Globe, LayoutDashboard, Shield,
+  type LucideIcon,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import SEOHead from "@/components/SEOHead";
-import { useState, type ComponentType } from "react";
+import { useState } from "react";
 import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
 import testimonialMayara from "@/assets/testimonial-mayara.jpeg";
 import testimonialCinara from "@/assets/testimonial-cinara.jpeg";
@@ -76,7 +77,6 @@ const Mark = () => (
 );
 
 /* Helper para evitar `<items[i].icon />` (TS) */
-type LucideIcon = ComponentType<{ size?: number | string; color?: string; strokeWidth?: number }>;
 const IconRender = ({ icon: I, size = 20 }: { icon: LucideIcon; size?: number }) => (
   <I size={size} color={C.teal} />
 );
