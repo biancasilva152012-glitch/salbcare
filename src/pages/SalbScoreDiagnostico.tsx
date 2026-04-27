@@ -35,6 +35,12 @@ const FIX_ACTIONS: Record<string, { title: string; desc: string; cta: string; to
   auth: [
     { title: "Faça login novamente", desc: "Sua sessão expirou ou está ausente.", cta: "Ir para login", to: "/login" },
   ],
+  route_private_salbscore: [
+    { title: "Revisar sessão e rota", desc: "A página deve abrir para qualquer usuário logado, sem exigir plano pago.", cta: "Abrir SalbScore", to: "/perfil/salbscore" },
+  ],
+  route_public_seal: [
+    { title: "Validar selo público", desc: "A URL pública deve exibir apenas dados verificados e nenhuma ação de edição.", cta: "Ver selo exemplo", to: "/perfil/salbscore/selo-exemplo" },
+  ],
   profile: [
     { title: "Configurar perfil profissional", desc: "Adicione conselho (CRP/CRM), bio e dados básicos.", cta: "Configurar perfil", to: "/profile" },
   ],
@@ -47,6 +53,12 @@ const FIX_ACTIONS: Record<string, { title: string; desc: string; cta: string; to
   ],
   edge_documento: [
     { title: "Ative o plano Essencial", desc: "Emissão de Comprovante de Renda exige assinatura ativa.", cta: "Fazer upgrade", to: "/upgrade" },
+  ],
+  rls_history_write: [
+    { title: "Bloquear escrita direta", desc: "O histórico deve ser gerado apenas pelo backend verificado da SalbCare.", cta: "Re-executar diagnóstico", to: "/perfil/salbscore/diagnostico" },
+  ],
+  rls_documents_write: [
+    { title: "Revisar emissão segura", desc: "Documentos devem exigir plano ativo e nunca aceitar escrita pública.", cta: "Fazer upgrade", to: "/upgrade" },
   ],
 };
 
