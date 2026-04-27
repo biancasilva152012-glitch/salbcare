@@ -664,12 +664,14 @@ const Index = () => {
                       ))}
                     </ul>
                     <Link
-                      to="/salbscore"
+                      to="/salbscore?source=landing-salbscore-link"
+                      onClick={() => trackCtaClick("salbscore_link", "landing_salbscore_section")}
                       className="inline-flex items-center gap-1.5"
                       style={{
                         color: C.teal, fontSize: 14, fontWeight: 600,
                         marginTop: 18, textDecoration: "none",
                       }}
+                      data-track="salbscore_section_link"
                     >
                       Entender como o SalbScore funciona
                       <ArrowRight size={14} />
@@ -1484,10 +1486,11 @@ const Index = () => {
             </motion.h2>
             <Accordion type="single" collapsible className="space-y-3">
               {[
-                { q: "O que é o SalbScore?", a: "É uma pontuação de 0 a 1000 que reflete sua saúde financeira como profissional autônomo da saúde — calculada com seu volume de atendimentos, recebimentos confirmados, regularidade no conselho e tempo de prática. Saiba mais em /salbscore." },
+                { q: "O que é o SalbScore e quando ele começa a valer?", a: "É uma pontuação de 0 a 1000 que reflete sua saúde financeira como profissional autônomo da saúde. Está em desenvolvimento e o cálculo público entra em produção no roadmap 2026, mas seu histórico já começa a contar a partir do primeiro atendimento registrado. Veja detalhes em /salbscore." },
+                { q: "Quais ações já fazem meu histórico contar para o score?", a: "Cinco ações registradas na plataforma já alimentam seu histórico: (1) cadastrar seu conselho com número e UF, (2) marcar consultas na agenda, (3) lançar recebimentos no módulo financeiro, (4) confirmar atendimentos realizados, (5) atualizar despesas e separar pró-labore. Quanto mais consistente o registro mensal, mais maduro seu score quando ele entrar no ar." },
                 { q: "Quais planos existem hoje?", a: "Dois: o Grátis (até 10 pacientes, agenda e prontuário básico) e o Essencial a R$ 89/mês (pacientes ilimitados, teleconsulta, receita e atestado digital, controle financeiro completo e IA Mentora). O Premium, com Comprovante de Renda e Selo Verificado, está em lista de espera." },
-                { q: "Preciso de cartão para começar?", a: "Não. O cadastro é grátis e não pede cartão. Você só paga quando decidir assinar o Essencial — a cobrança é imediata, sem período de teste pago." },
-                { q: "O Comprovante de Renda Oficial SalbCare já está disponível?", a: "Ainda não. Está em desenvolvimento e faz parte do roadmap 2026 do SalbScore. Profissionais com score ativo terão prioridade no acesso. Comece agora a registrar consultas para que seu histórico já esteja maduro no lançamento." },
+                { q: "Preciso de cartão para começar?", a: "Não. O cadastro é 100% grátis e não pede cartão de crédito. Você só informa o cartão quando decidir assinar o Essencial — e a cobrança é imediata, sem período de teste pago." },
+                { q: "O Comprovante de Renda Oficial SalbCare já está disponível?", a: "Ainda não. Está em desenvolvimento e faz parte do roadmap 2026 do SalbScore. Profissionais com histórico ativo na plataforma terão prioridade no acesso. Comece a registrar consultas agora para que seu histórico já esteja maduro no lançamento." },
                 { q: "A SalbCare cobra comissão por consulta?", a: "Não. Cobramos apenas a assinatura mensal fixa. 100% do valor das suas consultas vai direto para você — combinado e recebido fora da plataforma." },
                 { q: "Meus dados e dos meus pacientes estão seguros?", a: "Sim. Usamos criptografia e seguimos as normas da LGPD. Cada profissional só vê seus próprios dados (Row Level Security)." },
               ].map((item, i) => (
