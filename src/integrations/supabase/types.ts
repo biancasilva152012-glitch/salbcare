@@ -1694,6 +1694,16 @@ export type Database = {
           overall_ok: boolean
         }[]
       }
+      check_salbscore_security_health: {
+        Args: never
+        Returns: {
+          action_hint: string
+          check_key: string
+          label: string
+          message: string
+          status: string
+        }[]
+      }
       get_ambassador_spots_taken: { Args: never; Returns: number }
       get_partner_by_slug: {
         Args: { _slug: string }
