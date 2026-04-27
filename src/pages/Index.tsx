@@ -95,26 +95,41 @@ const initialsOf = (name: string) =>
 const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => (
   <Avatar
     style={{
-      width: 56, height: 56,
+      width: 56,
+      height: 56,
       border: `2px solid ${C.teal}`,
       background: C.cardElev,
       flexShrink: 0,
+      borderRadius: "9999px",
+      overflow: "hidden",
     }}
   >
     <AvatarImage
       src={src}
-      alt={name}
+      alt={`Foto de ${name}`}
       loading="lazy"
       decoding="async"
-      style={{ objectFit: "cover", objectPosition: "center top" }}
+      style={{
+        objectFit: "cover",
+        objectPosition: "center top",
+        width: "100%",
+        height: "100%",
+        borderRadius: "9999px",
+      }}
+      onError={(e) => {
+        // Esconde a img quebrada para o AvatarFallback assumir
+        (e.currentTarget as HTMLImageElement).style.display = "none";
+      }}
     />
     <AvatarFallback
+      delayMs={0}
       style={{
         background: C.cardElev,
         color: C.teal,
         fontWeight: 700,
         fontSize: 14,
         letterSpacing: "0.02em",
+        borderRadius: "9999px",
       }}
     >
       {initialsOf(name)}
