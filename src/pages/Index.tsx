@@ -476,7 +476,8 @@ const Index = () => {
                   Sem cartão de crédito · Cancele quando quiser
                 </p>
                 <Link
-                  to="/login"
+                  to="/login?source=landing-hero"
+                  onClick={() => trackCtaClick("login", "landing_hero", { source: "landing-hero" })}
                   className="salb-nav-link"
                   style={{ fontSize: 13, marginTop: 4, textDecoration: "underline", textUnderlineOffset: 4 }}
                 >
