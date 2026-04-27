@@ -1456,8 +1456,13 @@ const Index = () => {
                 Profissionais de saúde autônomos já usam a SalbCare para atender sem pagar comissão
               </motion.h2>
               <motion.div variants={reveal} className="mt-10">
-                <Link to="/planos" className="salb-btn-primary" style={{ padding: "16px 36px" }}>
-                  Começar grátis por 7 dias
+                <Link
+                  to="/register?source=landing-cta-final"
+                  onClick={() => trackCtaClick("register", "landing_cta_final")}
+                  className="salb-btn-primary"
+                  style={{ padding: "16px 36px" }}
+                >
+                  Criar conta grátis
                   <ArrowRight size={16} />
                 </Link>
               </motion.div>
