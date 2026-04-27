@@ -349,7 +349,7 @@ const Index = () => {
               <Link to="/planos" onClick={() => setMobileMenuOpen(false)} className="salb-nav-link block text-sm">Planos</Link>
               <div className="flex flex-col gap-2 pt-2">
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="salb-btn-outline">Já tenho conta</Link>
-                <Link to="/experimente" onClick={() => setMobileMenuOpen(false)} className="salb-btn-primary-sm">Testar agora</Link>
+                <Link to="/register?source=landing-nav" onClick={() => setMobileMenuOpen(false)} className="salb-btn-primary-sm">Começar grátis</Link>
               </div>
             </motion.div>
           )}
