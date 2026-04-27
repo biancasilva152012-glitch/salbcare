@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import QRCode from "qrcode";
@@ -9,7 +9,7 @@ import SEOHead from "@/components/SEOHead";
 import PageContainer from "@/components/PageContainer";
 import BackButton from "@/components/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUserType } from "@/hooks/useUserType";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Página /perfil/salbscore/selo-exemplo
@@ -17,8 +17,19 @@ import { useUserType } from "@/hooks/useUserType";
  */
 const SalbScoreSeloPreview = () => {
   const navigate = useNavigate();
-  const { profile } = useAuth();
-  const { userType } = useUserType();
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<{ profile_slug: string | null; payment_status: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    void supabase
+      .from("profiles")
+      .select("profile_slug, payment_status")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setProfile(data as any));
+  }, [user]);
+
   const isPaid = profile?.payment_status === "active" || profile?.payment_status === "trialing" || profile?.payment_status === "paid";
 
   const exemplo = {
