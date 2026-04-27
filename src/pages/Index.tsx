@@ -907,6 +907,26 @@ const Index = () => {
                 Retome o controle da sua vida financeira. Seja reconhecido pelo que você
                 realmente produz.
               </motion.p>
+
+              <motion.div
+                variants={reveal}
+                className="flex flex-col sm:flex-row sm:items-center"
+                style={{ gap: 14, marginTop: 8 }}
+              >
+                <Link
+                  to="/register"
+                  className="salb-btn-primary"
+                  style={{ padding: "16px 32px", justifyContent: "center" }}
+                  data-track="cta_invisivel_bancos_register"
+                >
+                  Criar minha conta grátis
+                  <ArrowRight size={16} />
+                </Link>
+                <span style={{ color: C.textMuted, fontSize: 13 }}>
+                  7 dias grátis · sem cartão de crédito
+                </span>
+              </motion.div>
+
             </motion.div>
           </div>
         </section>
