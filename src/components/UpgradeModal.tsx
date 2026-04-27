@@ -64,10 +64,10 @@ const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeMo
             className="w-full gradient-primary font-semibold py-5"
           >
             <Crown className="h-4 w-4 mr-2" />
-            Assinar por R$ {plan.price}/mês
+            Virar Plus por R$ {plan.price}/mês
           </Button>
           <p className="text-[10px] text-center text-muted-foreground">
-            Cancele quando quiser
+            Pagamento imediato • Apple Pay, Google Pay, cartão, boleto e Pix • Cancele quando quiser
           </p>
         </div>
       </DialogContent>
