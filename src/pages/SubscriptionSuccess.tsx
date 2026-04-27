@@ -1,27 +1,63 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Loader2, Clock, Calendar, DollarSign, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { trackPurchase, trackCtaClick } from "@/hooks/useTracking";
-import { PLANS } from "@/config/plans";
+import { trackPurchase, trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { PLANS, PlanKey } from "@/config/plans";
 
 const MAX_ATTEMPTS = 6;
+const SOURCE_KEY = "salbcare_checkout_source";
+const PLAN_KEY = "salbcare_checkout_plan";
 
 type Status = "confirming" | "active" | "pending";
 
 /**
- * Página dedicada pós-checkout do plano Essencial.
- * - Confirma a assinatura
- * - Dispara `purchase` (GA4 + Meta) com plan + value uma única vez
- * - Mostra próximos passos para começar a alimentar o SalbScore
+ * Resolve `plan` e `source` na seguinte ordem de prioridade:
+ *   1) query string (ex: ?plan=basic&source=salbscore-hero)
+ *   2) sessionStorage (sobrevive a F5 / volta do navegador depois do Stripe)
+ *   3) defaults seguros ('basic' / 'direct')
+ * Sempre que resolver via query, persiste em sessionStorage para
+ * sobreviver a um refresh subsequente.
  */
+function resolveCheckoutContext(qsPlan: string | null, qsSource: string | null) {
+  let plan: PlanKey = "basic";
+  if (qsPlan && qsPlan in PLANS) {
+    plan = qsPlan as PlanKey;
+  } else {
+    const stored = sessionStorage.getItem(PLAN_KEY);
+    if (stored && stored in PLANS) plan = stored as PlanKey;
+  }
+
+  let source = "direct";
+  if (qsSource && qsSource.length > 0) {
+    source = qsSource;
+  } else {
+    const stored = sessionStorage.getItem(SOURCE_KEY);
+    if (stored && stored.length > 0) source = stored;
+  }
+
+  // Re-persiste para garantir reaproveitamento em refresh / navegação de volta.
+  sessionStorage.setItem(PLAN_KEY, plan);
+  sessionStorage.setItem(SOURCE_KEY, source);
+
+  return { plan, source };
+}
+
 const SubscriptionSuccess = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { refreshSubscription, subscription, user } = useAuth();
   const [attempts, setAttempts] = useState(0);
   const [purchaseTracked, setPurchaseTracked] = useState(false);
+
+  const { plan: planKey, source } = useMemo(
+    () => resolveCheckoutContext(searchParams.get("plan"), searchParams.get("source")),
+    [searchParams],
+  );
+  const plan = PLANS[planKey];
+  const planValue = plan.price;
 
   // Refresh inicial
   useEffect(() => {
@@ -45,30 +81,42 @@ const SubscriptionSuccess = () => {
     return "confirming";
   }, [subscription.subscribed, attempts]);
 
-  // Dispara purchase event uma vez quando confirmar
+  // Dispara conversão uma única vez quando subscription confirmar.
+  // Mesmo nome de evento (`subscription_confirmed`) em GA4 e Meta Pixel
+  // via trackUnified para paridade 1:1.
   useEffect(() => {
     if (status === "active" && !purchaseTracked) {
-      trackPurchase(PLANS.basic.price);
-      // GA4 conversion granular
-      if (window.gtag) {
-        window.gtag("event", "subscription_confirmed", {
-          plan: "basic",
-          plan_name: PLANS.basic.name,
-          value: PLANS.basic.price,
-          currency: "BRL",
-          source: sessionStorage.getItem("salbcare_checkout_source") || "checkout",
-        });
-      }
-      if (window.fbq) {
-        window.fbq("trackCustom", "SubscriptionConfirmed", {
-          plan: "basic",
-          value: PLANS.basic.price,
-          currency: "BRL",
-        });
-      }
+      const purchasePayload = {
+        plan: planKey,
+        plan_name: plan.name,
+        value: planValue,
+        currency: "BRL",
+        source,
+      };
+      // Conversão padrão GA Ads + fbq Purchase (com value correto do plano)
+      trackPurchase(planValue);
+      // Evento custom de funil unificado
+      trackUnified("subscription_confirmed", purchasePayload);
       setPurchaseTracked(true);
+      // Limpa storage só depois de disparar — assim sobrevive a refreshes
+      // antes da confirmação.
+      sessionStorage.removeItem("salbcare_from_checkout");
     }
-  }, [status, purchaseTracked]);
+  }, [status, purchaseTracked, planKey, planValue, plan.name, source]);
+
+  // Estado de erro/pendente também é trackado — útil pra correlacionar
+  // checkouts iniciados que não confirmam.
+  useEffect(() => {
+    if (status === "pending") {
+      trackUnified("subscription_pending", {
+        plan: planKey,
+        plan_name: plan.name,
+        value: planValue,
+        currency: "BRL",
+        source,
+      });
+    }
+  }, [status, planKey, plan.name, planValue, source]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -78,6 +126,8 @@ const SubscriptionSuccess = () => {
         className="glass-card p-8 max-w-lg w-full space-y-6"
         data-testid="subscription-success-card"
         data-status={status}
+        data-plan={planKey}
+        data-source={source}
       >
         <div className="text-center space-y-3">
           {status === "active" ? (
@@ -89,7 +139,7 @@ const SubscriptionSuccess = () => {
           )}
           <h1 className="text-2xl font-bold">
             {status === "active"
-              ? "Assinatura Essencial confirmada!"
+              ? `Assinatura ${plan.name} confirmada!`
               : status === "pending"
               ? "Pagamento em processamento"
               : "Confirmando seu pagamento…"}
@@ -97,7 +147,7 @@ const SubscriptionSuccess = () => {
           <p className="text-sm text-muted-foreground">
             {status === "active" ? (
               <>
-                Bem-vindo ao plano <strong>Essencial</strong> — R$ {PLANS.basic.price}/mês.
+                Bem-vindo ao plano <strong>{plan.name}</strong> — R$ {planValue}/mês.
                 Você já tem acesso a todos os recursos: pacientes ilimitados, teleconsulta,
                 receita digital, controle financeiro completo e IA Mentora.
               </>
@@ -137,7 +187,7 @@ const SubscriptionSuccess = () => {
             <div className="space-y-2">
               <Button
                 onClick={() => {
-                  trackCtaClick("go_dashboard", "subscription_success");
+                  trackCtaClick("go_dashboard", "subscription_success", { source, plan: planKey });
                   navigate("/dashboard");
                 }}
                 className="w-full gradient-primary font-semibold gap-2"
@@ -148,7 +198,7 @@ const SubscriptionSuccess = () => {
               </Button>
               <Button
                 onClick={() => {
-                  trackCtaClick("go_salbscore", "subscription_success");
+                  trackCtaClick("go_salbscore", "subscription_success", { source, plan: planKey });
                   navigate("/perfil/salbscore");
                 }}
                 variant="outline"
