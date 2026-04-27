@@ -8,8 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/SEOHead";
 import PageContainer from "@/components/PageContainer";
 import BackButton from "@/components/BackButton";
+import { SALBSCORE_STATUS_CLASSES, SALBSCORE_STATUS_LABELS, type SalbScoreCheckStatus } from "@/lib/salbscoreStatus";
 
-type CheckStatus = "pending" | "ok" | "warn" | "fail";
+type CheckStatus = SalbScoreCheckStatus;
 type Check = {
   id: string;
   label: string;
@@ -35,10 +36,10 @@ const FIX_ACTIONS: Record<string, { title: string; desc: string; cta: string; to
     { title: "Faça login novamente", desc: "Sua sessão expirou ou está ausente.", cta: "Ir para login", to: "/login" },
   ],
   profile: [
-    { title: "Configurar perfil profissional", desc: "Adicione conselho (CRP/CRM), bio e dados básicos.", cta: "Configurar perfil", to: "/dashboard/perfil" },
+    { title: "Configurar perfil profissional", desc: "Adicione conselho (CRP/CRM), bio e dados básicos.", cta: "Configurar perfil", to: "/profile" },
   ],
   table_historico: [
-    { title: "Registrar primeiro atendimento", desc: "Sem histórico, o SalbScore não tem base de cálculo.", cta: "Cadastrar paciente", to: "/dashboard/patients" },
+    { title: "Registrar primeiro atendimento", desc: "Sem histórico, o SalbScore não tem base de cálculo.", cta: "Cadastrar paciente", to: "/dashboard/pacientes" },
     { title: "Lançar receita no financeiro", desc: "Receitas validam atividade real e elevam seu score.", cta: "Abrir financeiro", to: "/dashboard/financial" },
   ],
   edge_calcular: [
@@ -57,14 +58,7 @@ const StatusIcon = ({ status }: { status: CheckStatus }) => {
 };
 
 const StatusBadge = ({ status }: { status: CheckStatus }) => {
-  const map: Record<CheckStatus, { label: string; className: string }> = {
-    pending: { label: "Verificando", className: "bg-muted text-muted-foreground" },
-    ok: { label: "OK", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-    warn: { label: "Atenção", className: "bg-amber-50 text-amber-700 border-amber-200" },
-    fail: { label: "Falha", className: "bg-red-50 text-red-700 border-red-200" },
-  };
-  const c = map[status];
-  return <Badge variant="outline" className={c.className}>{c.label}</Badge>;
+  return <Badge variant="outline" className={SALBSCORE_STATUS_CLASSES[status]}>{SALBSCORE_STATUS_LABELS[status]}</Badge>;
 };
 
 function loadHistory(): HistoryEntry[] {
