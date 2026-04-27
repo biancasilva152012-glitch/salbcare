@@ -323,7 +323,7 @@ const Index = () => {
 
             <div className="hidden md:flex items-center gap-3">
               <Link to="/login" className="salb-btn-outline">Já tenho conta</Link>
-              <Link to="/experimente" className="salb-btn-primary-sm">Testar agora</Link>
+              <Link to="/register?source=landing-nav" className="salb-btn-primary-sm">Começar grátis</Link>
             </div>
 
             <button
