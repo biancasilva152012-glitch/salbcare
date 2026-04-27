@@ -105,23 +105,42 @@
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1647046726471853&ev=PageView&noscript=1" alt="" /></noscript>
 
     <script>
-      // Defer SW + cache maintenance off the critical path to avoid forced reflows
-      // and main-thread contention during initial render.
+      // SW + cache maintenance: runs only AFTER first user interaction OR
+      // after a few seconds of idle time post-load. Emits User Timing marks
+      // so you can correlate this work with "Forced reflow" entries in DevTools
+      // Performance / Lighthouse traces (filter by "salb:").
       (function () {
         var scheduled = false;
-        function runMaintenance() {
+        var IDLE_DELAY_MS = 6000;     // wait this long if user never interacts
+        var INTERACTION_DELAY_MS = 800; // small grace after first interaction
+
+        function mark(name) {
+          try { performance.mark('salb:' + name); } catch (e) {}
+        }
+        function measure(name, start, end) {
+          try { performance.measure('salb:' + name, 'salb:' + start, 'salb:' + end); } catch (e) {}
+        }
+
+        mark('boot');
+
+        function runMaintenance(trigger) {
           if (scheduled) return;
           scheduled = true;
+          mark('maint-scheduled-' + trigger);
+
           var run = function () {
+            mark('maint-start');
             try {
               if ('serviceWorker' in navigator) {
+                mark('sw-update-start');
                 navigator.serviceWorker.getRegistrations().then(function (registrations) {
                   for (var i = 0; i < registrations.length; i++) {
                     registrations[i].update();
                   }
+                  mark('sw-update-end');
+                  measure('sw-update', 'sw-update-start', 'sw-update-end');
                 }).catch(function () {});
-                // Reload on new SW activation, but only when the page is hidden
-                // to avoid disrupting the user and triggering layout work mid-session.
+
                 navigator.serviceWorker.addEventListener('controllerchange', function () {
                   if (document.visibilityState === 'hidden') {
                     window.location.reload();
@@ -136,6 +155,7 @@
                 });
               }
               if ('caches' in window) {
+                mark('cache-purge-start');
                 caches.keys().then(function (names) {
                   for (var i = 0; i < names.length; i++) {
                     if (
@@ -146,20 +166,43 @@
                       caches.delete(names[i]);
                     }
                   }
+                  mark('cache-purge-end');
+                  measure('cache-purge', 'cache-purge-start', 'cache-purge-end');
                 }).catch(function () {});
               }
             } catch (e) {}
+            mark('maint-end');
+            measure('maint-total', 'maint-start', 'maint-end');
           };
+
           if ('requestIdleCallback' in window) {
             window.requestIdleCallback(run, { timeout: 4000 });
           } else {
-            setTimeout(run, 2000);
+            setTimeout(run, 200);
           }
         }
+
+        var interactionEvents = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+        function onInteraction() {
+          interactionEvents.forEach(function (ev) {
+            window.removeEventListener(ev, onInteraction, { passive: true });
+          });
+          if (idleTimer) clearTimeout(idleTimer);
+          setTimeout(function () { runMaintenance('interaction'); }, INTERACTION_DELAY_MS);
+        }
+
+        var idleTimer = null;
+        function armTriggers() {
+          interactionEvents.forEach(function (ev) {
+            window.addEventListener(ev, onInteraction, { passive: true, once: false });
+          });
+          idleTimer = setTimeout(function () { runMaintenance('idle'); }, IDLE_DELAY_MS);
+        }
+
         if (document.readyState === 'complete') {
-          runMaintenance();
+          armTriggers();
         } else {
-          window.addEventListener('load', runMaintenance, { once: true });
+          window.addEventListener('load', armTriggers, { once: true });
         }
       })();
     </script>
