@@ -66,16 +66,25 @@ const PublicSalbScore = () => {
         <nav style={{ borderBottom: `1px solid ${C.border}`, background: "rgba(250,250,247,0.85)", backdropFilter: "blur(10px)", position: "sticky", top: 0, zIndex: 50 }}>
           <div className="mx-auto max-w-6xl px-5 sm:px-6 flex items-center justify-between" style={{ height: 64 }}>
             <Link to="/" style={{ fontWeight: 800, color: C.text, letterSpacing: "-0.02em", fontSize: 17 }}>SalbCare</Link>
-            <Link
-              to="/register?source=salbscore-nav"
-              onClick={() => trackCtaClick("register_nav", "salbscore_page")}
-              style={{
-                background: C.teal, color: C.tealOnDark, padding: "10px 18px",
-                borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none",
-              }}
-            >
-              Começar grátis
-            </Link>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <Link
+                to="/login?source=salbscore-nav"
+                onClick={() => trackCtaClick("login", "salbscore_nav", { source: "salbscore-nav" })}
+                style={{ color: C.textMuted, fontSize: 14, textDecoration: "none", fontWeight: 500 }}
+              >
+                Entrar
+              </Link>
+              <Link
+                to="/register?source=salbscore-nav"
+                onClick={() => trackCtaClick("register", "salbscore_nav", { source: "salbscore-nav" })}
+                style={{
+                  background: C.teal, color: C.tealOnDark, padding: "10px 18px",
+                  borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none",
+                }}
+              >
+                Começar grátis
+              </Link>
+            </div>
           </div>
         </nav>
 
