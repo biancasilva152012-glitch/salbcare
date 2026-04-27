@@ -1,8 +1,10 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Crown, Check, X } from "lucide-react";
+import { Crown, Check, X, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { PLANS } from "@/config/plans";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { deriveSubscriptionStatus } from "@/lib/subscriptionStatus";
 
 interface UpgradeModalProps {
   open: boolean;
@@ -14,7 +16,20 @@ interface UpgradeModalProps {
 
 const UpgradeModal = ({ open, onClose, feature, currentUsage, limit }: UpgradeModalProps) => {
   const navigate = useNavigate();
+  const { subscription } = useAuth();
   const plan = PLANS.basic;
+  const status = deriveSubscriptionStatus({
+    paymentStatus: subscription.paymentStatus,
+    trialDaysRemaining: subscription.trialDaysRemaining,
+    subscribed: subscription.subscribed,
+  });
+
+  const StatusIcon =
+    status.kind === "active"
+      ? CheckCircle
+      : status.kind === "trial" || status.kind === "pending"
+        ? Clock
+        : AlertCircle;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
