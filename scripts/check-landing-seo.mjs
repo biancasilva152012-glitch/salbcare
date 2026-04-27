@@ -37,8 +37,8 @@ if (!descMatch) errors.push("SEOHead description ausente em Index.tsx.");
 else if (descMatch[1].length > 165) warnings.push(`Description >165 chars (${descMatch[1].length}).`);
 else ok.push(`Description (${descMatch[1].length} chars).`);
 
-// 2. Único <h1>
-const h1Count = (src.match(/<h1[\s>]/g) ?? []).length;
+// 2. Único <h1> (incluindo motion.h1)
+const h1Count = (src.match(/<(?:motion\.)?h1[\s>]/g) ?? []).length;
 if (h1Count === 0) errors.push("Nenhum <h1> encontrado em Index.tsx.");
 else if (h1Count > 1) errors.push(`Múltiplos <h1> (${h1Count}). Mantenha apenas um na landing.`);
 else ok.push("H1 único.");
