@@ -57,23 +57,61 @@ serve(async (req) => {
   }
 
 
+  // ── 1) Verificar header e segredo ────────────────────────────────────
   const signature = req.headers.get("stripe-signature");
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 
-  if (!signature || !webhookSecret) {
-    logStep("Missing signature or webhook secret");
-    return new Response("Missing signature or webhook secret", { status: 400 });
+  if (!webhookSecret) {
+    // Erro de configuração — devolve 500 (não 400) para que o Stripe re-tente
+    // e fique evidente nos logs que falta provisionar o segredo.
+    logStep("❌ STRIPE_WEBHOOK_SECRET não configurado — recusando webhook");
+    return new Response(
+      JSON.stringify({ error: "Webhook secret not configured" }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
   }
 
+  if (!signature) {
+    // Requisição sem header `stripe-signature` → não veio do Stripe.
+    // 401 deixa claro que é tentativa não autenticada (úteis para alertas).
+    logStep("⚠️ Requisição sem stripe-signature — possível chamada não autorizada");
+    return new Response(
+      JSON.stringify({ error: "Missing stripe-signature header" }),
+      { status: 401, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  // ── 2) Validar assinatura ────────────────────────────────────────────
+  // Lê o body cru (string) — exigência do verificador do Stripe.
   const body = await req.text();
   let event: Stripe.Event;
 
   try {
-    event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+    event = await stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      webhookSecret,
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    logStep("Assinatura inválida", { error: msg });
-    return new Response("Webhook signature invalid", { status: 400 });
+    // 400 sinaliza ao Stripe "assinatura inválida, não re-tente" — exatamente
+    // o que queremos para tentativas falsas. Loga com detalhes para auditoria.
+    logStep("⚠️ Assinatura do webhook inválida — rejeitando", {
+      error: msg,
+      sigPrefix: signature.slice(0, 20),
+    });
+    return new Response(
+      JSON.stringify({ error: "Invalid webhook signature" }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  if (!event?.id || !event?.type) {
+    logStep("⚠️ Evento sem id/type após validação — descartando");
+    return new Response(
+      JSON.stringify({ error: "Malformed event" }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
+    );
   }
 
   logStep("Evento recebido", { type: event.type, id: event.id });
