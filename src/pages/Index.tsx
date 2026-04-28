@@ -7,9 +7,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
 import { useState } from "react";
-import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
-import testimonialMayara from "@/assets/testimonial-mayara.jpeg";
-import testimonialCinara from "@/assets/testimonial-cinara.jpeg";
+// Fotos dos depoimentos servidas pelo bucket público "testimonials" no Supabase Storage.
+// Upload manual via painel: sarah-almeida.{jpg,png}, mayara-barros.{jpg,png}, cinara-costa.{jpg,png}.
+const TESTIMONIAL_BUCKET = "https://fevrdqmqmbahmeaymplq.supabase.co/storage/v1/object/public/testimonials";
+const testimonialSarah = `${TESTIMONIAL_BUCKET}/sarah-almeida.jpg`;
+const testimonialMayara = `${TESTIMONIAL_BUCKET}/mayara-barros.jpg`;
+const testimonialCinara = `${TESTIMONIAL_BUCKET}/cinara-costa.jpg`;
 
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — única fonte de verdade
@@ -75,14 +78,24 @@ const initialsOf = (name: string) =>
 
 const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const triedPng = currentSrc.endsWith(".png");
   return (
-    <div style={{ position: "relative", width: 56, height: 56, borderRadius: "9999px", border: `2px solid ${C.teal}`, background: C.cardElev, flexShrink: 0, overflow: "hidden" }}>
+    <div style={{ position: "relative", width: 56, height: 56, borderRadius: "9999px", border: "2px solid #ffffff", background: C.cardElev, flexShrink: 0, overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
       {status === "loading" && (
         <div aria-hidden style={{ position: "absolute", inset: 0, borderRadius: "9999px", background: `linear-gradient(90deg, ${C.cardElev} 0%, ${C.cardHover} 50%, ${C.cardElev} 100%)`, backgroundSize: "200% 100%", animation: "salbShimmer 1.4s ease-in-out infinite" }} />
       )}
       {status !== "error" && (
-        <img src={src} alt={`Foto de ${name}`} loading="lazy" decoding="async" width={56} height={56}
-          onLoad={() => setStatus("loaded")} onError={() => setStatus("error")}
+        <img src={currentSrc} alt={`Foto de ${name}`} loading="lazy" decoding="async" width={56} height={56}
+          onLoad={() => setStatus("loaded")}
+          onError={() => {
+            if (!triedPng) {
+              setStatus("loading");
+              setCurrentSrc(currentSrc.replace(/\.jpg$/, ".png"));
+            } else {
+              setStatus("error");
+            }
+          }}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", borderRadius: "9999px", opacity: status === "loaded" ? 1 : 0, transition: "opacity 220ms ease" }} />
       )}
       {status === "error" && (
@@ -585,8 +598,89 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── 5b. SALBSCORE — IDENTIDADE FINANCEIRA ── */}
+        <section id="salbscore-identidade" style={{ background: C.bg, borderTop: `1px solid ${C.border}` }} className={S.sectionY} aria-label="SalbScore — sua identidade financeira">
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger} className="text-center mb-10">
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(28px, 4.4vw, 44px)", maxWidth: 820, marginInline: "auto" }}>
+                SalbScore™ — Sua identidade financeira como profissional de saúde
+              </motion.h2>
+              <motion.p variants={reveal} style={{ color: C.textMuted, fontSize: 16, lineHeight: 1.6, marginTop: 14, maxWidth: 680, marginInline: "auto" }}>
+                O sistema financeiro brasileiro foi feito para CLT. O <strong style={{ color: C.text }}>SalbScore</strong> foi feito para você.
+              </motion.p>
+            </motion.div>
+
+            {/* Problema */}
+            <motion.ul initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+              className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-12" style={{ listStyle: "none", padding: 0 }}>
+              {[
+                "Banco nega crédito porque sua renda em Pix é “invisível”.",
+                "Imobiliária exige contracheque que você não tem.",
+                "Financeiras cobram juros abusivos por falta de histórico comprovado.",
+              ].map((txt) => (
+                <motion.li key={txt} variants={reveal}
+                  style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: "16px 18px", color: C.text, fontSize: 14.5, lineHeight: 1.55 }}>
+                  <span style={{ color: C.teal, fontWeight: 700, marginRight: 8 }}>•</span>{txt}
+                </motion.li>
+              ))}
+            </motion.ul>
+
+            {/* Solução: card de score + 3 colunas */}
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,360px)_1fr] gap-8 items-start">
+              {/* Card de score visual estilo FICO */}
+              <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: 28, textAlign: "center" }}>
+                <div style={{ color: C.textMuted, fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>SalbScore</div>
+                <div style={{ marginTop: 10, fontSize: 64, fontWeight: 800, color: C.teal, lineHeight: 1, letterSpacing: "-0.02em" }}>
+                  742<span style={{ color: C.textMuted, fontSize: 18, fontWeight: 500, marginLeft: 6 }}>/ 1000</span>
+                </div>
+                <div style={{ marginTop: 10, fontSize: 14, color: C.text, fontWeight: 600 }}>Faixa Estabelecido</div>
+                {/* Barra 0-1000 */}
+                <div style={{ marginTop: 18, height: 8, background: C.cardElev, borderRadius: 999, overflow: "hidden", position: "relative" }}>
+                  <div style={{ width: "74.2%", height: "100%", background: C.teal, borderRadius: 999 }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, fontSize: 11, color: C.textMuted }}>
+                  <span>0</span><span>500</span><span>1000</span>
+                </div>
+                <div style={{ marginTop: 18, padding: "10px 12px", background: C.cardElev, borderRadius: 10, fontSize: 12, color: C.textMuted, lineHeight: 1.5 }}>
+                  Gerado automaticamente com seus dados da plataforma — quanto mais você usa, mais alto fica.
+                </div>
+              </motion.div>
+
+              {/* 3 colunas de benefícios */}
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { t: "Comprovante de Renda Digital", d: "Substitui contracheque para aluguéis, financiamentos e vistos." },
+                  { t: "Certidão de Atividade Profissional", d: "Comprova pacientes ativos, tempo de atuação e conformidade com CRM/CRP/CRN." },
+                  { t: "Score de Crédito SalbCare", d: "Número verificável por parceiros financeiros via QR Code." },
+                ].map((b) => (
+                  <motion.div key={b.t} variants={reveal}
+                    style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+                    <div style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>SalbScore</div>
+                    <h3 style={{ color: C.text, fontSize: 16, fontWeight: 700, lineHeight: 1.35 }}>{b.t}</h3>
+                    <p style={{ color: C.textMuted, fontSize: 13.5, lineHeight: 1.55 }}>{b.d}</p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* CTA */}
+            <div className="text-center mt-12">
+              <Link to="/cadastro" onClick={() => fireCta("quero_construir_meu_salbscore", "salbscore_identidade")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.teal, color: "#ffffff", fontWeight: 700, fontSize: 15, padding: "14px 28px", borderRadius: 12, textDecoration: "none", transition: `background ${T.fast}` }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#00a08e")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = C.teal)}>
+                Quero construir meu SalbScore →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* ── 6. DEPOIMENTOS ── */}
         <section style={{ background: C.card, borderTop: `1px solid ${C.border}` }} className={S.sectionY}>
+
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="text-center mb-14">
