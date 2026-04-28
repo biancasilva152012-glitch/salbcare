@@ -7,9 +7,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
 import { useState } from "react";
-import testimonialSarah from "@/assets/testimonial-sarah.jpeg";
-import testimonialMayara from "@/assets/testimonial-mayara.jpeg";
-import testimonialCinara from "@/assets/testimonial-cinara.jpeg";
+// Fotos dos depoimentos servidas pelo bucket público "testimonials" no Supabase Storage.
+// Upload manual via painel: sarah-almeida.{jpg,png}, mayara-barros.{jpg,png}, cinara-costa.{jpg,png}.
+const TESTIMONIAL_BUCKET = "https://fevrdqmqmbahmeaymplq.supabase.co/storage/v1/object/public/testimonials";
+const testimonialSarah = `${TESTIMONIAL_BUCKET}/sarah-almeida.jpg`;
+const testimonialMayara = `${TESTIMONIAL_BUCKET}/mayara-barros.jpg`;
+const testimonialCinara = `${TESTIMONIAL_BUCKET}/cinara-costa.jpg`;
 
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — única fonte de verdade
