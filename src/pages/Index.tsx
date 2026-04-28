@@ -330,14 +330,8 @@ const Index = () => {
               </motion.h1>
 
               <motion.p variants={reveal}
-                style={{ fontSize: "clamp(17px, 2.2vw, 21px)", maxWidth: 660, margin: "24px auto 0", color: C.text, opacity: 0.92, fontWeight: 500, lineHeight: 1.5 }}>
-                A primeira plataforma do Brasil que enxerga o que o banco não enxerga:
-                a <strong style={{ color: C.teal, opacity: 1 }}>renda real</strong> do profissional de saúde autônomo.
-              </motion.p>
-
-              <motion.p variants={reveal}
-                style={{ fontSize: 16, maxWidth: 580, margin: "16px auto 0", color: C.textMuted, lineHeight: 1.6 }}>
-                Construa seu SalbScore. Organize sua renda. Pare de ser invisível.
+                style={{ fontSize: "clamp(17px, 2.2vw, 21px)", maxWidth: 680, margin: "24px auto 0", color: C.text, opacity: 0.92, fontWeight: 500, lineHeight: 1.5 }}>
+                Mais de <strong style={{ color: C.teal, opacity: 1 }}>500 profissionais</strong> já organizaram sua prática e estão construindo seu <strong style={{ color: C.teal, opacity: 1 }}>SalbScore</strong> — a identidade financeira que o banco nunca te deu.
               </motion.p>
 
               <motion.ul variants={reveal} className="flex flex-wrap items-center justify-center"
@@ -355,6 +349,13 @@ const Index = () => {
                   </li>
                 ))}
               </motion.ul>
+
+              {/* Social proof bar discreto */}
+              <motion.p variants={reveal}
+                style={{ marginTop: 18, color: C.textMuted, fontSize: 13, fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 8 }}>
+                <span aria-hidden style={{ display: "inline-block", width: 8, height: 8, borderRadius: 999, background: "#22c55e", boxShadow: "0 0 0 4px rgba(34,197,94,0.18)" }} />
+                47 profissionais cadastrados esta semana
+              </motion.p>
 
               <motion.div variants={reveal} className="flex flex-col items-center" style={{ marginTop: 32, gap: 12 }}>
                 <Link to="/register?source=landing-hero"
