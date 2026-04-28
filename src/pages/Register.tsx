@@ -211,7 +211,7 @@ const Register = () => {
       >
         <motion.div className="text-center" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
           <motion.div className="mx-auto mb-2 h-16 w-16 relative" whileHover={{ scale: 1.05 }}>
-            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
+            <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
           </motion.div>
           <div className="flex items-center justify-center gap-2 mb-1">
             <Stethoscope className="h-4 w-4 text-primary" />

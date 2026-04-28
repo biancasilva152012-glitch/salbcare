@@ -54,7 +54,7 @@ const Install = () => {
 
         {/* Icon */}
         <div className="mx-auto h-20 w-20">
-          <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
+          <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
         </div>
 
         <div>

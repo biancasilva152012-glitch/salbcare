@@ -23,7 +23,7 @@ const ActivationOnboarding = ({ userName }: ActivationOnboardingProps) => {
         transition={{ duration: 0.5 }}
         className="space-y-3"
       >
-        <img src="/pwa-icon-512.png" alt="SalbCare" className="h-14 w-14 mx-auto mb-4 object-contain" />
+        <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt="SalbCare" className="h-14 w-14 mx-auto mb-4 object-contain" />
         <h1 className="text-2xl sm:text-3xl font-bold">
           Bem-vindo(a), {firstName}! 👋
         </h1>
