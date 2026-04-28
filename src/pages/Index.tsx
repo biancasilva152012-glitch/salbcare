@@ -669,7 +669,7 @@ const Index = () => {
             {/* CTA */}
             <div className="text-center mt-12">
               <Link to="/cadastro" onClick={() => fireCta("quero_construir_meu_salbscore", "salbscore_identidade")}
-                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.teal, color: "#ffffff", fontWeight: 700, fontSize: 15, padding: "14px 28px", borderRadius: 12, textDecoration: "none", transition: `background ${T.button}` }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.teal, color: "#ffffff", fontWeight: 700, fontSize: 15, padding: "14px 28px", borderRadius: 12, textDecoration: "none", transition: `background ${T.fast}` }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#00a08e")}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = C.teal)}>
                 Quero construir meu SalbScore →
