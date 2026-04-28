@@ -131,7 +131,7 @@ const App = () => (
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<ParaProfissionais />} />
+              <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cadastro" element={<Register />} />
@@ -139,8 +139,9 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
-              <Route path="/para-profissionais" element={<ParaProfissionais />} />
-              <Route path="/index" element={<Index />} />
+              {/* /para-profissionais e /index → redirect 301-like para a raiz unificada */}
+              <Route path="/para-profissionais" element={<Navigate to="/" replace />} />
+              <Route path="/index" element={<Navigate to="/" replace />} />
               <Route path="/p/:slug" element={<PublicProfile />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/profissionais" element={<PublicProfessionals />} />
