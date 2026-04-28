@@ -380,7 +380,176 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── 2. BARRA DE PROVA SOCIAL ── */}
+        {/* ── 1.5 NOVO BLOCO CTA — SalbScore ── */}
+        <section aria-label="SalbScore — sua identidade financeira" style={{ background: C.bg, paddingTop: 32, paddingBottom: 32 }}>
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              style={{
+                background: "#0D1B2A",
+                borderRadius: 24,
+                border: `1px solid ${C.border}`,
+                boxShadow: "0 20px 60px -20px rgba(0,180,160,0.25), 0 0 0 1px rgba(0,180,160,0.10) inset",
+                padding: "clamp(28px, 5vw, 56px)",
+              }}
+            >
+              {/* Badge topo */}
+              <div className="flex justify-center" style={{ marginBottom: 20 }}>
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    background: "rgba(0,180,160,0.12)",
+                    border: "1px solid rgba(0,180,160,0.35)",
+                    color: C.teal,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    padding: "6px 14px",
+                    borderRadius: 999,
+                  }}
+                >
+                  <span aria-hidden style={{ width: 6, height: 6, borderRadius: 999, background: C.teal, boxShadow: "0 0 0 4px rgba(0,180,160,0.18)" }} />
+                  Novo • Exclusivo SalbCare
+                </span>
+              </div>
+
+              {/* Título */}
+              <h2
+                className="text-center"
+                style={{
+                  fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+                  color: "#ffffff",
+                  fontWeight: 800,
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.02em",
+                  fontSize: "clamp(26px, 4.4vw, 40px)",
+                  maxWidth: 760,
+                  margin: "0 auto",
+                }}
+              >
+                Seu score já está sendo calculado —{" "}
+                <span style={{ color: C.teal }}>você ainda não sabe quanto vale.</span>
+              </h2>
+
+              {/* Subtítulo */}
+              <p
+                className="text-center"
+                style={{
+                  marginTop: 18,
+                  color: "rgba(255,255,255,0.78)",
+                  fontSize: "clamp(15px, 2vw, 17px)",
+                  lineHeight: 1.6,
+                  maxWidth: 720,
+                  marginInline: "auto",
+                }}
+              >
+                O <strong style={{ color: "#fff" }}>SalbScore™</strong> é a primeira identidade financeira do
+                profissional de saúde autônomo brasileiro. Enquanto você atende, a SalbCare constrói seu histórico:
+                pacientes, receita, conformidade com CRM/CRP/CRN, tempo de atuação. Resultado: um número de{" "}
+                <strong style={{ color: C.teal }}>0 a 1000</strong> que o banco, a imobiliária e o consulado vão aceitar.
+              </p>
+
+              {/* 3 bullets em teal */}
+              <ul
+                style={{
+                  marginTop: 28,
+                  display: "grid",
+                  gap: 10,
+                  maxWidth: 620,
+                  marginInline: "auto",
+                  listStyle: "none",
+                  padding: 0,
+                }}
+              >
+                {[
+                  "Substitui contracheque para aluguel, financiamento e visto",
+                  "Comprova renda real em Pix sem depender de contador",
+                  "Quanto mais tempo na SalbCare, mais alto e mais valioso fica",
+                ].map((b) => (
+                  <li
+                    key={b}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 12,
+                      color: "rgba(255,255,255,0.92)",
+                      fontSize: 15,
+                      lineHeight: 1.55,
+                    }}
+                  >
+                    <span
+                      aria-hidden
+                      style={{
+                        flexShrink: 0,
+                        marginTop: 3,
+                        width: 18,
+                        height: 18,
+                        borderRadius: 999,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(0,180,160,0.18)",
+                        color: C.teal,
+                        fontWeight: 800,
+                        fontSize: 11,
+                      }}
+                    >
+                      ✓
+                    </span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              <div className="flex flex-col items-center" style={{ marginTop: 32, gap: 10 }}>
+                <Link
+                  to="/cadastro?source=landing-salbscore-cta"
+                  onClick={() => fireCta("register", "landing_salbscore_cta", { source: "landing-salbscore-cta" })}
+                  className="salb-btn-primary"
+                  style={{
+                    minHeight: 56,
+                    padding: "16px 32px",
+                    fontSize: 16,
+                    width: "100%",
+                    maxWidth: 420,
+                    fontWeight: 700,
+                  }}
+                  data-track="landing_salbscore_cta_register"
+                >
+                  Começar a construir meu SalbScore
+                  <ArrowRight size={18} />
+                </Link>
+                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>
+                  Grátis nos primeiros 10 pacientes. Sem cartão de crédito.
+                </p>
+                <p
+                  style={{
+                    marginTop: 10,
+                    color: "rgba(255,255,255,0.55)",
+                    fontSize: 12,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    textAlign: "center",
+                    maxWidth: 480,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <span aria-hidden>⚡</span>
+                  Score disponível apenas para quem usa a SalbCare — não existe em nenhuma outra plataforma.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         <section style={{ background: C.cardElev, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
           <div className="mx-auto max-w-6xl px-5 sm:px-6 py-6">
             <div className="flex flex-col items-center gap-3 text-center">
