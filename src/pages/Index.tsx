@@ -692,8 +692,8 @@ const Index = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { photo: testimonialSarah, name: "Dra. Sarah T.", role: "Médica", quote: "Finalmente uma plataforma que não fica com parte das minhas consultas." },
-                { photo: testimonialMayara, name: "Vitória F.", role: "Dentista", quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes." },
+                { photo: testimonialMayara, name: "Dra. Sarah T.", role: "Médica", quote: "Finalmente uma plataforma que não fica com parte das minhas consultas." },
+                { photo: testimonialSarah, name: "Vitória F.", role: "Dentista", quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes." },
                 { photo: testimonialCinara, name: "Cinara C.", role: "Nutricionista", quote: "O Carnê-Leão sozinho já vale a assinatura inteira." },
               ].map((t, i) => (
                 <motion.div key={t.name} initial={reveal.hidden} whileInView={reveal.show} viewport={{ once: true, margin: "-60px" }} transition={{ delay: i * 0.08 }}
