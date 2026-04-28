@@ -454,7 +454,7 @@ const ProntoAtendimentoFlow = () => {
                 />
                 <div className="border-2 border-dashed border-border rounded-xl p-6 text-center space-y-2 hover:border-primary/50 transition-colors">
                   {prescriptionPreview ? (
-                    <img src={prescriptionPreview} alt="Receita" className="max-h-40 mx-auto rounded-lg" />
+                    <img loading="lazy" decoding="async" src={prescriptionPreview} alt="Receita" className="max-h-40 mx-auto rounded-lg" />
                   ) : (
                     <>
                       <div className="flex justify-center gap-3">
@@ -641,7 +641,7 @@ const ProntoAtendimentoFlow = () => {
                       />
                       <div className="border-2 border-dashed border-border rounded-xl p-4 text-center hover:border-primary/50 transition-colors">
                         {receiptPreview ? (
-                          <img src={receiptPreview} alt="Comprovante" className="max-h-32 mx-auto rounded-lg" />
+                          <img loading="lazy" decoding="async" src={receiptPreview} alt="Comprovante" className="max-h-32 mx-auto rounded-lg" />
                         ) : receiptFile ? (
                           <div className="flex items-center justify-center gap-2">
                             <Check className="h-4 w-4 text-green-500" />

@@ -108,7 +108,7 @@ const SpecialtyListing = () => {
                       <CardContent className="p-5 flex flex-col gap-3">
                         <div className="flex items-center gap-3">
                           {prof.avatar_url ? (
-                            <img src={prof.avatar_url} alt={prof.name} className="h-12 w-12 rounded-full object-cover" />
+                            <img loading="lazy" decoding="async" src={prof.avatar_url} alt={prof.name} className="h-12 w-12 rounded-full object-cover" />
                           ) : (
                             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
                               {prof.name?.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}

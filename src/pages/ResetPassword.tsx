@@ -59,7 +59,7 @@ const ResetPassword = () => {
       <div className="flex min-h-screen flex-col items-center justify-center px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm space-y-6 text-center">
           <div className="mx-auto mb-4 h-14 w-14">
-            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
+            <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold">Link inválido</h1>
           <p className="text-sm text-muted-foreground">Este link de recuperação é inválido ou expirou. Solicite um novo link.</p>

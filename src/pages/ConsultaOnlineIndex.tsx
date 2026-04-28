@@ -47,7 +47,7 @@ const ConsultaOnlineIndex = () => {
       <div className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-2xl items-center px-4">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/pwa-icon-512.png" alt="SALBCARE" className="h-7 w-7" />
+            <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt="SALBCARE" className="h-7 w-7" />
             <span className="text-base font-bold gradient-text">SALBCARE</span>
           </Link>
         </div>

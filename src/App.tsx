@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
@@ -25,7 +25,7 @@ const TrackingProvider = () => { useTracking(); return null; };
 // Eager: login, register, landing (entry points)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import ParaProfissionais from "./pages/ParaProfissionais";
+import Index from "./pages/Index";
 
 // Lazy with auto-retry
 const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"), "ForgotPassword");
@@ -71,7 +71,7 @@ const AdminRolesPage = lazyWithRetry(() => import("./pages/admin/AdminRolesPage"
 const AdminRlsAuditPage = lazyWithRetry(() => import("./pages/admin/AdminRlsAuditPage"), "AdminRlsAuditPage");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
-const Index = lazyWithRetry(() => import("./pages/Index"), "Index");
+// Index é eager (rota raiz)
 const PublicProfile = lazyWithRetry(() => import("./pages/PublicProfile"), "PublicProfile");
 const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 const SpecialtyListing = lazyWithRetry(() => import("./pages/SpecialtyListing"), "SpecialtyListing");
@@ -131,7 +131,7 @@ const App = () => (
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<ParaProfissionais />} />
+              <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cadastro" element={<Register />} />
@@ -139,8 +139,9 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
-              <Route path="/para-profissionais" element={<ParaProfissionais />} />
-              <Route path="/index" element={<Index />} />
+              {/* /para-profissionais e /index → redirect 301-like para a raiz unificada */}
+              <Route path="/para-profissionais" element={<Navigate to="/" replace />} />
+              <Route path="/index" element={<Navigate to="/" replace />} />
               <Route path="/p/:slug" element={<PublicProfile />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
               <Route path="/profissionais" element={<PublicProfessionals />} />
