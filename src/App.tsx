@@ -71,7 +71,7 @@ const AdminRolesPage = lazyWithRetry(() => import("./pages/admin/AdminRolesPage"
 const AdminRlsAuditPage = lazyWithRetry(() => import("./pages/admin/AdminRlsAuditPage"), "AdminRlsAuditPage");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
-const Index = lazyWithRetry(() => import("./pages/Index"), "Index");
+// Index é eager (rota raiz)
 const PublicProfile = lazyWithRetry(() => import("./pages/PublicProfile"), "PublicProfile");
 const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 const SpecialtyListing = lazyWithRetry(() => import("./pages/SpecialtyListing"), "SpecialtyListing");
