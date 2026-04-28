@@ -10,8 +10,8 @@ import { useState } from "react";
 // Fotos dos depoimentos servidas pelo bucket público "testimonials" no Supabase Storage.
 // Upload manual via painel: sarah-almeida.{jpg,png}, mayara-barros.{jpg,png}, cinara-costa.{jpg,png}.
 const TESTIMONIAL_BUCKET = "https://fevrdqmqmbahmeaymplq.supabase.co/storage/v1/object/public/testimonials";
-const testimonialSarah = `${TESTIMONIAL_BUCKET}/sarah-almeida.jpg`;
-const testimonialMayara = `${TESTIMONIAL_BUCKET}/mayara-barros.jpg`;
+const testimonialSarah = `${TESTIMONIAL_BUCKET}/mayara-barros.jpg`;
+const testimonialMayara = `${TESTIMONIAL_BUCKET}/sarah-almeida.jpg`;
 const testimonialCinara = `${TESTIMONIAL_BUCKET}/cinara-costa.jpg`;
 
 /* ─────────────────────────────────────────────
@@ -692,8 +692,8 @@ const Index = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { photo: testimonialMayara, name: "Dra. Sarah T.", role: "Médica", quote: "Finalmente uma plataforma que não fica com parte das minhas consultas." },
-                { photo: testimonialSarah, name: "Vitória F.", role: "Dentista", quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes." },
+                { photo: testimonialSarah, name: "Dra. Sarah T.", role: "Médica", quote: "Finalmente uma plataforma que não fica com parte das minhas consultas." },
+                { photo: testimonialMayara, name: "Vitória F.", role: "Dentista", quote: "Configurei tudo em uma tarde. Já recebi meus primeiros pacientes." },
                 { photo: testimonialCinara, name: "Cinara C.", role: "Nutricionista", quote: "O Carnê-Leão sozinho já vale a assinatura inteira." },
               ].map((t, i) => (
                 <motion.div key={t.name} initial={reveal.hidden} whileInView={reveal.show} viewport={{ once: true, margin: "-60px" }} transition={{ delay: i * 0.08 }}
