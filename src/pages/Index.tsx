@@ -10,8 +10,8 @@ import { useState } from "react";
 // Fotos dos depoimentos servidas pelo bucket público "testimonials" no Supabase Storage.
 // Upload manual via painel: sarah-almeida.{jpg,png}, mayara-barros.{jpg,png}, cinara-costa.{jpg,png}.
 const TESTIMONIAL_BUCKET = "https://fevrdqmqmbahmeaymplq.supabase.co/storage/v1/object/public/testimonials";
-const testimonialSarah = `${TESTIMONIAL_BUCKET}/sarah-almeida.jpg`;
-const testimonialMayara = `${TESTIMONIAL_BUCKET}/mayara-barros.jpg`;
+const testimonialSarah = `${TESTIMONIAL_BUCKET}/mayara-barros.jpg`;
+const testimonialMayara = `${TESTIMONIAL_BUCKET}/sarah-almeida.jpg`;
 const testimonialCinara = `${TESTIMONIAL_BUCKET}/cinara-costa.jpg`;
 
 /* ─────────────────────────────────────────────
