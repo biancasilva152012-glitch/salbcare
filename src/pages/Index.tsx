@@ -78,14 +78,24 @@ const initialsOf = (name: string) =>
 
 const TestimonialAvatar = ({ src, name }: { src: string; name: string }) => {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const triedPng = currentSrc.endsWith(".png");
   return (
-    <div style={{ position: "relative", width: 56, height: 56, borderRadius: "9999px", border: `2px solid ${C.teal}`, background: C.cardElev, flexShrink: 0, overflow: "hidden" }}>
+    <div style={{ position: "relative", width: 56, height: 56, borderRadius: "9999px", border: "2px solid #ffffff", background: C.cardElev, flexShrink: 0, overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
       {status === "loading" && (
         <div aria-hidden style={{ position: "absolute", inset: 0, borderRadius: "9999px", background: `linear-gradient(90deg, ${C.cardElev} 0%, ${C.cardHover} 50%, ${C.cardElev} 100%)`, backgroundSize: "200% 100%", animation: "salbShimmer 1.4s ease-in-out infinite" }} />
       )}
       {status !== "error" && (
-        <img src={src} alt={`Foto de ${name}`} loading="lazy" decoding="async" width={56} height={56}
-          onLoad={() => setStatus("loaded")} onError={() => setStatus("error")}
+        <img src={currentSrc} alt={`Foto de ${name}`} loading="lazy" decoding="async" width={56} height={56}
+          onLoad={() => setStatus("loaded")}
+          onError={() => {
+            if (!triedPng) {
+              setStatus("loading");
+              setCurrentSrc(currentSrc.replace(/\.jpg$/, ".png"));
+            } else {
+              setStatus("error");
+            }
+          }}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", borderRadius: "9999px", opacity: status === "loaded" ? 1 : 0, transition: "opacity 220ms ease" }} />
       )}
       {status === "error" && (
