@@ -598,8 +598,89 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── 5b. SALBSCORE — IDENTIDADE FINANCEIRA ── */}
+        <section id="salbscore-identidade" style={{ background: C.bg, borderTop: `1px solid ${C.border}` }} className={S.sectionY} aria-label="SalbScore — sua identidade financeira">
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger} className="text-center mb-10">
+              <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(28px, 4.4vw, 44px)", maxWidth: 820, marginInline: "auto" }}>
+                SalbScore™ — Sua identidade financeira como profissional de saúde
+              </motion.h2>
+              <motion.p variants={reveal} style={{ color: C.textMuted, fontSize: 16, lineHeight: 1.6, marginTop: 14, maxWidth: 680, marginInline: "auto" }}>
+                O sistema financeiro brasileiro foi feito para CLT. O <strong style={{ color: C.text }}>SalbScore</strong> foi feito para você.
+              </motion.p>
+            </motion.div>
+
+            {/* Problema */}
+            <motion.ul initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+              className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-12" style={{ listStyle: "none", padding: 0 }}>
+              {[
+                "Banco nega crédito porque sua renda em Pix é “invisível”.",
+                "Imobiliária exige contracheque que você não tem.",
+                "Financeiras cobram juros abusivos por falta de histórico comprovado.",
+              ].map((txt) => (
+                <motion.li key={txt} variants={reveal}
+                  style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: "16px 18px", color: C.text, fontSize: 14.5, lineHeight: 1.55 }}>
+                  <span style={{ color: C.teal, fontWeight: 700, marginRight: 8 }}>•</span>{txt}
+                </motion.li>
+              ))}
+            </motion.ul>
+
+            {/* Solução: card de score + 3 colunas */}
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,360px)_1fr] gap-8 items-start">
+              {/* Card de score visual estilo FICO */}
+              <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: 28, textAlign: "center" }}>
+                <div style={{ color: C.textMuted, fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>SalbScore</div>
+                <div style={{ marginTop: 10, fontSize: 64, fontWeight: 800, color: C.teal, lineHeight: 1, letterSpacing: "-0.02em" }}>
+                  742<span style={{ color: C.textMuted, fontSize: 18, fontWeight: 500, marginLeft: 6 }}>/ 1000</span>
+                </div>
+                <div style={{ marginTop: 10, fontSize: 14, color: C.text, fontWeight: 600 }}>Faixa Estabelecido</div>
+                {/* Barra 0-1000 */}
+                <div style={{ marginTop: 18, height: 8, background: C.cardElev, borderRadius: 999, overflow: "hidden", position: "relative" }}>
+                  <div style={{ width: "74.2%", height: "100%", background: C.teal, borderRadius: 999 }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, fontSize: 11, color: C.textMuted }}>
+                  <span>0</span><span>500</span><span>1000</span>
+                </div>
+                <div style={{ marginTop: 18, padding: "10px 12px", background: C.cardElev, borderRadius: 10, fontSize: 12, color: C.textMuted, lineHeight: 1.5 }}>
+                  Gerado automaticamente com seus dados da plataforma — quanto mais você usa, mais alto fica.
+                </div>
+              </motion.div>
+
+              {/* 3 colunas de benefícios */}
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { t: "Comprovante de Renda Digital", d: "Substitui contracheque para aluguéis, financiamentos e vistos." },
+                  { t: "Certidão de Atividade Profissional", d: "Comprova pacientes ativos, tempo de atuação e conformidade com CRM/CRP/CRN." },
+                  { t: "Score de Crédito SalbCare", d: "Número verificável por parceiros financeiros via QR Code." },
+                ].map((b) => (
+                  <motion.div key={b.t} variants={reveal}
+                    style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+                    <div style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>SalbScore</div>
+                    <h3 style={{ color: C.text, fontSize: 16, fontWeight: 700, lineHeight: 1.35 }}>{b.t}</h3>
+                    <p style={{ color: C.textMuted, fontSize: 13.5, lineHeight: 1.55 }}>{b.d}</p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* CTA */}
+            <div className="text-center mt-12">
+              <Link to="/cadastro" onClick={() => fireCta("quero_construir_meu_salbscore", "salbscore_identidade")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.teal, color: "#ffffff", fontWeight: 700, fontSize: 15, padding: "14px 28px", borderRadius: 12, textDecoration: "none", transition: `background ${T.button}` }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#00a08e")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = C.teal)}>
+                Quero construir meu SalbScore →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* ── 6. DEPOIMENTOS ── */}
         <section style={{ background: C.card, borderTop: `1px solid ${C.border}` }} className={S.sectionY}>
+
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="text-center mb-14">
