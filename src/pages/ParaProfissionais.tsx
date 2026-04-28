@@ -288,6 +288,7 @@ const ParaProfissionais = () => {
                   name: "Sarah Almeida",
                   role: "Médica • Clínica Médica",
                   color: "bg-emerald-500",
+                  image: "https://fevrdqmqmbahmeaymplq.supabase.co/storage/v1/object/public/testimonials/sarah-almeida.jpg",
                   quote: "A SalbCare organizou meu consultório digital do zero. Consigo gerenciar minha agenda, emitir receituários e atender com muito mais profissionalismo — tudo em uma plataforma só.",
                 },
                 {
@@ -295,6 +296,7 @@ const ParaProfissionais = () => {
                   name: "Mayara Barros",
                   role: "Terapeuta • Atende da Espanha para o Brasil",
                   color: "bg-violet-500",
+                  image: "https://fevrdqmqmbahmeaymplq.supabase.co/storage/v1/object/public/testimonials/mayara-barros.jpg",
                   quote: "Atendo meus pacientes brasileiros morando na Espanha sem nenhuma complicação. A teleconsulta integrada tornou isso simples e legal. Não consigo imaginar trabalhar sem a plataforma.",
                 },
                 {
@@ -302,6 +304,7 @@ const ParaProfissionais = () => {
                   name: "Cinara Costa",
                   role: "Dentista • HOF e Prontuários",
                   color: "bg-amber-500",
+                  image: "https://fevrdqmqmbahmeaymplq.supabase.co/storage/v1/object/public/testimonials/cinara-costa.jpg",
                   quote: "Faço a primeira avaliação de HOF e organizo todos os prontuários dos meus pacientes pela SalbCare. Ficou tudo centralizado, seguro e fácil de acessar a qualquer momento.",
                 },
               ].map((t) => (
@@ -314,8 +317,18 @@ const ParaProfissionais = () => {
                   <Card className="h-full border-border/40 bg-card/60 backdrop-blur-sm">
                     <CardContent className="p-6 flex flex-col gap-3">
                       <div className="flex items-center gap-3">
-                        <div className={`h-10 w-10 rounded-full ${t.color} flex items-center justify-center text-sm font-bold text-white shrink-0`}>
-                          {t.initials}
+                        <div className={`relative h-14 w-14 rounded-full ${t.color} flex items-center justify-center text-sm font-bold text-white shrink-0 overflow-hidden ring-2 ring-white shadow-sm`}>
+                          {t.image ? (
+                            <img
+                              src={t.image}
+                              alt={t.name}
+                              loading="lazy"
+                              decoding="async"
+                              className="absolute inset-0 h-full w-full object-cover"
+                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                            />
+                          ) : null}
+                          <span className="relative">{t.initials}</span>
                         </div>
                         <div>
                           <p className="text-sm font-semibold">{t.name}</p>
