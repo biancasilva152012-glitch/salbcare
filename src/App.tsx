@@ -25,7 +25,8 @@ const TrackingProvider = () => { useTracking(); return null; };
 // Eager: login, register, landing (entry points)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import ParaProfissionais from "./pages/ParaProfissionais";
+import Index from "./pages/Index";
+import { Navigate } from "react-router-dom";
 
 // Lazy with auto-retry
 const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"), "ForgotPassword");
