@@ -739,42 +739,65 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── 5. O QUE VOCÊ EMITE COM SEU SALBSCORE ── */}
-        <section style={{ background: C.bg }} className={S.sectionY} aria-label="Documentos do SalbScore">
+        {/* ── 5. O QUE O SALBSCORE DESBLOQUEIA ── */}
+        <section style={{ background: C.bg }} className={S.sectionY} aria-label="O que o SalbScore desbloqueia">
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="text-center" style={{ marginBottom: 48 }}>
               <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.p variants={reveal} style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>
+                Exclusividade SalbCare
+              </motion.p>
               <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(28px, 4.5vw, 44px)" }}>
-                3 documentos que mudam o jogo
+                O que o SalbScore desbloqueia pra você
               </motion.h2>
+              <motion.p variants={reveal} style={{ color: C.textMuted, fontSize: 16, lineHeight: 1.6, marginTop: 14, maxWidth: 540, marginInline: "auto" }}>
+                Recursos exclusivos disponíveis para profissionais com SalbScore ativo.
+              </motion.p>
             </motion.div>
 
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="grid gap-5 md:grid-cols-3">
+              {/* Card destaque — Comprovante de Renda */}
+              <motion.div variants={reveal}
+                style={{ background: C.card, border: `1.5px solid ${C.teal}`, borderRadius: 20, padding: "32px 28px", boxShadow: "0 8px 24px rgba(0,180,160,0.18)", display: "flex", flexDirection: "column", position: "relative" }}>
+                <span style={{ position: "absolute", top: 16, right: 16, background: C.teal, color: "#fff", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999 }}>
+                  Disponível agora
+                </span>
+                <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 48, height: 48, borderRadius: 14, background: C.tealTint, marginBottom: 16 }}>
+                  <Star size={22} color={C.teal} />
+                </span>
+                <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, lineHeight: 1.3, letterSpacing: "-0.01em" }}>
+                  Comprovante de Renda SalbCare
+                </h3>
+                <p style={{ color: C.textMuted, fontSize: 14.5, lineHeight: 1.65, marginTop: 10, flex: 1 }}>
+                  PDF assinado digitalmente que comprova sua renda como profissional autônomo de saúde. Verificável por QR Code. Útil para aluguel, financiamento e crédito.
+                </p>
+                <Link to="/salbscore?source=landing-comprovante-card"
+                  onClick={() => fireCta("ver_meu_salbscore", "landing_comprovante_card")}
+                  style={{ marginTop: 24, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: C.teal, color: "#fff", fontWeight: 600, padding: "14px 18px", borderRadius: 999, textDecoration: "none", fontSize: 14.5 }}>
+                  Ver meu SalbScore →
+                </Link>
+              </motion.div>
+
+              {/* Demais cards */}
               {[
-                { emoji: "📄", t: "Comprovante de Renda SalbCare", d: "PDF oficial com QR Code de verificação. Mostra média mensal de recebimentos comprovados pela plataforma. Pensado para imobiliárias e bancos parceiros." },
-                { emoji: "🏆", t: "Certidão de Atividade Profissional", d: "Comprova tempo de atuação, volume mensal de atendimentos e conselho profissional ativo. Útil para credenciamento e parcerias." },
-                { emoji: "⭐", t: "Selo Verificado Público", d: "Página pública com seu SalbScore e dados profissionais. URL única que você usa no Instagram, no consultório, na assinatura de e-mail." },
+                { Icon: FileCheck, t: "Declaração de Atividade Profissional", d: "Comprova tempo de atuação, volume mensal de atendimentos e conselho profissional ativo. Útil para credenciamento e parcerias." },
+                { Icon: Shield, t: "Score público com consentimento", d: "Compartilhe seu histórico profissional com parceiros financeiros para facilitar acesso a crédito — sempre com sua autorização." },
               ].map((doc) => (
                 <motion.div key={doc.t} variants={reveal} className="salb-card flex flex-col" style={{ padding: 28 }}>
-                  <span aria-hidden style={{ fontSize: 32, lineHeight: 1, marginBottom: 16 }}>{doc.emoji}</span>
+                  <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 48, height: 48, borderRadius: 14, background: C.tealTint, marginBottom: 16 }}>
+                    <doc.Icon size={22} color={C.teal} />
+                  </span>
                   <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, lineHeight: 1.3, letterSpacing: "-0.01em" }}>
                     {doc.t}
                   </h3>
-                  <p style={{ color: C.textMuted, fontSize: 14.5, lineHeight: 1.6, marginTop: 10, flex: 1 }}>
+                  <p style={{ color: C.textMuted, fontSize: 14.5, lineHeight: 1.65, marginTop: 10, flex: 1 }}>
                     {doc.d}
-                  </p>
-                  <p style={{ marginTop: 16, color: C.gold, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-                    Em breve · Roadmap 2026
                   </p>
                 </motion.div>
               ))}
             </motion.div>
-
-            <p style={{ color: C.textMuted, fontSize: 13, textAlign: "center", marginTop: 28, maxWidth: 600, marginInline: "auto", lineHeight: 1.6 }}>
-              Em desenvolvimento. Quem já constrói histórico hoje terá <strong style={{ color: C.text }}>prioridade no acesso</strong> quando os documentos forem liberados.
-            </p>
           </div>
         </section>
 
