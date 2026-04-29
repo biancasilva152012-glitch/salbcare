@@ -1180,7 +1180,7 @@ const Index = () => {
                 { q: "Em quanto tempo meu SalbScore fica relevante?", a: "Em 30 dias de uso ativo seu histórico já fica consistente. Em 6 meses, atinge faixa Estabelecido. Em 12 meses, a maioria dos profissionais alcança faixa Premium. Cinco ações já alimentam seu histórico hoje: cadastrar seu conselho, marcar consultas, lançar recebimentos, confirmar atendimentos e atualizar despesas." },
                 { q: "E se eu já tenho contador?", a: "A SalbCare complementa o contador. Contador faz IRPF e impostos. SalbCare constrói seu histórico financeiro profissional verificável em PDF — algo que contador comum não emite." },
                 { q: "Funciona para MEI, autônomo PF, Simples Nacional?", a: "Funciona para todos os regimes. A IA detecta o seu e calcula tudo de forma adequada." },
-                { q: "E se eu cancelar? Perco meu SalbScore?", a: "Seu histórico fica salvo. Reativando, você continua de onde parou. Comprovantes oficiais serão emitidos com plano Premium ativo, quando o módulo entrar no ar." },
+                { q: "E se eu cancelar? Perco meu SalbScore?", a: "Seu histórico fica salvo. Reativando, você continua de onde parou." },
                 { q: "Meus dados estão seguros?", a: "Sim. 100% LGPD. Criptografia em repouso, RLS no banco, auditoria de acesso. Você pode pedir exclusão total a qualquer momento." },
               ].map((item, i) => (
                 <AccordionItem key={i} value={`faq-${i}`} className="salb-faq-item">
