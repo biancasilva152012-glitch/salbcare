@@ -686,12 +686,14 @@ const Index = () => {
               <div>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {[
-                    { emoji: "🔢", t: "Uma nota de 0 a 1000", d: "Calculada a partir do seu histórico real na plataforma: atendimentos, recebimentos via Pix, tempo de atuação e conformidade no conselho profissional." },
-                    { emoji: "📄", t: "Documentos oficiais que você emite quando quiser", d: "Comprovante de Renda SalbCare, Certidão de Atividade Profissional e Selo Verificado Público — todos com QR Code de verificação. (Em rollout 2026.)" },
-                    { emoji: "⏳", t: "Quanto mais tempo na SalbCare, mais valiosa fica sua nota", d: "Cada mês de uso compõe seu histórico. Seu SalbScore é seu — e ninguém mais constrói por você." },
+                    { Icon: Hash, t: "Uma nota de 0 a 1000", d: "Calculada a partir do seu histórico real na plataforma: atendimentos, recebimentos via Pix, tempo de atuação e conformidade no conselho profissional." },
+                    { Icon: FileText, t: "Documentos oficiais que você emite quando quiser", d: "Comprovante de Renda SalbCare, Declaração de Atividade Profissional e Selo Verificado Público — todos com QR Code de verificação." },
+                    { Icon: Clock, t: "Quanto mais tempo na SalbCare, mais valiosa fica sua nota", d: "Cada mês de uso compõe seu histórico. Seu SalbScore é seu — e ninguém mais constrói por você." },
                   ].map((b) => (
                     <li key={b.t} style={{ display: "flex", gap: 14, padding: "16px 0", borderBottom: `1px solid ${C.border}` }}>
-                      <span aria-hidden style={{ fontSize: 22, lineHeight: 1, marginTop: 2 }}>{b.emoji}</span>
+                      <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: 10, background: C.tealTint, flexShrink: 0 }}>
+                        <b.Icon size={18} color={C.teal} />
+                      </span>
                       <div>
                         <p style={{ color: C.text, fontWeight: 700, fontSize: 16, lineHeight: 1.35 }}>{b.t}</p>
                         <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginTop: 6 }}>{b.d}</p>
