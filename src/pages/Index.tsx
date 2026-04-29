@@ -918,10 +918,6 @@ const Index = () => {
 
           </div>
         </section>
-        {/* placeholder removido */}
-        <div style={{ display: "none" }} aria-hidden />
-          </div>
-        </section>
 
         {/* ── 7. COMO FUNCIONA ── */}
         <section id="como-funciona" style={{ background: C.bg }} className={S.sectionY}>
