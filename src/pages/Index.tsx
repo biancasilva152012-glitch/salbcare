@@ -591,15 +591,17 @@ const Index = () => {
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="grid gap-5 sm:gap-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
               {[
-                { emoji: "🏦", t: "Pediu empréstimo no banco?", d: "Tratada como CLT sem registro ou MEI sem histórico." },
-                { emoji: "🔑", t: "Tentou alugar consultório ou apartamento?", d: "Pediram 3 fiadores e contracheque que você não tem." },
-                { emoji: "💳", t: "Pediu cartão com limite decente?", d: "Recusado. Sua renda em Pix não conta pro sistema." },
-                { emoji: "🚗", t: "Quis financiar equipamento ou carro?", d: "Juros de quem o banco considera 'risco alto'." },
-                { emoji: "✈️", t: "Tentou tirar visto ou financiar imóvel?", d: "Pesadelo de declarações, contador caro, papelada infinita." },
-                { emoji: "📊", t: "Pediu crédito pra abrir clínica?", d: "Exigiram garantia real. Sua história profissional não conta." },
+                { Icon: Building2, t: "Pediu empréstimo no banco?", d: "Tratada como CLT sem registro ou MEI sem histórico." },
+                { Icon: Key, t: "Tentou alugar consultório ou apartamento?", d: "Pediram 3 fiadores e contracheque que você não tem." },
+                { Icon: CreditCard, t: "Pediu cartão com limite decente?", d: "Recusado. Sua renda em Pix não conta pro sistema." },
+                { Icon: Car, t: "Quis financiar equipamento ou carro?", d: "Juros de quem o banco considera 'risco alto'." },
+                { Icon: Plane, t: "Tentou tirar visto ou financiar imóvel?", d: "Pesadelo de declarações, contador caro, papelada infinita." },
+                { Icon: BarChart3, t: "Pediu crédito pra abrir clínica?", d: "Exigiram garantia real. Sua história profissional não conta." },
               ].map((p) => (
                 <motion.div key={p.t} variants={reveal} className="salb-card-light">
-                  <span aria-hidden style={{ fontSize: 28, lineHeight: 1, display: "block", marginBottom: 12 }}>{p.emoji}</span>
+                  <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#FEF7E6", marginBottom: 16 }}>
+                    <p.Icon size={22} color="#D97706" />
+                  </span>
                   <h3 style={{ color: C.bgLightInk, fontWeight: 700, fontSize: 17, lineHeight: 1.3, letterSpacing: "-0.01em" }}>
                     {p.t}
                   </h3>
