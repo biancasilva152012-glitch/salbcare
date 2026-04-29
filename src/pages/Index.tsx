@@ -935,7 +935,7 @@ const Index = () => {
               {[
                 { n: "1", t: "Cadastre-se e valide seu conselho profissional", d: "Em menos de 1 minuto. Validamos automaticamente seu CRM, CRP, CRN, CRO, CREFITO ou outro registro." },
                 { n: "2", t: "Atenda seus pacientes pela plataforma", d: "Cada atendimento agendado, cada Pix recebido e cada paciente que retorna alimenta seu SalbScore. Você só precisa atender — a SalbCare cuida do resto." },
-                { n: "3", t: "Use seu SalbScore quando precisar", d: "Visualize seu histórico organizado e prepare-se para emitir Comprovantes em PDF (em breve), com QR Code para garantir autenticidade." },
+                { n: "3", t: "Use seu SalbScore quando precisar", d: "Visualize seu histórico organizado e emita seu Comprovante de Renda em PDF, com QR Code para garantir autenticidade." },
               ].map((s) => (
                 <motion.div key={s.n} variants={reveal} className="salb-card flex flex-col" style={{ padding: S.cardPad }}>
                   <span style={{ width: 44, height: 44, borderRadius: 999, background: C.tealTint, border: `1px solid ${C.borderTeal}`,
