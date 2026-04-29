@@ -856,8 +856,8 @@ const Index = () => {
                 className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { t: "Comprovante de Renda Digital", d: "Substitui contracheque para aluguéis, financiamentos e vistos." },
-                  { t: "Certidão de Atividade Profissional", d: "Comprova pacientes ativos, tempo de atuação e conformidade com CRM/CRP/CRN." },
-                  { t: "Score de Crédito SalbCare", d: "Número verificável por parceiros financeiros via QR Code." },
+                  { t: "Declaração de Atividade Profissional", d: "Comprova pacientes ativos, tempo de atuação e conformidade com CRM/CRP/CRN." },
+                  { t: "Score público com consentimento", d: "Compartilhe seu histórico profissional com parceiros — sempre com sua autorização." },
                 ].map((b) => (
                   <motion.div key={b.t} variants={reveal}
                     style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: 20, display: "flex", flexDirection: "column", gap: 8 }}>
