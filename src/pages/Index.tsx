@@ -1036,10 +1036,10 @@ const Index = () => {
                   cta: "Assinar Essencial", to: "/checkout?plan=basic&source=landing-planos-essencial", variant: "primary" as const, popular: true, plan: "essencial",
                 },
                 {
-                  name: "Premium", price: "Em breve", cadence: "lista de espera",
-                  desc: "Comprovante de Renda, Certidão e Selo Verificado.",
-                  features: ["Tudo do Essencial", "Comprovante de Renda SalbCare ilimitado", "Certidão de Atividade Profissional", "Selo Verificado Público com QR Code", "Prioridade no diretório de profissionais"],
-                  cta: "Entrar na lista", to: "/parcerias?source=landing-planos-premium", variant: "outline" as const, plan: "premium",
+                  name: "Premium", price: "Sob consulta", cadence: "personalizado",
+                  desc: "Comprovante de Renda, Declaração e Selo Verificado.",
+                  features: ["Tudo do Essencial", "Comprovante de Renda SalbCare ilimitado", "Declaração de Atividade Profissional", "Selo Verificado Público com QR Code", "Prioridade no diretório de profissionais"],
+                  cta: "Falar com a equipe", to: "/parcerias?source=landing-planos-premium", variant: "outline" as const, plan: "premium",
                 },
               ].map((plan, i) => (
                 <motion.div key={plan.name}
