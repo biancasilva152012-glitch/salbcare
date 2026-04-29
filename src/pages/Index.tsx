@@ -1,7 +1,13 @@
 // build: 2026-04-27 — SalbScore narrative reformulation
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Menu, X, Shield } from "lucide-react";
+import {
+  ArrowRight, Menu, X, Shield,
+  Building2, Key, CreditCard, Car, Plane, BarChart3,
+  Hash, FileText, Clock, Star, FileCheck, Wallet, Bot,
+  Calendar, Video, ClipboardList, Calculator, Brain, Users,
+  CheckCircle2,
+} from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import SEOHead from "@/components/SEOHead";
@@ -137,7 +143,7 @@ const Index = () => {
       {
         "@type": "FAQPage",
         mainEntity: [
-          { "@type": "Question", name: "O Comprovante de Renda SalbCare substitui contracheque?", acceptedAnswer: { "@type": "Answer", text: "Para a maioria das finalidades como aluguel e parcelamentos, sim. Para finalidades específicas como financiamento imobiliário, recomendamos apresentar junto com declaração contábil. O Comprovante está em desenvolvimento no roadmap 2026." } },
+          { "@type": "Question", name: "O Comprovante de Renda SalbCare substitui contracheque?", acceptedAnswer: { "@type": "Answer", text: "Para a maioria das finalidades como aluguel e parcelamentos, sim. Para finalidades específicas como financiamento imobiliário, recomendamos apresentar junto com declaração contábil." } },
           { "@type": "Question", name: "Em quanto tempo meu SalbScore fica relevante?", acceptedAnswer: { "@type": "Answer", text: "Em 30 dias de uso ativo seu histórico já é consistente. Em 6 meses, atinge faixa Estabelecido. Em 12 meses, a maioria dos profissionais alcança faixa Premium." } },
           { "@type": "Question", name: "E se eu já tenho contador?", acceptedAnswer: { "@type": "Answer", text: "A SalbCare complementa o contador. Contador faz IRPF e impostos. SalbCare constrói seu histórico financeiro profissional verificável em PDF — algo que contador comum não emite." } },
           { "@type": "Question", name: "Funciona para MEI, autônomo PF, Simples Nacional?", acceptedAnswer: { "@type": "Answer", text: "Funciona para todos os regimes. A IA detecta o seu e calcula tudo de forma adequada." } },
@@ -337,14 +343,14 @@ const Index = () => {
               <motion.ul variants={reveal} className="flex flex-wrap items-center justify-center"
                 style={{ gap: "10px 14px", marginTop: 24, listStyle: "none", padding: 0 }}>
                 {[
-                  { icon: "💚", text: "100% das suas consultas no seu bolso" },
-                  { icon: "📄", text: "Comprovante de Renda em breve" },
-                  { icon: "🤖", text: "IA financeira que conhece seus números" },
+                  { Icon: Wallet, text: "100% das suas consultas no seu bolso" },
+                  { Icon: FileCheck, text: "Comprovante de Renda SalbCare" },
+                  { Icon: Bot, text: "IA financeira que conhece seus números" },
                 ].map((b) => (
                   <li key={b.text}
                     style={{ color: C.text, fontSize: 13, fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 8,
                       background: C.tealTint, border: `1px solid ${C.borderTeal}`, borderRadius: 999, padding: "6px 12px" }}>
-                    <span aria-hidden>{b.icon}</span>
+                    <b.Icon size={14} color={C.teal} aria-hidden />
                     {b.text}
                   </li>
                 ))}
@@ -585,15 +591,17 @@ const Index = () => {
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="grid gap-5 sm:gap-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
               {[
-                { emoji: "🏦", t: "Pediu empréstimo no banco?", d: "Tratada como CLT sem registro ou MEI sem histórico." },
-                { emoji: "🔑", t: "Tentou alugar consultório ou apartamento?", d: "Pediram 3 fiadores e contracheque que você não tem." },
-                { emoji: "💳", t: "Pediu cartão com limite decente?", d: "Recusado. Sua renda em Pix não conta pro sistema." },
-                { emoji: "🚗", t: "Quis financiar equipamento ou carro?", d: "Juros de quem o banco considera 'risco alto'." },
-                { emoji: "✈️", t: "Tentou tirar visto ou financiar imóvel?", d: "Pesadelo de declarações, contador caro, papelada infinita." },
-                { emoji: "📊", t: "Pediu crédito pra abrir clínica?", d: "Exigiram garantia real. Sua história profissional não conta." },
+                { Icon: Building2, t: "Pediu empréstimo no banco?", d: "Tratada como CLT sem registro ou MEI sem histórico." },
+                { Icon: Key, t: "Tentou alugar consultório ou apartamento?", d: "Pediram 3 fiadores e contracheque que você não tem." },
+                { Icon: CreditCard, t: "Pediu cartão com limite decente?", d: "Recusado. Sua renda em Pix não conta pro sistema." },
+                { Icon: Car, t: "Quis financiar equipamento ou carro?", d: "Juros de quem o banco considera 'risco alto'." },
+                { Icon: Plane, t: "Tentou tirar visto ou financiar imóvel?", d: "Pesadelo de declarações, contador caro, papelada infinita." },
+                { Icon: BarChart3, t: "Pediu crédito pra abrir clínica?", d: "Exigiram garantia real. Sua história profissional não conta." },
               ].map((p) => (
                 <motion.div key={p.t} variants={reveal} className="salb-card-light">
-                  <span aria-hidden style={{ fontSize: 28, lineHeight: 1, display: "block", marginBottom: 12 }}>{p.emoji}</span>
+                  <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#FEF7E6", marginBottom: 16 }}>
+                    <p.Icon size={22} color="#D97706" />
+                  </span>
                   <h3 style={{ color: C.bgLightInk, fontWeight: 700, fontSize: 17, lineHeight: 1.3, letterSpacing: "-0.01em" }}>
                     {p.t}
                   </h3>
@@ -678,12 +686,14 @@ const Index = () => {
               <div>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {[
-                    { emoji: "🔢", t: "Uma nota de 0 a 1000", d: "Calculada a partir do seu histórico real na plataforma: atendimentos, recebimentos via Pix, tempo de atuação e conformidade no conselho profissional." },
-                    { emoji: "📄", t: "Documentos oficiais que você emite quando quiser", d: "Comprovante de Renda SalbCare, Certidão de Atividade Profissional e Selo Verificado Público — todos com QR Code de verificação. (Em rollout 2026.)" },
-                    { emoji: "⏳", t: "Quanto mais tempo na SalbCare, mais valiosa fica sua nota", d: "Cada mês de uso compõe seu histórico. Seu SalbScore é seu — e ninguém mais constrói por você." },
+                    { Icon: Hash, t: "Uma nota de 0 a 1000", d: "Calculada a partir do seu histórico real na plataforma: atendimentos, recebimentos via Pix, tempo de atuação e conformidade no conselho profissional." },
+                    { Icon: FileText, t: "Documentos oficiais que você emite quando quiser", d: "Comprovante de Renda SalbCare, Declaração de Atividade Profissional e Selo Verificado Público — todos com QR Code de verificação." },
+                    { Icon: Clock, t: "Quanto mais tempo na SalbCare, mais valiosa fica sua nota", d: "Cada mês de uso compõe seu histórico. Seu SalbScore é seu — e ninguém mais constrói por você." },
                   ].map((b) => (
                     <li key={b.t} style={{ display: "flex", gap: 14, padding: "16px 0", borderBottom: `1px solid ${C.border}` }}>
-                      <span aria-hidden style={{ fontSize: 22, lineHeight: 1, marginTop: 2 }}>{b.emoji}</span>
+                      <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: 10, background: C.tealTint, flexShrink: 0 }}>
+                        <b.Icon size={18} color={C.teal} />
+                      </span>
                       <div>
                         <p style={{ color: C.text, fontWeight: 700, fontSize: 16, lineHeight: 1.35 }}>{b.t}</p>
                         <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginTop: 6 }}>{b.d}</p>
@@ -729,42 +739,65 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── 5. O QUE VOCÊ EMITE COM SEU SALBSCORE ── */}
-        <section style={{ background: C.bg }} className={S.sectionY} aria-label="Documentos do SalbScore">
+        {/* ── 5. O QUE O SALBSCORE DESBLOQUEIA ── */}
+        <section style={{ background: C.bg }} className={S.sectionY} aria-label="O que o SalbScore desbloqueia">
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="text-center" style={{ marginBottom: 48 }}>
               <motion.div variants={reveal}><Mark /></motion.div>
+              <motion.p variants={reveal} style={{ color: C.teal, fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>
+                Exclusividade SalbCare
+              </motion.p>
               <motion.h2 variants={reveal} className="salb-h" style={{ fontSize: "clamp(28px, 4.5vw, 44px)" }}>
-                3 documentos que mudam o jogo
+                O que o SalbScore desbloqueia pra você
               </motion.h2>
+              <motion.p variants={reveal} style={{ color: C.textMuted, fontSize: 16, lineHeight: 1.6, marginTop: 14, maxWidth: 540, marginInline: "auto" }}>
+                Recursos exclusivos disponíveis para profissionais com SalbScore ativo.
+              </motion.p>
             </motion.div>
 
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
               className="grid gap-5 md:grid-cols-3">
+              {/* Card destaque — Comprovante de Renda */}
+              <motion.div variants={reveal}
+                style={{ background: C.card, border: `1.5px solid ${C.teal}`, borderRadius: 20, padding: "32px 28px", boxShadow: "0 8px 24px rgba(0,180,160,0.18)", display: "flex", flexDirection: "column", position: "relative" }}>
+                <span style={{ position: "absolute", top: 16, right: 16, background: C.teal, color: "#fff", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999 }}>
+                  Disponível agora
+                </span>
+                <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 48, height: 48, borderRadius: 14, background: C.tealTint, marginBottom: 16 }}>
+                  <Star size={22} color={C.teal} />
+                </span>
+                <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, lineHeight: 1.3, letterSpacing: "-0.01em" }}>
+                  Comprovante de Renda SalbCare
+                </h3>
+                <p style={{ color: C.textMuted, fontSize: 14.5, lineHeight: 1.65, marginTop: 10, flex: 1 }}>
+                  PDF assinado digitalmente que comprova sua renda como profissional autônomo de saúde. Verificável por QR Code. Útil para aluguel, financiamento e crédito.
+                </p>
+                <Link to="/salbscore?source=landing-comprovante-card"
+                  onClick={() => fireCta("ver_meu_salbscore", "landing_comprovante_card")}
+                  style={{ marginTop: 24, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: C.teal, color: "#fff", fontWeight: 600, padding: "14px 18px", borderRadius: 999, textDecoration: "none", fontSize: 14.5 }}>
+                  Ver meu SalbScore →
+                </Link>
+              </motion.div>
+
+              {/* Demais cards */}
               {[
-                { emoji: "📄", t: "Comprovante de Renda SalbCare", d: "PDF oficial com QR Code de verificação. Mostra média mensal de recebimentos comprovados pela plataforma. Pensado para imobiliárias e bancos parceiros." },
-                { emoji: "🏆", t: "Certidão de Atividade Profissional", d: "Comprova tempo de atuação, volume mensal de atendimentos e conselho profissional ativo. Útil para credenciamento e parcerias." },
-                { emoji: "⭐", t: "Selo Verificado Público", d: "Página pública com seu SalbScore e dados profissionais. URL única que você usa no Instagram, no consultório, na assinatura de e-mail." },
+                { Icon: FileCheck, t: "Declaração de Atividade Profissional", d: "Comprova tempo de atuação, volume mensal de atendimentos e conselho profissional ativo. Útil para credenciamento e parcerias." },
+                { Icon: Shield, t: "Score público com consentimento", d: "Compartilhe seu histórico profissional com parceiros financeiros para facilitar acesso a crédito — sempre com sua autorização." },
               ].map((doc) => (
                 <motion.div key={doc.t} variants={reveal} className="salb-card flex flex-col" style={{ padding: 28 }}>
-                  <span aria-hidden style={{ fontSize: 32, lineHeight: 1, marginBottom: 16 }}>{doc.emoji}</span>
+                  <span aria-hidden style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 48, height: 48, borderRadius: 14, background: C.tealTint, marginBottom: 16 }}>
+                    <doc.Icon size={22} color={C.teal} />
+                  </span>
                   <h3 style={{ color: C.text, fontWeight: 700, fontSize: 18, lineHeight: 1.3, letterSpacing: "-0.01em" }}>
                     {doc.t}
                   </h3>
-                  <p style={{ color: C.textMuted, fontSize: 14.5, lineHeight: 1.6, marginTop: 10, flex: 1 }}>
+                  <p style={{ color: C.textMuted, fontSize: 14.5, lineHeight: 1.65, marginTop: 10, flex: 1 }}>
                     {doc.d}
-                  </p>
-                  <p style={{ marginTop: 16, color: C.gold, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-                    Em breve · Roadmap 2026
                   </p>
                 </motion.div>
               ))}
             </motion.div>
-
-            <p style={{ color: C.textMuted, fontSize: 13, textAlign: "center", marginTop: 28, maxWidth: 600, marginInline: "auto", lineHeight: 1.6 }}>
-              Em desenvolvimento. Quem já constrói histórico hoje terá <strong style={{ color: C.text }}>prioridade no acesso</strong> quando os documentos forem liberados.
-            </p>
           </div>
         </section>
 
@@ -823,8 +856,8 @@ const Index = () => {
                 className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { t: "Comprovante de Renda Digital", d: "Substitui contracheque para aluguéis, financiamentos e vistos." },
-                  { t: "Certidão de Atividade Profissional", d: "Comprova pacientes ativos, tempo de atuação e conformidade com CRM/CRP/CRN." },
-                  { t: "Score de Crédito SalbCare", d: "Número verificável por parceiros financeiros via QR Code." },
+                  { t: "Declaração de Atividade Profissional", d: "Comprova pacientes ativos, tempo de atuação e conformidade com CRM/CRP/CRN." },
+                  { t: "Score público com consentimento", d: "Compartilhe seu histórico profissional com parceiros — sempre com sua autorização." },
                 ].map((b) => (
                   <motion.div key={b.t} variants={reveal}
                     style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: S.radius, padding: 20, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -844,6 +877,58 @@ const Index = () => {
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = C.teal)}>
                 Quero construir meu SalbScore →
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 5c. TUDO QUE VOCÊ PRECISA ── */}
+        <section style={{ background: C.bgLight }} className={S.sectionY} aria-label="Tudo que você precisa">
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+              className="text-center" style={{ marginBottom: 48 }}>
+              <motion.p variants={reveal} style={{ color: C.teal, fontSize: 12, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16 }}>
+                Plataforma completa
+              </motion.p>
+              <motion.h2 variants={reveal} className="salb-h-light" style={{ fontSize: "clamp(28px, 5vw, 40px)" }}>
+                Tudo que você precisa, em um só lugar
+              </motion.h2>
+              <motion.p variants={reveal} style={{ color: C.bgLightMuted, fontSize: 17, lineHeight: 1.6, marginTop: 16, maxWidth: 560, marginInline: "auto" }}>
+                Da agenda à contabilidade. Da consulta ao recebimento. Sem precisar de mais nenhuma ferramenta.
+              </motion.p>
+            </motion.div>
+
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { Icon: Calendar, t: "Agenda Inteligente", d: "Chega de papel e WhatsApp. Agenda automática, lembretes e confirmações pros pacientes." },
+                { Icon: FileText, t: "Prontuário Digital", d: "Histórico completo dos seus pacientes, seguro e acessível de qualquer lugar." },
+                { Icon: Video, t: "Teleconsulta Integrada", d: "Link do Google Meet em 1 clique. Sem instalar nada, sem complicação." },
+                { Icon: ClipboardList, t: "Receita e Atestado Digital", d: "Receita Comum, Controle Especial e Notificações com validade legal e assinatura digital." },
+                { Icon: Wallet, t: "Controle Financeiro Completo", d: "Veja quanto entrou, quanto vai entrar e sua média mensal. Sem planilha." },
+                { Icon: Calculator, t: "Contabilidade Especializada", d: "Esqueça o Carnê-Leão. Contadores especialistas em saúde cuidando de tudo." },
+                { Icon: Brain, t: "Mentoria Financeira com IA", d: "Análise dos seus números em tempo real pra você tomar decisões lucrativas e seguras." },
+                { Icon: Users, t: "Captação de Pacientes", d: "Seu perfil aparece para pacientes que buscam profissionais na sua área e região." },
+              ].map((item) => (
+                <motion.div key={item.t} variants={reveal}
+                  style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: 20, background: "#FFFFFF", border: "1px solid #E8ECEF", borderRadius: 14, transition: "all 200ms ease" }}
+                  whileHover={{ y: -2, borderColor: "rgba(0,180,160,0.4)" }}>
+                  <span aria-hidden style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 11, background: "#F0FAFA" }}>
+                    <item.Icon size={22} color={C.teal} />
+                  </span>
+                  <div>
+                    <p style={{ color: C.bgLightInk, fontWeight: 700, fontSize: 16, lineHeight: 1.3, marginBottom: 4 }}>{item.t}</p>
+                    <p style={{ color: C.bgLightMuted, fontSize: 14, lineHeight: 1.6 }}>{item.d}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <div className="text-center" style={{ marginTop: 56 }}>
+              <a href="#planos"
+                onClick={() => fireCta("ver_todos_planos", "tudo_que_precisa")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.teal, fontWeight: 600, fontSize: 16, textDecoration: "none" }}>
+                Ver todos os planos →
+              </a>
             </div>
           </div>
         </section>
@@ -883,10 +968,6 @@ const Index = () => {
               ))}
             </div>
 
-            <p style={{ marginTop: 32, color: C.textMuted, fontSize: 13.5, textAlign: "center", maxWidth: 620, marginInline: "auto", lineHeight: 1.6 }}>
-              Em breve, depoimentos de quem já usou o Comprovante SalbCare pra alugar imóvel,
-              conseguir cartão e financiar equipamento.
-            </p>
           </div>
         </section>
 
@@ -906,7 +987,7 @@ const Index = () => {
               {[
                 { n: "1", t: "Cadastre-se e valide seu conselho profissional", d: "Em menos de 1 minuto. Validamos automaticamente seu CRM, CRP, CRN, CRO, CREFITO ou outro registro." },
                 { n: "2", t: "Atenda seus pacientes pela plataforma", d: "Cada atendimento agendado, cada Pix recebido e cada paciente que retorna alimenta seu SalbScore. Você só precisa atender — a SalbCare cuida do resto." },
-                { n: "3", t: "Use seu SalbScore quando precisar", d: "Visualize seu histórico organizado e prepare-se para emitir Comprovantes em PDF (em breve), com QR Code para garantir autenticidade." },
+                { n: "3", t: "Use seu SalbScore quando precisar", d: "Visualize seu histórico organizado e emita seu Comprovante de Renda em PDF, com QR Code para garantir autenticidade." },
               ].map((s) => (
                 <motion.div key={s.n} variants={reveal} className="salb-card flex flex-col" style={{ padding: S.cardPad }}>
                   <span style={{ width: 44, height: 44, borderRadius: 999, background: C.tealTint, border: `1px solid ${C.borderTeal}`,
@@ -1007,10 +1088,10 @@ const Index = () => {
                   cta: "Assinar Essencial", to: "/checkout?plan=basic&source=landing-planos-essencial", variant: "primary" as const, popular: true, plan: "essencial",
                 },
                 {
-                  name: "Premium", price: "Em breve", cadence: "lista de espera",
-                  desc: "Comprovante de Renda, Certidão e Selo Verificado.",
-                  features: ["Tudo do Essencial", "Comprovante de Renda SalbCare ilimitado", "Certidão de Atividade Profissional", "Selo Verificado Público com QR Code", "Prioridade no diretório de profissionais"],
-                  cta: "Entrar na lista", to: "/parcerias?source=landing-planos-premium", variant: "outline" as const, plan: "premium",
+                  name: "Premium", price: "Sob consulta", cadence: "personalizado",
+                  desc: "Comprovante de Renda, Declaração e Selo Verificado.",
+                  features: ["Tudo do Essencial", "Comprovante de Renda SalbCare ilimitado", "Declaração de Atividade Profissional", "Selo Verificado Público com QR Code", "Prioridade no diretório de profissionais"],
+                  cta: "Falar com a equipe", to: "/parcerias?source=landing-planos-premium", variant: "outline" as const, plan: "premium",
                 },
               ].map((plan, i) => (
                 <motion.div key={plan.name}
@@ -1110,7 +1191,7 @@ const Index = () => {
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {[
                     "SalbScore que te torna visível",
-                    "Comprovante de Renda Oficial em PDF (em breve)",
+                    "Comprovante de Renda SalbCare em PDF",
                     "Histórico financeiro construído mês a mês",
                     "IA que mostra clareza dos seus números",
                     "Agenda profissional automática",
@@ -1147,11 +1228,11 @@ const Index = () => {
             <Accordion type="single" collapsible className="space-y-3"
               onValueChange={(v) => v && trackUnified("faq_open", { question_id: v, location: "landing_faq" })}>
               {[
-                { q: "O Comprovante de Renda SalbCare substitui contracheque?", a: "Para a maioria das finalidades (aluguel, parcelamentos, comprovação geral), sim. Para finalidades específicas como financiamento imobiliário ou processos formais, recomendamos apresentar junto com declaração contábil — nosso contador parceiro emite ambos. O Comprovante está em desenvolvimento e entra em produção no roadmap 2026." },
+                { q: "O Comprovante de Renda SalbCare substitui contracheque?", a: "Para a maioria das finalidades (aluguel, parcelamentos, comprovação geral), sim. Para finalidades específicas como financiamento imobiliário ou processos formais, recomendamos apresentar junto com declaração contábil — nosso contador parceiro emite ambos." },
                 { q: "Em quanto tempo meu SalbScore fica relevante?", a: "Em 30 dias de uso ativo seu histórico já fica consistente. Em 6 meses, atinge faixa Estabelecido. Em 12 meses, a maioria dos profissionais alcança faixa Premium. Cinco ações já alimentam seu histórico hoje: cadastrar seu conselho, marcar consultas, lançar recebimentos, confirmar atendimentos e atualizar despesas." },
                 { q: "E se eu já tenho contador?", a: "A SalbCare complementa o contador. Contador faz IRPF e impostos. SalbCare constrói seu histórico financeiro profissional verificável em PDF — algo que contador comum não emite." },
                 { q: "Funciona para MEI, autônomo PF, Simples Nacional?", a: "Funciona para todos os regimes. A IA detecta o seu e calcula tudo de forma adequada." },
-                { q: "E se eu cancelar? Perco meu SalbScore?", a: "Seu histórico fica salvo. Reativando, você continua de onde parou. Comprovantes oficiais serão emitidos com plano Premium ativo, quando o módulo entrar no ar." },
+                { q: "E se eu cancelar? Perco meu SalbScore?", a: "Seu histórico fica salvo. Reativando, você continua de onde parou." },
                 { q: "Meus dados estão seguros?", a: "Sim. 100% LGPD. Criptografia em repouso, RLS no banco, auditoria de acesso. Você pode pedir exclusão total a qualquer momento." },
               ].map((item, i) => (
                 <AccordionItem key={i} value={`faq-${i}`} className="salb-faq-item">
