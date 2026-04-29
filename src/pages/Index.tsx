@@ -1,7 +1,13 @@
 // build: 2026-04-27 — SalbScore narrative reformulation
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Menu, X, Shield } from "lucide-react";
+import {
+  ArrowRight, Menu, X, Shield,
+  Building2, Key, CreditCard, Car, Plane, BarChart3,
+  Hash, FileText, Clock, Star, FileCheck, Wallet, Bot,
+  Calendar, Video, ClipboardList, Calculator, Brain, Users,
+  CheckCircle2,
+} from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import SEOHead from "@/components/SEOHead";
