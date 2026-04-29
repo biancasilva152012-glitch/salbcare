@@ -916,10 +916,10 @@ const Index = () => {
               ))}
             </div>
 
-            <p style={{ marginTop: 32, color: C.textMuted, fontSize: 13.5, textAlign: "center", maxWidth: 620, marginInline: "auto", lineHeight: 1.6 }}>
-              Em breve, depoimentos de quem já usou o Comprovante SalbCare pra alugar imóvel,
-              conseguir cartão e financiar equipamento.
-            </p>
+          </div>
+        </section>
+        {/* placeholder removido */}
+        <div style={{ display: "none" }} aria-hidden />
           </div>
         </section>
 
