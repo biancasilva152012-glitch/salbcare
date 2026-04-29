@@ -143,7 +143,7 @@ const Index = () => {
       {
         "@type": "FAQPage",
         mainEntity: [
-          { "@type": "Question", name: "O Comprovante de Renda SalbCare substitui contracheque?", acceptedAnswer: { "@type": "Answer", text: "Para a maioria das finalidades como aluguel e parcelamentos, sim. Para finalidades específicas como financiamento imobiliário, recomendamos apresentar junto com declaração contábil. O Comprovante está em desenvolvimento no roadmap 2026." } },
+          { "@type": "Question", name: "O Comprovante de Renda SalbCare substitui contracheque?", acceptedAnswer: { "@type": "Answer", text: "Para a maioria das finalidades como aluguel e parcelamentos, sim. Para finalidades específicas como financiamento imobiliário, recomendamos apresentar junto com declaração contábil." } },
           { "@type": "Question", name: "Em quanto tempo meu SalbScore fica relevante?", acceptedAnswer: { "@type": "Answer", text: "Em 30 dias de uso ativo seu histórico já é consistente. Em 6 meses, atinge faixa Estabelecido. Em 12 meses, a maioria dos profissionais alcança faixa Premium." } },
           { "@type": "Question", name: "E se eu já tenho contador?", acceptedAnswer: { "@type": "Answer", text: "A SalbCare complementa o contador. Contador faz IRPF e impostos. SalbCare constrói seu histórico financeiro profissional verificável em PDF — algo que contador comum não emite." } },
           { "@type": "Question", name: "Funciona para MEI, autônomo PF, Simples Nacional?", acceptedAnswer: { "@type": "Answer", text: "Funciona para todos os regimes. A IA detecta o seu e calcula tudo de forma adequada." } },
