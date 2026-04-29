@@ -1139,7 +1139,7 @@ const Index = () => {
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {[
                     "SalbScore que te torna visível",
-                    "Comprovante de Renda Oficial em PDF (em breve)",
+                    "Comprovante de Renda SalbCare em PDF",
                     "Histórico financeiro construído mês a mês",
                     "IA que mostra clareza dos seus números",
                     "Agenda profissional automática",
