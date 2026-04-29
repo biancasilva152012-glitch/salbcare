@@ -343,14 +343,14 @@ const Index = () => {
               <motion.ul variants={reveal} className="flex flex-wrap items-center justify-center"
                 style={{ gap: "10px 14px", marginTop: 24, listStyle: "none", padding: 0 }}>
                 {[
-                  { icon: "💚", text: "100% das suas consultas no seu bolso" },
-                  { icon: "📄", text: "Comprovante de Renda em breve" },
-                  { icon: "🤖", text: "IA financeira que conhece seus números" },
+                  { Icon: Wallet, text: "100% das suas consultas no seu bolso" },
+                  { Icon: FileCheck, text: "Comprovante de Renda SalbCare" },
+                  { Icon: Bot, text: "IA financeira que conhece seus números" },
                 ].map((b) => (
                   <li key={b.text}
                     style={{ color: C.text, fontSize: 13, fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 8,
                       background: C.tealTint, border: `1px solid ${C.borderTeal}`, borderRadius: 999, padding: "6px 12px" }}>
-                    <span aria-hidden>{b.icon}</span>
+                    <b.Icon size={14} color={C.teal} aria-hidden />
                     {b.text}
                   </li>
                 ))}
