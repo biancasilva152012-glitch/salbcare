@@ -881,6 +881,58 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── 5c. TUDO QUE VOCÊ PRECISA ── */}
+        <section style={{ background: C.bgLight }} className={S.sectionY} aria-label="Tudo que você precisa">
+          <div className="mx-auto max-w-6xl px-5 sm:px-6">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+              className="text-center" style={{ marginBottom: 48 }}>
+              <motion.p variants={reveal} style={{ color: C.teal, fontSize: 12, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16 }}>
+                Plataforma completa
+              </motion.p>
+              <motion.h2 variants={reveal} className="salb-h-light" style={{ fontSize: "clamp(28px, 5vw, 40px)" }}>
+                Tudo que você precisa, em um só lugar
+              </motion.h2>
+              <motion.p variants={reveal} style={{ color: C.bgLightMuted, fontSize: 17, lineHeight: 1.6, marginTop: 16, maxWidth: 560, marginInline: "auto" }}>
+                Da agenda à contabilidade. Da consulta ao recebimento. Sem precisar de mais nenhuma ferramenta.
+              </motion.p>
+            </motion.div>
+
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }} variants={stagger}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { Icon: Calendar, t: "Agenda Inteligente", d: "Chega de papel e WhatsApp. Agenda automática, lembretes e confirmações pros pacientes." },
+                { Icon: FileText, t: "Prontuário Digital", d: "Histórico completo dos seus pacientes, seguro e acessível de qualquer lugar." },
+                { Icon: Video, t: "Teleconsulta Integrada", d: "Link do Google Meet em 1 clique. Sem instalar nada, sem complicação." },
+                { Icon: ClipboardList, t: "Receita e Atestado Digital", d: "Receita Comum, Controle Especial e Notificações com validade legal e assinatura digital." },
+                { Icon: Wallet, t: "Controle Financeiro Completo", d: "Veja quanto entrou, quanto vai entrar e sua média mensal. Sem planilha." },
+                { Icon: Calculator, t: "Contabilidade Especializada", d: "Esqueça o Carnê-Leão. Contadores especialistas em saúde cuidando de tudo." },
+                { Icon: Brain, t: "Mentoria Financeira com IA", d: "Análise dos seus números em tempo real pra você tomar decisões lucrativas e seguras." },
+                { Icon: Users, t: "Captação de Pacientes", d: "Seu perfil aparece para pacientes que buscam profissionais na sua área e região." },
+              ].map((item) => (
+                <motion.div key={item.t} variants={reveal}
+                  style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: 20, background: "#FFFFFF", border: "1px solid #E8ECEF", borderRadius: 14, transition: "all 200ms ease" }}
+                  whileHover={{ y: -2, borderColor: "rgba(0,180,160,0.4)" }}>
+                  <span aria-hidden style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 11, background: "#F0FAFA" }}>
+                    <item.Icon size={22} color={C.teal} />
+                  </span>
+                  <div>
+                    <p style={{ color: C.bgLightInk, fontWeight: 700, fontSize: 16, lineHeight: 1.3, marginBottom: 4 }}>{item.t}</p>
+                    <p style={{ color: C.bgLightMuted, fontSize: 14, lineHeight: 1.6 }}>{item.d}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <div className="text-center" style={{ marginTop: 56 }}>
+              <a href="#planos"
+                onClick={() => fireCta("ver_todos_planos", "tudo_que_precisa")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.teal, fontWeight: 600, fontSize: 16, textDecoration: "none" }}>
+                Ver todos os planos →
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* ── 6. DEPOIMENTOS ── */}
         <section style={{ background: C.card, borderTop: `1px solid ${C.border}` }} className={S.sectionY}>
 
