@@ -269,7 +269,7 @@ const Login = () => {
           <p className="text-sm text-muted-foreground">
             Não tem conta?{" "}
             <Link to={`/register${nextQs}`} className="text-primary hover:underline font-medium">
-              Comece grátis por 7 dias
+              Teste grátis
             </Link>
           </p>
           <p className="text-xs text-muted-foreground">
