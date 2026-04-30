@@ -25,7 +25,6 @@ const fireCta = (ctaName: string, location: string, extras: Record<string, unkno
 
 /* IA Mentora — mensagens rotativas (genéricas, sem métricas inventadas) */
 const MENTORA_MSGS = [
-  "Atualizando depoimentos com ajustes feitos",
   "Quer que eu mostre onde investir o próximo R$ 1.000?",
   "Seus recebimentos do mês entraram. Quer ver o resumo?",
   "Posso preparar seu lembrete de imposto desta semana?",
