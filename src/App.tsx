@@ -163,7 +163,7 @@ const App = () => (
               <Route path="/blog/receituario-digital" element={<BlogReceituarioDigital />} />
               <Route path="/blog/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
               <Route path="/blog/preco-minimo-consulta" element={<BlogPrecoMinimoConsulta />} />
-              <Route path="/instalar-app" element={<InstallApp />} />
+              
 
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
