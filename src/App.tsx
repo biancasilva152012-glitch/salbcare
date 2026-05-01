@@ -221,7 +221,6 @@ const App = () => (
           </Suspense>
           <BottomNav />
           <CookieConsent />
-          </PWAInstallProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
