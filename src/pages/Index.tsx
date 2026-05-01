@@ -497,7 +497,6 @@ const Index = () => {
                 <Link to="/privacy" style={{ color: TEXT_MUTED }}>Privacidade</Link>
                 <Link to="/blog" style={{ color: TEXT_MUTED }}>Blog</Link>
                 <Link to="/parcerias" style={{ color: TEXT_MUTED }}>Parcerias</Link>
-                <Link to="/instalar-app" style={{ color: TEXT_MUTED }}>Como instalar o app?</Link>
               </div>
               <p style={{ color: TEXT_MUTED, fontSize: 13 }}>
                 © {new Date().getFullYear()} SalbCare. Todos os direitos reservados.
