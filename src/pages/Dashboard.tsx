@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import GuestDashboard from "@/components/guest/GuestDashboard";
 import GuestSyncReminderBanner from "@/components/GuestSyncReminderBanner";
-import InstallTipBanner from "@/components/pwa/InstallTipBanner";
+
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import { useFinancialHealth } from "@/hooks/useFinancialHealth";
 import FinancialDiagnosisBanner from "@/components/financial/FinancialDiagnosisBanner";
