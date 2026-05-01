@@ -17,8 +17,6 @@ import GlobalDemoMigration from "@/components/GlobalDemoMigration";
 import GuestDataSyncRedirector from "@/components/GuestDataSyncRedirector";
 import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
-import { PWAInstallProvider } from "@/contexts/PWAInstallContext";
-import InstallPWAButton from "@/components/pwa/InstallPWAButton";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
 
