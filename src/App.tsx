@@ -123,14 +123,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <PWAInstallProvider>
           <ScrollToTop />
           <TrackingProvider />
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
           <GlobalStatusBanner />
           <FreemiumDebugPanel />
-          <InstallPWAButton />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
