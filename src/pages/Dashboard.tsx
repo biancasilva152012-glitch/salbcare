@@ -202,7 +202,6 @@ const Dashboard = () => {
 
   return (
     <PageContainer>
-      <InstallTipBanner />
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
         {/* Auto-sync reminder when guest data is still pending */}
         <motion.div variants={item}>
