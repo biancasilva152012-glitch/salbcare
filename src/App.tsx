@@ -17,8 +17,6 @@ import GlobalDemoMigration from "@/components/GlobalDemoMigration";
 import GuestDataSyncRedirector from "@/components/GuestDataSyncRedirector";
 import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
-import { PWAInstallProvider } from "@/contexts/PWAInstallContext";
-import InstallPWAButton from "@/components/pwa/InstallPWAButton";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
 
@@ -98,7 +96,7 @@ const BlogAgendaMedica = lazyWithRetry(() => import("./pages/blog/BlogAgendaMedi
 const BlogReceituarioDigital = lazyWithRetry(() => import("./pages/blog/BlogReceituarioDigital"), "BlogReceituarioDigital");
 const BlogCnpjMedico = lazyWithRetry(() => import("./pages/blog/BlogCnpjMedico"), "BlogCnpjMedico");
 const BlogPrecoMinimoConsulta = lazyWithRetry(() => import("./pages/blog/BlogPrecoMinimoConsulta"), "BlogPrecoMinimoConsulta");
-const InstallApp = lazyWithRetry(() => import("./pages/InstallApp"), "InstallApp");
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -125,14 +123,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <PWAInstallProvider>
           <ScrollToTop />
           <TrackingProvider />
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
           <GlobalStatusBanner />
           <FreemiumDebugPanel />
-          <InstallPWAButton />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
@@ -167,7 +163,7 @@ const App = () => (
               <Route path="/blog/receituario-digital" element={<BlogReceituarioDigital />} />
               <Route path="/blog/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
               <Route path="/blog/preco-minimo-consulta" element={<BlogPrecoMinimoConsulta />} />
-              <Route path="/instalar-app" element={<InstallApp />} />
+              
 
               {/* Public patient routes */}
               <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
@@ -225,7 +221,6 @@ const App = () => (
           </Suspense>
           <BottomNav />
           <CookieConsent />
-          </PWAInstallProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
