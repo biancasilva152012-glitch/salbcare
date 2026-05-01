@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Send } from "lucide-react";
+import { generateMeetRoom } from "@/utils/generateMeetRoom";
 
 interface CreateTeleconsultationModalProps {
   open: boolean;
@@ -59,6 +60,9 @@ const CreateTeleconsultationModal = ({
     setSaving(true);
     try {
       const dateTime = new Date(`${date}T${time}`).toISOString();
+      // Generate a unique Meet room per consultation
+      const { roomName, roomUrl } = generateMeetRoom();
+
       const { error } = await supabase.from("teleconsultations").insert({
         user_id: userId,
         patient_name: patientName.trim(),
@@ -67,16 +71,17 @@ const CreateTeleconsultationModal = ({
         duration: parseInt(duration),
         notes: notes.trim() || null,
         status: "scheduled",
-        room_url: defaultMeetLink.trim() || null,
+        room_name: roomName,
+        room_url: roomUrl,
       });
       if (error) throw error;
 
       // Send wa.me link to patient if phone available
-      if (patientPhone && defaultMeetLink) {
+      if (patientPhone) {
         const phone = patientPhone.replace(/\D/g, "");
         const dateObj = new Date(`${date}T${time}`);
         const msg = encodeURIComponent(
-          `✅ Consulta confirmada!\n\n📅 ${dateObj.toLocaleDateString("pt-BR")} às ${dateObj.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}\n⏱ ${duration} minutos\n\n🔗 Acesse sua consulta aqui:\n${defaultMeetLink}\n\nSalve este link. Entraremos em contato com lembretes antes da consulta.`
+          `✅ Consulta confirmada!\n\n📅 ${dateObj.toLocaleDateString("pt-BR")} às ${dateObj.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}\n⏱ ${duration} minutos\n\n🔗 Acesse sua consulta aqui:\n${roomUrl}\n\nSalve este link. Entraremos em contato com lembretes antes da consulta.`
         );
         window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
       }
