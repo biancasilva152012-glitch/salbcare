@@ -128,7 +128,7 @@ const PatientLimitWarning = ({ count, limit, isFree, blockOpen, onBlockClose }: 
                 "Pacientes ilimitados",
                 "Receitas e atestados digitais",
                 "Teleconsulta integrada",
-                "Diretório público de profissionais",
+                "Mentoria financeira com IA ilimitada",
               ].map((b) => (
                 <li key={b} className="flex items-center gap-2 text-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />

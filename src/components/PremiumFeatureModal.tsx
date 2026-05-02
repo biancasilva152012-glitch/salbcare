@@ -17,14 +17,12 @@ const DEFAULT_BENEFITS = [
   "Receitas: comum, controle especial, notificação azul e amarela",
   "Atestados e certificados digitais com assinatura ICP",
   "Teleconsulta integrada com Google Meet",
-  "Perfil destacado no diretório público de profissionais",
   "Pacientes ilimitados e mentoria de IA ilimitada",
 ];
 
 /**
  * Modal exibido sempre que um usuário no plano gratuito tenta acessar uma
- * feature exclusiva do plano Essencial (prescrições, atestados, teleconsulta,
- * diretório público).
+ * feature exclusiva do plano Essencial (prescrições, atestados, teleconsulta).
  */
 const PremiumFeatureModal = ({ open, onClose, featureName, description }: PremiumFeatureModalProps) => {
   const navigate = useNavigate();

@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { Save, Loader2, Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle, Wifi, WifiOff } from "lucide-react";
+import { Save, Loader2, Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -66,14 +65,13 @@ const ConsultationSettings = () => {
 
   const [meetLink, setMeetLink] = useState("");
   const [meetSaved, setMeetSaved] = useState(false);
-  const [availabilityOnline, setAvailabilityOnline] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile-settings", user?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("meet_link, availability_online")
+        .select("meet_link")
         .eq("user_id", user!.id)
         .single();
       return data;
@@ -85,7 +83,6 @@ const ConsultationSettings = () => {
     if (profile) {
       setMeetLink(profile.meet_link || "");
       setMeetSaved(!!profile.meet_link);
-      setAvailabilityOnline((profile as any).availability_online || false);
     }
   }, [profile]);
 
@@ -95,7 +92,6 @@ const ConsultationSettings = () => {
         .from("profiles")
         .update({
           meet_link: meetLink.trim() || null,
-          availability_online: availabilityOnline,
         } as any)
         .eq("user_id", user!.id);
       if (error) throw error;
@@ -113,31 +109,6 @@ const ConsultationSettings = () => {
 
   return (
     <div className="space-y-5">
-      {/* Visibility Toggle */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 px-1">
-          {availabilityOnline ? (
-            <Wifi className="h-4 w-4 text-primary" />
-          ) : (
-            <WifiOff className="h-4 w-4 text-muted-foreground" />
-          )}
-          <h2 className="text-sm font-semibold">Visibilidade no diretório</h2>
-        </div>
-        <div className="glass-card p-3 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">
-              {availabilityOnline ? "Visível para pacientes" : "Invisível na busca"}
-            </p>
-            <p className="text-[10px] text-muted-foreground">
-              {availabilityOnline
-                ? "Seu perfil aparece no diretório público."
-                : "Ative para aparecer no diretório de profissionais."}
-            </p>
-          </div>
-          <Switch checked={availabilityOnline} onCheckedChange={setAvailabilityOnline} />
-        </div>
-      </div>
-
       {/* Teleconsulta - Meet Link Section */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 px-1">

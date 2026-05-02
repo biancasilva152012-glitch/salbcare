@@ -50,10 +50,6 @@ const Upgrade = () => {
       title: "Atestados digitais são exclusivos do plano Essencial",
       subtitle: "Emita atestados e certificados com hash de verificação e assinatura ICP.",
     },
-    public_directory: {
-      title: "Aparecer no diretório público é exclusivo do Essencial",
-      subtitle: "Tenha um perfil destacado em /profissionais e receba pacientes da plataforma.",
-    },
     premium_required: {
       title:
         params.get("module") === "accounting"
@@ -113,7 +109,6 @@ const Upgrade = () => {
     { text: "Lançamentos financeiros ilimitados", icon: Check },
     { text: "Mentoria com IA ilimitada", icon: Sparkles, highlight: true },
     { text: "Teleconsulta via Google Meet", icon: Check },
-    { text: "Perfil público pesquisável no diretório", icon: Check },
     { text: "100% do valor das consultas (sem comissão)", icon: Check },
     { text: "Suporte prioritário no WhatsApp", icon: Check },
   ];
