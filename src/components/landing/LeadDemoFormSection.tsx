@@ -58,9 +58,12 @@ const LeadDemoFormSection = () => {
     setSubmitting(true);
 
     try {
+      const payload = parsed.data as {
+        nome: string; email: string; dor_principal: string; whatsapp: string;
+      };
       const { data, error } = await supabase
         .from("leads_demo")
-        .insert([parsed.data])
+        .insert([payload])
         .select("id")
         .single();
 
