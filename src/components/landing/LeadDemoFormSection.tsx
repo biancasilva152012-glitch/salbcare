@@ -60,7 +60,7 @@ const LeadDemoFormSection = () => {
     try {
       const { data, error } = await supabase
         .from("leads_demo")
-        .insert(parsed.data)
+        .insert([parsed.data])
         .select("id")
         .single();
 
