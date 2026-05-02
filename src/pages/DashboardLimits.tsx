@@ -195,7 +195,6 @@ const DashboardLimits = () => {
                 />
                 <FeatureLine ok={false} text="Telessaúde" />
                 <FeatureLine ok={false} text="Receitas/atestados digitais" />
-                <FeatureLine ok={false} text="Perfil público" />
               </ul>
               {isGuest && (
                 <Button asChild variant="outline" size="sm" className="w-full">

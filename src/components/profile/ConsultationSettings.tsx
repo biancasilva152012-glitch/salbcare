@@ -113,31 +113,6 @@ const ConsultationSettings = () => {
 
   return (
     <div className="space-y-5">
-      {/* Visibility Toggle */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 px-1">
-          {availabilityOnline ? (
-            <Wifi className="h-4 w-4 text-primary" />
-          ) : (
-            <WifiOff className="h-4 w-4 text-muted-foreground" />
-          )}
-          <h2 className="text-sm font-semibold">Visibilidade no diretório</h2>
-        </div>
-        <div className="glass-card p-3 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">
-              {availabilityOnline ? "Visível para pacientes" : "Invisível na busca"}
-            </p>
-            <p className="text-[10px] text-muted-foreground">
-              {availabilityOnline
-                ? "Seu perfil aparece no diretório público."
-                : "Ative para aparecer no diretório de profissionais."}
-            </p>
-          </div>
-          <Switch checked={availabilityOnline} onCheckedChange={setAvailabilityOnline} />
-        </div>
-      </div>
-
       {/* Teleconsulta - Meet Link Section */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 px-1">

@@ -17,7 +17,7 @@ export const PLANS = {
       "Receita e Atestado Digital (PDF)",
       "Instruções para assinatura ICP-Brasil gratuita",
       "Mentoria financeira com IA ilimitada",
-      "Perfil público e link de indicação",
+      "Link de indicação para colegas",
       "Você fica com 100% do valor das consultas",
     ],
     hasTrial: false,

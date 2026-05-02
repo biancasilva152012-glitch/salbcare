@@ -16,7 +16,6 @@ const features = [
   { text: "Contador financeiro mensal", highlight: false },
   { text: "Mentoria financeira com IA ilimitada", highlight: true },
   { text: "Teleconsulta via Google Meet", highlight: false },
-  { text: "Perfil público pesquisável", highlight: false },
   { text: "Link de indicação para colegas", highlight: false },
   { text: "Sem comissão sobre consultas", highlight: false },
 ];
