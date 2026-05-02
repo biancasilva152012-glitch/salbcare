@@ -191,6 +191,8 @@ const Index = () => {
                 <ArrowRight size={20} strokeWidth={2.4} />
               </Link>
 
+              <WhatsAppDemoButton origem="hero" />
+
               <a href="#como-funciona" className="salb-link" style={{ fontSize: 15 }}>
                 Como funciona?
               </a>
