@@ -2,12 +2,9 @@
 // Reutilizado também via WhatsAppDemoButton para variantes inline (hero, rodapé).
 import { motion } from "framer-motion";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
-const WHATSAPP_NUMBER = "5588996924700";
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Olá! Vim pela SalbCare e gostaria de falar com a equipe e agendar uma demonstração da plataforma."
-);
-const WA_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
+const WA_URL = buildWhatsAppUrl();
 
 const fire = (origem: string) => {
   trackCtaClick("click_whatsapp_demo", origem);
