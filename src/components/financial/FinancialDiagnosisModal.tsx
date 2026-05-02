@@ -120,61 +120,81 @@ const FinancialDiagnosisModal = ({ open, onClose }: Props) => {
 
         <div className="px-6 py-4 space-y-3 min-h-[220px]">
           {step === 1 && (
-            <fieldset className="space-y-2">
-              <legend className="text-xs font-semibold mb-2">
+            <div role="radiogroup" aria-label="Objetivo financeiro" className="space-y-2">
+              <p className="text-xs font-semibold mb-2">
                 Qual seu maior objetivo financeiro agora?
-              </legend>
-              {GOAL_OPTIONS.map((opt) => (
-                <label
-                  key={opt.value}
-                  className={
-                    "flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer transition-colors " +
-                    (goal === opt.value
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/40")
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="diagnosis-goal"
-                    value={opt.value}
-                    checked={goal === opt.value}
-                    onChange={() => setGoal(opt.value)}
-                    className="h-3.5 w-3.5 accent-primary"
-                  />
-                  <span className="text-xs">{opt.label}</span>
-                </label>
-              ))}
-            </fieldset>
+              </p>
+              {GOAL_OPTIONS.map((opt) => {
+                const selected = goal === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setGoal(opt.value)}
+                    data-testid={`diagnosis-goal-${opt.value}`}
+                    className={
+                      "w-full flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer transition-colors text-left " +
+                      (selected
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/40")
+                    }
+                  >
+                    <span
+                      className={
+                        "h-4 w-4 rounded-full border-2 flex items-center justify-center shrink-0 " +
+                        (selected ? "border-primary" : "border-muted-foreground/40")
+                      }
+                    >
+                      {selected && (
+                        <span className="h-2 w-2 rounded-full bg-primary" />
+                      )}
+                    </span>
+                    <span className="text-xs">{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           )}
 
           {step === 2 && (
-            <fieldset className="space-y-2">
-              <legend className="text-xs font-semibold mb-2">
+            <div role="radiogroup" aria-label="Faixa de faturamento" className="space-y-2">
+              <p className="text-xs font-semibold mb-2">
                 Quanto você fatura por mês hoje?
-              </legend>
-              {RANGE_OPTIONS.map((opt) => (
-                <label
-                  key={opt.value}
-                  className={
-                    "flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer transition-colors " +
-                    (range === opt.value
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/40")
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="diagnosis-range"
-                    value={opt.value}
-                    checked={range === opt.value}
-                    onChange={() => setRange(opt.value)}
-                    className="h-3.5 w-3.5 accent-primary"
-                  />
-                  <span className="text-xs">{opt.label}</span>
-                </label>
-              ))}
-            </fieldset>
+              </p>
+              {RANGE_OPTIONS.map((opt) => {
+                const selected = range === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setRange(opt.value)}
+                    data-testid={`diagnosis-range-${opt.value}`}
+                    className={
+                      "w-full flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer transition-colors text-left " +
+                      (selected
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/40")
+                    }
+                  >
+                    <span
+                      className={
+                        "h-4 w-4 rounded-full border-2 flex items-center justify-center shrink-0 " +
+                        (selected ? "border-primary" : "border-muted-foreground/40")
+                      }
+                    >
+                      {selected && (
+                        <span className="h-2 w-2 rounded-full bg-primary" />
+                      )}
+                    </span>
+                    <span className="text-xs">{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           )}
 
           {step === 3 && (
