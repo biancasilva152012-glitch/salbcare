@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { Save, Loader2, Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle, Wifi, WifiOff } from "lucide-react";
+import { Save, Loader2, Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -66,14 +65,13 @@ const ConsultationSettings = () => {
 
   const [meetLink, setMeetLink] = useState("");
   const [meetSaved, setMeetSaved] = useState(false);
-  const [availabilityOnline, setAvailabilityOnline] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile-settings", user?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("meet_link, availability_online")
+        .select("meet_link")
         .eq("user_id", user!.id)
         .single();
       return data;
@@ -85,7 +83,6 @@ const ConsultationSettings = () => {
     if (profile) {
       setMeetLink(profile.meet_link || "");
       setMeetSaved(!!profile.meet_link);
-      setAvailabilityOnline((profile as any).availability_online || false);
     }
   }, [profile]);
 
@@ -95,7 +92,6 @@ const ConsultationSettings = () => {
         .from("profiles")
         .update({
           meet_link: meetLink.trim() || null,
-          availability_online: availabilityOnline,
         } as any)
         .eq("user_id", user!.id);
       if (error) throw error;
