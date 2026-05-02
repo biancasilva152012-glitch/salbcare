@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Settings, Users, Inbox, UserPlus, BarChart3, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
@@ -232,7 +232,7 @@ function NewClientTab({ onCreated }: { onCreated: () => void }) {
   });
 
   // Listen for prefill from leads tab
-  useState(() => {
+  useEffect(() => {
     const handler = (e: Event) => {
       const lead = (e as CustomEvent).detail;
       setForm((f) => ({
@@ -246,7 +246,7 @@ function NewClientTab({ onCreated }: { onCreated: () => void }) {
     };
     window.addEventListener("admin:prefill-lead", handler);
     return () => window.removeEventListener("admin:prefill-lead", handler);
-  });
+  }, []);
 
   const mutation = useMutation({
     mutationFn: async () => {
