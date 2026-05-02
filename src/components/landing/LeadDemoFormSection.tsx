@@ -281,15 +281,51 @@ const LeadDemoFormSection = () => {
                 Recebemos seus dados!
               </h3>
               <p style={{ color: TEXT_MUTED, fontSize: 15.5, lineHeight: 1.6, marginTop: 12 }}>
-                {notifyStatus === "warn"
-                  ? "Seu cadastro foi salvo com sucesso. A notificação automática para o nosso time falhou, mas seu lead já está registrado e nossa equipe entrará em contato em breve."
-                  : "Em breve nossa equipe entrará em contato pelo WhatsApp para agendar sua demonstração."}
+                Abrimos o WhatsApp da Bianca em uma nova aba com sua mensagem já pronta. Se nada abrir, use uma das opções abaixo.
               </p>
+
+              {/* CTA principal — abre wa.me */}
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCtaClick("whatsapp", "landing_lead_form_done")}
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10,
+                  marginTop: 20, padding: "14px 24px", borderRadius: 12,
+                  background: "#25D366", color: "#FFFFFF", fontWeight: 700, fontSize: 15.5,
+                  textDecoration: "none", boxShadow: "0 6px 20px rgba(37,211,102,0.28)",
+                  minHeight: 52,
+                }}
+              >
+                <MessageCircle size={18} /> Abrir WhatsApp para agendar
+              </a>
+
+              {/* Fallback — link alternativo + número visível */}
+              <div
+                style={{
+                  marginTop: 16, padding: "12px 14px",
+                  background: SURFACE, border: `1px dashed ${BORDER}`, borderRadius: 10,
+                  fontSize: 13.5, color: TEXT_MUTED, lineHeight: 1.55,
+                }}
+              >
+                Não abriu?{" "}
+                <a
+                  href={waAppUrl}
+                  style={{ color: TEAL, fontWeight: 600 }}
+                  onClick={() => trackCtaClick("whatsapp_fallback_app", "landing_lead_form_done")}
+                >
+                  tentar abrir direto no app
+                </a>
+                {" "}ou copie o número{" "}
+                <strong style={{ color: NAVY }}>{WHATSAPP_DISPLAY}</strong>.
+              </div>
+
               <div className="ld-status-box" style={{ marginTop: 22, textAlign: "left" }}>
                 {renderStep("Lead salvo no banco", saveStatus)}
                 {renderStep(
                   notifyStatus === "warn"
-                    ? "Notificação WhatsApp não enviada (nossa equipe será avisada por outro canal)"
+                    ? "Notificação interna não enviada (lead já registrado, nossa equipe será avisada por outro canal)"
                     : "Notificação enviada para nossa equipe",
                   notifyStatus
                 )}
