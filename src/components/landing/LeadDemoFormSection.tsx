@@ -120,7 +120,19 @@ const LeadDemoFormSection = () => {
       if (error) throw error;
       setSaveStatus("ok");
 
-      // Notificação WhatsApp — bloqueia só para mostrar status, mas com fallback se falhar
+      // Monta mensagem personalizada e abre o WhatsApp da Bianca já preenchido
+      const personalMessage =
+        `Olá Bianca! Vim pela SalbCare e gostaria de agendar uma demonstração da plataforma.\n\n` +
+        `Nome: ${parsed.data.nome}\n` +
+        `E-mail: ${parsed.data.email}\n` +
+        `WhatsApp: ${parsed.data.whatsapp}\n` +
+        `Principal dor: ${parsed.data.dor_principal}`;
+      const personalWaUrl = buildWhatsAppUrl(personalMessage);
+      const personalWaAppUrl = buildWhatsAppAppUrl(personalMessage);
+      setWaUrl(personalWaUrl);
+      setWaAppUrl(personalWaAppUrl);
+
+      // Notificação WhatsApp interna (CallMeBot) — em paralelo, com fallback
       setNotifyStatus("active");
       try {
         const { error: notifyErr } = await supabase.functions.invoke(
@@ -137,6 +149,13 @@ const LeadDemoFormSection = () => {
       trackCtaClick("lead_demo_submit", "landing_lead_form");
       trackUnified("lead_demo_submitted", { source: "landing_lead_form" });
       setDone(true);
+
+      // Abre o WhatsApp em nova aba imediatamente após enviar
+      try {
+        window.open(personalWaUrl, "_blank", "noopener,noreferrer");
+      } catch {
+        /* fallback exibido na tela */
+      }
     } catch (err) {
       console.error(err);
       setSaveStatus("idle");
