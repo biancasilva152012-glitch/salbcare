@@ -7,6 +7,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
 import logoSalb from "/pwa-icon-512.png";
+import PainShockSection from "@/components/landing/PainShockSection";
+import PainSignalsSection from "@/components/landing/PainSignalsSection";
+import FinancialIntelligenceSection from "@/components/landing/FinancialIntelligenceSection";
+import AllToolsSection from "@/components/landing/AllToolsSection";
 
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — paleta fixa: navy / teal / mint
