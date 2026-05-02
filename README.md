@@ -4,6 +4,53 @@
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
+## Service Worker & bug de refresh (F5)
+
+A SalbCare é uma SPA. Para evitar regressões do bug "página não encontrada ao
+atualizar", mantemos dois service workers convivendo:
+
+- **`public/push-sw.js`** — SW ativo em produção, registrado por
+  `src/main.tsx`. Cuida de Web Push e nada mais.
+- **`public/sw.js`** — **kill-switch** que se autodestrói. Existe apenas para
+  desregistrar versões antigas do SW que interceptavam navegações e quebravam
+  refresh em rotas profundas (`/dashboard`, `/agenda`, `/dashboard/financeiro`).
+
+### Como atualizar o service worker
+
+1. Edite **somente** `public/push-sw.js` para mudanças reais de
+   funcionalidade (push, cache, etc.). **Não** renomeie o arquivo — os
+   navegadores dos usuários estão registrados nesse caminho.
+2. **Nunca** reintroduza um SW em `/sw.js`. Esse caminho é reservado ao
+   kill-switch e precisa continuar se desregistrando para limpar instalações
+   legadas. Manter o arquivo por pelo menos 1 release após qualquer mudança.
+3. Após o deploy, para forçar a atualização em um device de teste:
+   `DevTools → Application → Service Workers → Update` (ou marque
+   "Update on reload"). Em seguida, dê reload duas vezes.
+4. Se precisar limpar tudo: `DevTools → Application → Storage → Clear site
+   data`.
+
+### Como validar o bug de refresh após o deploy
+
+Manualmente, para cada rota crítica (`/dashboard`, `/dashboard/agenda`,
+`/dashboard/financeiro`):
+
+1. Faça login em https://salbcare.com.
+2. Navegue até a rota e pressione **F5** (ou Cmd+R).
+3. A página deve recarregar **sem 404** e **sem tela em branco**, mantendo o
+   usuário logado. Se deslogado, deve cair em `/login` — nunca em
+   `/index.html` cru ou "Página não encontrada".
+4. Repita em uma aba anônima colando a URL diretamente: deve redirecionar
+   para `/login` (não 404).
+
+Automaticamente:
+
+```sh
+bunx playwright test e2e/spa-refresh.spec.ts
+```
+
+O spec valida que F5 nas três rotas retorna HTTP 200 e renderiza a SPA
+(nunca a tela de NotFound do servidor).
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
