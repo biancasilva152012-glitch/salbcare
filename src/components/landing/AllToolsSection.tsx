@@ -68,34 +68,13 @@ const TOOLS: Array<{ n: string; name: string; Icon: typeof Calendar; body: strin
   },
   {
     n: "07",
-    name: "Pagamento online",
-    Icon: CreditCard,
-    body:
-      "Cobrança via Pix, cartão de crédito (parcelado) e link de pagamento, com conciliação automática na sua agenda. Reduz inadimplência em até 70% e elimina o constrangimento de cobrar pessoalmente.",
-  },
-  {
-    n: "08",
-    name: "Captação de pacientes",
-    Icon: Users,
-    body:
-      "Marketplace integrado onde novos pacientes te encontram pela região, especialidade e disponibilidade. Sem comissão por consulta — você paga uma assinatura fixa e mantém 100% do que fatura.",
-  },
-  {
-    n: "09",
     name: "WhatsApp automatizado",
     Icon: MessageCircle,
     body:
       "Confirmação de agendamento, lembrete 24h antes, mensagem de retorno pós-consulta e pesquisa de satisfação — tudo automático e personalizado com o nome do paciente. Reduz no-show em até 60%.",
   },
   {
-    n: "10",
-    name: "App do paciente",
-    Icon: Smartphone,
-    body:
-      "Seu paciente agenda, remarca, recebe receita e tira dúvidas básicas sem precisar te ligar ou mandar mensagem. Você ganha horas de volta toda semana.",
-  },
-  {
-    n: "11",
+    n: "08",
     name: "Painel de gestão em tempo real",
     Icon: LayoutDashboard,
     body:
