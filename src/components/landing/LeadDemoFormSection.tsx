@@ -12,6 +12,7 @@ import {
   buildWhatsAppUrl,
   buildWhatsAppAppUrl,
   buildLeadWhatsAppMessage,
+  LEAD_MESSAGE_MAX_CHARS,
   WHATSAPP_DISPLAY,
 } from "@/lib/whatsapp";
 
@@ -419,6 +420,45 @@ const LeadDemoFormSection = () => {
                 </label>
                 {errors.lgpd_consent && <p className="ld-error">{errors.lgpd_consent}</p>}
               </div>
+
+              {/* Prévia da mensagem do WhatsApp + contador de caracteres */}
+              {(form.nome || form.email || form.whatsapp || form.dor_principal) && (() => {
+                const previewMsg = buildLeadWhatsAppMessage({
+                  nome: form.nome,
+                  email: form.email,
+                  whatsapp: form.whatsapp,
+                  dor: form.dor_principal,
+                });
+                const len = previewMsg.length;
+                const pct = Math.min(100, Math.round((len / LEAD_MESSAGE_MAX_CHARS) * 100));
+                const nearLimit = pct >= 90;
+                return (
+                  <div
+                    style={{
+                      marginBottom: 18, padding: "12px 14px", borderRadius: 10,
+                      background: SURFACE, border: `1px dashed ${BORDER}`,
+                    }}
+                    aria-live="polite"
+                  >
+                    <div style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "center",
+                      marginBottom: 8, fontSize: 12, color: TEXT_MUTED, fontWeight: 600,
+                    }}>
+                      <span>Prévia da mensagem que será enviada no WhatsApp</span>
+                      <span style={{ color: nearLimit ? "#D97706" : TEAL, fontVariantNumeric: "tabular-nums" }}>
+                        {len}/{LEAD_MESSAGE_MAX_CHARS}
+                      </span>
+                    </div>
+                    <pre style={{
+                      margin: 0, padding: 10, background: "#FFFFFF",
+                      border: `1px solid ${BORDER}`, borderRadius: 8,
+                      fontSize: 12.5, color: NAVY, lineHeight: 1.5,
+                      fontFamily: "inherit", whiteSpace: "pre-wrap", wordBreak: "break-word",
+                      maxHeight: 160, overflowY: "auto",
+                    }}>{previewMsg}</pre>
+                  </div>
+                );
+              })()}
 
               <button
                 type="submit"
