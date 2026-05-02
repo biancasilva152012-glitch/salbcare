@@ -5,9 +5,10 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
+import { CheckCircle2, Loader2, AlertTriangle, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { buildWhatsAppUrl, buildWhatsAppAppUrl, WHATSAPP_DISPLAY } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
 const TEAL = "#00B4A0";
