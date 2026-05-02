@@ -24,6 +24,7 @@ import AIPreviewLockedCard from "@/components/financial/AIPreviewLockedCard";
 import SmartTrialNotification from "@/components/financial/SmartTrialNotification";
 import FinancialOnboardingWizard from "@/components/financial/FinancialOnboardingWizard";
 import UpgradeModal from "@/components/UpgradeModal";
+import AdminQuickDrawer from "@/components/admin/AdminQuickDrawer";
 
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Button } from "@/components/ui/button";
@@ -202,6 +203,7 @@ const Dashboard = () => {
 
   return (
     <PageContainer>
+      {isAdmin && <AdminQuickDrawer />}
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
         {/* Auto-sync reminder when guest data is still pending */}
         <motion.div variants={item}>
