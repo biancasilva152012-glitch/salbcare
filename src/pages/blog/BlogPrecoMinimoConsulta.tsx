@@ -5,7 +5,12 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlogBreadcrumb from "@/components/blog/BlogBreadcrumb";
+import RelatedPosts from "@/components/blog/RelatedPosts";
+import { buildBlogPostingSchema, buildBreadcrumbSchema } from "@/components/blog/blogSchema";
 import { maskCurrency, parseBRL } from "@/utils/currencyMask";
+
+const SLUG = "preco-minimo-consulta";
+const TITLE = "Como Calcular o Preço Mínimo da Sua Consulta";
 
 /* ---------- Inline calculator ---------- */
 const CalcField = ({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder: string }) => (
@@ -78,20 +83,23 @@ const PrecoMinimoCalculator = () => {
 const BlogPrecoMinimoConsulta = () => (
   <>
     <SEOHead
-      title="Como Calcular o Preço Mínimo da Sua Consulta"
-      description="Aprenda a calcular o preço mínimo por consulta com nossa calculadora gratuita. Custos fixos, variáveis e margem de lucro explicados para profissionais de saúde."
-      canonical="/blog/preco-minimo-consulta"
+      title="Preço Mínimo da Consulta: Calculadora Grátis"
+      description="Calculadora gratuita de preço mínimo por consulta para profissionais de saúde. Sistema de gestão de saúde com cálculo de custos fixos, variáveis e margem de lucro."
+      canonical={`/blog/${SLUG}`}
       ogType="article"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Como Calcular o Preço Mínimo da Sua Consulta",
-        description: "Guia prático com calculadora interativa para profissionais de saúde definirem o preço mínimo sustentável por consulta.",
-        author: { "@type": "Organization", name: "SalbCare" },
-        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
-        datePublished: "2026-04-14",
-        mainEntityOfPage: "https://salbcare.com.br/blog/preco-minimo-consulta",
-      }}
+      ogImage={`https://salbcare.com.br${blogImage}`}
+      keywords={["preço mínimo consulta", "calculadora preço consulta", "sistema de gestão de saúde", "gestão financeira", "profissional autônomo"]}
+      publishedTime="2026-04-14"
+      modifiedTime="2026-05-02"
+      jsonLd={[
+        buildBlogPostingSchema({
+          slug: SLUG, headline: TITLE,
+          description: "Guia prático com calculadora interativa para profissionais de saúde definirem o preço mínimo sustentável por consulta.",
+          image: blogImage, datePublished: "2026-04-14", dateModified: "2026-05-02",
+          category: "Finanças", keywords: ["preço mínimo", "consulta", "calculadora"],
+        }),
+        buildBreadcrumbSchema(TITLE, SLUG),
+      ]}
     />
     <article className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
@@ -178,6 +186,8 @@ const BlogPrecoMinimoConsulta = () => (
             <Link to="/planos">Ver planos</Link>
           </Button>
         </div>
+
+        <RelatedPosts currentSlug={SLUG} preferSlugs={["gestao-financeira-profissional-saude", "como-abrir-cnpj-medico", "agenda-medica-digital"]} />
       </div>
     </article>
   </>
