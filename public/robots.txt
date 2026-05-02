@@ -1,5 +1,18 @@
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /blog/
+Allow: /consulta-online
+Allow: /consulta-online/
+Allow: /profissionais
+Allow: /diagnostico
+Allow: /parcerias
+Allow: /planos
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api
+Disallow: /api/
 Disallow: /dashboard
 Disallow: /agenda
 Disallow: /patients
@@ -9,7 +22,6 @@ Disallow: /accounting
 Disallow: /legal
 Disallow: /profile
 Disallow: /subscription
-Disallow: /admin
 Disallow: /onboarding
 Disallow: /checkout
 Disallow: /patient-dashboard
