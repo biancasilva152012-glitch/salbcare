@@ -8,6 +8,54 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const ACTIVE_PAYMENT_STATUSES = ["active", "paid"];
+
+const planMonthlyValue = (plan: string | null | undefined) => {
+  const normalized = (plan || "").toLowerCase();
+  if (normalized.includes("anual") || normalized.includes("annual")) return 69;
+  return 89;
+};
+
+const isStripePermissionError = (error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes("required permissions") || message.includes("rak_subscription_read") || message.includes("rak_billing_cadence_read");
+};
+
+async function getDatabaseFinancialFallback(supabase: ReturnType<typeof createClient>, reason?: string) {
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select("plan, payment_status, created_at, user_type, name, email")
+    .in("payment_status", ACTIVE_PAYMENT_STATUSES);
+
+  if (error) throw error;
+
+  const activeProfiles = (profiles || []).filter((p) => {
+    const name = (p.name || "").toLowerCase();
+    const email = (p.email || "").toLowerCase();
+    return p.user_type === "professional" && !name.includes("teste") && !email.includes("test");
+  });
+  const mrr = activeProfiles.reduce((sum, p) => sum + planMonthlyValue(p.plan), 0);
+
+  const now = new Date();
+  const monthlyRevenue: { month: string; revenue: number }[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
+    monthlyRevenue.push({ month: label, revenue: i === 0 ? mrr : 0 });
+  }
+
+  return {
+    mrr,
+    active_subs: activeProfiles.length,
+    churn_rate: 0,
+    total_canceled: 0,
+    recent_charges: [],
+    monthly_revenue: monthlyRevenue,
+    source: "database_fallback",
+    warning: reason,
+  };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
