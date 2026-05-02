@@ -4,24 +4,32 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlogBreadcrumb from "@/components/blog/BlogBreadcrumb";
+import RelatedPosts from "@/components/blog/RelatedPosts";
+import { buildBlogPostingSchema, buildBreadcrumbSchema } from "@/components/blog/blogSchema";
+
+const SLUG = "consulta-online-psicologo";
+const TITLE = "Consulta Online com Psicólogo: Como Funciona, Benefícios e Como Agendar";
 
 const BlogConsultaPsicologo = () => (
   <>
     <SEOHead
       title="Consulta Online com Psicólogo: Como Funciona"
-      description="Saiba como funciona a consulta online com psicólogo. Entenda os benefícios da terapia virtual, o que diz o CFP e como agendar pelo celular de qualquer lugar do Brasil."
-      canonical="/blog/consulta-online-psicologo"
+      description="Como funciona a consulta online com psicólogo. Sistema para psicólogo aprovado pelo CFP, terapia virtual com privacidade e agendamento simples pela SalbCare."
+      canonical={`/blog/${SLUG}`}
       ogType="article"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Consulta Online com Psicólogo: Como Funciona, Benefícios e Como Agendar",
-        description: "Guia completo sobre terapia online: regulamentação do CFP, benefícios, como funciona na prática e como agendar pelo SalbCare.",
-        author: { "@type": "Organization", name: "SalbCare" },
-        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
-        datePublished: "2026-04-14",
-        mainEntityOfPage: "https://salbcare.com.br/blog/consulta-online-psicologo",
-      }}
+      ogImage={`https://salbcare.com.br${blogImage}`}
+      keywords={["consulta online psicólogo", "sistema para psicólogo", "terapia online", "teleconsulta", "CFP", "agenda online"]}
+      publishedTime="2026-04-14"
+      modifiedTime="2026-05-02"
+      jsonLd={[
+        buildBlogPostingSchema({
+          slug: SLUG, headline: TITLE,
+          description: "Guia completo sobre terapia online: regulamentação do CFP, benefícios, como funciona na prática e como agendar pelo SalbCare.",
+          image: blogImage, datePublished: "2026-04-14", dateModified: "2026-05-02",
+          category: "Saúde Mental", keywords: ["consulta online", "psicólogo", "CFP", "terapia online"],
+        }),
+        buildBreadcrumbSchema(TITLE, SLUG),
+      ]}
     />
     <article className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
@@ -86,6 +94,8 @@ const BlogConsultaPsicologo = () => (
             <Link to="/cadastro">Sou profissional — quero me cadastrar</Link>
           </Button>
         </div>
+
+        <RelatedPosts currentSlug={SLUG} preferSlugs={["teleconsulta-medica", "agenda-medica-digital", "nutricionista-online"]} />
       </div>
     </article>
   </>

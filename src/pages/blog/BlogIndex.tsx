@@ -100,17 +100,51 @@ const POSTS = [
 const BlogIndex = () => (
   <>
     <SEOHead
-      title="Blog SalbCare | Conteúdo para Profissionais de Saúde"
-      description="Artigos sobre teleconsulta, prontuário digital, gestão financeira e regulamentação para profissionais de saúde autônomos. Conteúdo educativo e prático."
+      title="Blog SalbCare | Sistema para Profissional de Saúde"
+      description="Guias sobre sistema para consultório médico, prontuário eletrônico, agenda online, teleconsulta e prescrição digital. Conteúdo prático para profissionais de saúde autônomos."
       canonical="/blog"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Blog",
-        name: "Blog SalbCare",
-        description: "Conteúdo educativo para profissionais de saúde autônomos.",
-        url: "https://salbcare.com.br/blog",
-        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
-      }}
+      keywords={[
+        "sistema para consultório médico",
+        "prontuário eletrônico",
+        "software para clínica",
+        "agenda online para médicos",
+        "teleconsulta",
+        "prescrição digital",
+        "sistema de gestão de saúde",
+      ]}
+      jsonLd={[
+        {
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          name: "Blog SalbCare",
+          description: "Conteúdo educativo sobre sistema para consultório, prontuário eletrônico, teleconsulta e gestão financeira para profissionais de saúde.",
+          url: "https://salbcare.com.br/blog",
+          publisher: {
+            "@type": "Organization",
+            name: "SalbCare",
+            url: "https://salbcare.com.br",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://salbcare.com.br/og-image.png",
+            },
+          },
+          blogPost: POSTS.map((p) => ({
+            "@type": "BlogPosting",
+            headline: p.title,
+            url: `https://salbcare.com.br/blog/${p.slug}`,
+            image: `https://salbcare.com.br${typeof p.image === "string" ? p.image : ""}`,
+            datePublished: "2026-04-14",
+          })),
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://salbcare.com.br/" },
+            { "@type": "ListItem", position: 2, name: "Blog", item: "https://salbcare.com.br/blog" },
+          ],
+        },
+      ]}
     />
 
     <div className="min-h-screen bg-background">

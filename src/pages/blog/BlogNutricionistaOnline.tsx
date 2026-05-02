@@ -4,24 +4,32 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlogBreadcrumb from "@/components/blog/BlogBreadcrumb";
+import RelatedPosts from "@/components/blog/RelatedPosts";
+import { buildBlogPostingSchema, buildBreadcrumbSchema } from "@/components/blog/blogSchema";
+
+const SLUG = "nutricionista-online";
+const TITLE = "Nutricionista Online: Como Funciona a Consulta por Vídeo e Como Agendar";
 
 const BlogNutricionistaOnline = () => (
   <>
     <SEOHead
-      title="Nutricionista Online: Consulta por Vídeo"
-      description="Consulta com nutricionista online: como funciona, o que diz o CFN, benefícios da teleconsulta nutricional e como agendar pelo celular em qualquer lugar do Brasil."
-      canonical="/blog/nutricionista-online"
+      title="Nutricionista Online: Software para Nutricionista"
+      description="Software para nutricionista com teleconsulta, prontuário eletrônico e agenda online. Atenda pacientes por vídeo dentro das normas do CFN. Teste grátis."
+      canonical={`/blog/${SLUG}`}
       ogType="article"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Nutricionista Online: Como Funciona a Consulta por Vídeo",
-        description: "Guia completo sobre consulta nutricional online: regulamentação do CFN, benefícios e como agendar.",
-        author: { "@type": "Organization", name: "SalbCare" },
-        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
-        datePublished: "2026-04-14",
-        mainEntityOfPage: "https://salbcare.com.br/blog/nutricionista-online",
-      }}
+      ogImage={`https://salbcare.com.br${blogImage}`}
+      keywords={["software para nutricionista", "nutricionista online", "teleconsulta", "sistema para profissional de saúde", "CFN"]}
+      publishedTime="2026-04-14"
+      modifiedTime="2026-05-02"
+      jsonLd={[
+        buildBlogPostingSchema({
+          slug: SLUG, headline: TITLE,
+          description: "Guia completo sobre consulta nutricional online: regulamentação do CFN, benefícios e como agendar.",
+          image: blogImage, datePublished: "2026-04-14", dateModified: "2026-05-02",
+          category: "Nutrição", keywords: ["nutricionista online", "CFN", "teleconsulta"],
+        }),
+        buildBreadcrumbSchema(TITLE, SLUG),
+      ]}
     />
     <article className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
@@ -72,6 +80,8 @@ const BlogNutricionistaOnline = () => (
             <Link to="/cadastro">Sou nutricionista — quero me cadastrar</Link>
           </Button>
         </div>
+
+        <RelatedPosts currentSlug={SLUG} preferSlugs={["teleconsulta-medica", "agenda-medica-digital", "consulta-online-psicologo"]} />
       </div>
     </article>
   </>
