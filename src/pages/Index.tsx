@@ -11,6 +11,7 @@ import PainShockSection from "@/components/landing/PainShockSection";
 import PainSignalsSection from "@/components/landing/PainSignalsSection";
 import FinancialIntelligenceSection from "@/components/landing/FinancialIntelligenceSection";
 import AllToolsSection from "@/components/landing/AllToolsSection";
+import PricingCalculatorSection from "@/components/landing/PricingCalculatorSection";
 import LeadDemoFormSection from "@/components/landing/LeadDemoFormSection";
 import WhatsAppFab, { WhatsAppDemoButton } from "@/components/WhatsAppFab";
 
@@ -272,6 +273,7 @@ const Index = () => {
         <PainShockSection />
         <PainSignalsSection />
         <FinancialIntelligenceSection />
+        <PricingCalculatorSection />
         <AllToolsSection />
         <LeadDemoFormSection />
 
