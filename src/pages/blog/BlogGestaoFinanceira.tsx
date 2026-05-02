@@ -4,24 +4,32 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlogBreadcrumb from "@/components/blog/BlogBreadcrumb";
+import RelatedPosts from "@/components/blog/RelatedPosts";
+import { buildBlogPostingSchema, buildBreadcrumbSchema } from "@/components/blog/blogSchema";
+
+const SLUG = "gestao-financeira-profissional-saude";
+const TITLE = "Gestão Financeira para Profissionais de Saúde: Guia Prático para Autônomos";
 
 const BlogGestaoFinanceira = () => (
   <>
     <SEOHead
-      title="Gestão Financeira para Profissionais de Saúde"
-      description="Aprenda a organizar as finanças do seu consultório: Carnê-Leão, reserva de emergência, preço mínimo por consulta e mentoria com IA. Guia prático para autônomos."
-      canonical="/blog/gestao-financeira-profissional-saude"
+      title="Gestão Financeira para Profissional de Saúde"
+      description="Sistema de gestão de saúde com Carnê-Leão automático, reserva de emergência, preço mínimo por consulta e mentoria com IA. Guia prático para autônomos."
+      canonical={`/blog/${SLUG}`}
       ogType="article"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Gestão Financeira para Profissionais de Saúde Autônomos",
-        description: "Guia prático de finanças para médicos, dentistas, psicólogos e outros profissionais de saúde autônomos.",
-        author: { "@type": "Organization", name: "SalbCare" },
-        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
-        datePublished: "2026-04-14",
-        mainEntityOfPage: "https://salbcare.com.br/blog/gestao-financeira-profissional-saude",
-      }}
+      ogImage={`https://salbcare.com.br${blogImage}`}
+      keywords={["sistema de gestão de saúde", "gestão financeira", "Carnê-Leão", "sistema para profissional de saúde", "preço mínimo consulta"]}
+      publishedTime="2026-04-14"
+      modifiedTime="2026-05-02"
+      jsonLd={[
+        buildBlogPostingSchema({
+          slug: SLUG, headline: TITLE,
+          description: "Guia prático de finanças para médicos, dentistas, psicólogos e outros profissionais de saúde autônomos.",
+          image: blogImage, datePublished: "2026-04-14", dateModified: "2026-05-02",
+          category: "Finanças", keywords: ["gestão financeira", "Carnê-Leão", "saúde"],
+        }),
+        buildBreadcrumbSchema(TITLE, SLUG),
+      ]}
     />
     <article className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
@@ -86,6 +94,8 @@ const BlogGestaoFinanceira = () => (
             <Link to="/planos">Ver planos</Link>
           </Button>
         </div>
+
+        <RelatedPosts currentSlug={SLUG} preferSlugs={["preco-minimo-consulta", "como-abrir-cnpj-medico", "agenda-medica-digital"]} />
       </div>
     </article>
   </>

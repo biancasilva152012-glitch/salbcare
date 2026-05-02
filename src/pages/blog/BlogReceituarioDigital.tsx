@@ -4,24 +4,32 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlogBreadcrumb from "@/components/blog/BlogBreadcrumb";
+import RelatedPosts from "@/components/blog/RelatedPosts";
+import { buildBlogPostingSchema, buildBreadcrumbSchema } from "@/components/blog/blogSchema";
+
+const SLUG = "receituario-digital";
+const TITLE = "Receituário Digital: Como Emitir Prescrição Eletrônica com Validade Legal";
 
 const BlogReceituarioDigital = () => (
   <>
     <SEOHead
-      title="Receituário Digital: Prescrição Eletrônica Legal"
-      description="Como emitir receituário digital com validade legal. Entenda a regulamentação, assinatura eletrônica ICP-Brasil e como usar na prática no seu consultório."
-      canonical="/blog/receituario-digital"
+      title="Prescrição Digital: RDC ANVISA e ICP-Brasil"
+      description="Prescrição digital com validade legal: assinatura ICP-Brasil, RDC 471 da ANVISA, tipos de receita e como emitir pelo prontuário eletrônico SalbCare."
+      canonical={`/blog/${SLUG}`}
       ogType="article"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Receituário Digital: Como Emitir Prescrição Eletrônica com Validade Legal",
-        description: "Guia sobre receituário digital: legislação, assinatura ICP-Brasil, tipos de receita e como emitir pela SalbCare.",
-        author: { "@type": "Organization", name: "SalbCare" },
-        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
-        datePublished: "2026-04-14",
-        mainEntityOfPage: "https://salbcare.com.br/blog/receituario-digital",
-      }}
+      ogImage={`https://salbcare.com.br${blogImage}`}
+      keywords={["prescrição digital", "receituário digital", "ICP-Brasil", "RDC 471 ANVISA", "prontuário eletrônico", "teleconsulta"]}
+      publishedTime="2026-04-14"
+      modifiedTime="2026-05-02"
+      jsonLd={[
+        buildBlogPostingSchema({
+          slug: SLUG, headline: TITLE,
+          description: "Guia sobre prescrição digital: legislação, assinatura ICP-Brasil, tipos de receita e como emitir pela SalbCare.",
+          image: blogImage, datePublished: "2026-04-14", dateModified: "2026-05-02",
+          category: "Documentos Clínicos", keywords: ["prescrição digital", "ICP-Brasil", "ANVISA"],
+        }),
+        buildBreadcrumbSchema(TITLE, SLUG),
+      ]}
     />
     <article className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
@@ -78,6 +86,8 @@ const BlogReceituarioDigital = () => (
             <Link to="/planos">Ver planos</Link>
           </Button>
         </div>
+
+        <RelatedPosts currentSlug={SLUG} preferSlugs={["teleconsulta-medica", "prontuario-digital-dentista", "agenda-medica-digital"]} />
       </div>
     </article>
   </>

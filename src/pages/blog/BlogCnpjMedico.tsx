@@ -4,24 +4,32 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlogBreadcrumb from "@/components/blog/BlogBreadcrumb";
+import RelatedPosts from "@/components/blog/RelatedPosts";
+import { buildBlogPostingSchema, buildBreadcrumbSchema } from "@/components/blog/blogSchema";
+
+const SLUG = "como-abrir-cnpj-medico";
+const TITLE = "Como Abrir CNPJ Médico: Guia Completo para Profissionais de Saúde em 2026";
 
 const BlogCnpjMedico = () => (
   <>
     <SEOHead
       title="Como Abrir CNPJ Médico: Guia Completo 2026"
-      description="Passo a passo para abrir CNPJ como médico ou profissional de saúde. Tipos de empresa, regime tributário, documentos necessários e quanto custa."
-      canonical="/blog/como-abrir-cnpj-medico"
+      description="Passo a passo para abrir CNPJ médico: tipos de empresa, regime tributário, documentos e custos. Reduza impostos em até 70% com sistema de gestão de saúde."
+      canonical={`/blog/${SLUG}`}
       ogType="article"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Como Abrir CNPJ Médico: Guia Completo para Profissionais de Saúde",
-        description: "Passo a passo para abrir CNPJ: tipos de empresa, regimes tributários, custos e vantagens para médicos e profissionais de saúde.",
-        author: { "@type": "Organization", name: "SalbCare" },
-        publisher: { "@type": "Organization", name: "SalbCare", url: "https://salbcare.com.br" },
-        datePublished: "2026-04-14",
-        mainEntityOfPage: "https://salbcare.com.br/blog/como-abrir-cnpj-medico",
-      }}
+      ogImage={`https://salbcare.com.br${blogImage}`}
+      keywords={["CNPJ médico", "como abrir CNPJ", "Simples Nacional", "Lucro Presumido", "sistema para profissional de saúde", "PJ médico"]}
+      publishedTime="2026-04-14"
+      modifiedTime="2026-05-02"
+      jsonLd={[
+        buildBlogPostingSchema({
+          slug: SLUG, headline: TITLE,
+          description: "Passo a passo para abrir CNPJ: tipos de empresa, regimes tributários, custos e vantagens para médicos e profissionais de saúde.",
+          image: blogImage, datePublished: "2026-04-14", dateModified: "2026-05-02",
+          category: "Contabilidade", keywords: ["CNPJ", "Simples Nacional", "médico", "PJ"],
+        }),
+        buildBreadcrumbSchema(TITLE, SLUG),
+      ]}
     />
     <article className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-8">
@@ -85,6 +93,8 @@ const BlogCnpjMedico = () => (
             <Link to="/diagnostico">Fazer diagnóstico tributário grátis</Link>
           </Button>
         </div>
+
+        <RelatedPosts currentSlug={SLUG} preferSlugs={["gestao-financeira-profissional-saude", "preco-minimo-consulta", "agenda-medica-digital"]} />
       </div>
     </article>
   </>
