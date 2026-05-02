@@ -1,6 +1,7 @@
 // Seção 3 — 5 sinais silenciosos. Background branco, grid 3+2, hover elegante.
 import { Link } from "react-router-dom";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
 const TEAL = "#00B4A0";
@@ -8,8 +9,7 @@ const TEAL_DARK = "#009986";
 const TEXT_MUTED = "#64748B";
 const BORDER = "#E2E8F0";
 
-const WHATSAPP_NUMBER = "5588996924700";
-const WA_MSG = encodeURIComponent("Olá! Vi os 5 sinais na landing da SalbCare e quero conversar.");
+const WA_URL = buildWhatsAppUrl();
 
 const SIGNALS = [
   {
@@ -186,7 +186,7 @@ const PainSignalsSection = () => {
             </Link>
 
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WA_MSG}`}
+              href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="signal-wa-link"

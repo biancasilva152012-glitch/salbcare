@@ -5,9 +5,10 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
+import { CheckCircle2, Loader2, AlertTriangle, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { buildWhatsAppUrl, buildWhatsAppAppUrl, WHATSAPP_DISPLAY } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
 const TEAL = "#00B4A0";
@@ -74,6 +75,8 @@ const LeadDemoFormSection = () => {
   const [done, setDone] = useState(false);
   const [saveStatus, setSaveStatus] = useState<StepStatus>("idle");
   const [notifyStatus, setNotifyStatus] = useState<StepStatus>("idle");
+  const [waUrl, setWaUrl] = useState<string>(buildWhatsAppUrl());
+  const [waAppUrl, setWaAppUrl] = useState<string>(buildWhatsAppAppUrl());
 
   const onChange = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => {
     setForm((f) => ({
@@ -117,7 +120,19 @@ const LeadDemoFormSection = () => {
       if (error) throw error;
       setSaveStatus("ok");
 
-      // Notificação WhatsApp — bloqueia só para mostrar status, mas com fallback se falhar
+      // Monta mensagem personalizada e abre o WhatsApp da Bianca já preenchido
+      const personalMessage =
+        `Olá Bianca! Vim pela SalbCare e gostaria de agendar uma demonstração da plataforma.\n\n` +
+        `Nome: ${parsed.data.nome}\n` +
+        `E-mail: ${parsed.data.email}\n` +
+        `WhatsApp: ${parsed.data.whatsapp}\n` +
+        `Principal dor: ${parsed.data.dor_principal}`;
+      const personalWaUrl = buildWhatsAppUrl(personalMessage);
+      const personalWaAppUrl = buildWhatsAppAppUrl(personalMessage);
+      setWaUrl(personalWaUrl);
+      setWaAppUrl(personalWaAppUrl);
+
+      // Notificação WhatsApp interna (CallMeBot) — em paralelo, com fallback
       setNotifyStatus("active");
       try {
         const { error: notifyErr } = await supabase.functions.invoke(
@@ -134,6 +149,13 @@ const LeadDemoFormSection = () => {
       trackCtaClick("lead_demo_submit", "landing_lead_form");
       trackUnified("lead_demo_submitted", { source: "landing_lead_form" });
       setDone(true);
+
+      // Abre o WhatsApp em nova aba imediatamente após enviar
+      try {
+        window.open(personalWaUrl, "_blank", "noopener,noreferrer");
+      } catch {
+        /* fallback exibido na tela */
+      }
     } catch (err) {
       console.error(err);
       setSaveStatus("idle");
@@ -259,15 +281,51 @@ const LeadDemoFormSection = () => {
                 Recebemos seus dados!
               </h3>
               <p style={{ color: TEXT_MUTED, fontSize: 15.5, lineHeight: 1.6, marginTop: 12 }}>
-                {notifyStatus === "warn"
-                  ? "Seu cadastro foi salvo com sucesso. A notificação automática para o nosso time falhou, mas seu lead já está registrado e nossa equipe entrará em contato em breve."
-                  : "Em breve nossa equipe entrará em contato pelo WhatsApp para agendar sua demonstração."}
+                Abrimos o WhatsApp da Bianca em uma nova aba com sua mensagem já pronta. Se nada abrir, use uma das opções abaixo.
               </p>
+
+              {/* CTA principal — abre wa.me */}
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCtaClick("whatsapp", "landing_lead_form_done")}
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10,
+                  marginTop: 20, padding: "14px 24px", borderRadius: 12,
+                  background: "#25D366", color: "#FFFFFF", fontWeight: 700, fontSize: 15.5,
+                  textDecoration: "none", boxShadow: "0 6px 20px rgba(37,211,102,0.28)",
+                  minHeight: 52,
+                }}
+              >
+                <MessageCircle size={18} /> Abrir WhatsApp para agendar
+              </a>
+
+              {/* Fallback — link alternativo + número visível */}
+              <div
+                style={{
+                  marginTop: 16, padding: "12px 14px",
+                  background: SURFACE, border: `1px dashed ${BORDER}`, borderRadius: 10,
+                  fontSize: 13.5, color: TEXT_MUTED, lineHeight: 1.55,
+                }}
+              >
+                Não abriu?{" "}
+                <a
+                  href={waAppUrl}
+                  style={{ color: TEAL, fontWeight: 600 }}
+                  onClick={() => trackCtaClick("whatsapp_fallback_app", "landing_lead_form_done")}
+                >
+                  tentar abrir direto no app
+                </a>
+                {" "}ou copie o número{" "}
+                <strong style={{ color: NAVY }}>{WHATSAPP_DISPLAY}</strong>.
+              </div>
+
               <div className="ld-status-box" style={{ marginTop: 22, textAlign: "left" }}>
                 {renderStep("Lead salvo no banco", saveStatus)}
                 {renderStep(
                   notifyStatus === "warn"
-                    ? "Notificação WhatsApp não enviada (nossa equipe será avisada por outro canal)"
+                    ? "Notificação interna não enviada (lead já registrado, nossa equipe será avisada por outro canal)"
                     : "Notificação enviada para nossa equipe",
                   notifyStatus
                 )}

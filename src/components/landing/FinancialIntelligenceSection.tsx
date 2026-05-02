@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { Check, TrendingUp, AlertTriangle, Sparkles } from "lucide-react";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
 const NAVY_LIGHT = "#1B2A3F";
@@ -11,8 +12,7 @@ const TEAL_DARK = "#009986";
 const TEXT_LIGHT = "#CBD5E0";
 const WHITE = "#FFFFFF";
 
-const WHATSAPP_NUMBER = "5588996924700";
-const WA_MSG = encodeURIComponent("Olá! Quero entender como a inteligência financeira da SalbCare funciona.");
+const WA_URL = buildWhatsAppUrl();
 
 const BULLETS = [
   {
@@ -163,7 +163,7 @@ const FinancialIntelligenceSection = () => {
               </Link>
 
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WA_MSG}`}
+                href={WA_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fi-cta-secondary"

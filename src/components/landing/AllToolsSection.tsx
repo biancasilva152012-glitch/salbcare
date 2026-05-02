@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
 const TEAL = "#00B4A0";
@@ -19,8 +20,7 @@ const TEXT_MUTED = "#64748B";
 const SURFACE = "#F8F9FA";
 const BORDER = "#E2E8F0";
 
-const WHATSAPP_NUMBER = "5588996924700";
-const WA_MSG = encodeURIComponent("Olá! Quero agendar uma demonstração da SalbCare.");
+const WA_URL = buildWhatsAppUrl();
 
 const TOOLS: Array<{ n: string; name: string; Icon: typeof Calendar; body: string; highlight?: boolean }> = [
   {
@@ -233,7 +233,7 @@ const AllToolsSection = () => {
           </Link>
 
           <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WA_MSG}`}
+            href={WA_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="tool-wa-link"
