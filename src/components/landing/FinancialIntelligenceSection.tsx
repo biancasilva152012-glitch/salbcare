@@ -163,7 +163,7 @@ const FinancialIntelligenceSection = () => {
               </Link>
 
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WA_MSG}`}
+                href={WA_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fi-cta-secondary"
