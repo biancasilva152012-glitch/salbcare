@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
 import {
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { trackCtaClick } from "@/hooks/useTracking";
 
 const GOAL_KEY = "salbcare_financial_goal";
+const PROGRESS_KEY = "salbcare_financial_diagnosis_progress";
 
 type Goal =
   | "reduce_expenses"
@@ -59,16 +60,54 @@ const FinancialDiagnosisModal = ({ open, onClose }: Props) => {
   const [goal, setGoal] = useState<Goal | null>(null);
   const [range, setRange] = useState<Range | null>(null);
 
+  // Restaura progresso salvo (responde "não perde o que já respondi" ao reabrir)
+  useEffect(() => {
+    if (!open) return;
+    try {
+      const raw = sessionStorage.getItem(PROGRESS_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as {
+        step?: 1 | 2 | 3;
+        goal?: Goal | null;
+        range?: Range | null;
+      };
+      if (saved.goal) setGoal(saved.goal);
+      if (saved.range) setRange(saved.range);
+      if (saved.step) setStep(saved.step);
+    } catch {
+      /* ignore */
+    }
+  }, [open]);
+
+  // Persiste enquanto o usuário avança
+  useEffect(() => {
+    if (!open) return;
+    try {
+      sessionStorage.setItem(
+        PROGRESS_KEY,
+        JSON.stringify({ step, goal, range }),
+      );
+    } catch {
+      /* ignore */
+    }
+  }, [open, step, goal, range]);
+
   const reset = () => {
     setStep(1);
     setGoal(null);
     setRange(null);
+    try {
+      sessionStorage.removeItem(PROGRESS_KEY);
+    } catch {
+      /* ignore */
+    }
   };
 
   const handleClose = () => {
     onClose();
     // Damos um respiro para a animação fechar antes de resetar.
-    setTimeout(reset, 200);
+    // OBS: NÃO resetamos automaticamente — mantemos o progresso para
+    // o usuário continuar de onde parou ao reabrir.
   };
 
   const insights = generateInsights(goal, range);
@@ -82,7 +121,8 @@ const FinancialDiagnosisModal = ({ open, onClose }: Props) => {
       }
     }
     trackCtaClick("diagnosis_completed", goal || "unknown");
-    handleClose();
+    reset();
+    onClose();
     navigate(
       "/dashboard/financial?onboarding=diagnosis&type=income&autoOpen=1",
     );
