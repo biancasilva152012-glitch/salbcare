@@ -739,6 +739,36 @@ export type Database = {
         }
         Relationships: []
       }
+      leads_demo: {
+        Row: {
+          created_at: string
+          dor_principal: string
+          email: string
+          id: string
+          nome: string
+          status: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          dor_principal: string
+          email: string
+          id?: string
+          nome: string
+          status?: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          dor_principal?: string
+          email?: string
+          id?: string
+          nome?: string
+          status?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       legal_consultations: {
         Row: {
           created_at: string
