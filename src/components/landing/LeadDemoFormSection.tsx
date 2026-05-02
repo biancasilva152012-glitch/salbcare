@@ -75,6 +75,8 @@ const LeadDemoFormSection = () => {
   const [done, setDone] = useState(false);
   const [saveStatus, setSaveStatus] = useState<StepStatus>("idle");
   const [notifyStatus, setNotifyStatus] = useState<StepStatus>("idle");
+  const [waUrl, setWaUrl] = useState<string>(buildWhatsAppUrl());
+  const [waAppUrl, setWaAppUrl] = useState<string>(buildWhatsAppAppUrl());
 
   const onChange = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => {
     setForm((f) => ({
