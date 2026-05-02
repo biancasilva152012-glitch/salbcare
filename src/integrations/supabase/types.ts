@@ -745,6 +745,8 @@ export type Database = {
           dor_principal: string
           email: string
           id: string
+          lgpd_consent: boolean
+          lgpd_consent_at: string | null
           nome: string
           status: string
           whatsapp: string
@@ -754,6 +756,8 @@ export type Database = {
           dor_principal: string
           email: string
           id?: string
+          lgpd_consent?: boolean
+          lgpd_consent_at?: string | null
           nome: string
           status?: string
           whatsapp: string
@@ -763,6 +767,8 @@ export type Database = {
           dor_principal?: string
           email?: string
           id?: string
+          lgpd_consent?: boolean
+          lgpd_consent_at?: string | null
           nome?: string
           status?: string
           whatsapp?: string

@@ -518,7 +518,7 @@ const Index = () => {
               Pronto para ver no seu consultório?
             </h2>
             <p style={{ color: "#CBD5E0", fontSize: 16, lineHeight: 1.55, marginBottom: 28 }}>
-              Fale direto com a Bianca pelo WhatsApp e agende sua demonstração.
+              Fale com a nossa equipe e agende uma demonstração da plataforma.
             </p>
             <div className="flex justify-center">
               <WhatsAppDemoButton origem="rodape" />
