@@ -53,6 +53,18 @@ const Login = () => {
       return;
     }
     if (authData.user) {
+      // Check admin role first — admins always go to /admin
+      const { data: isAdmin } = await supabase.rpc("has_role", {
+        _user_id: authData.user.id,
+        _role: "admin",
+      });
+
+      if (isAdmin) {
+        setLoading(false);
+        navigate("/admin", { replace: true });
+        return;
+      }
+
       // Single profile query — no duplicate
       const { data: profile } = await supabase
         .from("profiles")
