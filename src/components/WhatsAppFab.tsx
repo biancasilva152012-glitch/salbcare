@@ -5,7 +5,7 @@ import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
 
 const WHATSAPP_NUMBER = "5588996924700";
 const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Olá Bianca! Vim pela SalbCare e gostaria de agendar uma demonstração da plataforma."
+  "Olá! Vim pela SalbCare e gostaria de falar com a equipe e agendar uma demonstração da plataforma."
 );
 const WA_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
 
@@ -20,7 +20,7 @@ const WhatsAppFab = () => {
       href={WA_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Agendar demonstração pelo WhatsApp"
+      aria-label="Falar com a equipe SalbCare e agendar uma demonstração"
       onClick={() => fire("flutuante")}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -42,7 +42,7 @@ const WhatsAppFab = () => {
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-300" />
         </span>
       </span>
-      <span className="hidden sm:inline">Clique e agende uma demonstração</span>
+      <span className="hidden sm:inline">Fale com a nossa equipe e agende uma demonstração</span>
       <span className="inline sm:hidden">Agendar demo</span>
     </motion.a>
   );
@@ -65,7 +65,7 @@ export const WhatsAppDemoButton = ({
       href={WA_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Agendar demonstração pelo WhatsApp"
+      aria-label="Falar com a equipe SalbCare e agendar uma demonstração"
       onClick={() => fire(origem)}
       className={`inline-flex items-center justify-center gap-2.5 rounded-xl px-6 py-4 text-white font-semibold text-base shadow-md transition-all hover:-translate-y-0.5 ${
         fullWidth ? "w-full" : ""
@@ -81,7 +81,7 @@ export const WhatsAppDemoButton = ({
       <svg viewBox="0 0 32 32" className="h-5 w-5 fill-white" aria-hidden="true">
         <path d="M16.004 2.667A13.26 13.26 0 0 0 2.667 15.89a13.16 13.16 0 0 0 1.784 6.628L2.667 29.333l7.048-1.848A13.23 13.23 0 0 0 16.004 29.2 13.27 13.27 0 0 0 29.333 15.89 13.27 13.27 0 0 0 16.004 2.667Zm6.06 16.26c-.332-.167-1.965-.97-2.27-1.082-.306-.11-.528-.166-.75.167s-.862 1.08-1.056 1.302c-.195.222-.389.249-.722.083a9.1 9.1 0 0 1-2.682-1.655 10.07 10.07 0 0 1-1.855-2.312c-.194-.333-.02-.513.147-.678.15-.15.332-.389.5-.583.166-.195.222-.333.333-.555.111-.222.056-.416-.028-.583-.083-.166-.75-1.81-1.028-2.477-.271-.65-.546-.562-.75-.573l-.64-.011a1.226 1.226 0 0 0-.889.417c-.306.333-1.166 1.138-1.166 2.774s1.194 3.218 1.36 3.44c.167.222 2.35 3.59 5.696 5.034.796.344 1.417.55 1.902.703.799.254 1.526.218 2.101.132.641-.096 1.965-.803 2.243-1.578.278-.776.278-1.44.194-1.579-.083-.138-.305-.222-.638-.388Z" />
       </svg>
-      Clique e agende uma demonstração
+      Fale com a nossa equipe e agende uma demonstração
     </a>
   );
 };
