@@ -123,8 +123,11 @@ serve(async (req) => {
                     : null,
                 };
               }
-            } catch {
-              // Stripe lookup failed, continue
+            } catch (error) {
+              if (isStripePermissionError(error)) {
+                console.warn("Stripe restricted key lacks subscription read permissions; skipping Stripe enrichment.");
+              }
+              // Stripe lookup failed, continue with database profile data only.
             }
           }
           enriched.push({ ...p, stripe: stripeData });
