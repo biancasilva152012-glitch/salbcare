@@ -7,10 +7,7 @@ import {
   Video,
   LineChart,
   Receipt,
-  CreditCard,
-  Users,
   MessageCircle,
-  Smartphone,
   LayoutDashboard,
 } from "lucide-react";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
