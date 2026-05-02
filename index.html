@@ -131,6 +131,12 @@
           var run = function () {
             mark('maint-start');
             try {
+              // SW update check only — NO automatic reload.
+              // Removing controllerchange→reload because vite-plugin-pwa is in
+              // autoUpdate+skipWaiting+clientsClaim mode, which fires controllerchange
+              // every time the SW re-activates. Reloading on that event causes an
+              // infinite refresh loop in production. The new SW content will be
+              // served on the user's next natural navigation, no reload needed.
               if ('serviceWorker' in navigator) {
                 mark('sw-update-start');
                 navigator.serviceWorker.getRegistrations().then(function (registrations) {
@@ -140,36 +146,9 @@
                   mark('sw-update-end');
                   measure('sw-update', 'sw-update-start', 'sw-update-end');
                 }).catch(function () {});
-
-                navigator.serviceWorker.addEventListener('controllerchange', function () {
-                  if (document.visibilityState === 'hidden') {
-                    window.location.reload();
-                  } else {
-                    document.addEventListener('visibilitychange', function onHide() {
-                      if (document.visibilityState === 'hidden') {
-                        document.removeEventListener('visibilitychange', onHide);
-                        window.location.reload();
-                      }
-                    });
-                  }
-                });
               }
-              if ('caches' in window) {
-                mark('cache-purge-start');
-                caches.keys().then(function (names) {
-                  for (var i = 0; i < names.length; i++) {
-                    if (
-                      names[i].indexOf('workbox-precache') === -1 &&
-                      names[i].indexOf('google-fonts') === -1 &&
-                      names[i].indexOf('gstatic-fonts') === -1
-                    ) {
-                      caches.delete(names[i]);
-                    }
-                  }
-                  mark('cache-purge-end');
-                  measure('cache-purge', 'cache-purge-start', 'cache-purge-end');
-                }).catch(function () {});
-              }
+              // Cache purge disabled — was racing with workbox runtime caches.
+              // Workbox's cleanupOutdatedCaches handles stale precaches safely.
             } catch (e) {}
             mark('maint-end');
             measure('maint-total', 'maint-start', 'maint-end');
