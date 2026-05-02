@@ -172,61 +172,73 @@ serve(async (req) => {
 
       case "get_mrr": {
         if (!stripe) {
+          const fallback = await getDatabaseFinancialFallback(supabase, "Stripe não configurado; métricas estimadas pelo banco.");
+          return new Response(JSON.stringify(fallback), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        try {
+          const subs = await stripe.subscriptions.list({ status: "active", limit: 100 });
+          let mrr = 0;
+          for (const s of subs.data) {
+            const amount = s.items.data[0]?.price?.unit_amount || 0;
+            mrr += amount / 100;
+          }
+
+          const canceled = await stripe.subscriptions.list({ status: "canceled", limit: 100 });
+          const total = subs.data.length + canceled.data.length;
+          const churnRate = total > 0 ? (canceled.data.length / total) * 100 : 0;
+
+          const charges = await stripe.charges.list({ limit: 30 });
+          const recentCharges = charges.data.map((c) => ({
+            id: c.id,
+            amount: c.amount / 100,
+            currency: c.currency,
+            status: c.status,
+            created: c.created,
+            customer_email: c.billing_details?.email,
+            description: c.description,
+            refunded: c.refunded,
+            paid: c.paid,
+          }));
+
+          // Monthly revenue (last 6 months)
+          const now = new Date();
+          const monthlyRevenue: { month: string; revenue: number }[] = [];
+          for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const label = d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
+            const start = Math.floor(d.getTime() / 1000);
+            const end = Math.floor(new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime() / 1000);
+            const monthCharges = charges.data.filter(
+              (c) => c.created >= start && c.created < end && c.paid && !c.refunded
+            );
+            const rev = monthCharges.reduce((sum, c) => sum + c.amount / 100, 0);
+            monthlyRevenue.push({ month: label, revenue: rev });
+          }
+
           return new Response(
-            JSON.stringify({ mrr: 0, active_subs: 0, churn_rate: 0, recent_charges: [], monthly_revenue: [] }),
+            JSON.stringify({
+              mrr,
+              active_subs: subs.data.length,
+              churn_rate: Math.round(churnRate * 10) / 10,
+              recent_charges: recentCharges,
+              monthly_revenue: monthlyRevenue,
+              total_canceled: canceled.data.length,
+              source: "stripe",
+            }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
-        }
-        const subs = await stripe.subscriptions.list({ status: "active", limit: 100 });
-        let mrr = 0;
-        for (const s of subs.data) {
-          const amount = s.items.data[0]?.price?.unit_amount || 0;
-          mrr += amount / 100;
-        }
-
-        const canceled = await stripe.subscriptions.list({ status: "canceled", limit: 100 });
-        const total = subs.data.length + canceled.data.length;
-        const churnRate = total > 0 ? (canceled.data.length / total) * 100 : 0;
-
-        const charges = await stripe.charges.list({ limit: 30 });
-        const recentCharges = charges.data.map((c) => ({
-          id: c.id,
-          amount: c.amount / 100,
-          currency: c.currency,
-          status: c.status,
-          created: c.created,
-          customer_email: c.billing_details?.email,
-          description: c.description,
-          refunded: c.refunded,
-          paid: c.paid,
-        }));
-
-        // Monthly revenue (last 6 months)
-        const now = new Date();
-        const monthlyRevenue: { month: string; revenue: number }[] = [];
-        for (let i = 5; i >= 0; i--) {
-          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-          const label = d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
-          const start = Math.floor(d.getTime() / 1000);
-          const end = Math.floor(new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime() / 1000);
-          const monthCharges = charges.data.filter(
-            (c) => c.created >= start && c.created < end && c.paid && !c.refunded
+        } catch (error) {
+          if (!isStripePermissionError(error)) throw error;
+          const fallback = await getDatabaseFinancialFallback(
+            supabase,
+            "A chave Stripe atual não tem permissão de leitura de assinaturas; métricas estimadas pelo banco."
           );
-          const rev = monthCharges.reduce((sum, c) => sum + c.amount / 100, 0);
-          monthlyRevenue.push({ month: label, revenue: rev });
+          return new Response(JSON.stringify(fallback), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
         }
-
-        return new Response(
-          JSON.stringify({
-            mrr,
-            active_subs: subs.data.length,
-            churn_rate: Math.round(churnRate * 10) / 10,
-            recent_charges: recentCharges,
-            monthly_revenue: monthlyRevenue,
-            total_canceled: canceled.data.length,
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
       }
 
       case "refund_charge": {
