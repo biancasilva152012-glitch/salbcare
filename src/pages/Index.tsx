@@ -11,6 +11,8 @@ import PainShockSection from "@/components/landing/PainShockSection";
 import PainSignalsSection from "@/components/landing/PainSignalsSection";
 import FinancialIntelligenceSection from "@/components/landing/FinancialIntelligenceSection";
 import AllToolsSection from "@/components/landing/AllToolsSection";
+import LeadDemoFormSection from "@/components/landing/LeadDemoFormSection";
+import WhatsAppFab, { WhatsAppDemoButton } from "@/components/WhatsAppFab";
 
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — paleta fixa: navy / teal / mint
@@ -189,6 +191,8 @@ const Index = () => {
                 <ArrowRight size={20} strokeWidth={2.4} />
               </Link>
 
+              <WhatsAppDemoButton origem="hero" />
+
               <a href="#como-funciona" className="salb-link" style={{ fontSize: 15 }}>
                 Como funciona?
               </a>
@@ -269,6 +273,7 @@ const Index = () => {
         <PainSignalsSection />
         <FinancialIntelligenceSection />
         <AllToolsSection />
+        <LeadDemoFormSection />
 
         {/* ── COMO FUNCIONA (vitrine/controle — MANTIDA) ── */}
         <section id="como-funciona" style={{ background: "#FFFFFF", padding: "72px 0", borderTop: `1px solid ${BORDER}` }}>
@@ -497,6 +502,30 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── CTA WhatsApp final (antes do footer) ── */}
+        <section style={{ background: NAVY, padding: "64px 0" }}>
+          <div className="mx-auto max-w-2xl px-5 sm:px-6 text-center">
+            <h2
+              style={{
+                color: "#FFFFFF",
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                fontSize: "clamp(24px, 3.8vw, 34px)",
+                lineHeight: 1.2,
+                marginBottom: 14,
+              }}
+            >
+              Pronto para ver no seu consultório?
+            </h2>
+            <p style={{ color: "#CBD5E0", fontSize: 16, lineHeight: 1.55, marginBottom: 28 }}>
+              Fale direto com a Bianca pelo WhatsApp e agende sua demonstração.
+            </p>
+            <div className="flex justify-center">
+              <WhatsAppDemoButton origem="rodape" />
+            </div>
+          </div>
+        </section>
+
         {/* ── Footer ── */}
         <footer style={{ background: MINT_BG, borderTop: `1px solid ${BORDER}`, padding: "40px 0" }}>
           <div className="mx-auto max-w-6xl px-5 sm:px-6">
@@ -514,6 +543,8 @@ const Index = () => {
             </div>
           </div>
         </footer>
+
+        <WhatsAppFab />
       </div>
     </>
   );

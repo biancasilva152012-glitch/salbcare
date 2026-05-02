@@ -40,7 +40,7 @@ const PainShockSection = () => {
             margin: 0,
           }}
         >
-          Você sabe <span style={{ color: TEAL }}>exatamente</span> quanto seu consultório lucra por mês?
+          Você sabe <span style={{ color: TEAL }}>exatamente</span> quanto você lucra por mês?
         </h2>
 
         <p
