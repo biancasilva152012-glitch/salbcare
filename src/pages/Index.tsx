@@ -7,6 +7,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import SEOHead from "@/components/SEOHead";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
 import logoSalb from "/pwa-icon-512.png";
+import PainShockSection from "@/components/landing/PainShockSection";
+import PainSignalsSection from "@/components/landing/PainSignalsSection";
+import FinancialIntelligenceSection from "@/components/landing/FinancialIntelligenceSection";
+import AllToolsSection from "@/components/landing/AllToolsSection";
 
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — paleta fixa: navy / teal / mint
@@ -260,7 +264,13 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── COMO FUNCIONA ── */}
+        {/* ── NOVAS SEÇÕES (Fase 1) — Dor → Solução → Ferramentas ── */}
+        <PainShockSection />
+        <PainSignalsSection />
+        <FinancialIntelligenceSection />
+        <AllToolsSection />
+
+        {/* ── COMO FUNCIONA (vitrine/controle — MANTIDA) ── */}
         <section id="como-funciona" style={{ background: "#FFFFFF", padding: "72px 0", borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto max-w-4xl px-5 sm:px-6">
             <h2
