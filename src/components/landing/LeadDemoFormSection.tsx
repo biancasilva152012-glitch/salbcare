@@ -8,7 +8,12 @@ import { toast } from "sonner";
 import { CheckCircle2, Loader2, AlertTriangle, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
-import { buildWhatsAppUrl, buildWhatsAppAppUrl, WHATSAPP_DISPLAY } from "@/lib/whatsapp";
+import {
+  buildWhatsAppUrl,
+  buildWhatsAppAppUrl,
+  buildLeadWhatsAppMessage,
+  WHATSAPP_DISPLAY,
+} from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
 const TEAL = "#00B4A0";
@@ -120,13 +125,13 @@ const LeadDemoFormSection = () => {
       if (error) throw error;
       setSaveStatus("ok");
 
-      // Monta mensagem personalizada e abre o WhatsApp da Bianca já preenchido
-      const personalMessage =
-        `Olá Bianca! Vim pela SalbCare e gostaria de agendar uma demonstração da plataforma.\n\n` +
-        `Nome: ${parsed.data.nome}\n` +
-        `E-mail: ${parsed.data.email}\n` +
-        `WhatsApp: ${parsed.data.whatsapp}\n` +
-        `Principal dor: ${parsed.data.dor_principal}`;
+      // Monta mensagem personalizada via template ÚNICO (com truncamento)
+      const personalMessage = buildLeadWhatsAppMessage({
+        nome: parsed.data.nome,
+        email: parsed.data.email,
+        whatsapp: parsed.data.whatsapp,
+        dor: parsed.data.dor_principal,
+      });
       const personalWaUrl = buildWhatsAppUrl(personalMessage);
       const personalWaAppUrl = buildWhatsAppAppUrl(personalMessage);
       setWaUrl(personalWaUrl);
