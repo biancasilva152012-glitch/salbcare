@@ -100,9 +100,11 @@ const LeadDemoFormSection = () => {
     setNotifyStatus("idle");
 
     try {
-      const { lgpd_consent, ...rest } = parsed.data;
       const payload = {
-        ...rest,
+        nome: parsed.data.nome,
+        email: parsed.data.email,
+        dor_principal: parsed.data.dor_principal,
+        whatsapp: parsed.data.whatsapp,
         lgpd_consent: true,
         lgpd_consent_at: new Date().toISOString(),
       };
