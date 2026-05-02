@@ -11,6 +11,8 @@ import PainShockSection from "@/components/landing/PainShockSection";
 import PainSignalsSection from "@/components/landing/PainSignalsSection";
 import FinancialIntelligenceSection from "@/components/landing/FinancialIntelligenceSection";
 import AllToolsSection from "@/components/landing/AllToolsSection";
+import LeadDemoFormSection from "@/components/landing/LeadDemoFormSection";
+import WhatsAppFab, { WhatsAppDemoButton } from "@/components/WhatsAppFab";
 
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — paleta fixa: navy / teal / mint
