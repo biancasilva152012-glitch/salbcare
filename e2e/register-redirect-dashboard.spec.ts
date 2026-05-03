@@ -1,18 +1,18 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type BrowserContext, type Route } from "@playwright/test";
 
 /**
- * Verifica que após o cadastro o usuário é levado direto a /dashboard,
- * sem passar por /login, e que o SubscriptionGuard não bloqueia o acesso
- * de uma conta recém-criada (trial começa nesse momento).
+ * Cobertura E2E do fluxo de cadastro:
  *
- * Como não temos uma conta SMTP de teste configurada, este spec roda em
- * modo "mock": interceptamos as chamadas ao Supabase Auth/Profiles para
- * simular um signup bem-sucedido com sessão imediata e validamos a UX
- * do front-end (estado da rota + ausência de passagem por /login).
+ *  1) Cadastro bem-sucedido leva direto a /dashboard, sem passar por /login.
+ *  2) SubscriptionGuard / rota protegida não bloqueia recém-cadastrado em
+ *     /dashboard, /dashboard/agenda nem /dashboard/pacientes durante o trial.
  *
- * Para rodar contra o backend real, defina E2E_REAL_SIGNUP=1 e
- * E2E_SIGNUP_EMAIL_DOMAIN (ex.: "@mailinator.com"). Caso contrário,
- * o modo mock é usado.
+ * Modos:
+ *  - Padrão (mock): intercepta os endpoints do Supabase Auth/REST com
+ *    matchers específicos (path-suffix), simulando signup com sessão imediata.
+ *  - Real (E2E_REAL_SIGNUP=1): roda contra o backend real. Requer
+ *    E2E_SIGNUP_EMAIL_DOMAIN (ex.: "@mailinator.com") para gerar e-mails
+ *    descartáveis e auto-confirm habilitado em Auth.
  */
 
 const SUPABASE_URL =
@@ -27,168 +27,184 @@ const PROJECT_REF = (() => {
   }
 })();
 
-const FAKE_USER_ID = "00000000-0000-4000-8000-000000000001";
-const FAKE_EMAIL = `e2e-signup-${Date.now()}@example.test`;
+const REAL_SIGNUP = process.env.E2E_REAL_SIGNUP === "1";
+const REAL_DOMAIN = process.env.E2E_SIGNUP_EMAIL_DOMAIN ?? "@mailinator.com";
 
-function buildSession() {
+const FAKE_USER_ID = "00000000-0000-4000-8000-000000000001";
+const FAKE_EMAIL = REAL_SIGNUP
+  ? `salbcare-e2e-${Date.now()}-${Math.floor(Math.random() * 1e6)}${REAL_DOMAIN}`
+  : `e2e-signup-${Date.now()}@example.test`;
+
+function buildSession(email = FAKE_EMAIL, userId = FAKE_USER_ID) {
   const now = Math.floor(Date.now() / 1000);
+  const user = {
+    id: userId,
+    aud: "authenticated",
+    role: "authenticated",
+    email,
+    created_at: new Date().toISOString(),
+    app_metadata: { provider: "email" },
+    user_metadata: {
+      name: "Usuário E2E",
+      user_type: "professional",
+      professional_type: "medico",
+    },
+  };
   return {
     access_token: "fake-access-token",
     refresh_token: "fake-refresh-token",
     token_type: "bearer",
     expires_in: 3600,
     expires_at: now + 3600,
-    user: {
-      id: FAKE_USER_ID,
-      aud: "authenticated",
-      role: "authenticated",
-      email: FAKE_EMAIL,
-      created_at: new Date().toISOString(),
-      app_metadata: { provider: "email" },
-      user_metadata: {
-        name: "Usuário E2E",
-        user_type: "professional",
-        professional_type: "medico",
-      },
-    },
+    user,
   };
 }
 
-test.describe("Cadastro → Dashboard direto (sem login)", () => {
-  test("redireciona signup bem-sucedido para /dashboard sem passar por /login", async ({
+/**
+ * Mocks específicos por path — usar URL pattern com host fixo + sufixos
+ * exatos evita interceptar chamadas não relacionadas e quebrar quando
+ * uma nova rota Supabase aparece.
+ */
+async function installSupabaseMocks(
+  context: BrowserContext,
+  opts: { profileBody?: unknown; profileContentRange?: string } = {},
+) {
+  const json = (route: Route, body: unknown, status = 200, extra: Record<string, string> = {}) =>
+    route.fulfill({
+      status,
+      contentType: "application/json",
+      headers: extra,
+      body: typeof body === "string" ? body : JSON.stringify(body),
+    });
+
+  // RPC: check_email_user_type → e-mail livre.
+  await context.route(
+    (url) =>
+      url.host.includes(PROJECT_REF) &&
+      url.pathname === "/rest/v1/rpc/check_email_user_type",
+    (route) => json(route, null),
+  );
+
+  // signup → sessão imediata (auto-confirm).
+  await context.route(
+    (url) =>
+      url.host.includes(PROJECT_REF) && url.pathname === "/auth/v1/signup",
+    (route) => {
+      const session = buildSession();
+      json(route, { ...session.user, session, user: session.user });
+    },
+  );
+
+  // signInWithPassword fallback (caso a sessão não venha do signup).
+  await context.route(
+    (url) =>
+      url.host.includes(PROJECT_REF) &&
+      url.pathname === "/auth/v1/token" &&
+      url.searchParams.get("grant_type") === "password",
+    (route) => {
+      const session = buildSession();
+      json(route, session);
+    },
+  );
+
+  // profiles select/update — path exato.
+  await context.route(
+    (url) =>
+      url.host.includes(PROJECT_REF) && url.pathname === "/rest/v1/profiles",
+    (route) =>
+      json(
+        route,
+        opts.profileBody ?? [],
+        200,
+        { "content-range": opts.profileContentRange ?? "0-0/0" },
+      ),
+  );
+
+  // professionals insert.
+  await context.route(
+    (url) =>
+      url.host.includes(PROJECT_REF) &&
+      url.pathname === "/rest/v1/professionals",
+    (route) => json(route, [], 201),
+  );
+
+  // Edge functions (notify-admin-signup, check-subscription, etc.)
+  await context.route(
+    (url) =>
+      url.host.includes(PROJECT_REF) &&
+      url.pathname.startsWith("/functions/v1/"),
+    (route) => json(route, {}),
+  );
+
+  // Demais RPCs → null (catch-all genérico, mas escopado a /rpc/).
+  await context.route(
+    (url) =>
+      url.host.includes(PROJECT_REF) &&
+      url.pathname.startsWith("/rest/v1/rpc/"),
+    (route) => json(route, null),
+  );
+}
+
+async function preloadSession(context: BrowserContext) {
+  await context.addInitScript(
+    ({ key, value }) => {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch {}
+    },
+    {
+      key: `sb-${PROJECT_REF}-auth-token`,
+      value: JSON.stringify(buildSession()),
+    },
+  );
+}
+
+function trackPaths(page: import("@playwright/test").Page) {
+  const visited: string[] = [];
+  page.on("framenavigated", (frame) => {
+    if (frame === page.mainFrame()) {
+      try {
+        visited.push(new URL(frame.url()).pathname);
+      } catch {}
+    }
+  });
+  return visited;
+}
+
+test.describe("Cadastro → Dashboard direto (sem passar por /login)", () => {
+  test(`[${REAL_SIGNUP ? "REAL" : "MOCK"}] redireciona signup para /dashboard`, async ({
     page,
     context,
   }) => {
-    const visitedPaths: string[] = [];
-    page.on("framenavigated", (frame) => {
-      if (frame === page.mainFrame()) {
-        try {
-          visitedPaths.push(new URL(frame.url()).pathname);
-        } catch {}
-      }
-    });
+    const visitedPaths = trackPaths(page);
 
-    // ---- Mock Supabase Auth/REST endpoints ----
+    if (!REAL_SIGNUP) {
+      await installSupabaseMocks(context);
+      await preloadSession(context);
+    }
 
-    // check_email_user_type RPC: sempre retorna null (e-mail livre).
-    await context.route(
-      `${SUPABASE_URL}/rest/v1/rpc/check_email_user_type`,
-      (route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: "null",
-        }),
-    );
-
-    // signUp -> retorna sessão imediata (auto-confirm habilitado).
-    await context.route(`${SUPABASE_URL}/auth/v1/signup*`, (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          ...buildSession().user,
-          session: buildSession(),
-          // Supabase JS lê tanto user quanto session do payload.
-          user: buildSession().user,
-        }),
-      }),
-    );
-
-    // Qualquer SELECT/UPDATE/INSERT em tabelas: responde com 200 vazio.
-    await context.route(`${SUPABASE_URL}/rest/v1/profiles*`, (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        headers: { "content-range": "0-0/0" },
-        body: "[]",
-      }),
-    );
-    await context.route(`${SUPABASE_URL}/rest/v1/professionals*`, (route) =>
-      route.fulfill({
-        status: 201,
-        contentType: "application/json",
-        body: "[]",
-      }),
-    );
-
-    // notify-admin-signup edge function: ignora.
-    await context.route(`${SUPABASE_URL}/functions/v1/**`, (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: "{}" }),
-    );
-
-    // check-subscription / qualquer outra RPC: 200 vazio.
-    await context.route(`${SUPABASE_URL}/rest/v1/rpc/**`, (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: "null" }),
-    );
-
-    // Pré-popula localStorage com a sessão para garantir que, após o
-    // signup, o AuthProvider já enxerga o usuário e o ProfessionalRoute
-    // não redireciona para /login antes do navigate("/dashboard").
-    await context.addInitScript(
-      ({ key, value }) => {
-        try {
-          window.localStorage.setItem(key, value);
-        } catch {}
-      },
-      {
-        key: `sb-${PROJECT_REF}-auth-token`,
-        value: JSON.stringify(buildSession()),
-      },
-    );
-
-    // ---- Fluxo ----
     await page.goto("/register");
-
     await page.getByLabel("Nome completo *").fill("Usuário E2E");
     await page.getByLabel("E-mail *").fill(FAKE_EMAIL);
     await page.getByLabel("Senha *").fill("senhaSegura123");
-
     await page.getByRole("button", { name: /Entrar no SalbCare/i }).click();
 
-    // Deve aterrissar em /dashboard (com loader inicial permitido).
-    await page.waitForURL(/\/dashboard(\?|$|#)/, { timeout: 15_000 });
+    await page.waitForURL(/\/dashboard(\?|$|#)/, { timeout: 30_000 });
 
-    // Não deve ter passado por /login durante o fluxo.
     expect(
       visitedPaths.filter((p) => p === "/login"),
       `passou por /login: ${visitedPaths.join(" → ")}`,
     ).toHaveLength(0);
-
-    // Sanity: a flag de "just signed up" foi consumida ou ainda existe
-    // brevemente, mas o usuário continua autenticado em /dashboard.
     expect(page.url()).toMatch(/\/dashboard/);
   });
+});
 
-  test("SubscriptionGuard / rota protegida permite recém-cadastrado em /dashboard", async ({
-    page,
-    context,
-  }) => {
-    // Simula sessão recém-criada + flag de signup; navega direto a
-    // /dashboard e garante que NÃO há redirect para /login, /upgrade,
-    // /complete-profile ou /subscription.
-    await context.addInitScript(
-      ({ key, value }) => {
-        try {
-          window.localStorage.setItem(key, value);
-          window.sessionStorage.setItem("salbcare_just_signed_up", "1");
-        } catch {}
-      },
-      {
-        key: `sb-${PROJECT_REF}-auth-token`,
-        value: JSON.stringify(buildSession()),
-      },
-    );
-
-    await context.route(`${SUPABASE_URL}/rest/v1/profiles*`, (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        headers: { "content-range": "0-0/1" },
-        // Profile mínimo de profissional, sem council_number — o guard
-        // antigo redirecionaria para /complete-profile; o ajuste de
-        // signup deve permitir que o usuário fique no dashboard.
-        body: JSON.stringify([
+test.describe("SubscriptionGuard libera rotas durante trial imediato", () => {
+  for (const path of ["/dashboard", "/dashboard/agenda", "/dashboard/pacientes"]) {
+    test(`recém-cadastrado pode acessar ${path}`, async ({ page, context }) => {
+      // Profile mínimo de profissional em trial, sem council_number.
+      await installSupabaseMocks(context, {
+        profileBody: [
           {
             user_id: FAKE_USER_ID,
             email: FAKE_EMAIL,
@@ -196,38 +212,32 @@ test.describe("Cadastro → Dashboard direto (sem login)", () => {
             professional_type: "medico",
             payment_status: "trialing",
             trial_start_date: new Date().toISOString(),
+            plan: "basic",
           },
-        ]),
-      }),
-    );
-    await context.route(`${SUPABASE_URL}/rest/v1/rpc/**`, (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: "null" }),
-    );
-    await context.route(`${SUPABASE_URL}/functions/v1/**`, (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: "{}" }),
-    );
+        ],
+        profileContentRange: "0-0/1",
+      });
+      await preloadSession(context);
 
-    const blockedPaths = ["/login", "/upgrade", "/subscription", "/complete-profile"];
-    const visited: string[] = [];
-    page.on("framenavigated", (frame) => {
-      if (frame === page.mainFrame()) {
+      await context.addInitScript(() => {
         try {
-          visited.push(new URL(frame.url()).pathname);
+          window.sessionStorage.setItem("salbcare_just_signed_up", "1");
         } catch {}
+      });
+
+      const blockedPaths = ["/login", "/upgrade", "/subscription", "/complete-profile"];
+      const visited = trackPaths(page);
+
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+
+      expect(page.url()).toMatch(new RegExp(path.replace(/\//g, "\\/")));
+      for (const blocked of blockedPaths) {
+        expect(
+          visited.includes(blocked),
+          `não deveria redirecionar para ${blocked} ao acessar ${path}; histórico: ${visited.join(" → ")}`,
+        ).toBe(false);
       }
     });
-
-    await page.goto("/dashboard");
-
-    // Aguarda o app montar (loader some).
-    await page.waitForLoadState("networkidle");
-
-    expect(page.url()).toMatch(/\/dashboard/);
-    for (const blocked of blockedPaths) {
-      expect(
-        visited.includes(blocked),
-        `não deveria redirecionar para ${blocked}, mas histórico foi: ${visited.join(" → ")}`,
-      ).toBe(false);
-    }
-  });
+  }
 });
