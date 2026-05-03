@@ -171,9 +171,13 @@ const Register = () => {
       }
 
       setLoading(false);
-      toast.success("Conta criada com sucesso!");
+      toast.success("Conta criada com sucesso! Bem-vindo ao seu consultório digital.");
+      // Skip the AuthContext auto-redirect to /complete-profile so newly
+      // signed-up users land directly on the dashboard. They can finish their
+      // profile later from the dashboard banner.
+      sessionStorage.setItem("salbcare_just_signed_up", "1");
       // Honor `next` so users (e.g. coming from /profile) return to where they were.
-      navigate(safeNext || "/dashboard");
+      navigate(safeNext || "/dashboard", { replace: true });
     } catch (err) {
       console.error("[Register] Unexpected signup error:", err);
       setLoading(false);
