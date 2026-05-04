@@ -64,10 +64,9 @@ test("Checkout Essencial redireciona para Stripe", async ({ page, context }) => 
   await page.goto("/checkout?plan=essencial&source=e2e");
   await page.waitForLoadState("networkidle");
 
-  // Find pay button — match common labels
-  const payBtn = page
-    .getByRole("button", { name: /Pagar|Assinar|Continuar para o pagamento|Ir para pagamento/i })
-    .first();
+  // Pay button has stable data-testid
+  const payBtn = page.locator('[data-testid="checkout-pay-btn"]');
+  await payBtn.waitFor({ state: "visible" });
   await payBtn.click();
 
   // Wait for redirect to fake Stripe URL
