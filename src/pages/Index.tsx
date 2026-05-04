@@ -45,6 +45,12 @@ const Index = () => {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    trackViewContent("SalbCare Landing Page", "Homepage");
+    const cleanup = setupScrolledHalfwayTracking();
+    return cleanup;
+  }, []);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
