@@ -34,6 +34,10 @@ export default function Pricing() {
   const [annual, setAnnual] = useState(false);
   const { partner, applyDiscount } = usePartnerDiscount();
 
+  useEffect(() => {
+    trackViewContent("Pricing Page", "Pricing", 89);
+  }, []);
+
   const monthlyBase = 89;
   const annualBase = 69;
   const monthlyPrice = applyDiscount(monthlyBase);
