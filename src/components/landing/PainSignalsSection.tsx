@@ -1,6 +1,6 @@
 // Seção 3 — 5 sinais silenciosos. Background branco, grid 3+2, hover elegante.
 import { Link } from "react-router-dom";
-import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { trackCtaClick, trackUnified, trackLeadIntent } from "@/hooks/useTracking";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
@@ -179,6 +179,7 @@ const PainSignalsSection = () => {
               onClick={() => {
                 trackCtaClick("testar_plataforma", "landing_pain_signals");
                 trackUnified("landing_cta_click", { cta_name: "testar_plataforma", cta_location: "landing_pain_signals" });
+                trackLeadIntent("Trial - Pain Signals", 89);
               }}
               className="signal-cta"
             >

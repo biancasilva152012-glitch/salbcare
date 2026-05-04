@@ -1,7 +1,7 @@
 // Seção 4 — A solução central: CFO de bolso. Background navy, 2 colunas com mockup financeiro real.
 import { Link } from "react-router-dom";
 import { Check, TrendingUp, AlertTriangle, Sparkles } from "lucide-react";
-import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { trackCtaClick, trackUnified, trackLeadIntent } from "@/hooks/useTracking";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";
@@ -156,6 +156,7 @@ const FinancialIntelligenceSection = () => {
                 onClick={() => {
                   trackCtaClick("ver_na_pratica", "landing_financial_intel");
                   trackUnified("landing_cta_click", { cta_name: "ver_na_pratica", cta_location: "landing_financial_intel" });
+                  trackLeadIntent("Trial - Financial Intel", 89);
                 }}
                 className="fi-cta-primary"
               >
