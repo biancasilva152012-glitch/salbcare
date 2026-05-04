@@ -114,7 +114,23 @@ export function trackUnified(eventName: string, payload: Record<string, unknown>
   }
 }
 
+// Dedup window: avoid firing the same Lead/ViewContent twice in a short interval
+// (handles double clicks, back-nav, React StrictMode double effects).
+const DEDUP_MS = 1500;
+const lastFired = new Map<string, number>();
+function shouldFire(key: string): boolean {
+  const now = Date.now();
+  const prev = lastFired.get(key) ?? 0;
+  if (now - prev < DEDUP_MS) return false;
+  lastFired.set(key, now);
+  return true;
+}
+export function __resetTrackingDedupForTests() {
+  lastFired.clear();
+}
+
 export function trackViewContent(contentName: string, category: string, value?: number) {
+  if (!shouldFire(`vc:${contentName}:${category}`)) return;
   const payload: Record<string, unknown> = { content_name: contentName, content_category: category };
   if (typeof value === "number") {
     payload.value = value;
@@ -125,6 +141,7 @@ export function trackViewContent(contentName: string, category: string, value?: 
 }
 
 export function trackLeadIntent(contentName: string, value = 89) {
+  if (!shouldFire(`lead:${contentName}:${value}`)) return;
   const payload = { content_name: contentName, value, currency: "BRL" };
   if (window.fbq) window.fbq("track", "Lead", payload);
   if (window.gtag) window.gtag("event", "generate_lead", payload);
