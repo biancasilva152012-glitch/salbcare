@@ -88,6 +88,7 @@ const PricingCalculatorSection = () => {
       cta_name: "calculadora_quero_organizar",
       cta_location: "pricing_calculator",
     });
+    trackLeadIntent("Trial - Pricing Calculator", 89);
   };
 
   return (
