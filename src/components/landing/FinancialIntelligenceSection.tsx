@@ -156,6 +156,7 @@ const FinancialIntelligenceSection = () => {
                 onClick={() => {
                   trackCtaClick("ver_na_pratica", "landing_financial_intel");
                   trackUnified("landing_cta_click", { cta_name: "ver_na_pratica", cta_location: "landing_financial_intel" });
+                  trackLeadIntent("Trial - Financial Intel", 89);
                 }}
                 className="fi-cta-primary"
               >
