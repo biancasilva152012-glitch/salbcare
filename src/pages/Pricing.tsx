@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, X, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
 import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
 import { PartnerDiscountBadge } from "@/components/PartnerDiscountBadge";
+import { trackViewContent, trackLeadIntent } from "@/hooks/useTracking";
 
 const FREE_FEATURES = [
   { text: "Até 10 pacientes cadastrados", included: true },
