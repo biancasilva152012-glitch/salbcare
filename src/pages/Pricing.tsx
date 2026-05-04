@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, X, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
 import { usePartnerDiscount } from "@/hooks/usePartnerDiscount";
 import { PartnerDiscountBadge } from "@/components/PartnerDiscountBadge";
+import { trackViewContent, trackLeadIntent } from "@/hooks/useTracking";
 
 const FREE_FEATURES = [
   { text: "Até 10 pacientes cadastrados", included: true },
@@ -32,6 +33,10 @@ export default function Pricing() {
   const navigate = useNavigate();
   const [annual, setAnnual] = useState(false);
   const { partner, applyDiscount } = usePartnerDiscount();
+
+  useEffect(() => {
+    trackViewContent("Pricing Page", "Pricing", 89);
+  }, []);
 
   const monthlyBase = 89;
   const annualBase = 69;
@@ -108,7 +113,7 @@ export default function Pricing() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => navigate("/register")}
+                  onClick={() => { trackLeadIntent("Plano Grátis", 0); navigate("/register"); }}
                 >
                   Criar conta grátis
                 </Button>
@@ -164,7 +169,7 @@ export default function Pricing() {
                 </ul>
                 <Button
                   className="w-full"
-                  onClick={() => navigate("/register")}
+                  onClick={() => { trackLeadIntent(annual ? "Plano Essencial Anual" : "Plano Essencial Mensal", annual ? annualPrice : monthlyPrice); navigate("/register"); }}
                 >
                   {annual ? "Assinar plano anual" : "Assinar plano mensal"} <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>

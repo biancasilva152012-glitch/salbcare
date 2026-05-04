@@ -5,7 +5,7 @@ import { ArrowRight, UserPlus, LayoutGrid, FileText, Check } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import SEOHead from "@/components/SEOHead";
-import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { trackCtaClick, trackUnified, trackViewContent, trackLeadIntent, setupScrolledHalfwayTracking } from "@/hooks/useTracking";
 import logoSalb from "/pwa-icon-512.png";
 import PainShockSection from "@/components/landing/PainShockSection";
 import PainSignalsSection from "@/components/landing/PainSignalsSection";
@@ -43,6 +43,12 @@ const Index = () => {
   useEffect(() => {
     const id = setInterval(() => setMsgIdx((i) => (i + 1) % MENTORA_MSGS.length), 3500);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    trackViewContent("SalbCare Landing Page", "Homepage");
+    const cleanup = setupScrolledHalfwayTracking();
+    return cleanup;
   }, []);
 
   const jsonLd = {
@@ -184,7 +190,10 @@ const Index = () => {
             <div className="flex flex-col items-center" style={{ marginTop: 40, gap: 18 }}>
               <Link
                 to="/register?source=landing-hero"
-                onClick={() => fireCta("testar_agora", "landing_hero", { source: "landing-hero" })}
+                onClick={() => {
+                  fireCta("testar_agora", "landing_hero", { source: "landing-hero" });
+                  trackLeadIntent("Trial Iniciado", 89);
+                }}
                 className="salb-cta"
                 data-track="hero_cta_register"
               >

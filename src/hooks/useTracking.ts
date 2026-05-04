@@ -114,6 +114,42 @@ export function trackUnified(eventName: string, payload: Record<string, unknown>
   }
 }
 
+export function trackViewContent(contentName: string, category: string, value?: number) {
+  const payload: Record<string, unknown> = { content_name: contentName, content_category: category };
+  if (typeof value === "number") {
+    payload.value = value;
+    payload.currency = "BRL";
+  }
+  if (window.fbq) window.fbq("track", "ViewContent", payload);
+  if (window.gtag) window.gtag("event", "view_content", { ...payload, send_to: "G-117MVSM8LG" });
+}
+
+export function trackLeadIntent(contentName: string, value = 89) {
+  const payload = { content_name: contentName, value, currency: "BRL" };
+  if (window.fbq) window.fbq("track", "Lead", payload);
+  if (window.gtag) window.gtag("event", "generate_lead", payload);
+}
+
+let scrolledHalfwayFired = false;
+export function setupScrolledHalfwayTracking() {
+  if (typeof window === "undefined") return () => {};
+  scrolledHalfwayFired = false;
+  const handler = () => {
+    const scrollable = document.body.scrollHeight - window.innerHeight;
+    if (scrollable <= 0) return;
+    const pct = (window.scrollY / scrollable) * 100;
+    if (pct > 50 && !scrolledHalfwayFired) {
+      scrolledHalfwayFired = true;
+      const payload = { page: window.location.pathname };
+      if (window.fbq) window.fbq("trackCustom", "ScrolledHalfway", payload);
+      if (window.gtag) window.gtag("event", "scrolled_halfway", { ...payload, send_to: "G-117MVSM8LG" });
+      window.removeEventListener("scroll", handler);
+    }
+  };
+  window.addEventListener("scroll", handler, { passive: true });
+  return () => window.removeEventListener("scroll", handler);
+}
+
 export function trackLimitWarning(eventName: string, count: number) {
   if (window.gtag) {
     window.gtag("event", eventName, {
