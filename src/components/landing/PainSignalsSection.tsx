@@ -179,6 +179,7 @@ const PainSignalsSection = () => {
               onClick={() => {
                 trackCtaClick("testar_plataforma", "landing_pain_signals");
                 trackUnified("landing_cta_click", { cta_name: "testar_plataforma", cta_location: "landing_pain_signals" });
+                trackLeadIntent("Trial - Pain Signals", 89);
               }}
               className="signal-cta"
             >
