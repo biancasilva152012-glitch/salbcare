@@ -5,7 +5,7 @@ import { ArrowRight, UserPlus, LayoutGrid, FileText, Check } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import SEOHead from "@/components/SEOHead";
-import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { trackCtaClick, trackUnified, trackViewContent, trackLeadIntent, setupScrolledHalfwayTracking } from "@/hooks/useTracking";
 import logoSalb from "/pwa-icon-512.png";
 import PainShockSection from "@/components/landing/PainShockSection";
 import PainSignalsSection from "@/components/landing/PainSignalsSection";
