@@ -113,7 +113,7 @@ export default function Pricing() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => navigate("/register")}
+                  onClick={() => { trackLeadIntent("Plano Grátis", 0); navigate("/register"); }}
                 >
                   Criar conta grátis
                 </Button>
@@ -169,7 +169,7 @@ export default function Pricing() {
                 </ul>
                 <Button
                   className="w-full"
-                  onClick={() => navigate("/register")}
+                  onClick={() => { trackLeadIntent(annual ? "Plano Essencial Anual" : "Plano Essencial Mensal", annual ? annualPrice : monthlyPrice); navigate("/register"); }}
                 >
                   {annual ? "Assinar plano anual" : "Assinar plano mensal"} <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>
