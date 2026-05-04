@@ -190,7 +190,10 @@ const Index = () => {
             <div className="flex flex-col items-center" style={{ marginTop: 40, gap: 18 }}>
               <Link
                 to="/register?source=landing-hero"
-                onClick={() => fireCta("testar_agora", "landing_hero", { source: "landing-hero" })}
+                onClick={() => {
+                  fireCta("testar_agora", "landing_hero", { source: "landing-hero" });
+                  trackLeadIntent("Trial Iniciado", 89);
+                }}
                 className="salb-cta"
                 data-track="hero_cta_register"
               >
