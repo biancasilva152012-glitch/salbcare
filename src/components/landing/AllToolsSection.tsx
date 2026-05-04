@@ -226,6 +226,7 @@ const AllToolsSection = () => {
             onClick={() => {
               trackCtaClick("agendar_demo", "landing_all_tools");
               trackUnified("landing_cta_click", { cta_name: "agendar_demo", cta_location: "landing_all_tools" });
+              trackLeadIntent("Trial - All Tools", 89);
             }}
             className="tool-cta"
           >
