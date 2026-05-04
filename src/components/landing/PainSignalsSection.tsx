@@ -1,6 +1,6 @@
 // Seção 3 — 5 sinais silenciosos. Background branco, grid 3+2, hover elegante.
 import { Link } from "react-router-dom";
-import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { trackCtaClick, trackUnified, trackLeadIntent } from "@/hooks/useTracking";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";

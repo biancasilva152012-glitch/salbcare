@@ -1,7 +1,7 @@
 // Seção 4 — A solução central: CFO de bolso. Background navy, 2 colunas com mockup financeiro real.
 import { Link } from "react-router-dom";
 import { Check, TrendingUp, AlertTriangle, Sparkles } from "lucide-react";
-import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { trackCtaClick, trackUnified, trackLeadIntent } from "@/hooks/useTracking";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAVY = "#0D1B2A";

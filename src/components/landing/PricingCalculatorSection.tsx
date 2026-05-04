@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { maskCurrency, parseBRL } from "@/utils/currencyMask";
-import { trackCtaClick, trackUnified } from "@/hooks/useTracking";
+import { trackCtaClick, trackUnified, trackLeadIntent } from "@/hooks/useTracking";
 
 /* Tokens da landing — manter consistência visual */
 const NAVY = "#0D1B2A";
