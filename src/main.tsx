@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
+import { attachSwDiagnostics } from "./lib/swDiagnostics";
 
 const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
 const hostname = window.location.hostname;
@@ -9,6 +10,9 @@ const isPreview = hostname.includes("id-preview--") || hostname.includes("lovabl
 const canRegisterServiceWorker = "serviceWorker" in navigator && !isInIframe && !isPreview;
 
 if (canRegisterServiceWorker) {
+  // Liga diagnósticos ANTES de registrar — capta o primeiro controllerchange.
+  attachSwDiagnostics();
+
   // Registra APENAS o SW gerado pelo Workbox (em /sw.js).
   // O handler de push é injetado via workbox.importScripts (vite.config.ts → /push-handlers.js).
   // NUNCA registrar um segundo SW no mesmo escopo "/" — isso causa swap contínuo entre SWs
