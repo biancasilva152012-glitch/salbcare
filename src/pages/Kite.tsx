@@ -35,7 +35,18 @@ export default function Kite() {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
     if (ref) {
-      try { localStorage.setItem("pousada_ref", ref.slice(0, 64)); } catch {}
+      const safe = ref.slice(0, 64);
+      try { localStorage.setItem("pousada_ref", safe); } catch {}
+      // Track scan once per session
+      try {
+        const flag = `qr_scan_tracked_${safe}`;
+        if (!sessionStorage.getItem(flag)) {
+          sessionStorage.setItem(flag, "1");
+          import("@/integrations/supabase/client").then(({ supabase }) => {
+            supabase.rpc("increment_qr_scan" as any, { _slug: safe }).then(() => {});
+          });
+        }
+      } catch {}
     }
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
