@@ -155,6 +155,8 @@ const App = () => (
               <Route path="/experimente" element={<Experimente />} />
               <Route path="/guest" element={<GuestEntry />} />
               <Route path="/upgrade" element={<Upgrade />} />
+              <Route path="/kite" element={<Kite />} />
+              <Route path="/kite/confirmed" element={<KiteConfirmed />} />
 
               {/* Blog SEO */}
               <Route path="/blog" element={<BlogIndex />} />
