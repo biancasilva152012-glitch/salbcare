@@ -401,7 +401,7 @@ function ProcedureCard({
   type: "presencial" | "online";
   total: number;
   eu?: number;
-  t: typeof T["en"];
+  t: (typeof T)[Lang];
   onBook: (id: string, type: "presencial" | "online", total: number) => void;
 }) {
   const isOnline = type === "online";
