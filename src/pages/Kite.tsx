@@ -5,30 +5,154 @@ import KiteBookingModal, { type KiteProcedure } from "@/components/kite/KiteBook
 
 const BOOKING_FEE = 50;
 
-const DENTAL: (KiteProcedure & { eu: number })[] = [
-  { id: "dental-cleaning",  label: "Cleaning & Check-up",   type: "presencial", amountCharged: BOOKING_FEE, totalPrice: 180, eu: 120 },
-  { id: "dental-whitening", label: "Teeth Whitening",       type: "presencial", amountCharged: BOOKING_FEE, totalPrice: 480, eu: 350 },
-  { id: "dental-exam",      label: "Complete Oral Exam",    type: "presencial", amountCharged: BOOKING_FEE, totalPrice: 120, eu: 90 },
-];
+type Lang = "en" | "es";
 
-const PHYSIO: (KiteProcedure & { eu: number })[] = [
-  { id: "physio-kite-recovery", label: "Kite Recovery Session",            type: "presencial", amountCharged: BOOKING_FEE, totalPrice: 200, eu: 90 },
-  { id: "physio-massage",       label: "Sports Massage (60 min)",          type: "presencial", amountCharged: BOOKING_FEE, totalPrice: 180, eu: 80 },
-  { id: "physio-postural",      label: "Postural Assessment",              type: "presencial", amountCharged: BOOKING_FEE, totalPrice: 160, eu: 70 },
-  { id: "physio-package",       label: "Full Recovery Package (3 sessions)", type: "presencial", amountCharged: BOOKING_FEE, totalPrice: 480, eu: 240 },
-];
+const T = {
+  en: {
+    htmlLang: "en",
+    title: "SalbDental — World-class care while you kite | Ilha do Guajiru",
+    desc: "Dental, physiotherapy and online consultations in English & Spanish for kitesurfers and expats in Ilha do Guajiru, Ceará. Fraction of European prices.",
+    nav: { dental: "Dental", physio: "Physio", online: "Telehealth", book: "Book Now" },
+    hero: {
+      pin: "📍 Ilha do Guajiru, Ceará — Brazil",
+      h1a: "World-class care.",
+      h1b: "While you kite.",
+      sub: "Dental, physiotherapy and telehealth — in English & Spanish, at a fraction of European prices.",
+      ctaIn: "Book In-Person →",
+      ctaOnline: "Online Consultation",
+      trust: ["European patients", "English & Spanish", "International cards"],
+    },
+    tabs: { dental: "🦷 Dental", physio: "💆 Physio", online: "💻 Online" },
+    physioIntro: "Sore shoulders? Tired back? Our physiotherapist specializes in kite-related recovery and sports massage.",
+    onlineIntro: "Full payment now · Google Meet link sent within 2 hours · From your room.",
+    inPersonBanner: "Your R$ 50 secures the appointment. Pay the remaining balance at the clinic on the day of your visit.",
+    how: {
+      h2: "How it works",
+      inLabel: "In-person",
+      onlineLabel: "Online",
+      inSteps: ["1. Choose your procedure", "2. Pay R$ 50 booking fee", "3. Show up at the clinic", "4. Pay the remaining balance"],
+      onlineSteps: ["1. Choose your consultation", "2. Pay in full", "3. Receive your Google Meet link", "4. Join from anywhere"],
+    },
+    testimonialsH2: "What kitesurfers say",
+    testimonials: [
+      { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic, paid €30 instead of €120 back home." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Booked an online consultation from my pousada. Got the Meet link in less than an hour. Felt heard." },
+      { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later I was back on the water." },
+    ],
+    finalH2: "Book your appointment today.",
+    card: {
+      total: "total",
+      euCompare: (eu: number) => `€${eu} in Europe`,
+      tagFull: "Full payment",
+      tagPartial: "R$50 now + rest at clinic",
+      ctaOnline: (n: number) => `Book & Pay R$ ${n} →`,
+      ctaIn: (n: number) => `Reserve for R$ ${n} →`,
+    },
+    procedures: {
+      "dental-cleaning":  "Cleaning & Check-up",
+      "dental-whitening": "Teeth Whitening",
+      "dental-exam":      "Complete Oral Exam",
+      "physio-kite-recovery": "Kite Recovery Session",
+      "physio-massage":       "Sports Massage (60 min)",
+      "physio-postural":      "Postural Assessment",
+      "physio-package":       "Full Recovery Package (3 sessions)",
+      "telehealth-psychology":    "Psychology",
+      "telehealth-nutrition":     "Nutrition",
+      "telehealth-physio-online": "Physiotherapy (online)",
+      "telehealth-medicine":      "General Medicine",
+    } as Record<string, string>,
+  },
+  es: {
+    htmlLang: "es",
+    title: "SalbDental — Atención de primer nivel mientras haces kite | Ilha do Guajiru",
+    desc: "Odontología, fisioterapia y consultas online en inglés y español para kitesurfistas y expatriados en Ilha do Guajiru, Ceará. Una fracción de los precios europeos.",
+    nav: { dental: "Dental", physio: "Fisio", online: "Telesalud", book: "Reservar" },
+    hero: {
+      pin: "📍 Ilha do Guajiru, Ceará — Brasil",
+      h1a: "Atención de primer nivel.",
+      h1b: "Mientras haces kite.",
+      sub: "Odontología, fisioterapia y telesalud — en inglés y español, a una fracción de los precios europeos.",
+      ctaIn: "Reservar presencial →",
+      ctaOnline: "Consulta online",
+      trust: ["Pacientes europeos", "Inglés y español", "Tarjetas internacionales"],
+    },
+    tabs: { dental: "🦷 Dental", physio: "💆 Fisio", online: "💻 Online" },
+    physioIntro: "¿Hombros doloridos? ¿Espalda cansada? Nuestro fisioterapeuta se especializa en recuperación post-kite y masaje deportivo.",
+    onlineIntro: "Pago completo ahora · Enlace de Google Meet en menos de 2 horas · Desde tu habitación.",
+    inPersonBanner: "Tus R$ 50 reservan la cita. Paga el saldo restante en la clínica el día de tu visita.",
+    how: {
+      h2: "Cómo funciona",
+      inLabel: "Presencial",
+      onlineLabel: "Online",
+      inSteps: ["1. Elige el procedimiento", "2. Paga R$ 50 de reserva", "3. Acude a la clínica", "4. Paga el saldo restante"],
+      onlineSteps: ["1. Elige tu consulta", "2. Paga el total", "3. Recibe tu enlace de Google Meet", "4. Conéctate desde cualquier lugar"],
+    },
+    testimonialsH2: "Lo que dicen los kitesurfistas",
+    testimonials: [
+      { name: "Lars M.", flag: "🇩🇪", text: "Limpieza rápida entre sesiones. Dentista en inglés, clínica impecable, pagué €30 en lugar de €120 en casa." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Reservé una consulta online desde mi pousada. Recibí el enlace de Meet en menos de una hora. Me sentí escuchada." },
+      { name: "Pieter V.", flag: "🇳🇱", text: "Caí fuerte y me destrocé el hombro. Tres sesiones de fisio después estaba de vuelta en el agua." },
+    ],
+    finalH2: "Reserva tu cita hoy.",
+    card: {
+      total: "total",
+      euCompare: (eu: number) => `€${eu} en Europa`,
+      tagFull: "Pago completo",
+      tagPartial: "R$50 ahora + resto en la clínica",
+      ctaOnline: (n: number) => `Reservar y pagar R$ ${n} →`,
+      ctaIn: (n: number) => `Reservar por R$ ${n} →`,
+    },
+    procedures: {
+      "dental-cleaning":  "Limpieza y revisión",
+      "dental-whitening": "Blanqueamiento dental",
+      "dental-exam":      "Examen bucal completo",
+      "physio-kite-recovery": "Sesión de recuperación post-kite",
+      "physio-massage":       "Masaje deportivo (60 min)",
+      "physio-postural":      "Evaluación postural",
+      "physio-package":       "Paquete recuperación completa (3 sesiones)",
+      "telehealth-psychology":    "Psicología",
+      "telehealth-nutrition":     "Nutrición",
+      "telehealth-physio-online": "Fisioterapia (online)",
+      "telehealth-medicine":      "Medicina general",
+    } as Record<string, string>,
+  },
+} as const;
 
-const ONLINE: KiteProcedure[] = [
-  { id: "telehealth-psychology",    label: "Psychology",                  type: "online", amountCharged: 280, totalPrice: 280 },
-  { id: "telehealth-nutrition",     label: "Nutrition",                   type: "online", amountCharged: 220, totalPrice: 220 },
-  { id: "telehealth-physio-online", label: "Physiotherapy (online)",      type: "online", amountCharged: 240, totalPrice: 240 },
-  { id: "telehealth-medicine",      label: "General Medicine",            type: "online", amountCharged: 200, totalPrice: 200 },
+const DENTAL_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
+  { id: "dental-cleaning",  type: "presencial", total: 180, eu: 120 },
+  { id: "dental-whitening", type: "presencial", total: 480, eu: 350 },
+  { id: "dental-exam",      type: "presencial", total: 120, eu: 90 },
+];
+const PHYSIO_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
+  { id: "physio-kite-recovery", type: "presencial", total: 200, eu: 90 },
+  { id: "physio-massage",       type: "presencial", total: 180, eu: 80 },
+  { id: "physio-postural",      type: "presencial", total: 160, eu: 70 },
+  { id: "physio-package",       type: "presencial", total: 480, eu: 240 },
+];
+const ONLINE_IDS: { id: string; type: "online"; total: number }[] = [
+  { id: "telehealth-psychology",    type: "online", total: 280 },
+  { id: "telehealth-nutrition",     type: "online", total: 220 },
+  { id: "telehealth-physio-online", type: "online", total: 240 },
+  { id: "telehealth-medicine",      type: "online", total: 200 },
 ];
 
 export default function Kite() {
   const [scrolled, setScrolled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState<KiteProcedure | null>(null);
+  const [lang, setLang] = useState<Lang>(() => {
+    if (typeof window === "undefined") return "en";
+    const saved = localStorage.getItem("kite_lang") as Lang | null;
+    if (saved === "en" || saved === "es") return saved;
+    const browser = navigator.language?.toLowerCase() || "";
+    return browser.startsWith("es") ? "es" : "en";
+  });
+
+  const t = T[lang];
+
+  useEffect(() => {
+    try { localStorage.setItem("kite_lang", lang); } catch {}
+  }, [lang]);
 
   useEffect(() => {
     // Capture pousada ref
@@ -37,7 +161,6 @@ export default function Kite() {
     if (ref) {
       const safe = ref.slice(0, 64);
       try { localStorage.setItem("pousada_ref", safe); } catch {}
-      // Track scan once per session
       try {
         const flag = `qr_scan_tracked_${safe}`;
         if (!sessionStorage.getItem(flag)) {
@@ -48,14 +171,19 @@ export default function Kite() {
         }
       } catch {}
     }
+    const langParam = params.get("lang");
+    if (langParam === "es" || langParam === "en") setLang(langParam);
+
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const openBooking = (p: KiteProcedure) => {
-    setSelected(p);
+  const openBooking = (id: string, type: "presencial" | "online", total: number) => {
+    const label = t.procedures[id] || id;
+    const amountCharged = type === "online" ? total : BOOKING_FEE;
+    setSelected({ id, label, type, amountCharged, totalPrice: total });
     setModalOpen(true);
   };
 
@@ -66,15 +194,17 @@ export default function Kite() {
   return (
     <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: "#f7f3ee", color: "#1a1612" }}>
       <Helmet>
-        <html lang="en" />
-        <title>SalbDental — World-class care while you kite | Ilha do Guajiru</title>
-        <meta name="description" content="Dental, physiotherapy and online consultations in English for kitesurfers and expats in Ilha do Guajiru, Ceará. Fraction of European prices." />
+        <html lang={t.htmlLang} />
+        <title>{t.title}</title>
+        <meta name="description" content={t.desc} />
         <link rel="canonical" href="https://salbcare.com/kite" />
+        <link rel="alternate" hrefLang="en" href="https://salbcare.com/kite?lang=en" />
+        <link rel="alternate" hrefLang="es" href="https://salbcare.com/kite?lang=es" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
-        <meta property="og:title" content="SalbDental — World-class care while you kite" />
-        <meta property="og:description" content="Dental, physio and telehealth in English. Ilha do Guajiru, Ceará." />
+        <meta property="og:title" content={t.title} />
+        <meta property="og:description" content={t.desc} />
         <meta property="og:url" content="https://salbcare.com/kite" />
       </Helmet>
 
@@ -94,15 +224,38 @@ export default function Kite() {
           <a href="#top" className="text-xl font-bold tracking-tight" style={{ color: scrolled ? "#1a1612" : "#fff" }}>
             Salb<span style={{ color: "#2c6e49" }}>Dental</span>
           </a>
-          <div className="hidden md:flex items-center gap-7 text-sm font-medium" style={{ color: scrolled ? "#1a1612" : "#fff" }}>
-            <button onClick={() => scrollTo("dental")} className="hover:opacity-70">Dental</button>
-            <button onClick={() => scrollTo("physio")} className="hover:opacity-70">Physio</button>
-            <button onClick={() => scrollTo("online")} className="hover:opacity-70">Telehealth</button>
+          <div className="flex items-center gap-4 md:gap-7 text-sm font-medium" style={{ color: scrolled ? "#1a1612" : "#fff" }}>
+            <button onClick={() => scrollTo("dental")} className="hidden md:inline hover:opacity-70">{t.nav.dental}</button>
+            <button onClick={() => scrollTo("physio")} className="hidden md:inline hover:opacity-70">{t.nav.physio}</button>
+            <button onClick={() => scrollTo("online")} className="hidden md:inline hover:opacity-70">{t.nav.online}</button>
+
+            {/* Language toggle */}
+            <div
+              className={`flex items-center rounded-full p-0.5 text-xs font-semibold border ${
+                scrolled ? "border-black/10 bg-black/5" : "border-white/30 bg-white/10"
+              }`}
+              aria-label="Language"
+            >
+              {(["en", "es"] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={`px-2.5 py-1 rounded-full transition ${
+                    lang === l
+                      ? "bg-[#2c6e49] text-white"
+                      : scrolled ? "text-[#1a1612]/70" : "text-white/80"
+                  }`}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
             <button
               onClick={() => scrollTo("services")}
               className="px-4 py-2 rounded-full bg-[#2c6e49] text-white hover:bg-[#1a3a2a]"
             >
-              Book Now
+              {t.nav.book}
             </button>
           </div>
         </div>
@@ -116,34 +269,29 @@ export default function Kite() {
       >
         <div className="max-w-4xl mx-auto text-center">
           <span className="inline-block px-3 py-1 rounded-full bg-white/15 text-white/90 text-xs font-medium mb-6">
-            📍 Ilha do Guajiru, Ceará — Brazil
+            {t.hero.pin}
           </span>
           <h1 className="kite-h text-4xl md:text-6xl font-bold leading-tight mb-5">
-            World-class care.<br />While you kite.
+            {t.hero.h1a}<br />{t.hero.h1b}
           </h1>
           <p className="text-base md:text-lg text-white/85 max-w-2xl mx-auto mb-8">
-            Dental, physiotherapy and telehealth — in English, at a fraction of European prices.
+            {t.hero.sub}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => scrollTo("dental")}
-              className="px-7 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90"
-            >
-              Book In-Person →
+            <button onClick={() => scrollTo("dental")} className="px-7 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">
+              {t.hero.ctaIn}
             </button>
-            <button
-              onClick={() => scrollTo("online")}
-              className="px-7 py-3 rounded-full bg-transparent border border-white/60 text-white font-semibold hover:bg-white/10"
-            >
-              Online Consultation
+            <button onClick={() => scrollTo("online")} className="px-7 py-3 rounded-full bg-transparent border border-white/60 text-white font-semibold hover:bg-white/10">
+              {t.hero.ctaOnline}
             </button>
           </div>
           <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/75">
-            <span>European patients</span>
-            <span>·</span>
-            <span>English & Spanish</span>
-            <span>·</span>
-            <span>International cards</span>
+            {t.hero.trust.map((it, i) => (
+              <span key={it} className="flex items-center gap-3">
+                {i > 0 && <span aria-hidden>·</span>}
+                <span>{it}</span>
+              </span>
+            ))}
           </div>
         </div>
       </section>
@@ -153,42 +301,35 @@ export default function Kite() {
         <div className="max-w-5xl mx-auto">
           <Tabs defaultValue="dental">
             <TabsList className="grid grid-cols-3 w-full max-w-2xl mx-auto mb-10 bg-white border border-black/5 p-1 rounded-full h-auto">
-              <TabsTrigger value="dental" className="rounded-full data-[state=active]:bg-[#2c6e49] data-[state=active]:text-white py-2.5 text-sm md:text-base">🦷 Dental</TabsTrigger>
-              <TabsTrigger value="physio" className="rounded-full data-[state=active]:bg-[#2c6e49] data-[state=active]:text-white py-2.5 text-sm md:text-base">💆 Physio</TabsTrigger>
-              <TabsTrigger value="online" className="rounded-full data-[state=active]:bg-[#2c6e49] data-[state=active]:text-white py-2.5 text-sm md:text-base">💻 Online</TabsTrigger>
+              <TabsTrigger value="dental" className="rounded-full data-[state=active]:bg-[#2c6e49] data-[state=active]:text-white py-2.5 text-sm md:text-base">{t.tabs.dental}</TabsTrigger>
+              <TabsTrigger value="physio" className="rounded-full data-[state=active]:bg-[#2c6e49] data-[state=active]:text-white py-2.5 text-sm md:text-base">{t.tabs.physio}</TabsTrigger>
+              <TabsTrigger value="online" className="rounded-full data-[state=active]:bg-[#2c6e49] data-[state=active]:text-white py-2.5 text-sm md:text-base">{t.tabs.online}</TabsTrigger>
             </TabsList>
 
-            {/* DENTAL */}
             <TabsContent value="dental" id="dental">
               <div className="grid md:grid-cols-3 gap-5">
-                {DENTAL.map((p) => (
-                  <ProcedureCard key={p.id} p={p} onBook={openBooking} euPrice={p.eu} />
+                {DENTAL_IDS.map((p) => (
+                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
                 ))}
               </div>
-              <InfoBanner kind="presencial" />
+              <InfoBanner text={t.inPersonBanner} />
             </TabsContent>
 
-            {/* PHYSIO */}
             <TabsContent value="physio" id="physio">
-              <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">
-                Sore shoulders? Tired back? Our physiotherapist specializes in kite-related recovery and sports massage.
-              </p>
+              <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">{t.physioIntro}</p>
               <div className="grid md:grid-cols-2 gap-5">
-                {PHYSIO.map((p) => (
-                  <ProcedureCard key={p.id} p={p} onBook={openBooking} euPrice={p.eu} />
+                {PHYSIO_IDS.map((p) => (
+                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
                 ))}
               </div>
-              <InfoBanner kind="presencial" />
+              <InfoBanner text={t.inPersonBanner} />
             </TabsContent>
 
-            {/* ONLINE */}
             <TabsContent value="online" id="online">
-              <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">
-                Full payment now · Google Meet link sent within 2 hours · From your room.
-              </p>
+              <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">{t.onlineIntro}</p>
               <div className="grid md:grid-cols-2 gap-5">
-                {ONLINE.map((p) => (
-                  <ProcedureCard key={p.id} p={p} onBook={openBooking} />
+                {ONLINE_IDS.map((p) => (
+                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} t={t} onBook={openBooking} />
                 ))}
               </div>
             </TabsContent>
@@ -199,24 +340,18 @@ export default function Kite() {
       {/* How it works */}
       <section style={{ background: "#1a1612", color: "#f7f3ee" }} className="px-5 py-20">
         <div className="max-w-5xl mx-auto">
-          <h2 className="kite-h text-3xl md:text-4xl text-center mb-12">How it works</h2>
+          <h2 className="kite-h text-3xl md:text-4xl text-center mb-12">{t.how.h2}</h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="border border-white/10 rounded-2xl p-8">
-              <p className="text-xs uppercase tracking-widest text-[#2c6e49] mb-3 font-semibold">In-person</p>
+              <p className="text-xs uppercase tracking-widest text-[#2c6e49] mb-3 font-semibold">{t.how.inLabel}</p>
               <ol className="space-y-3 text-white/85">
-                <li>1. Choose your procedure</li>
-                <li>2. Pay R$ 50 booking fee</li>
-                <li>3. Show up at the clinic</li>
-                <li>4. Pay the remaining balance</li>
+                {t.how.inSteps.map((s) => <li key={s}>{s}</li>)}
               </ol>
             </div>
             <div className="border border-white/10 rounded-2xl p-8">
-              <p className="text-xs uppercase tracking-widest text-[#2c6e49] mb-3 font-semibold">Online</p>
+              <p className="text-xs uppercase tracking-widest text-[#2c6e49] mb-3 font-semibold">{t.how.onlineLabel}</p>
               <ol className="space-y-3 text-white/85">
-                <li>1. Choose your consultation</li>
-                <li>2. Pay in full</li>
-                <li>3. Receive your Google Meet link</li>
-                <li>4. Join from anywhere</li>
+                {t.how.onlineSteps.map((s) => <li key={s}>{s}</li>)}
               </ol>
             </div>
           </div>
@@ -226,16 +361,12 @@ export default function Kite() {
       {/* Testimonials */}
       <section className="px-5 py-20">
         <div className="max-w-5xl mx-auto">
-          <h2 className="kite-h text-3xl md:text-4xl text-center mb-12">What kitesurfers say</h2>
+          <h2 className="kite-h text-3xl md:text-4xl text-center mb-12">{t.testimonialsH2}</h2>
           <div className="grid md:grid-cols-3 gap-5">
-            {[
-              { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic, paid €30 instead of €120 back home." },
-              { name: "Sophie T.", flag: "🇫🇷", text: "Booked an online consultation from my pousada. Got the Meet link in less than an hour. Felt heard." },
-              { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later I was back on the water." },
-            ].map((t) => (
-              <div key={t.name} className="bg-white border border-black/5 rounded-2xl p-6">
-                <p className="text-[#1a1612]/85 mb-4 leading-relaxed">"{t.text}"</p>
-                <p className="text-sm font-semibold">{t.name} <span className="ml-1">{t.flag}</span></p>
+            {t.testimonials.map((tx) => (
+              <div key={tx.name} className="bg-white border border-black/5 rounded-2xl p-6">
+                <p className="text-[#1a1612]/85 mb-4 leading-relaxed">"{tx.text}"</p>
+                <p className="text-sm font-semibold">{tx.name} <span className="ml-1">{tx.flag}</span></p>
               </div>
             ))}
           </div>
@@ -245,11 +376,11 @@ export default function Kite() {
       {/* Final CTA */}
       <section className="px-5 py-20" style={{ background: "linear-gradient(135deg, #1a3a2a 0%, #2c6e49 100%)" }}>
         <div className="max-w-3xl mx-auto text-center text-white">
-          <h2 className="kite-h text-3xl md:text-5xl mb-8">Book your appointment today.</h2>
+          <h2 className="kite-h text-3xl md:text-5xl mb-8">{t.finalH2}</h2>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button onClick={() => scrollTo("dental")} className="px-6 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">🦷 Dental</button>
-            <button onClick={() => scrollTo("physio")} className="px-6 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">💆 Physio</button>
-            <button onClick={() => scrollTo("online")} className="px-6 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">💻 Online</button>
+            <button onClick={() => scrollTo("dental")} className="px-6 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">{t.tabs.dental}</button>
+            <button onClick={() => scrollTo("physio")} className="px-6 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">{t.tabs.physio}</button>
+            <button onClick={() => scrollTo("online")} className="px-6 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">{t.tabs.online}</button>
           </div>
         </div>
       </section>
@@ -258,58 +389,55 @@ export default function Kite() {
         SalbDental by SalbCare · Ilha do Guajiru · salbcare.com
       </footer>
 
-      <KiteBookingModal open={modalOpen} onOpenChange={setModalOpen} procedure={selected} />
+      <KiteBookingModal open={modalOpen} onOpenChange={setModalOpen} procedure={selected} lang={lang} />
     </div>
   );
 }
 
 function ProcedureCard({
-  p,
-  onBook,
-  euPrice,
+  id, type, total, eu, t, onBook,
 }: {
-  p: KiteProcedure;
-  onBook: (p: KiteProcedure) => void;
-  euPrice?: number;
+  id: string;
+  type: "presencial" | "online";
+  total: number;
+  eu?: number;
+  t: typeof T["en"];
+  onBook: (id: string, type: "presencial" | "online", total: number) => void;
 }) {
-  const isOnline = p.type === "online";
+  const isOnline = type === "online";
+  const label = t.procedures[id] || id;
+  const amountCharged = isOnline ? total : BOOKING_FEE;
   return (
     <div className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex flex-col">
-      <h3 className="kite-h text-xl mb-3 text-[#1a1612]">{p.label}</h3>
+      <h3 className="kite-h text-xl mb-3 text-[#1a1612]">{label}</h3>
       <div className="mb-4">
         <p className="text-2xl font-bold text-[#1a1612]">
-          R$ {p.totalPrice}
-          <span className="text-sm font-normal text-[#5a564f] ml-1">total</span>
+          R$ {total}
+          <span className="text-sm font-normal text-[#5a564f] ml-1">{t.card.total}</span>
         </p>
-        {euPrice && (
-          <p className="text-sm text-gray-400 line-through mt-0.5">€{euPrice} in Europe</p>
-        )}
+        {eu && <p className="text-sm text-gray-400 line-through mt-0.5">{t.card.euCompare(eu)}</p>}
       </div>
       <div className="mb-5">
         {isOnline ? (
-          <span className="inline-block px-2 py-1 rounded bg-[#2c6e49]/10 text-[#2c6e49] text-xs font-semibold">
-            Full payment
-          </span>
+          <span className="inline-block px-2 py-1 rounded bg-[#2c6e49]/10 text-[#2c6e49] text-xs font-semibold">{t.card.tagFull}</span>
         ) : (
-          <span className="inline-block px-2 py-1 rounded bg-amber-100 text-amber-800 text-xs font-semibold">
-            R$50 now + rest at clinic
-          </span>
+          <span className="inline-block px-2 py-1 rounded bg-amber-100 text-amber-800 text-xs font-semibold">{t.card.tagPartial}</span>
         )}
       </div>
       <button
-        onClick={() => onBook(p)}
+        onClick={() => onBook(id, type, total)}
         className="mt-auto w-full px-4 py-3 rounded-full bg-[#2c6e49] text-white font-semibold hover:bg-[#1a3a2a] transition"
       >
-        {isOnline ? `Book & Pay R$ ${p.amountCharged} →` : `Reserve for R$ ${p.amountCharged} →`}
+        {isOnline ? t.card.ctaOnline(amountCharged) : t.card.ctaIn(amountCharged)}
       </button>
     </div>
   );
 }
 
-function InfoBanner({ kind }: { kind: "presencial" }) {
+function InfoBanner({ text }: { text: string }) {
   return (
     <div className="mt-8 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 px-5 py-4 text-sm text-center">
-      Your R$ 50 secures the appointment. Pay the remaining balance at the clinic on the day of your visit.
+      {text}
     </div>
   );
 }

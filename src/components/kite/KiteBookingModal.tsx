@@ -19,22 +19,46 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   procedure: KiteProcedure | null;
+  lang?: "en" | "es";
 };
 
-export default function KiteBookingModal({ open, onOpenChange, procedure }: Props) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [date, setDate] = useState("");
-  const [timePref, setTimePref] = useState<"morning" | "afternoon" | "any">("any");
-  const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(false);
+const COPY = {
+  en: {
+    onlineBadge: "Full payment now · Meet link sent after confirmation",
+    partial: (paid: number, rest: number) => `R$ ${paid} now + pay R$ ${rest} at the clinic`,
+    name: "Full name",
+    email: "Email",
+    date: "Preferred date",
+    timeLabel: "Preferred time",
+    times: { morning: "morning", afternoon: "afternoon", any: "any" } as Record<string, string>,
+    notes: "Anything we should know? (optional)",
+    notesPh: "Injury, preferred language, etc.",
+    cta: (n: number, online: boolean) => online ? `Pay R$ ${n} →` : `Pay R$ ${n} booking fee →`,
+    redirecting: "Redirecting…",
+    secure: "Secure payment via Stripe · International cards accepted",
+    missing: "Please fill in your name and email",
+    err: "Could not start checkout",
+  },
+  es: {
+    onlineBadge: "Pago completo ahora · Enlace de Meet enviado tras confirmación",
+    partial: (paid: number, rest: number) => `R$ ${paid} ahora + paga R$ ${rest} en la clínica`,
+    name: "Nombre completo",
+    email: "Correo electrónico",
+    date: "Fecha preferida",
+    timeLabel: "Horario preferido",
+    times: { morning: "mañana", afternoon: "tarde", any: "cualquiera" } as Record<string, string>,
+    notes: "¿Algo que debamos saber? (opcional)",
+    notesPh: "Lesión, idioma preferido, etc.",
+    cta: (n: number, online: boolean) => online ? `Pagar R$ ${n} →` : `Pagar R$ ${n} de reserva →`,
+    redirecting: "Redirigiendo…",
+    secure: "Pago seguro vía Stripe · Tarjetas internacionales aceptadas",
+    missing: "Por favor completa tu nombre y correo",
+    err: "No se pudo iniciar el checkout",
+  },
+};
 
-  if (!procedure) return null;
-
-  const isOnline = procedure.type === "online";
-  const ctaLabel = isOnline
-    ? `Pay R$ ${procedure.amountCharged} →`
-    : `Pay R$ ${procedure.amountCharged} booking fee →`;
+export default function KiteBookingModal({ open, onOpenChange, procedure, lang = "en" }: Props) {
+  const c = COPY[lang];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
