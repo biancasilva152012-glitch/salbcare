@@ -19,9 +19,46 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   procedure: KiteProcedure | null;
+  lang?: "en" | "es";
 };
 
-export default function KiteBookingModal({ open, onOpenChange, procedure }: Props) {
+const COPY = {
+  en: {
+    onlineBadge: "Full payment now · Meet link sent after confirmation",
+    partial: (paid: number, rest: number) => `R$ ${paid} now + pay R$ ${rest} at the clinic`,
+    name: "Full name",
+    email: "Email",
+    date: "Preferred date",
+    timeLabel: "Preferred time",
+    times: { morning: "morning", afternoon: "afternoon", any: "any" } as Record<string, string>,
+    notes: "Anything we should know? (optional)",
+    notesPh: "Injury, preferred language, etc.",
+    cta: (n: number, online: boolean) => online ? `Pay R$ ${n} →` : `Pay R$ ${n} booking fee →`,
+    redirecting: "Redirecting…",
+    secure: "Secure payment via Stripe · International cards accepted",
+    missing: "Please fill in your name and email",
+    err: "Could not start checkout",
+  },
+  es: {
+    onlineBadge: "Pago completo ahora · Enlace de Meet enviado tras confirmación",
+    partial: (paid: number, rest: number) => `R$ ${paid} ahora + paga R$ ${rest} en la clínica`,
+    name: "Nombre completo",
+    email: "Correo electrónico",
+    date: "Fecha preferida",
+    timeLabel: "Horario preferido",
+    times: { morning: "mañana", afternoon: "tarde", any: "cualquiera" } as Record<string, string>,
+    notes: "¿Algo que debamos saber? (opcional)",
+    notesPh: "Lesión, idioma preferido, etc.",
+    cta: (n: number, online: boolean) => online ? `Pagar R$ ${n} →` : `Pagar R$ ${n} de reserva →`,
+    redirecting: "Redirigiendo…",
+    secure: "Pago seguro vía Stripe · Tarjetas internacionales aceptadas",
+    missing: "Por favor completa tu nombre y correo",
+    err: "No se pudo iniciar el checkout",
+  },
+};
+
+export default function KiteBookingModal({ open, onOpenChange, procedure, lang = "en" }: Props) {
+  const c = COPY[lang];
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [date, setDate] = useState("");
@@ -32,14 +69,11 @@ export default function KiteBookingModal({ open, onOpenChange, procedure }: Prop
   if (!procedure) return null;
 
   const isOnline = procedure.type === "online";
-  const ctaLabel = isOnline
-    ? `Pay R$ ${procedure.amountCharged} →`
-    : `Pay R$ ${procedure.amountCharged} booking fee →`;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name || !email) {
-      toast.error("Please fill in your name and email");
+      toast.error(c.missing);
       return;
     }
     setLoading(true);
@@ -54,13 +88,14 @@ export default function KiteBookingModal({ open, onOpenChange, procedure }: Prop
           time_preference: timePref,
           notes,
           pousada_ref,
+          lang,
         },
       });
       if (error) throw error;
       if (!data?.url) throw new Error("Checkout URL not returned");
       window.location.href = data.url;
     } catch (err: any) {
-      toast.error(err?.message || "Could not start checkout");
+      toast.error(err?.message || c.err);
       setLoading(false);
     }
   }
@@ -75,11 +110,11 @@ export default function KiteBookingModal({ open, onOpenChange, procedure }: Prop
           <DialogDescription className="text-[#5a564f]">
             {isOnline ? (
               <span className="inline-block mt-2 px-2 py-1 rounded bg-[#2c6e49]/10 text-[#2c6e49] text-xs font-semibold">
-                Full payment now · Meet link sent after confirmation
+                {c.onlineBadge}
               </span>
             ) : (
               <span className="inline-block mt-2 px-2 py-1 rounded bg-amber-100 text-amber-800 text-xs font-semibold">
-                R$ {procedure.amountCharged} now + pay R$ {procedure.totalPrice - procedure.amountCharged} at the clinic
+                {c.partial(procedure.amountCharged, procedure.totalPrice - procedure.amountCharged)}
               </span>
             )}
           </DialogDescription>
@@ -87,19 +122,19 @@ export default function KiteBookingModal({ open, onOpenChange, procedure }: Prop
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <Label htmlFor="kite-name">Full name</Label>
+            <Label htmlFor="kite-name">{c.name}</Label>
             <Input id="kite-name" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
           <div>
-            <Label htmlFor="kite-email">Email</Label>
+            <Label htmlFor="kite-email">{c.email}</Label>
             <Input id="kite-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div>
-            <Label htmlFor="kite-date">Preferred date</Label>
+            <Label htmlFor="kite-date">{c.date}</Label>
             <Input id="kite-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div>
-            <Label>Preferred time</Label>
+            <Label>{c.timeLabel}</Label>
             <div className="flex gap-2 mt-1">
               {(["morning", "afternoon", "any"] as const).map((t) => (
                 <button
@@ -112,18 +147,18 @@ export default function KiteBookingModal({ open, onOpenChange, procedure }: Prop
                       : "border-gray-300 text-gray-700 hover:border-gray-400"
                   }`}
                 >
-                  {t}
+                  {c.times[t]}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label htmlFor="kite-notes">Anything we should know? (optional)</Label>
+            <Label htmlFor="kite-notes">{c.notes}</Label>
             <Textarea
               id="kite-notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Injury, preferred language, etc."
+              placeholder={c.notesPh}
               rows={3}
             />
           </div>
@@ -133,11 +168,9 @@ export default function KiteBookingModal({ open, onOpenChange, procedure }: Prop
             disabled={loading}
             className="w-full bg-[#2c6e49] hover:bg-[#1a3a2a] text-white font-semibold h-12 text-base"
           >
-            {loading ? "Redirecting…" : ctaLabel}
+            {loading ? c.redirecting : c.cta(procedure.amountCharged, isOnline)}
           </Button>
-          <p className="text-xs text-center text-gray-500">
-            Secure payment via Stripe · International cards accepted
-          </p>
+          <p className="text-xs text-center text-gray-500">{c.secure}</p>
         </form>
       </DialogContent>
     </Dialog>
