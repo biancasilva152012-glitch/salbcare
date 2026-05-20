@@ -71,6 +71,8 @@ const AdminRolesPage = lazyWithRetry(() => import("./pages/admin/AdminRolesPage"
 const AdminRlsAuditPage = lazyWithRetry(() => import("./pages/admin/AdminRlsAuditPage"), "AdminRlsAuditPage");
 const AdminQrGeneratorPage = lazyWithRetry(() => import("./pages/admin/AdminQrGeneratorPage"), "AdminQrGeneratorPage");
 const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintPage"), "AdminQrPrintPage");
+const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
+const KiteConfirmed = lazyWithRetry(() => import("./pages/KiteConfirmed"), "KiteConfirmed");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
 // Index é eager (rota raiz)
@@ -153,6 +155,8 @@ const App = () => (
               <Route path="/experimente" element={<Experimente />} />
               <Route path="/guest" element={<GuestEntry />} />
               <Route path="/upgrade" element={<Upgrade />} />
+              <Route path="/kite" element={<Kite />} />
+              <Route path="/kite/confirmed" element={<KiteConfirmed />} />
 
               {/* Blog SEO */}
               <Route path="/blog" element={<BlogIndex />} />
