@@ -12,8 +12,19 @@ import imgAgenda from "@/assets/blog/agenda-medica.jpg";
 import imgReceituario from "@/assets/blog/receituario-digital.jpg";
 import imgCnpj from "@/assets/blog/cnpj-medico.jpg";
 import imgPrecoMinimo from "@/assets/blog/preco-minimo-consulta.jpg";
+import imgKite from "@/assets/blog/kite-international.jpg";
 
 const POSTS = [
+  {
+    slug: "kite",
+    path: "/kite",
+    category: "International",
+    title: "World-class care while you kite — Ilha do Guajiru",
+    excerpt: "Dental, physiotherapy and telehealth in English & Spanish for European travelers in Northeast Brazil.",
+    date: "20 de maio de 2026",
+    image: imgKite,
+    alt: "Kitesurfers at sunset on a turquoise Brazilian beach",
+  },
   {
     slug: "preco-minimo-consulta",
     category: "Finanças",
@@ -166,7 +177,7 @@ const BlogIndex = () => (
               transition={{ delay: i * 0.06 }}
             >
               <Link
-                to={`/blog/${post.slug}`}
+                to={(post as any).path ?? `/blog/${post.slug}`}
                 className="group flex flex-col sm:flex-row gap-4 rounded-xl border border-border/40 bg-card/60 p-4 hover:border-primary/30 transition-all"
               >
                 {/* Thumbnail */}
