@@ -282,7 +282,7 @@ const Index = () => {
         <PainShockSection />
         <PainSignalsSection />
         <FinancialIntelligenceSection />
-        <PricingCalculatorSection />
+        
         <AllToolsSection />
         <LeadDemoFormSection />
 
