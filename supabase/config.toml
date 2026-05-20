@@ -18,3 +18,11 @@ verify_jwt = false
 [functions.log-redirect-audit]
 verify_jwt = false
 
+[functions.create-kite-checkout]
+verify_jwt = false
+
+[functions.kite-webhook]
+verify_jwt = false
+
+[functions.get-kite-session]
+verify_jwt = false
