@@ -326,6 +326,8 @@ export default function Kite() {
             </TabsList>
 
             <TabsContent value="dental" id="dental">
+              <div id="in-person" />
+              <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">{t.dentalIntro}</p>
               <div className="grid md:grid-cols-3 gap-5">
                 {DENTAL_IDS.map((p) => (
                   <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
@@ -345,6 +347,7 @@ export default function Kite() {
             </TabsContent>
 
             <TabsContent value="online" id="online">
+              <div id="telehealth" />
               <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">{t.onlineIntro}</p>
               <div className="grid md:grid-cols-2 gap-5">
                 {ONLINE_IDS.map((p) => (
