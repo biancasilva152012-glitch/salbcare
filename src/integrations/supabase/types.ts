@@ -1504,6 +1504,36 @@ export type Database = {
         }
         Relationships: []
       }
+      qr_partners: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          full_url: string
+          id: string
+          pousada_name: string
+          scan_count: number
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          full_url: string
+          id?: string
+          pousada_name: string
+          scan_count?: number
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          full_url?: string
+          id?: string
+          pousada_name?: string
+          scan_count?: number
+          slug?: string
+        }
+        Relationships: []
+      }
       redirect_audit_events: {
         Row: {
           created_at: string
@@ -1899,6 +1929,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_qr_scan: { Args: { _slug: string }; Returns: undefined }
       is_admin_or_contador: { Args: { _user_id: string }; Returns: boolean }
       merge_demo_counters: {
         Args: { _guest_id: string }
