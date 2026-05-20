@@ -14,17 +14,22 @@ const T = {
     desc: "Dental, physiotherapy and online consultations in English & Spanish for kitesurfers and expats in Ilha do Guajiru, Ceará. Fraction of European prices.",
     nav: { dental: "Dental", physio: "Physio", online: "Telehealth", book: "Book Now" },
     hero: {
-      pin: "📍 Ilha do Guajiru, Ceará — Brazil",
-      h1a: "World-class care.",
-      h1b: "While you kite.",
-      sub: "Dental, physiotherapy and telehealth — in English & Spanish, at a fraction of European prices.",
-      ctaIn: "Book In-Person →",
-      ctaOnline: "Online Consultation",
+      welcome: "WELCOME · BIENVENIDOS",
+      pin: "📍 Ilha do Guajiru, Ceará · Brazil",
+      h1a: "Feel good.",
+      h1b: "Kite better.",
+      h1aEs: "Sentite bien.",
+      h1bEs: "Kiteá mejor.",
+      sub: "World-class dental, physiotherapy and telehealth — in English and Spanish, at a fraction of European prices.",
+      subEs: "Atención dental, fisioterapia y teleconsulta — a una fracción de los precios europeos.",
+      ctaIn: "See dental & physio →",
+      ctaOnline: "Online consultation →",
       trust: ["European patients", "English & Spanish", "International cards"],
     },
-    tabs: { dental: "🦷 Dental", physio: "💆 Physio", online: "💻 Online" },
-    physioIntro: "Sore shoulders? Tired back? Our physiotherapist specializes in kite-related recovery and sports massage.",
-    onlineIntro: "Full payment now · Google Meet link sent within 2 hours · From your room.",
+    tabs: { dental: "🦷 Dental", physio: "💆 Physio & Recovery", online: "💻 Telehealth" },
+    dentalIntro: "In-person care at our clinic in Ilha do Guajiru. Pay R$50 online to secure your slot — settle the rest at the clinic.",
+    physioIntro: "Sore from kiting? Our physiotherapist specializes in kite-related recovery and sports massage.",
+    onlineIntro: "Online consultations via Google Meet. Same day available. Pay in full, receive the Meet link within 2 hours.",
     inPersonBanner: "Your R$ 50 secures the appointment. Pay the remaining balance at the clinic on the day of your visit.",
     how: {
       h2: "How it works",
@@ -68,17 +73,22 @@ const T = {
     desc: "Odontología, fisioterapia y consultas online en inglés y español para kitesurfistas y expatriados en Ilha do Guajiru, Ceará. Una fracción de los precios europeos.",
     nav: { dental: "Dental", physio: "Fisio", online: "Telesalud", book: "Reservar" },
     hero: {
-      pin: "📍 Ilha do Guajiru, Ceará — Brasil",
-      h1a: "Atención de primer nivel.",
-      h1b: "Mientras haces kite.",
-      sub: "Odontología, fisioterapia y telesalud — en inglés y español, a una fracción de los precios europeos.",
-      ctaIn: "Reservar presencial →",
-      ctaOnline: "Consulta online",
+      welcome: "BIENVENIDOS · WELCOME",
+      pin: "📍 Ilha do Guajiru, Ceará · Brasil",
+      h1a: "Sentite bien.",
+      h1b: "Kiteá mejor.",
+      h1aEs: "Feel good.",
+      h1bEs: "Kite better.",
+      sub: "Atención dental, fisioterapia y teleconsulta de primer nivel — en inglés y español, a una fracción de los precios europeos.",
+      subEs: "World-class dental, physiotherapy and telehealth — in English and Spanish, at a fraction of European prices.",
+      ctaIn: "Ver dental y fisio →",
+      ctaOnline: "Consulta online →",
       trust: ["Pacientes europeos", "Inglés y español", "Tarjetas internacionales"],
     },
-    tabs: { dental: "🦷 Dental", physio: "💆 Fisio", online: "💻 Online" },
-    physioIntro: "¿Hombros doloridos? ¿Espalda cansada? Nuestro fisioterapeuta se especializa en recuperación post-kite y masaje deportivo.",
-    onlineIntro: "Pago completo ahora · Enlace de Google Meet en menos de 2 horas · Desde tu habitación.",
+    tabs: { dental: "🦷 Dental", physio: "💆 Fisio y recuperación", online: "💻 Telesalud" },
+    dentalIntro: "Atención presencial en nuestra clínica de Ilha do Guajiru. Paga R$50 online para reservar tu turno — el resto se abona en la clínica.",
+    physioIntro: "¿Adolorido del kite? Nuestro fisioterapeuta se especializa en recuperación post-kite y masaje deportivo.",
+    onlineIntro: "Consultas online vía Google Meet. Disponibilidad el mismo día. Pago completo, enlace de Meet en hasta 2 horas.",
     inPersonBanner: "Tus R$ 50 reservan la cita. Paga el saldo restante en la clínica el día de tu visita.",
     how: {
       h2: "Cómo funciona",
@@ -268,20 +278,29 @@ export default function Kite() {
         style={{ background: "linear-gradient(135deg, #1a3a2a 0%, #2c6e49 100%)", color: "#fff" }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <span className="inline-block px-3 py-1 rounded-full bg-white/15 text-white/90 text-xs font-medium mb-6">
-            {t.hero.pin}
+          <span className="inline-block px-3 py-1 rounded-full bg-white/15 text-white/90 text-[11px] font-semibold tracking-[0.18em] mb-5">
+            {t.hero.welcome}
           </span>
-          <h1 className="kite-h text-4xl md:text-6xl font-bold leading-tight mb-5">
-            {t.hero.h1a}<br />{t.hero.h1b}
+          <h1 className="kite-h text-4xl md:text-6xl font-bold leading-[1.05] mb-2">
+            {t.hero.h1a} {t.hero.h1b}
           </h1>
-          <p className="text-base md:text-lg text-white/85 max-w-2xl mx-auto mb-8">
+          <p className="kite-h text-2xl md:text-3xl text-white/55 font-medium italic leading-tight mb-5">
+            {t.hero.h1aEs} {t.hero.h1bEs}
+          </p>
+          <p className="text-base md:text-lg text-white/85 max-w-2xl mx-auto mb-1">
             {t.hero.sub}
           </p>
+          <p className="text-sm md:text-base text-white/55 max-w-2xl mx-auto mb-7 italic">
+            {t.hero.subEs}
+          </p>
+          <span className="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/85 text-xs font-medium mb-8">
+            {t.hero.pin}
+          </span>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button onClick={() => scrollTo("dental")} className="px-7 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">
+            <button onClick={() => scrollTo("in-person")} className="px-7 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">
               {t.hero.ctaIn}
             </button>
-            <button onClick={() => scrollTo("online")} className="px-7 py-3 rounded-full bg-transparent border border-white/60 text-white font-semibold hover:bg-white/10">
+            <button onClick={() => scrollTo("telehealth")} className="px-7 py-3 rounded-full bg-transparent border border-white/60 text-white font-semibold hover:bg-white/10">
               {t.hero.ctaOnline}
             </button>
           </div>
@@ -307,6 +326,8 @@ export default function Kite() {
             </TabsList>
 
             <TabsContent value="dental" id="dental">
+              <div id="in-person" />
+              <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">{t.dentalIntro}</p>
               <div className="grid md:grid-cols-3 gap-5">
                 {DENTAL_IDS.map((p) => (
                   <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
@@ -326,6 +347,7 @@ export default function Kite() {
             </TabsContent>
 
             <TabsContent value="online" id="online">
+              <div id="telehealth" />
               <p className="text-center max-w-2xl mx-auto text-[#5a564f] mb-8">{t.onlineIntro}</p>
               <div className="grid md:grid-cols-2 gap-5">
                 {ONLINE_IDS.map((p) => (
