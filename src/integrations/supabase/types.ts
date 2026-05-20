@@ -661,6 +661,57 @@ export type Database = {
         }
         Relationships: []
       }
+      kite_bookings: {
+        Row: {
+          amount_paid: number
+          created_at: string
+          email: string
+          id: string
+          notes: string | null
+          patient_name: string
+          pousada_ref: string | null
+          preferred_date: string | null
+          procedure: string
+          remaining_balance: number
+          status: string
+          stripe_session_id: string | null
+          time_preference: string | null
+          type: string
+        }
+        Insert: {
+          amount_paid?: number
+          created_at?: string
+          email: string
+          id?: string
+          notes?: string | null
+          patient_name: string
+          pousada_ref?: string | null
+          preferred_date?: string | null
+          procedure: string
+          remaining_balance?: number
+          status?: string
+          stripe_session_id?: string | null
+          time_preference?: string | null
+          type: string
+        }
+        Update: {
+          amount_paid?: number
+          created_at?: string
+          email?: string
+          id?: string
+          notes?: string | null
+          patient_name?: string
+          pousada_ref?: string | null
+          preferred_date?: string | null
+          procedure?: string
+          remaining_balance?: number
+          status?: string
+          stripe_session_id?: string | null
+          time_preference?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
       lawyers: {
         Row: {
           consultation_price: number
