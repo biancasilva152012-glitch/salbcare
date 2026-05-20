@@ -278,20 +278,29 @@ export default function Kite() {
         style={{ background: "linear-gradient(135deg, #1a3a2a 0%, #2c6e49 100%)", color: "#fff" }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <span className="inline-block px-3 py-1 rounded-full bg-white/15 text-white/90 text-xs font-medium mb-6">
-            {t.hero.pin}
+          <span className="inline-block px-3 py-1 rounded-full bg-white/15 text-white/90 text-[11px] font-semibold tracking-[0.18em] mb-5">
+            {t.hero.welcome}
           </span>
-          <h1 className="kite-h text-4xl md:text-6xl font-bold leading-tight mb-5">
-            {t.hero.h1a}<br />{t.hero.h1b}
+          <h1 className="kite-h text-4xl md:text-6xl font-bold leading-[1.05] mb-2">
+            {t.hero.h1a} {t.hero.h1b}
           </h1>
-          <p className="text-base md:text-lg text-white/85 max-w-2xl mx-auto mb-8">
+          <p className="kite-h text-2xl md:text-3xl text-white/55 font-medium italic leading-tight mb-5">
+            {t.hero.h1aEs} {t.hero.h1bEs}
+          </p>
+          <p className="text-base md:text-lg text-white/85 max-w-2xl mx-auto mb-1">
             {t.hero.sub}
           </p>
+          <p className="text-sm md:text-base text-white/55 max-w-2xl mx-auto mb-7 italic">
+            {t.hero.subEs}
+          </p>
+          <span className="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/85 text-xs font-medium mb-8">
+            {t.hero.pin}
+          </span>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button onClick={() => scrollTo("dental")} className="px-7 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">
+            <button onClick={() => scrollTo("in-person")} className="px-7 py-3 rounded-full bg-white text-[#1a3a2a] font-semibold hover:bg-white/90">
               {t.hero.ctaIn}
             </button>
-            <button onClick={() => scrollTo("online")} className="px-7 py-3 rounded-full bg-transparent border border-white/60 text-white font-semibold hover:bg-white/10">
+            <button onClick={() => scrollTo("telehealth")} className="px-7 py-3 rounded-full bg-transparent border border-white/60 text-white font-semibold hover:bg-white/10">
               {t.hero.ctaOnline}
             </button>
           </div>
