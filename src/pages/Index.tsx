@@ -284,6 +284,45 @@ const Index = () => {
         <FinancialIntelligenceSection />
         
         <AllToolsSection />
+
+        {/* ── ÁREA INTERNACIONAL — link discreto para /kite ── */}
+        <section style={{ background: "#FFFFFF", padding: "28px 0", borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-4xl px-5 sm:px-6">
+            <Link
+              to="/kite"
+              onClick={() => fireCta("international_area", "landing_int_strip")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+                padding: "16px 20px",
+                borderRadius: 14,
+                background: MINT_BG,
+                border: `1px solid ${BORDER}`,
+                textDecoration: "none",
+                color: NAVY,
+                flexWrap: "wrap",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                <span style={{ fontSize: 20 }} aria-hidden>🌎</span>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: TEAL_DARK, textTransform: "uppercase" }}>
+                    Área Internacional · EN / ES
+                  </div>
+                  <div style={{ fontSize: 15, fontWeight: 600 }}>
+                    Atendimento para turistas em Ilha do Guajiru
+                  </div>
+                </div>
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: TEAL_DARK, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                Acessar <ArrowRight size={14} />
+              </span>
+            </Link>
+          </div>
+        </section>
+
         <LeadDemoFormSection />
 
         {/* ── COMO FUNCIONA (vitrine/controle — MANTIDA) ── */}
