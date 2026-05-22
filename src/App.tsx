@@ -72,6 +72,9 @@ const AdminRlsAuditPage = lazyWithRetry(() => import("./pages/admin/AdminRlsAudi
 const AdminQrGeneratorPage = lazyWithRetry(() => import("./pages/admin/AdminQrGeneratorPage"), "AdminQrGeneratorPage");
 const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintPage"), "AdminQrPrintPage");
 const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
+const Hub = lazyWithRetry(() => import("./pages/Hub"), "Hub");
+const About = lazyWithRetry(() => import("./pages/About"), "About");
+const Contact = lazyWithRetry(() => import("./pages/Contact"), "Contact");
 const KiteConfirmed = lazyWithRetry(() => import("./pages/KiteConfirmed"), "KiteConfirmed");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
@@ -137,6 +140,11 @@ const App = () => (
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
+              {/* Brand hub + alias for current SaaS landing (Index) */}
+              <Route path="/hub" element={<Hub />} />
+              <Route path="/pro" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cadastro" element={<Register />} />
