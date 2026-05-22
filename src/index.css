@@ -69,7 +69,20 @@ body[data-scroll-locked] {
     --input: 220 13% 83%;               /* #D1D5DB */
     --ring: 173 100% 35%;
 
+    /* Multi-product brand hub tokens (Pro + Kite verticals) */
+    --brand-primary: 146 50% 24%;       /* #1F5C3F */
+    --brand-dark: 192 55% 13%;          /* #0F2A33 */
+    --brand-darker: 198 60% 8%;         /* #081A20 */
+    --pro-accent: 180 65% 46%;          /* #2ABFBF */
+    --pro-accent-light: 180 55% 60%;    /* #5FD4D4 */
+    --kite-gold: 43 47% 59%;            /* #C9A961 */
+    --kite-gold-light: 43 55% 78%;      /* #E5D4A8 */
+    --kite-cream: 41 50% 93%;           /* #F5F0E6 */
+    --hub-muted: 192 19% 58%;           /* #7FA0A8 */
+    --hub-rule: 192 32% 25%;            /* #2A4A52 */
+
     --radius: 0.75rem;
+
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 9% 46%;
