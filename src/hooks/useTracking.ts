@@ -19,16 +19,24 @@ export function useTracking() {
   return { trackLead, trackTrial, trackPageView };
 }
 
+function getVertical(path: string): "pro" | "kite" | "hub" {
+  if (path.startsWith("/kite") || path.startsWith("/international") || path.startsWith("/kitecare")) return "kite";
+  if (path === "/hub" || path === "/about" || path === "/contact") return "hub";
+  return "pro";
+}
+
 function trackPageView(path: string) {
+  const vertical = getVertical(path);
   // Meta Pixel
   if (window.fbq) {
     window.fbq("track", "PageView");
   }
-  // GA4
+  // GA4 — segment by product vertical via custom dimension
   if (window.gtag) {
-    window.gtag("event", "page_view", { page_path: path, send_to: "G-117MVSM8LG" });
+    window.gtag("event", "page_view", { page_path: path, vertical, send_to: "G-117MVSM8LG" });
   }
 }
+
 
 export function trackLead(email: string) {
   if (window.fbq) {

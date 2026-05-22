@@ -1,72 +1,63 @@
-# Plan: /kite Landing Page for SalbDental
+# SalbCare Multi-Product Refactor Plan
 
-## Overview
-English-language landing page targeting European kitesurfers in Ilha do Guajiru. Two payment models:
-- **In-person** (Dental + Physio): R$50 booking fee via Stripe, rest paid at clinic
-- **Online** (Telehealth): Full payment via Stripe
+This is a large, multi-phase architectural change. I want to confirm scope and sequencing before touching code, because several phases carry real regression risk for the live SaaS at salbcare.com.
 
-## Files to Create
+## Risk assessment of the brief
 
-### Frontend
-1. **`src/pages/Kite.tsx`** — Main landing page (English, Playfair Display + DM Sans)
-   - Fixed navbar (transparent → frosted on scroll)
-   - Hero with green gradient (#1a3a2a → #2c6e49)
-   - 3 tabs: Dental / Physio / Online
-   - Procedure cards with price comparison (BR vs EU)
-   - Booking modal (name, email, date, time preference, notes)
-   - "How it works", testimonials, final CTA, footer
-   - Captures `?ref=` query param → `localStorage.pousada_ref`
+A few items in the spec will break things if followed literally. I'll flag them and propose safe alternatives:
 
-2. **`src/pages/KiteConfirmed.tsx`** — Post-payment confirmation
-   - Reads `?session_id=` from URL
-   - Fetches session details from edge function
-   - Shows different message for presencial vs online
-   - "Add to Google Calendar" CTA
+1. **Moving current `/` to `/pro`** — The existing root (`Index.tsx`) is the live SaaS landing, indexed by Google, linked from ads, WhatsApp, partner pages, and SEO memory says canonical is `salbcare.com/`. Replacing it with a brand hub will tank conversions and SEO overnight. **Recommendation**: build the hub at `/hub` (or behind a feature flag) first, validate, then swap. Or: keep `/` as Pro and put the hub at `/welcome`.
 
-3. **`src/components/kite/KiteBookingModal.tsx`** — Reusable booking modal
-   - Form fields + Stripe checkout trigger
-   - Color-coded badge (amber=in-person, green=online)
+2. **Supabase `kite` schema** — The project already has a working `/kite` flow using `public.kite_bookings` + `create-kite-checkout` + `kite-webhook` + R$50 Stripe price (`price_1TZAulBUEEEAHx2hykS14Xnf`). Creating a parallel `kite.bookings` schema duplicates working infra. **Recommendation**: skip Phase 6/7 entirely — the Kite backend is already done and tested. Add the `procedures` catalog table in `public` only if we actually need it.
 
-4. **`src/App.tsx`** — Register routes `/kite` and `/kite/confirmed` (public, no auth required)
+3. **`/api/webhooks/stripe-kite`** — This is Next.js syntax. Project is Vite + Supabase Edge Functions. The existing `kite-webhook` edge function already does exactly what Phase 7 describes, with its own `STRIPE_WEBHOOK_SECRET_KITE`. **Recommendation**: nothing to do here.
 
-### Backend (Edge Functions)
-5. **`supabase/functions/create-kite-checkout/index.ts`** — Creates Stripe Checkout session
-   - Accepts: `{ procedureId, type, patient_name, email, preferred_date, time_preference, notes, pousada_ref }`
-   - Whitelist of allowed procedure IDs → price IDs and amounts
-   - Returns Stripe checkout URL
-   - No auth required (public booking)
+4. **Routes `/login`, `/signup`, `/dashboard`** — Spec says don't touch. Project uses `/login`, `/register` (not `/signup`), `/dashboard`. Already safe.
 
-6. **`supabase/functions/kite-webhook/index.ts`** — Stripe webhook handler
-   - Handles `checkout.session.completed`
-   - Inserts row into `kite_bookings`
-   - Sends email to Bianca via Resend (using existing connector if available, otherwise skip email and just log)
-   - `verify_jwt = false` in `supabase/config.toml`
+5. **Design tokens file at `src/styles/tokens.ts`** — Project's design system lives in `src/index.css` + `tailwind.config.ts` as HSL semantic tokens (per Lovable rules). A parallel JS tokens object fragments the system. **Recommendation**: add the new brand/pro/kite colors as HSL CSS variables in `index.css` and Tailwind config, not as a JS export.
 
-7. **`supabase/functions/get-kite-session/index.ts`** — Fetch session details for confirmation page
+## Proposed execution (safe path)
 
-### Database
-8. **Migration**: Create `kite_bookings` table
-   - Columns: id, procedure, type, patient_name, email, preferred_date, time_preference, notes, pousada_ref, stripe_session_id, amount_paid, remaining_balance, status, created_at
-   - RLS: only admins can SELECT; service role inserts via webhook
+### Phase A — Routing + Hub (no Pro regression)
+- Keep `/` = current SaaS landing (Index.tsx) **unchanged**
+- Add new route `/hub` rendering the new brand hub
+- Add `/pro` as an alias of current `/` (same component) so future links work
+- Add `/about` and `/contact` (simple new pages)
+- Once we validate analytics, we can swap `/` ↔ `/hub` in a separate one-line PR
 
-### Stripe Products
-Create 11 prices via `stripe--create_stripe_product_and_price`:
-- 7× R$50 booking fee products (dental-cleaning, dental-whitening, dental-exam, physio-kite-recovery, physio-massage, physio-postural, physio-package)
-- 4× telehealth products (psychology R$280, nutrition R$220, physio-online R$240, medicine R$200)
-- Hardcode resulting price IDs in `create-kite-checkout` whitelist
+### Phase B — Shared components
+- `src/components/shared/BrandLogo.tsx`
+- `src/components/shared/SharedFooter.tsx`
+- `src/components/shared/LanguageSwitcher.tsx`
+- Used on `/hub`, `/about`, `/contact` only. Pro and Kite keep current chrome.
 
-## Stripe Webhook Configuration
-After deploying, the user must add the webhook endpoint URL in Stripe Dashboard pointing to `kite-webhook` function and set `STRIPE_WEBHOOK_SECRET_KITE` secret. I'll add a note for this; reuse existing `STRIPE_WEBHOOK_SECRET` if available initially.
+### Phase C — Design tokens (Lovable-correct way)
+- Add `--brand-dark`, `--pro-accent`, `--kite-gold`, etc. as HSL variables in `src/index.css`
+- Extend `tailwind.config.ts` to expose them as `bg-pro-accent`, `bg-kite-gold`, etc.
+- Use them on hub/about/contact. Don't refactor Pro or Kite.
 
-## Email Notification
-Resend not currently connected — I'll structure the webhook to log notification details and prepare the email payload. If `RESEND_API_KEY` isn't set, it will skip sending (graceful). User can wire Resend later. All references use `salbcare.com`.
+### Phase D — Hub content
+- Hero (full-height, deep teal)
+- Two product cards with language-based ordering (`navigator.language` + `localStorage.salbcare_lang`)
+- Brand story paragraph
+- Shared footer
 
-## Design Tokens
-Page uses inline-scoped colors (#2c6e49, #1a1612, #f7f3ee) as it's a standalone marketing page with its own brand (SalbDental). This is intentional and self-contained — won't pollute the design system.
+### Phase E — SEO
+- `<Helmet>` per new route with the titles/descriptions specified
+- Add `/hub`, `/about`, `/contact`, `/pro` to `public/sitemap.xml`
 
-## Notes
-- All URLs use `salbcare.com` (not `.com.br`)
-- No commission logic — `pousada_ref` is analytics-only in metadata
-- Mobile-first responsive
-- Tabs use shadcn `Tabs` component
-- Modal uses shadcn `Dialog`
+### Phase F — Analytics
+- Extend existing `useTracking` hook to push `vertical` dimension (`pro` | `kite` | `hub`) per pageview
+
+### Skipped (intentionally)
+- Phase 6 Supabase `kite` schema — duplicates working `public.kite_bookings`
+- Phase 7 new Stripe webhook — `kite-webhook` already exists and works
+- Refactoring existing Pro pages to consume new tokens (spec also says skip)
+
+## Questions before I start
+
+1. **Root route**: OK to ship hub at `/hub` first and keep `/` as the current Pro landing? Or do you want `/` swapped immediately and accept the SEO/conversion risk?
+2. **Skip Phase 6/7?** Confirm we don't rebuild the Kite Supabase/Stripe layer that's already live.
+3. **Tokens as CSS HSL vars** instead of `src/styles/tokens.ts`? (Required by Lovable design-system rules.)
+
+Once you answer those three, I'll execute Phases A–F in one pass.
