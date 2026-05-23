@@ -1831,6 +1831,15 @@ export type Database = {
           status: string
         }[]
       }
+      get_partner_public_info: {
+        Args: { _slug: string }
+        Returns: {
+          discount_percent: number
+          name: string
+          slug: string
+          status: string
+        }[]
+      }
       get_partner_referrals: {
         Args: { _slug: string }
         Returns: {
