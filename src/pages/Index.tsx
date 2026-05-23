@@ -63,11 +63,13 @@ const Index = () => {
   return (
     <>
       <SEOHead
-        title="SalbCare — Gestão completa para profissionais de saúde autônomos"
-        description="Organize seus primeiros 10 pacientes sem custo. Gestão completa, mentoria financeira e visibilidade para pacientes."
+        title="SalbCare — Health, made human"
+        description="Healthcare platform for health professionals in Brazil and international travelers in Ilha do Guajiru. English, Spanish and Portuguese."
         canonical="/"
         jsonLd={jsonLd}
       />
+
+      <BrandHubLayer />
 
       <style>{`
         .salb-link { color: ${TEAL}; font-weight: 600; transition: opacity 150ms ease; }
@@ -103,6 +105,7 @@ const Index = () => {
       `}</style>
 
       <div
+        id="pro-landing-content"
         style={{
           minHeight: "100vh",
           background: `linear-gradient(180deg, ${MINT_BG} 0%, #FFFFFF 60%)`,
