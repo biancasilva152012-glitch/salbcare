@@ -14,6 +14,7 @@ import AllToolsSection from "@/components/landing/AllToolsSection";
 
 import LeadDemoFormSection from "@/components/landing/LeadDemoFormSection";
 import WhatsAppFab, { WhatsAppDemoButton } from "@/components/WhatsAppFab";
+import BrandHubLayer from "@/components/landing/BrandHubLayer";
 
 /* ─────────────────────────────────────────────
  * DESIGN TOKENS — paleta fixa: navy / teal / mint
