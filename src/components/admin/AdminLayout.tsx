@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users, BarChart3, Database, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight,
-  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard, QrCode,
+  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard, QrCode, FileLock2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { label: "Parcerias", icon: Handshake, path: "/admin/partners" },
   { label: "Banco de Dados", icon: Database, path: "/admin/database" },
   { label: "Logs", icon: ScrollText, path: "/admin/logs" },
+  { label: "Auditoria LGPD", icon: FileLock2, path: "/admin/lgpd-audit" },
   { label: "QR Pousadas", icon: QrCode, path: "/admin/qr-generator" },
   { label: "Configurações", icon: Settings, path: "/admin/settings" },
 ];

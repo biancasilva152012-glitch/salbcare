@@ -78,6 +78,7 @@ const AdminSettingsPage = lazyWithRetry(() => import("./pages/admin/AdminSetting
 const AdminPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminPartnersPage"), "AdminPartnersPage");
 const AdminRolesPage = lazyWithRetry(() => import("./pages/admin/AdminRolesPage"), "AdminRolesPage");
 const AdminRlsAuditPage = lazyWithRetry(() => import("./pages/admin/AdminRlsAuditPage"), "AdminRlsAuditPage");
+const AdminLgpdAuditPage = lazyWithRetry(() => import("./pages/admin/AdminLgpdAuditPage"), "AdminLgpdAuditPage");
 const AdminQrGeneratorPage = lazyWithRetry(() => import("./pages/admin/AdminQrGeneratorPage"), "AdminQrGeneratorPage");
 const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintPage"), "AdminQrPrintPage");
 const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
@@ -242,6 +243,7 @@ const App = () => (
               <Route path="/admin/partners" element={<AdminPartnersPage />} />
               <Route path="/admin/roles" element={<AdminRolesPage />} />
               <Route path="/admin/rls-audit" element={<AdminRlsAuditPage />} />
+              <Route path="/admin/lgpd-audit" element={<AdminLgpdAuditPage />} />
               <Route path="/admin/qr-generator" element={<AdminQrGeneratorPage />} />
               <Route path="/admin/qr-generator/print/:id" element={<AdminQrPrintPage />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />

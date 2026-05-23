@@ -1183,6 +1183,54 @@ export type Database = {
         }
         Relationships: []
       }
+      pii_access_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_user_id: string | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          metadata: Json
+          patient_id: string | null
+          patient_name: string | null
+          reason: string | null
+          resource_id: string | null
+          resource_table: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          patient_id?: string | null
+          patient_name?: string | null
+          reason?: string | null
+          resource_id?: string | null
+          resource_table: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          patient_id?: string | null
+          patient_name?: string | null
+          reason?: string | null
+          resource_id?: string | null
+          resource_table?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           id: string
@@ -1868,6 +1916,27 @@ export type Database = {
           total_referrals: number
         }[]
       }
+      get_pii_access_logs: {
+        Args: {
+          _actor?: string
+          _limit?: number
+          _patient?: string
+          _table?: string
+        }
+        Returns: {
+          action: string
+          actor_email: string
+          actor_user_id: string
+          created_at: string
+          id: string
+          ip_address: string
+          patient_id: string
+          patient_name: string
+          reason: string
+          resource_id: string
+          resource_table: string
+        }[]
+      }
       get_public_professionals: {
         Args: { specialty_filter?: string }
         Returns: {
@@ -1940,6 +2009,16 @@ export type Database = {
       }
       increment_qr_scan: { Args: { _slug: string }; Returns: undefined }
       is_admin_or_contador: { Args: { _user_id: string }; Returns: boolean }
+      log_pii_view: {
+        Args: {
+          _patient_id?: string
+          _patient_name?: string
+          _reason?: string
+          _resource_id: string
+          _resource_table: string
+        }
+        Returns: undefined
+      }
       merge_demo_counters: {
         Args: { _guest_id: string }
         Returns: {
