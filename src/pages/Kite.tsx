@@ -342,25 +342,30 @@ export default function Kite() {
       {/* Hero */}
       <section
         id="top"
-        className="relative px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20"
+        className="relative"
         style={{
           background: `linear-gradient(135deg, ${BRAND.ink} 0%, #1a3a4a 50%, ${BRAND.tealDark} 100%)`,
           color: "#fff",
         }}
       >
-        <div className="max-w-3xl mx-auto text-center">
+        <div
+          className="mx-auto text-center px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20 flex flex-col items-center"
+          style={{ maxWidth: 1200 }}
+        >
           <span
-            className="inline-block px-3 py-1.5 rounded-full bg-white/15 text-white/90 font-semibold mb-6"
+            className="inline-block px-3 py-1.5 rounded-full bg-white/15 text-white/90 font-semibold"
             style={{ fontSize: 11, letterSpacing: "0.15em" }}
           >
             {t.hero.welcome}
           </span>
 
           <h1
-            className="kite-h font-bold mb-6"
+            className="kite-h font-bold"
             style={{
+              marginTop: 24,
               fontSize: "clamp(40px, 9vw, 76px)",
               wordSpacing: "normal",
+              maxWidth: 720,
             }}
           >
             {t.hero.h1a}{" "}
@@ -368,8 +373,9 @@ export default function Kite() {
           </h1>
 
           <p
-            className="text-white/85 mx-auto mb-8"
+            className="text-white/85"
             style={{
+              marginTop: 24,
               maxWidth: "38ch",
               fontSize: "clamp(15px, 2.2vw, 18px)",
               lineHeight: 1.5,
@@ -378,14 +384,20 @@ export default function Kite() {
             {t.hero.sub}
           </p>
 
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/85 text-xs font-medium mb-8">
+          <span
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/85 text-xs font-medium whitespace-nowrap"
+            style={{ marginTop: 16 }}
+          >
             📍 {t.hero.pin}
           </span>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center" style={{ gap: 12 }}>
+          <div
+            className="flex flex-col sm:flex-row justify-center w-full sm:w-auto gap-3 sm:gap-4"
+            style={{ marginTop: 32, maxWidth: 480 }}
+          >
             <button
               onClick={() => scrollTo("services")}
-              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:brightness-105"
+              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:brightness-105 w-full sm:w-auto"
               style={{
                 background: "#fff",
                 color: BRAND.ink,
@@ -397,7 +409,7 @@ export default function Kite() {
             </button>
             <button
               onClick={() => scrollTo("online-section")}
-              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:bg-white/10"
+              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:bg-white/10 w-full sm:w-auto"
               style={{
                 background: "transparent",
                 color: "#fff",
@@ -410,7 +422,10 @@ export default function Kite() {
             </button>
           </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/75">
+          <div
+            className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/75"
+            style={{ marginTop: 24 }}
+          >
             {t.hero.trust.map((it, i) => (
               <span key={it} className="flex items-center gap-3">
                 {i > 0 && <span aria-hidden className="opacity-50">·</span>}
