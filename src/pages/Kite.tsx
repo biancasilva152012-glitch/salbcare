@@ -513,15 +513,28 @@ export default function Kite() {
               { label: t.how.inLabel, steps: t.how.inSteps },
               { label: t.how.onlineLabel, steps: t.how.onlineSteps },
             ].map((col) => (
-              <div key={col.label} className="border border-white/10 rounded-2xl p-8">
+              <div
+                key={col.label}
+                style={{
+                  background: "#0F2A33",
+                  border: "1px solid rgba(42, 191, 191, 0.15)",
+                  borderRadius: 12,
+                  padding: 32,
+                }}
+              >
                 <p
-                  className="text-xs uppercase mb-4 font-semibold"
-                  style={{ color: BRAND.teal, letterSpacing: "0.15em" }}
+                  className="text-xs uppercase mb-6 font-semibold"
+                  style={{ color: "#2ABFBF", letterSpacing: "0.15em" }}
                 >
                   {col.label}
                 </p>
-                <ol className="space-y-3 text-white/85 list-decimal list-inside">
-                  {col.steps.map((s) => <li key={s} className="pl-1">{s}</li>)}
+                <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+                  {col.steps.map((s, i) => (
+                    <li key={s} style={{ display: "flex", gap: 12, color: "#fff", lineHeight: 1.6 }}>
+                      <span style={{ color: "#2ABFBF", fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                      <span>{s}</span>
+                    </li>
+                  ))}
                 </ol>
               </div>
             ))}
