@@ -78,6 +78,7 @@ const AdminSettingsPage = lazyWithRetry(() => import("./pages/admin/AdminSetting
 const AdminPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminPartnersPage"), "AdminPartnersPage");
 const AdminRolesPage = lazyWithRetry(() => import("./pages/admin/AdminRolesPage"), "AdminRolesPage");
 const AdminRlsAuditPage = lazyWithRetry(() => import("./pages/admin/AdminRlsAuditPage"), "AdminRlsAuditPage");
+const AdminLgpdAuditPage = lazyWithRetry(() => import("./pages/admin/AdminLgpdAuditPage"), "AdminLgpdAuditPage");
 const AdminQrGeneratorPage = lazyWithRetry(() => import("./pages/admin/AdminQrGeneratorPage"), "AdminQrGeneratorPage");
 const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintPage"), "AdminQrPrintPage");
 const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
