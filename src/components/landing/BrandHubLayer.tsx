@@ -321,30 +321,6 @@ const BrandHubLayer = () => {
           )}
         </div>
       </section>
-
-      {/* Brand story strip */}
-      <section
-        style={{
-          background: DEEP_TEAL,
-          borderTop: `1px solid ${BORDER_TEAL}`,
-          padding: "64px 24px",
-          textAlign: "center",
-        }}
-      >
-        <p
-          style={{
-            maxWidth: 600,
-            margin: "0 auto",
-            color: "#fff",
-            fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
-            fontStyle: "italic",
-            fontSize: 18,
-            lineHeight: 1.5,
-          }}
-        >
-          SalbCare is a healthcare platform built around one belief: access to good care shouldn't depend on where you are, what language you speak, or how much you earn.
-        </p>
-      </section>
     </div>
   );
 };

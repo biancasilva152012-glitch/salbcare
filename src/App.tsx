@@ -23,10 +23,11 @@ import { useLocation } from "react-router-dom";
 
 const TrackingProvider = () => { useTracking(); return null; };
 
-// Hide the freemium debug widget on the public Kite landing.
+// Hide the freemium debug widget on public routes and in production.
 const FreemiumDebugPanelGate = () => {
   const { pathname } = useLocation();
-  if (pathname.startsWith("/kite")) return null;
+  if (!import.meta.env.DEV) return null;
+  if (pathname === "/" || pathname.startsWith("/kite")) return null;
   return <FreemiumDebugPanel />;
 };
 
