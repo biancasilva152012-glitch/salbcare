@@ -204,34 +204,6 @@ const Index = () => {
                 Testar agora
                 <ArrowRight size={20} strokeWidth={2.4} />
               </Link>
-
-              <WhatsAppDemoButton origem="hero" />
-
-              <a href="#como-funciona" className="salb-link" style={{ fontSize: 15 }}>
-                Como funciona?
-              </a>
-
-              <p style={{ color: TEXT_MUTED, fontSize: 14 }}>
-                Sem cartão • Comece em menos de 1 minuto
-              </p>
-
-              <Link
-                to="/experimente?source=landing-hero"
-                onClick={() => fireCta("experimente", "landing_hero")}
-                className="salb-link"
-                style={{ fontSize: 15 }}
-              >
-                Ou experimente sem cadastrar →
-              </Link>
-
-              <Link
-                to="/login?source=landing-hero"
-                onClick={() => fireCta("login", "landing_hero")}
-                className="salb-link"
-                style={{ fontSize: 15 }}
-              >
-                Já é cadastrado? Faça login
-              </Link>
             </div>
           </div>
         </section>
