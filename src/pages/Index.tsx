@@ -49,9 +49,6 @@ const Index = () => {
 
       <BrandHubLayer />
 
-      <div id="pro-landing-content" style={{ background: DEEP_TEAL_ALT }}>
-        <PainShockSection />
-      </div>
 
       <footer
         style={{
