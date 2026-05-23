@@ -243,6 +243,7 @@ const App = () => (
               <Route path="/admin/partners" element={<AdminPartnersPage />} />
               <Route path="/admin/roles" element={<AdminRolesPage />} />
               <Route path="/admin/rls-audit" element={<AdminRlsAuditPage />} />
+              <Route path="/admin/lgpd-audit" element={<AdminLgpdAuditPage />} />
               <Route path="/admin/qr-generator" element={<AdminQrGeneratorPage />} />
               <Route path="/admin/qr-generator/print/:id" element={<AdminQrPrintPage />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />
