@@ -85,24 +85,22 @@ const ProCard = () => (
       ))}
     </ul>
     <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-      <button
-        type="button"
-        onClick={scrollToProContent}
+      <Link
+        to="/pro"
         className="hub-cta-pro"
         style={{
           background: TEAL_ACCENT,
           color: DEEP_TEAL,
-          border: "none",
           borderRadius: 999,
           padding: "14px 24px",
           fontWeight: 700,
           fontSize: 15,
-          cursor: "pointer",
-          fontFamily: "inherit",
+          display: "inline-block",
+          textDecoration: "none",
         }}
       >
         Explore SalbCare Pro →
-      </button>
+      </Link>
       <Link to="/login" style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }} className="hub-secondary-link">
         Login to your account
       </Link>
