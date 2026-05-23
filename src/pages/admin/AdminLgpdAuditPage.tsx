@@ -88,7 +88,7 @@ export default function AdminLgpdAuditPage() {
 
   return (
     <AdminLayout>
-      <SEOHead title="Auditoria LGPD/CFM" description="Trilha de acesso a dados sensíveis de pacientes" noIndex />
+      <SEOHead title="Auditoria LGPD/CFM" description="Trilha de acesso a dados sensíveis de pacientes" noindex />
 
       <div className="space-y-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
