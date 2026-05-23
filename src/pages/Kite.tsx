@@ -342,8 +342,10 @@ export default function Kite() {
       {/* Hero */}
       <section
         id="top"
-        className="relative pt-28 pb-16 md:pt-36 md:pb-24 px-5"
+        className="relative px-6 md:px-12"
         style={{
+          paddingTop: "calc(48px + 64px)",
+          paddingBottom: 56,
           background: `linear-gradient(135deg, ${BRAND.ink} 0%, #1a3a4a 50%, ${BRAND.tealDark} 100%)`,
           color: "#fff",
         }}
