@@ -619,11 +619,6 @@ function ProcedureCard({
           R$ {total}
           <span className="text-sm font-normal ml-1" style={{ color: BRAND.muted }}>{t.card.total}</span>
         </p>
-        {eu && (
-          <p className="price-tnum text-sm line-through mt-1" style={{ color: "#9CA3AF" }}>
-            {t.card.euCompare(eu)}
-          </p>
-        )}
       </div>
 
       <div className="mb-6">
