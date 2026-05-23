@@ -42,14 +42,14 @@ const T = {
     inPersonBanner: "Your R$50 secures the appointment. Pay the remaining balance at the clinic on the day of your visit.",
     how: {
       h2: "How it works",
-      inLabel: "In-person",
-      onlineLabel: "Online",
-      inSteps: ["Choose your procedure", "Pay R$50 booking fee", "Show up at the clinic", "Pay the remaining balance"],
+      inLabel: "IN-PERSON",
+      onlineLabel: "ONLINE",
+      inSteps: ["Choose your procedure", "Pay a R$50 booking fee", "Attend the clinic", "Pay the remaining balance"],
       onlineSteps: ["Choose your consultation", "Pay in full", "Receive your Google Meet link", "Join from anywhere"],
     },
     testimonialsH2: "What kitesurfers say",
     testimonials: [
-      { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic, paid €30 instead of €120 back home." },
+      { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic." },
       { name: "Sophie T.", flag: "🇫🇷", text: "Booked an online consultation from my pousada. Got the Meet link in less than an hour. Felt heard." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later I was back on the water." },
     ],
@@ -58,7 +58,7 @@ const T = {
       total: "total",
       euCompare: (eu: number) => `€${eu} in Europe`,
       tagFull: "Full payment",
-      tagPartial: "R$50 now · rest at clinic",
+      tagPartial: "R$50 now, balance at the clinic",
       ctaOnline: (n: number) => `Book & pay R$${n}`,
       ctaIn: (n: number) => `Reserve for R$${n}`,
     },
@@ -98,14 +98,14 @@ const T = {
     inPersonBanner: "Tus R$50 reservan la cita. Paga el saldo restante en la clínica el día de tu visita.",
     how: {
       h2: "Cómo funciona",
-      inLabel: "Presencial",
-      onlineLabel: "Online",
-      inSteps: ["Elige el procedimiento", "Paga R$50 de reserva", "Acude a la clínica", "Paga el saldo restante"],
-      onlineSteps: ["Elige tu consulta", "Paga el total", "Recibe tu enlace de Google Meet", "Conéctate desde cualquier lugar"],
+      inLabel: "PRESENCIAL",
+      onlineLabel: "EN LÍNEA",
+      inSteps: ["Elige tu procedimiento", "Paga la tarifa de reserva de R$50", "Asiste a la clínica", "Paga el saldo restante"],
+      onlineSteps: ["Elige tu consulta", "Paga el valor total", "Recibe tu enlace de Google Meet", "Conéctate desde cualquier lugar"],
     },
     testimonialsH2: "Lo que dicen los kitesurfistas",
     testimonials: [
-      { name: "Lars M.", flag: "🇩🇪", text: "Limpieza rápida entre sesiones. Dentista en inglés, clínica impecable, pagué €30 en lugar de €120 en casa." },
+      { name: "Lars M.", flag: "🇩🇪", text: "Limpieza rápida entre sesiones. Dentista en inglés, clínica impecable." },
       { name: "Sophie T.", flag: "🇫🇷", text: "Reservé una consulta online desde mi pousada. Recibí el enlace de Meet en menos de una hora. Me sentí escuchada." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Caí fuerte y me destrocé el hombro. Tres sesiones de fisio después estaba de vuelta en el agua." },
     ],
@@ -114,7 +114,7 @@ const T = {
       total: "total",
       euCompare: (eu: number) => `€${eu} en Europa`,
       tagFull: "Pago completo",
-      tagPartial: "R$50 ahora · resto en la clínica",
+      tagPartial: "R$50 ahora, saldo en la clínica",
       ctaOnline: (n: number) => `Reservar y pagar R$${n}`,
       ctaIn: (n: number) => `Reservar por R$${n}`,
     },
@@ -342,25 +342,30 @@ export default function Kite() {
       {/* Hero */}
       <section
         id="top"
-        className="relative px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20"
+        className="relative"
         style={{
           background: `linear-gradient(135deg, ${BRAND.ink} 0%, #1a3a4a 50%, ${BRAND.tealDark} 100%)`,
           color: "#fff",
         }}
       >
-        <div className="max-w-3xl mx-auto text-center">
+        <div
+          className="mx-auto text-center px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20 flex flex-col items-center"
+          style={{ maxWidth: 1200 }}
+        >
           <span
-            className="inline-block px-3 py-1.5 rounded-full bg-white/15 text-white/90 font-semibold mb-6"
+            className="inline-block px-3 py-1.5 rounded-full bg-white/15 text-white/90 font-semibold"
             style={{ fontSize: 11, letterSpacing: "0.15em" }}
           >
             {t.hero.welcome}
           </span>
 
           <h1
-            className="kite-h font-bold mb-6"
+            className="kite-h font-bold"
             style={{
+              marginTop: 24,
               fontSize: "clamp(40px, 9vw, 76px)",
               wordSpacing: "normal",
+              maxWidth: 720,
             }}
           >
             {t.hero.h1a}{" "}
@@ -368,8 +373,9 @@ export default function Kite() {
           </h1>
 
           <p
-            className="text-white/85 mx-auto mb-8"
+            className="text-white/85"
             style={{
+              marginTop: 24,
               maxWidth: "38ch",
               fontSize: "clamp(15px, 2.2vw, 18px)",
               lineHeight: 1.5,
@@ -378,14 +384,20 @@ export default function Kite() {
             {t.hero.sub}
           </p>
 
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/85 text-xs font-medium mb-8">
+          <span
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/85 text-xs font-medium whitespace-nowrap"
+            style={{ marginTop: 16 }}
+          >
             📍 {t.hero.pin}
           </span>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center" style={{ gap: 12 }}>
+          <div
+            className="flex flex-col sm:flex-row justify-center w-full sm:w-auto gap-3 sm:gap-4"
+            style={{ marginTop: 32, maxWidth: 480 }}
+          >
             <button
               onClick={() => scrollTo("services")}
-              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:brightness-105"
+              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:brightness-105 w-full sm:w-auto"
               style={{
                 background: "#fff",
                 color: BRAND.ink,
@@ -397,7 +409,7 @@ export default function Kite() {
             </button>
             <button
               onClick={() => scrollTo("online-section")}
-              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:bg-white/10"
+              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:bg-white/10 w-full sm:w-auto"
               style={{
                 background: "transparent",
                 color: "#fff",
@@ -410,7 +422,10 @@ export default function Kite() {
             </button>
           </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/75">
+          <div
+            className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/75"
+            style={{ marginTop: 24 }}
+          >
             {t.hero.trust.map((it, i) => (
               <span key={it} className="flex items-center gap-3">
                 {i > 0 && <span aria-hidden className="opacity-50">·</span>}
@@ -498,15 +513,28 @@ export default function Kite() {
               { label: t.how.inLabel, steps: t.how.inSteps },
               { label: t.how.onlineLabel, steps: t.how.onlineSteps },
             ].map((col) => (
-              <div key={col.label} className="border border-white/10 rounded-2xl p-8">
+              <div
+                key={col.label}
+                style={{
+                  background: "#0F2A33",
+                  border: "1px solid rgba(42, 191, 191, 0.15)",
+                  borderRadius: 12,
+                  padding: 32,
+                }}
+              >
                 <p
-                  className="text-xs uppercase mb-4 font-semibold"
-                  style={{ color: BRAND.teal, letterSpacing: "0.15em" }}
+                  className="text-xs uppercase mb-6 font-semibold"
+                  style={{ color: "#2ABFBF", letterSpacing: "0.15em" }}
                 >
                   {col.label}
                 </p>
-                <ol className="space-y-3 text-white/85 list-decimal list-inside">
-                  {col.steps.map((s) => <li key={s} className="pl-1">{s}</li>)}
+                <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+                  {col.steps.map((s, i) => (
+                    <li key={s} style={{ display: "flex", gap: 12, color: "#fff", lineHeight: 1.6 }}>
+                      <span style={{ color: "#2ABFBF", fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                      <span>{s}</span>
+                    </li>
+                  ))}
                 </ol>
               </div>
             ))}
@@ -591,11 +619,6 @@ function ProcedureCard({
           R$ {total}
           <span className="text-sm font-normal ml-1" style={{ color: BRAND.muted }}>{t.card.total}</span>
         </p>
-        {eu && (
-          <p className="price-tnum text-sm line-through mt-1" style={{ color: "#9CA3AF" }}>
-            {t.card.euCompare(eu)}
-          </p>
-        )}
       </div>
 
       <div className="mb-6">
