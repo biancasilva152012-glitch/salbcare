@@ -204,34 +204,6 @@ const Index = () => {
                 Testar agora
                 <ArrowRight size={20} strokeWidth={2.4} />
               </Link>
-
-              <WhatsAppDemoButton origem="hero" />
-
-              <a href="#como-funciona" className="salb-link" style={{ fontSize: 15 }}>
-                Como funciona?
-              </a>
-
-              <p style={{ color: TEXT_MUTED, fontSize: 14 }}>
-                Sem cartão • Comece em menos de 1 minuto
-              </p>
-
-              <Link
-                to="/experimente?source=landing-hero"
-                onClick={() => fireCta("experimente", "landing_hero")}
-                className="salb-link"
-                style={{ fontSize: 15 }}
-              >
-                Ou experimente sem cadastrar →
-              </Link>
-
-              <Link
-                to="/login?source=landing-hero"
-                onClick={() => fireCta("login", "landing_hero")}
-                className="salb-link"
-                style={{ fontSize: 15 }}
-              >
-                Já é cadastrado? Faça login
-              </Link>
             </div>
           </div>
         </section>
@@ -329,75 +301,7 @@ const Index = () => {
 
         <LeadDemoFormSection />
 
-        {/* ── COMO FUNCIONA (vitrine/controle — MANTIDA) ── */}
-        <section id="como-funciona" style={{ background: "#FFFFFF", padding: "72px 0", borderTop: `1px solid ${BORDER}` }}>
-          <div className="mx-auto max-w-4xl px-5 sm:px-6">
-            <h2
-              style={{
-                textAlign: "center",
-                fontWeight: 800,
-                color: NAVY,
-                letterSpacing: "-0.02em",
-                fontSize: "clamp(26px, 4vw, 38px)",
-                lineHeight: 1.2,
-                marginBottom: 16,
-              }}
-            >
-              Em 3 passos você está dentro
-            </h2>
-            <p style={{ textAlign: "center", color: TEXT_MUTED, fontSize: 16, marginBottom: 48, maxWidth: 540, marginInline: "auto" }}>
-              Cadastro rápido, sem burocracia. Comece a organizar sua prática hoje.
-            </p>
-
-            <ol
-              style={{
-                display: "grid",
-                gap: 20,
-                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                listStyle: "none",
-                padding: 0,
-                margin: 0,
-              }}
-            >
-              {[
-                { n: "1", t: "Cadastre-se", d: "Crie sua conta em menos de 1 minuto e valide seu conselho profissional." },
-                { n: "2", t: "Configure sua agenda", d: "Adicione seus primeiros pacientes e organize seus horários." },
-                { n: "3", t: "Atenda e registre", d: "Use prontuário, receita digital e controle financeiro em um só lugar." },
-              ].map((s) => (
-                <li
-                  key={s.n}
-                  style={{
-                    background: "#FFFFFF",
-                    border: `1px solid ${BORDER}`,
-                    borderRadius: 16,
-                    padding: 24,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 999,
-                      background: "rgba(0,180,160,0.12)",
-                      color: TEAL,
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontWeight: 800,
-                      fontSize: 15,
-                      marginBottom: 14,
-                    }}
-                    aria-hidden
-                  >
-                    {s.n}
-                  </span>
-                  <h3 style={{ color: NAVY, fontWeight: 700, fontSize: 17, marginBottom: 6 }}>{s.t}</h3>
-                  <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{s.d}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+        {/* "Em 3 passos você está dentro" section removed */}
 
         {/* ── PLANOS — dados reais do PLANS config ── */}
         <section id="planos" style={{ background: MINT_BG, padding: "72px 0" }}>
