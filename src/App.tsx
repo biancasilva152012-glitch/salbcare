@@ -19,8 +19,16 @@ import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
+import { useLocation } from "react-router-dom";
 
 const TrackingProvider = () => { useTracking(); return null; };
+
+// Hide the freemium debug widget on the public Kite landing.
+const FreemiumDebugPanelGate = () => {
+  const { pathname } = useLocation();
+  if (pathname.startsWith("/kite")) return null;
+  return <FreemiumDebugPanel />;
+};
 
 // Eager: login, register, landing (entry points)
 import Login from "./pages/Login";
@@ -135,7 +143,7 @@ const App = () => (
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
           <GlobalStatusBanner />
-          <FreemiumDebugPanel />
+          <FreemiumDebugPanelGate />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
