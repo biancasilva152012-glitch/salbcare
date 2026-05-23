@@ -22,9 +22,9 @@ type Procedure = {
 
 const PROCEDURES: Record<string, Procedure> = {
   // ---- Dental (presencial) ----
-  "dental-cleaning":   { id: "dental-cleaning",   label: "Dental Cleaning & Check-up", type: "presencial", priceId: "price_1TZAulBUEEEAHx2hykS14Xnf", amountCharged: 50, totalPrice: 180 },
+  "dental-cleaning":   { id: "dental-cleaning",   label: "Dental Cleaning & Check-up", type: "presencial", priceId: "price_1TZAulBUEEEAHx2hykS14Xnf", amountCharged: 50, totalPrice: 200 },
   "dental-whitening":  { id: "dental-whitening",  label: "Teeth Whitening",             type: "presencial", priceId: "price_1TZAwTBUEEEAHx2hRJQYW9ge", amountCharged: 50, totalPrice: 480 },
-  "dental-exam":       { id: "dental-exam",       label: "Complete Oral Exam",          type: "presencial", priceId: "price_1TZB0BBUEEEAHx2h9MhxHAJ9", amountCharged: 50, totalPrice: 120 },
+  "dental-exam":       { id: "dental-exam",       label: "Complete Oral Exam",          type: "presencial", priceId: "price_1TZB0BBUEEEAHx2h9MhxHAJ9", amountCharged: 50, totalPrice: 200 },
   // ---- Physio (presencial) — reuse generic R$50 booking fee price ----
   "physio-kite-recovery": { id: "physio-kite-recovery", label: "Kite Recovery Session",     type: "presencial", priceId: BOOKING_FEE_PRICE, amountCharged: 50, totalPrice: 200 },
   "physio-massage":       { id: "physio-massage",       label: "Sports Massage (60 min)",   type: "presencial", priceId: BOOKING_FEE_PRICE, amountCharged: 50, totalPrice: 180 },

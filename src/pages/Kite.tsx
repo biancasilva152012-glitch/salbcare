@@ -135,9 +135,9 @@ const T = {
 } as const;
 
 const DENTAL_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
-  { id: "dental-cleaning",  type: "presencial", total: 180, eu: 120 },
+  { id: "dental-cleaning",  type: "presencial", total: 200, eu: 120 },
   { id: "dental-whitening", type: "presencial", total: 480, eu: 350 },
-  { id: "dental-exam",      type: "presencial", total: 120, eu: 90 },
+  { id: "dental-exam",      type: "presencial", total: 200, eu: 90 },
 ];
 const PHYSIO_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
   { id: "physio-kite-recovery", type: "presencial", total: 200, eu: 90 },
