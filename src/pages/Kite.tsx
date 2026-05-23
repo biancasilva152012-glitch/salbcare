@@ -51,7 +51,7 @@ const T = {
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic." },
       { name: "Sophie T.", flag: "🇫🇷", text: "Booked an online consultation from my pousada. Got the Meet link in less than an hour. Felt heard." },
-      { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later I was back on the water." },
+      { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later, I was back IN the water." },
     ],
     finalH2: "Book your appointment today.",
     card: {
@@ -107,7 +107,7 @@ const T = {
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Limpieza rápida entre sesiones. Dentista en inglés, clínica impecable." },
       { name: "Sophie T.", flag: "🇫🇷", text: "Reservé una consulta online desde mi pousada. Recibí el enlace de Meet en menos de una hora. Me sentí escuchada." },
-      { name: "Pieter V.", flag: "🇳🇱", text: "Caí fuerte y me destrocé el hombro. Tres sesiones de fisio después estaba de vuelta en el agua." },
+      { name: "Pieter V.", flag: "🇳🇱", text: "Me caí fuerte, hombro destrozado. Tres sesiones de fisio después, estaba DE VUELTA en el agua." },
     ],
     finalH2: "Reserva tu cita hoy.",
     card: {
