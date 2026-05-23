@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { label: "Parcerias", icon: Handshake, path: "/admin/partners" },
   { label: "Banco de Dados", icon: Database, path: "/admin/database" },
   { label: "Logs", icon: ScrollText, path: "/admin/logs" },
+  { label: "Auditoria LGPD", icon: FileLock2, path: "/admin/lgpd-audit" },
   { label: "QR Pousadas", icon: QrCode, path: "/admin/qr-generator" },
   { label: "Configurações", icon: Settings, path: "/admin/settings" },
 ];
