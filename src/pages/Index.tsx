@@ -13,7 +13,7 @@ import FinancialIntelligenceSection from "@/components/landing/FinancialIntellig
 import AllToolsSection from "@/components/landing/AllToolsSection";
 
 import LeadDemoFormSection from "@/components/landing/LeadDemoFormSection";
-import WhatsAppFab from "@/components/WhatsAppFab";
+import WhatsAppFab, { WhatsAppDemoButton } from "@/components/WhatsAppFab";
 import BrandHubLayer from "@/components/landing/BrandHubLayer";
 
 /* ─────────────────────────────────────────────
