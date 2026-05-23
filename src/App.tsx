@@ -82,6 +82,7 @@ const AdminQrGeneratorPage = lazyWithRetry(() => import("./pages/admin/AdminQrGe
 const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintPage"), "AdminQrPrintPage");
 const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
 const Hub = lazyWithRetry(() => import("./pages/Hub"), "Hub");
+const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const About = lazyWithRetry(() => import("./pages/About"), "About");
 const Contact = lazyWithRetry(() => import("./pages/Contact"), "Contact");
 const KiteConfirmed = lazyWithRetry(() => import("./pages/KiteConfirmed"), "KiteConfirmed");
