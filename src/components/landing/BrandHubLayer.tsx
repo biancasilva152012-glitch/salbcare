@@ -3,14 +3,13 @@ import { Link } from "react-router-dom";
 
 /**
  * Brand hub layer prepended to the "/" landing.
- * Adds: top bar with language switcher, brand hero, two product cards
- * (Pro + Kite), and a brand-story strip. Existing Pro content renders below.
+ * Top bar with language switcher, translated hero, two product cards
+ * (Pro translated, Kite always English).
  */
 
 const DEEP_TEAL = "#0F2A33";
 const DEEP_TEAL_DARK = "#081A20";
 const DEEP_TEAL_2 = "#1A3F50";
-const BORDER_TEAL = "#2A4A52";
 const GOLD = "#C9A961";
 const TEAL_ACCENT = "#2ABFBF";
 const TEXT_MUTED = "#B0C5CC";
@@ -20,25 +19,86 @@ type Lang = "pt" | "en" | "es";
 const LANG_KEY = "salbcare_lang";
 
 function detectInitialLang(): Lang {
-  if (typeof window === "undefined") return "en";
+  if (typeof window === "undefined") return "pt";
   try {
     const stored = window.localStorage.getItem(LANG_KEY) as Lang | null;
     if (stored === "pt" || stored === "en" || stored === "es") return stored;
   } catch {}
-  const nav = (navigator.language || "en").toLowerCase();
+  const nav = (navigator.language || "pt").toLowerCase();
   if (nav.startsWith("pt")) return "pt";
-  if (
-    nav.startsWith("en") ||
-    nav.startsWith("es") ||
-    nav.startsWith("de") ||
-    nav.startsWith("fr") ||
-    nav.startsWith("it") ||
-    nav.startsWith("nl")
-  ) {
-    return nav.startsWith("es") ? "es" : "en";
-  }
+  if (nav.startsWith("es")) return "es";
   return "en";
 }
+
+const heroCopy: Record<Lang, { eyebrow: string; headline: string; subhead: string }> = {
+  pt: {
+    eyebrow: "HEALTH, MADE HUMAN",
+    headline: "Uma missão. Portas diferentes.",
+    subhead:
+      "A SalbCare cria experiências de saúde para os momentos em que o sistema tradicional falha.",
+  },
+  en: {
+    eyebrow: "HEALTH, MADE HUMAN",
+    headline: "One mission. Different doors.",
+    subhead:
+      "SalbCare builds healthcare experiences for the moments traditional systems fail.",
+  },
+  es: {
+    eyebrow: "HEALTH, MADE HUMAN",
+    headline: "Una misión. Puertas diferentes.",
+    subhead:
+      "SalbCare crea experiencias de salud para los momentos en que el sistema tradicional falla.",
+  },
+};
+
+const proCardCopy: Record<Lang, {
+  eyebrow: string;
+  headline: string;
+  body: string;
+  bullets: string[];
+  cta: string;
+  secondaryLink: string;
+}> = {
+  pt: {
+    eyebrow: "PARA PROFISSIONAIS DE SAÚDE",
+    headline: "Sua prática, com confiança.",
+    body: "A plataforma completa para psicólogos, nutricionistas, médicos e fisioterapeutas autônomos no Brasil.",
+    bullets: [
+      "Prontuário digital & receitas eletrônicas",
+      "Teleconsulta via Google Meet",
+      "Mentora Financeira com IA",
+      "Sem comissões, nunca",
+    ],
+    cta: "Conhecer SalbCare Pro →",
+    secondaryLink: "Já é cadastrado? Faça login",
+  },
+  en: {
+    eyebrow: "FOR HEALTH PROFESSIONALS",
+    headline: "Run your practice with confidence",
+    body: "The all-in-one platform for autonomous psychologists, nutritionists, physicians and physiotherapists in Brazil.",
+    bullets: [
+      "Digital records & e-prescriptions",
+      "Telehealth via Google Meet",
+      "Mentora Financeira AI",
+      "No commissions, ever",
+    ],
+    cta: "Explore SalbCare Pro →",
+    secondaryLink: "Login to your account",
+  },
+  es: {
+    eyebrow: "PARA PROFESIONALES DE LA SALUD",
+    headline: "Tu práctica, con confianza.",
+    body: "La plataforma completa para psicólogos, nutricionistas, médicos y fisioterapeutas autónomos en Brasil.",
+    bullets: [
+      "Historia clínica digital y recetas electrónicas",
+      "Teleconsulta vía Google Meet",
+      "Mentora Financiera con IA",
+      "Sin comisiones, nunca",
+    ],
+    cta: "Conocer SalbCare Pro →",
+    secondaryLink: "¿Ya tienes cuenta? Inicia sesión",
+  },
+};
 
 const Check = ({ color }: { color: string }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: 3 }}>
@@ -46,67 +106,60 @@ const Check = ({ color }: { color: string }) => (
   </svg>
 );
 
-const scrollToProContent = () => {
-  const target = document.getElementById("pro-landing-content");
-  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+const ProCard = ({ lang }: { lang: Lang }) => {
+  const t = proCardCopy[lang];
+  return (
+    <article
+      style={{
+        background: `linear-gradient(160deg, ${DEEP_TEAL} 0%, ${DEEP_TEAL_2} 100%)`,
+        borderRadius: 16,
+        padding: 48,
+        display: "flex",
+        flexDirection: "column",
+        gap: 20,
+      }}
+    >
+      <div style={{ color: TEAL_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+        {t.eyebrow}
+      </div>
+      <h3 style={{ color: "#fff", fontWeight: 700, fontSize: 28, lineHeight: 1.2, margin: 0 }}>
+        {t.headline}
+      </h3>
+      <p style={{ color: TEXT_MUTED, fontSize: 15, lineHeight: 1.5, margin: 0 }}>
+        {t.body}
+      </p>
+      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+        {t.bullets.map((item) => (
+          <li key={item} style={{ display: "flex", gap: 10, color: "#fff", fontSize: 14, lineHeight: 1.4 }}>
+            <Check color={TEAL_ACCENT} />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+      <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+        <Link
+          to="/pro"
+          className="hub-cta-pro"
+          style={{
+            background: TEAL_ACCENT,
+            color: DEEP_TEAL,
+            borderRadius: 999,
+            padding: "14px 24px",
+            fontWeight: 700,
+            fontSize: 15,
+            display: "inline-block",
+            textDecoration: "none",
+          }}
+        >
+          {t.cta}
+        </Link>
+        <Link to="/login" style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }} className="hub-secondary-link">
+          {t.secondaryLink}
+        </Link>
+      </div>
+    </article>
+  );
 };
-
-const ProCard = () => (
-  <article
-    style={{
-      background: `linear-gradient(160deg, ${DEEP_TEAL} 0%, ${DEEP_TEAL_2} 100%)`,
-      borderRadius: 16,
-      padding: 48,
-      display: "flex",
-      flexDirection: "column",
-      gap: 20,
-    }}
-  >
-    <div style={{ color: TEAL_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-      For health professionals
-    </div>
-    <h3 style={{ color: "#fff", fontWeight: 700, fontSize: 28, lineHeight: 1.2, margin: 0 }}>
-      Run your practice with confidence
-    </h3>
-    <p style={{ color: TEXT_MUTED, fontSize: 15, lineHeight: 1.5, margin: 0 }}>
-      The all-in-one platform for autonomous psychologists, nutritionists, physicians and physiotherapists in Brazil.
-    </p>
-    <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-      {[
-        "Digital records & e-prescriptions",
-        "Telehealth via Google Meet",
-        "Mentora Financeira AI",
-        "No commissions, ever",
-      ].map((item) => (
-        <li key={item} style={{ display: "flex", gap: 10, color: "#fff", fontSize: 14, lineHeight: 1.4 }}>
-          <Check color={TEAL_ACCENT} />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-    <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-      <Link
-        to="/pro"
-        className="hub-cta-pro"
-        style={{
-          background: TEAL_ACCENT,
-          color: DEEP_TEAL,
-          borderRadius: 999,
-          padding: "14px 24px",
-          fontWeight: 700,
-          fontSize: 15,
-          display: "inline-block",
-          textDecoration: "none",
-        }}
-      >
-        Explore SalbCare Pro →
-      </Link>
-      <Link to="/login" style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }} className="hub-secondary-link">
-        Login to your account
-      </Link>
-    </div>
-  </article>
-);
 
 const KiteCard = () => (
   <article
@@ -181,7 +234,7 @@ const KiteCard = () => (
 );
 
 const BrandHubLayer = () => {
-  const [lang, setLang] = useState<Lang>("en");
+  const [lang, setLang] = useState<Lang>("pt");
   useEffect(() => setLang(detectInitialLang()), []);
 
   const onPickLang = (l: Lang) => {
@@ -189,7 +242,17 @@ const BrandHubLayer = () => {
     setLang(l);
   };
 
+  // Persist detected default so subsequent visits are stable.
+  useEffect(() => {
+    try {
+      if (!window.localStorage.getItem(LANG_KEY)) {
+        window.localStorage.setItem(LANG_KEY, lang);
+      }
+    } catch {}
+  }, [lang]);
+
   const proFirst = lang === "pt";
+  const hero = heroCopy[lang];
 
   return (
     <div
@@ -218,7 +281,6 @@ const BrandHubLayer = () => {
         }
       `}</style>
 
-      {/* Top bar with language switcher */}
       <header
         style={{
           maxWidth: 1200,
@@ -260,7 +322,6 @@ const BrandHubLayer = () => {
         </div>
       </header>
 
-      {/* Hero */}
       <section className="hub-hero-pad" style={{ textAlign: "center" }}>
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <div
@@ -273,7 +334,7 @@ const BrandHubLayer = () => {
               marginBottom: 20,
             }}
           >
-            Health, made human
+            {hero.eyebrow}
           </div>
           <h1
             className="hub-hero-h1"
@@ -286,7 +347,7 @@ const BrandHubLayer = () => {
               margin: 0,
             }}
           >
-            One mission. Different doors.
+            {hero.headline}
           </h1>
           <p
             style={{
@@ -298,23 +359,22 @@ const BrandHubLayer = () => {
               marginInline: "auto",
             }}
           >
-            SalbCare builds healthcare experiences for the moments traditional systems fail.
+            {hero.subhead}
           </p>
         </div>
       </section>
 
-      {/* Product cards */}
       <section style={{ padding: "0 24px" }}>
         <div className="hub-cards" style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 0 64px" }}>
           {proFirst ? (
             <>
-              <div className="hub-card-inner-wrap"><ProCard /></div>
+              <div className="hub-card-inner-wrap"><ProCard lang={lang} /></div>
               <div className="hub-card-inner-wrap"><KiteCard /></div>
             </>
           ) : (
             <>
               <div className="hub-card-inner-wrap"><KiteCard /></div>
-              <div className="hub-card-inner-wrap"><ProCard /></div>
+              <div className="hub-card-inner-wrap"><ProCard lang={lang} /></div>
             </>
           )}
         </div>
