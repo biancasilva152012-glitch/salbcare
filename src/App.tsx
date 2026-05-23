@@ -144,7 +144,7 @@ const App = () => (
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
           <GlobalStatusBanner />
-          <FreemiumDebugPanelGate />
+          {/* FreemiumDebugPanelGate removed — debug widget no longer rendered globally */}
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
