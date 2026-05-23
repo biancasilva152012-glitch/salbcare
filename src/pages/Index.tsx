@@ -4,7 +4,6 @@ import { useEffect } from "react";
 
 import SEOHead from "@/components/SEOHead";
 import { trackViewContent, setupScrolledHalfwayTracking } from "@/hooks/useTracking";
-import PainShockSection from "@/components/landing/PainShockSection";
 import BrandHubLayer from "@/components/landing/BrandHubLayer";
 import { buildWhatsAppUrl, WHATSAPP_DISPLAY } from "@/lib/whatsapp";
 
@@ -50,9 +49,6 @@ const Index = () => {
 
       <BrandHubLayer />
 
-      <div id="pro-landing-content" style={{ background: DEEP_TEAL_ALT }}>
-        <PainShockSection />
-      </div>
 
       <footer
         style={{

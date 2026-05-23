@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 /**
- * Brand hub layer prepended to the "/" landing.
- * Top bar with language switcher, translated hero, two product cards
- * (Pro translated, Kite always English).
+ * Brand hub: header + hero + 2 product cards + brand story.
+ * Language switcher (PT/EN/ES) updates all content. PT is default.
  */
 
 const DEEP_TEAL = "#0F2A33";
@@ -30,73 +29,139 @@ function detectInitialLang(): Lang {
   return "en";
 }
 
-const heroCopy: Record<Lang, { eyebrow: string; headline: string; subhead: string }> = {
-  pt: {
-    eyebrow: "HEALTH, MADE HUMAN",
-    headline: "Uma missão. Portas diferentes.",
-    subhead:
-      "A SalbCare cria experiências de saúde para os momentos em que o sistema tradicional falha.",
-  },
-  en: {
-    eyebrow: "HEALTH, MADE HUMAN",
-    headline: "One mission. Different doors.",
-    subhead:
-      "SalbCare builds healthcare experiences for the moments traditional systems fail.",
-  },
-  es: {
-    eyebrow: "HEALTH, MADE HUMAN",
-    headline: "Una misión. Puertas diferentes.",
-    subhead:
-      "SalbCare crea experiencias de salud para los momentos en que el sistema tradicional falla.",
-  },
+type Copy = {
+  hero: { eyebrow: string; headline: string; subhead: string };
+  proCard: {
+    eyebrow: string;
+    headline: string;
+    body: string;
+    bullets: string[];
+    cta: string;
+    secondaryLink: string;
+  };
+  kiteCard: {
+    eyebrow: string;
+    headline: string;
+    body: string;
+    bullets: string[];
+    cta: string;
+    secondaryLink: string;
+  };
+  brandStoryEyebrow: string;
+  brandStory: string;
 };
 
-const proCardCopy: Record<Lang, {
-  eyebrow: string;
-  headline: string;
-  body: string;
-  bullets: string[];
-  cta: string;
-  secondaryLink: string;
-}> = {
+const t: Record<Lang, Copy> = {
   pt: {
-    eyebrow: "PARA PROFISSIONAIS DE SAÚDE",
-    headline: "Sua prática, com confiança.",
-    body: "A plataforma completa para psicólogos, nutricionistas, médicos e fisioterapeutas autônomos no Brasil.",
-    bullets: [
-      "Prontuário digital & receitas eletrônicas",
-      "Teleconsulta via Google Meet",
-      "Mentora Financeira com IA",
-      "Sem comissões, nunca",
-    ],
-    cta: "Conhecer SalbCare Pro →",
-    secondaryLink: "Já é cadastrado? Faça login",
+    hero: {
+      eyebrow: "BEM-VINDO À SALBCARE",
+      headline: "Escolha seu caminho.",
+      subhead:
+        "Duas plataformas, uma missão: cuidar de quem cuida e de quem viaja.",
+    },
+    proCard: {
+      eyebrow: "PARA PROFISSIONAIS DE SAÚDE",
+      headline: "Sua prática, com confiança.",
+      body: "A plataforma completa para psicólogos, nutricionistas, médicos e fisioterapeutas autônomos no Brasil.",
+      bullets: [
+        "Prontuário digital & receitas eletrônicas",
+        "Teleconsulta via Google Meet",
+        "Mentora Financeira com IA",
+        "Sem comissões, nunca",
+      ],
+      cta: "Conhecer SalbCare Pro →",
+      secondaryLink: "Já é cadastrado? Faça login",
+    },
+    kiteCard: {
+      eyebrow: "PARA VIAJANTES INTERNACIONAIS",
+      headline: "Sinta-se bem. Pratique kite melhor.",
+      body: "Atendimento odontológico de primeira classe, fisioterapia e teleconsulta em Ilha do Guajiru — com cuidado disponível em inglês e espanhol, a uma fração dos preços europeus.",
+      bullets: [
+        "Atendimento em inglês e espanhol",
+        "Cartões internacionais aceitos",
+        "Reserve com R$50 de depósito",
+        "Pague o restante na clínica",
+      ],
+      cta: "Conhecer SalbCare Kite →",
+      secondaryLink: "Agendar uma visita",
+    },
+    brandStoryEyebrow: "A MARCA POR TRÁS",
+    brandStory:
+      "A SalbCare é uma plataforma de saúde construída em torno de uma crença: acesso a um bom cuidado não deveria depender de onde você está, que idioma você fala, ou quanto você ganha.",
   },
   en: {
-    eyebrow: "FOR HEALTH PROFESSIONALS",
-    headline: "Run your practice with confidence",
-    body: "The all-in-one platform for autonomous psychologists, nutritionists, physicians and physiotherapists in Brazil.",
-    bullets: [
-      "Digital records & e-prescriptions",
-      "Telehealth via Google Meet",
-      "Mentora Financeira AI",
-      "No commissions, ever",
-    ],
-    cta: "Explore SalbCare Pro →",
-    secondaryLink: "Login to your account",
+    hero: {
+      eyebrow: "WELCOME TO SALBCARE",
+      headline: "Choose your path.",
+      subhead:
+        "Two platforms, one mission: caring for those who care, and for those who travel.",
+    },
+    proCard: {
+      eyebrow: "FOR HEALTH PROFESSIONALS",
+      headline: "Run your practice with confidence",
+      body: "The all-in-one platform for autonomous psychologists, nutritionists, physicians and physiotherapists in Brazil.",
+      bullets: [
+        "Digital records & e-prescriptions",
+        "Telehealth via Google Meet",
+        "Mentora Financeira AI",
+        "No commissions, ever",
+      ],
+      cta: "Explore SalbCare Pro →",
+      secondaryLink: "Login to your account",
+    },
+    kiteCard: {
+      eyebrow: "FOR INTERNATIONAL TRAVELERS",
+      headline: "Feel better. Kite better.",
+      body: "World-class dental care, physiotherapy, and telehealth in Ilha do Guajiru — with care available in English and Spanish, at a fraction of European prices.",
+      bullets: [
+        "English & Spanish spoken",
+        "International cards accepted",
+        "Book with a R$50 deposit",
+        "Pay the remaining balance at the clinic",
+      ],
+      cta: "Explore SalbCare Kite →",
+      secondaryLink: "Book a visit",
+    },
+    brandStoryEyebrow: "THE BRAND BEHIND",
+    brandStory:
+      "SalbCare is a healthcare platform built around one belief: access to good care shouldn't depend on where you are, what language you speak, or how much you earn.",
   },
   es: {
-    eyebrow: "PARA PROFESIONALES DE LA SALUD",
-    headline: "Tu práctica, con confianza.",
-    body: "La plataforma completa para psicólogos, nutricionistas, médicos y fisioterapeutas autónomos en Brasil.",
-    bullets: [
-      "Historia clínica digital y recetas electrónicas",
-      "Teleconsulta vía Google Meet",
-      "Mentora Financiera con IA",
-      "Sin comisiones, nunca",
-    ],
-    cta: "Conocer SalbCare Pro →",
-    secondaryLink: "¿Ya tienes cuenta? Inicia sesión",
+    hero: {
+      eyebrow: "BIENVENIDO A SALBCARE",
+      headline: "Elige tu camino.",
+      subhead:
+        "Dos plataformas, una misión: cuidar de quien cuida y de quien viaja.",
+    },
+    proCard: {
+      eyebrow: "PARA PROFESIONALES DE LA SALUD",
+      headline: "Tu práctica, con confianza.",
+      body: "La plataforma completa para psicólogos, nutricionistas, médicos y fisioterapeutas autónomos en Brasil.",
+      bullets: [
+        "Historia clínica digital y recetas electrónicas",
+        "Teleconsulta vía Google Meet",
+        "Mentora Financiera con IA",
+        "Sin comisiones, nunca",
+      ],
+      cta: "Conocer SalbCare Pro →",
+      secondaryLink: "¿Ya tienes cuenta? Inicia sesión",
+    },
+    kiteCard: {
+      eyebrow: "PARA VIAJEROS INTERNACIONALES",
+      headline: "Sentite bien. Kiteá mejor.",
+      body: "Atención dental de primera clase, fisioterapia y teleconsulta en Ilha do Guajiru — con atención disponible en inglés y español, a una fracción de los precios europeos.",
+      bullets: [
+        "Atención en inglés y español",
+        "Tarjetas internacionales aceptadas",
+        "Reservá con un depósito de R$50",
+        "Pagá el resto en la clínica",
+      ],
+      cta: "Conocer SalbCare Kite →",
+      secondaryLink: "Agendar una visita",
+    },
+    brandStoryEyebrow: "LA MARCA DETRÁS",
+    brandStory:
+      "SalbCare es una plataforma de salud construida en torno a una creencia: el acceso a un buen cuidado no debería depender de dónde estás, qué idioma hablas o cuánto ganas.",
   },
 };
 
@@ -106,75 +171,89 @@ const Check = ({ color }: { color: string }) => (
   </svg>
 );
 
-const ProCard = ({ lang }: { lang: Lang }) => {
-  const t = proCardCopy[lang];
-  return (
-    <article
-      style={{
-        background: `linear-gradient(160deg, ${DEEP_TEAL} 0%, ${DEEP_TEAL_2} 100%)`,
-        borderRadius: 16,
-        padding: 48,
-        display: "flex",
-        flexDirection: "column",
-        gap: 20,
-      }}
-    >
-      <div style={{ color: TEAL_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-        {t.eyebrow}
-      </div>
-      <h3 style={{ color: "#fff", fontWeight: 700, fontSize: 28, lineHeight: 1.2, margin: 0 }}>
-        {t.headline}
-      </h3>
-      <p style={{ color: TEXT_MUTED, fontSize: 15, lineHeight: 1.5, margin: 0 }}>
-        {t.body}
-      </p>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-        {t.bullets.map((item) => (
-          <li key={item} style={{ display: "flex", gap: 10, color: "#fff", fontSize: 14, lineHeight: 1.4 }}>
-            <Check color={TEAL_ACCENT} />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-      <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-        <Link
-          to="/pro"
-          className="hub-cta-pro"
-          style={{
-            background: TEAL_ACCENT,
-            color: DEEP_TEAL,
-            borderRadius: 999,
-            padding: "14px 24px",
-            fontWeight: 700,
-            fontSize: 15,
-            display: "inline-block",
-            textDecoration: "none",
-          }}
-        >
-          {t.cta}
-        </Link>
-        <Link to="/login" style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }} className="hub-secondary-link">
-          {t.secondaryLink}
-        </Link>
-      </div>
-    </article>
-  );
-};
-
-const KiteCard = () => (
-  <article
+const ProCard = ({ copy }: { copy: Copy["proCard"] }) => (
+  <Link
+    to="/pro"
+    aria-label={copy.headline}
+    className="hub-card hub-card-pro"
     style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 20,
+      background: `linear-gradient(160deg, ${DEEP_TEAL} 0%, ${DEEP_TEAL_2} 100%)`,
+      borderRadius: 16,
+      padding: 48,
+      border: "1px solid rgba(42, 191, 191, 0.15)",
+      color: "inherit",
+      textDecoration: "none",
+    }}
+  >
+    <div style={{ color: TEAL_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+      {copy.eyebrow}
+    </div>
+    <h3 style={{ color: "#fff", fontWeight: 700, fontSize: 28, lineHeight: 1.2, margin: 0 }}>
+      {copy.headline}
+    </h3>
+    <p style={{ color: TEXT_MUTED, fontSize: 15, lineHeight: 1.5, margin: 0 }}>
+      {copy.body}
+    </p>
+    <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+      {copy.bullets.map((item) => (
+        <li key={item} style={{ display: "flex", gap: 10, color: "#fff", fontSize: 14, lineHeight: 1.4 }}>
+          <Check color={TEAL_ACCENT} />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+    <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+      <span
+        className="hub-cta-pro"
+        style={{
+          background: TEAL_ACCENT,
+          color: DEEP_TEAL,
+          borderRadius: 999,
+          padding: "14px 24px",
+          fontWeight: 700,
+          fontSize: 15,
+          display: "inline-block",
+        }}
+      >
+        {copy.cta}
+      </span>
+      <span
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = "/login";
+        }}
+        style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, cursor: "pointer" }}
+        className="hub-secondary-link"
+      >
+        {copy.secondaryLink}
+      </span>
+    </div>
+  </Link>
+);
+
+const KiteCard = ({ copy }: { copy: Copy["kiteCard"] }) => (
+  <Link
+    to="/kite"
+    aria-label={copy.headline}
+    className="hub-card hub-card-kite"
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 20,
       background: `linear-gradient(160deg, ${DEEP_TEAL_DARK} 0%, ${DEEP_TEAL} 100%)`,
       borderRadius: 16,
       padding: 48,
       border: "1px solid rgba(201, 169, 97, 0.2)",
-      display: "flex",
-      flexDirection: "column",
-      gap: 20,
+      color: "inherit",
+      textDecoration: "none",
     }}
   >
     <div style={{ color: GOLD, fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-      For international travelers
+      {copy.eyebrow}
     </div>
     <h3
       style={{
@@ -187,18 +266,13 @@ const KiteCard = () => (
         margin: 0,
       }}
     >
-      Feel good. Kite better.
+      {copy.headline}
     </h3>
     <p style={{ color: TEXT_MUTED, fontSize: 15, lineHeight: 1.5, margin: 0 }}>
-      World-class dental, physiotherapy and telehealth in Ilha do Guajiru — in English and Spanish, at a fraction of European prices.
+      {copy.body}
     </p>
     <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-      {[
-        "English & Spanish spoken",
-        "International cards accepted",
-        "Reserve with R$50",
-        "Pay rest at the clinic",
-      ].map((item) => (
+      {copy.bullets.map((item) => (
         <li key={item} style={{ display: "flex", gap: 10, color: "#fff", fontSize: 14, lineHeight: 1.4 }}>
           <Check color={GOLD} />
           <span>{item}</span>
@@ -206,8 +280,7 @@ const KiteCard = () => (
       ))}
     </ul>
     <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-      <Link
-        to="/kite"
+      <span
         className="hub-cta-kite"
         style={{
           background: GOLD,
@@ -217,66 +290,89 @@ const KiteCard = () => (
           fontWeight: 700,
           fontSize: 15,
           display: "inline-block",
-          textDecoration: "none",
         }}
       >
-        Explore SalbCare Kite →
-      </Link>
-      <Link
-        to="/kite?utm_source=hub&utm_medium=cta"
-        style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}
+        {copy.cta}
+      </span>
+      <span
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = "/kite?utm_source=hub&utm_medium=cta";
+        }}
+        style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, cursor: "pointer" }}
         className="hub-secondary-link"
       >
-        Book a visit
-      </Link>
+        {copy.secondaryLink}
+      </span>
     </div>
-  </article>
+  </Link>
 );
 
 const BrandHubLayer = () => {
   const [lang, setLang] = useState<Lang>("pt");
-  useEffect(() => setLang(detectInitialLang()), []);
+  const [order, setOrder] = useState<"proFirst" | "kiteFirst">("proFirst");
+  const [orderInit, setOrderInit] = useState(false);
+
+  useEffect(() => {
+    const initial = detectInitialLang();
+    setLang(initial);
+    if (!orderInit) {
+      setOrder(initial === "pt" ? "proFirst" : "kiteFirst");
+      setOrderInit(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onPickLang = (l: Lang) => {
     try { window.localStorage.setItem(LANG_KEY, l); } catch {}
     setLang(l);
+    // Card order does NOT change on switch; it sticks to initial.
   };
 
-  // Persist detected default so subsequent visits are stable.
-  useEffect(() => {
-    try {
-      if (!window.localStorage.getItem(LANG_KEY)) {
-        window.localStorage.setItem(LANG_KEY, lang);
-      }
-    } catch {}
-  }, [lang]);
-
-  const proFirst = lang === "pt";
-  const hero = heroCopy[lang];
+  const copy = t[lang];
 
   return (
-    <div
-      style={{
-        background: DEEP_TEAL,
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      }}
-    >
+    <div style={{ background: DEEP_TEAL, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
       <style>{`
         .hub-secondary-link:hover { text-decoration: underline; color: #fff !important; }
-        .hub-cta-pro:hover { filter: brightness(1.08); }
-        .hub-cta-kite:hover { filter: brightness(1.08); }
+        .hub-cta-pro, .hub-cta-kite { transition: filter 150ms ease; }
         .hub-lang-btn { background: transparent; color: rgba(255,255,255,0.7); border: 0; padding: 6px 12px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 999px; font-family: inherit; transition: background 150ms ease, color 150ms ease; }
         .hub-lang-btn[aria-pressed="true"] { background: ${TEAL_ACCENT}; color: ${DEEP_TEAL}; }
         .hub-lang-btn:hover:not([aria-pressed="true"]) { color: #fff; }
 
+        .hub-card {
+          cursor: pointer;
+          transition: transform 300ms cubic-bezier(0.2, 0, 0, 1),
+                      box-shadow 300ms cubic-bezier(0.2, 0, 0, 1),
+                      border-color 300ms cubic-bezier(0.2, 0, 0, 1);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        @media (hover: hover) and (pointer: fine) {
+          .hub-card-pro:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 4px 8px rgba(42,191,191,0.1);
+            border-color: rgba(42,191,191,0.4);
+          }
+          .hub-card-kite:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 4px 8px rgba(201,169,97,0.1);
+            border-color: rgba(201,169,97,0.4);
+          }
+          .hub-card-pro:hover .hub-cta-pro,
+          .hub-card-kite:hover .hub-cta-kite { filter: brightness(1.08); }
+        }
+        @media (hover: none) {
+          .hub-card:active { transform: scale(0.98); transition: transform 100ms ease; }
+        }
+
         .hub-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .hub-hero-h1 { font-size: 56px; }
-        .hub-hero-pad { padding: 96px 24px 64px; }
+        .hub-hero-h1 { font-size: 48px; }
+        .hub-hero-pad { padding: 80px 24px 56px; }
         @media (max-width: 768px) {
           .hub-cards { grid-template-columns: 1fr; }
-          .hub-hero-h1 { font-size: 40px !important; }
-          .hub-hero-pad { padding: 64px 20px 48px !important; }
-          .hub-card-inner { padding: 32px !important; }
+          .hub-hero-h1 { font-size: 36px !important; }
+          .hub-hero-pad { padding: 56px 20px 40px !important; }
+          .hub-card { padding: 32px !important; }
           .hub-cta-pro, .hub-cta-kite { width: 100%; text-align: center; }
         }
       `}</style>
@@ -334,7 +430,7 @@ const BrandHubLayer = () => {
               marginBottom: 20,
             }}
           >
-            {hero.eyebrow}
+            {copy.hero.eyebrow}
           </div>
           <h1
             className="hub-hero-h1"
@@ -347,36 +443,65 @@ const BrandHubLayer = () => {
               margin: 0,
             }}
           >
-            {hero.headline}
+            {copy.hero.headline}
           </h1>
           <p
             style={{
               marginTop: 20,
-              color: TEXT_SUBTLE,
+              color: TEXT_MUTED,
               fontSize: 16,
               lineHeight: 1.55,
               maxWidth: 600,
               marginInline: "auto",
             }}
           >
-            {hero.subhead}
+            {copy.hero.subhead}
           </p>
         </div>
       </section>
 
       <section style={{ padding: "0 24px" }}>
-        <div className="hub-cards" style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 0 64px" }}>
-          {proFirst ? (
+        <div className="hub-cards" style={{ maxWidth: 1200, margin: "0 auto", padding: "0 0 64px" }}>
+          {order === "proFirst" ? (
             <>
-              <div className="hub-card-inner-wrap"><ProCard lang={lang} /></div>
-              <div className="hub-card-inner-wrap"><KiteCard /></div>
+              <ProCard copy={copy.proCard} />
+              <KiteCard copy={copy.kiteCard} />
             </>
           ) : (
             <>
-              <div className="hub-card-inner-wrap"><KiteCard /></div>
-              <div className="hub-card-inner-wrap"><ProCard lang={lang} /></div>
+              <KiteCard copy={copy.kiteCard} />
+              <ProCard copy={copy.proCard} />
             </>
           )}
+        </div>
+      </section>
+
+      <section style={{ padding: "64px 24px 80px", textAlign: "center" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <div
+            style={{
+              color: GOLD,
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              marginBottom: 20,
+            }}
+          >
+            {copy.brandStoryEyebrow}
+          </div>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.85)",
+              fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: 22,
+              lineHeight: 1.5,
+              margin: 0,
+            }}
+          >
+            {copy.brandStory}
+          </p>
         </div>
       </section>
     </div>
