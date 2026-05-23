@@ -135,7 +135,7 @@ const App = () => (
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
           <GlobalStatusBanner />
-          <FreemiumDebugPanel />
+          <FreemiumDebugPanelGate />
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
