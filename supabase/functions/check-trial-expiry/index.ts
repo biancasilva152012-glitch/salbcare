@@ -10,11 +10,19 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // SECURITY: cron-only endpoint. Require shared CRON_SECRET to prevent
-  // anonymous callers from prematurely expiring trials or spamming chat.
+  // SECURITY: cron-only endpoint. Require a shared secret to prevent anonymous
+  // callers from prematurely expiring trials or spamming chat. We accept either
+  // CRON_SECRET (preferred, settable independently) OR the project's
+  // SERVICE_ROLE_KEY so an existing secret already works.
   const cronSecret = Deno.env.get("CRON_SECRET");
-  const provided = req.headers.get("x-cron-secret");
-  if (!cronSecret || provided !== cronSecret) {
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const provided =
+    req.headers.get("x-cron-secret") ||
+    (req.headers.get("authorization") || "").replace("Bearer ", "");
+  const ok =
+    (cronSecret && provided === cronSecret) ||
+    (serviceKey && provided === serviceKey);
+  if (!ok) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
