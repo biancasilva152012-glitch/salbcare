@@ -27,6 +27,27 @@ serve(async (req) => {
   }
 
   try {
+    // Require authenticated user to prevent unauthenticated AI quota abuse
+    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+    const { data: userData, error: userErr } = await supabaseAuth.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { symptoms, duration, conditions } = await req.json();
 
     if (!symptoms || typeof symptoms !== "string" || symptoms.trim().length === 0) {
