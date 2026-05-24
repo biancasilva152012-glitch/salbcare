@@ -143,7 +143,7 @@ const LeadDemoFormSection = () => {
       try {
         const { error: notifyErr } = await supabase.functions.invoke(
           "notify-new-lead",
-          { body: { lead_id: data.id } }
+          { body: { lead_id: data.id, email: parsed.data.email } }
         );
         if (notifyErr) throw notifyErr;
         setNotifyStatus("ok");
