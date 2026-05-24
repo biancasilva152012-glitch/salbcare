@@ -23,6 +23,26 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // SECURITY: require authentication for ALL actions (including upload_receipt)
+    // to prevent unauthenticated mutation of appointments and injection of
+    // arbitrary receipt URLs.
+    const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Não autorizado" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Não autorizado" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const user = userData.user;
+
     const { action, appointment_id, receipt_url } = await req.json();
 
     if (!action || !appointment_id) {
@@ -33,20 +53,77 @@ Deno.serve(async (req) => {
     }
 
     if (action === "upload_receipt") {
-      // Patient uploaded receipt — update status
-      if (!appointment_id || !receipt_url) {
+      if (!receipt_url || typeof receipt_url !== "string") {
         return new Response(JSON.stringify({ error: "Dados incompletos" }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
+      // SECURITY: receipt_url must be an https URL inside our Supabase storage
+      // host to prevent attackers attaching phishing/malicious links.
+      const allowedOrigin = new URL(supabaseUrl).origin;
+      let parsed: URL;
+      try {
+        parsed = new URL(receipt_url);
+      } catch {
+        return new Response(JSON.stringify({ error: "URL inválida" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (parsed.protocol !== "https:" || parsed.origin !== allowedOrigin) {
+        return new Response(JSON.stringify({ error: "URL de comprovante não permitida" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // SECURITY: only the appointment's patient (matched by email) or its
+      // professional may upload a receipt — and only while the appointment is
+      // awaiting one.
+      const { data: appt, error: apptErr } = await supabase
+        .from("appointments")
+        .select("id, user_id, status, patient_id")
+        .eq("id", appointment_id)
+        .maybeSingle();
+
+      if (apptErr || !appt) {
+        return new Response(JSON.stringify({ error: "Agendamento não encontrado" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (appt.status !== "aguardando_comprovante") {
+        return new Response(JSON.stringify({ error: "Agendamento não aceita comprovante" }), {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const isProfessional = appt.user_id === user.id;
+      // Optional patient ownership check via patients.user_id
+      let isPatient = false;
+      if (!isProfessional && appt.patient_id) {
+        const { data: pat } = await supabase
+          .from("patients")
+          .select("user_id, email")
+          .eq("id", appt.patient_id)
+          .maybeSingle();
+        if (pat && (pat.user_id === user.id || pat.email?.toLowerCase() === user.email?.toLowerCase())) {
+          isPatient = true;
+        }
+      }
+      if (!isProfessional && !isPatient) {
+        return new Response(JSON.stringify({ error: "Acesso negado" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const { error } = await supabase
         .from("appointments")
-        .update({
-          receipt_url,
-          status: "aguardando_confirmacao",
-        })
+        .update({ receipt_url, status: "aguardando_confirmacao" })
         .eq("id", appointment_id)
         .eq("status", "aguardando_comprovante");
 
@@ -58,36 +135,15 @@ Deno.serve(async (req) => {
     }
 
     if (action === "approve" || action === "reject") {
-      // Professional approving or rejecting — verify they own it
-      const authHeader = req.headers.get("authorization");
-      if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Não autorizado" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-      if (authError || !user) {
-        return new Response(JSON.stringify({ error: "Não autorizado" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
       // Verify the appointment belongs to this professional
       const { data: appt, error: apptError } = await supabase
         .from("appointments")
         .select("*")
         .eq("id", appointment_id)
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (apptError) {
-        console.error("Appointment lookup error:", apptError);
-      }
-
+      if (apptError) console.error("Appointment lookup error:", apptError);
       if (!appt) {
         return new Response(JSON.stringify({ error: "Agendamento não encontrado" }), {
           status: 404,

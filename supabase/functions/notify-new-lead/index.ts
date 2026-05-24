@@ -69,11 +69,11 @@ Deno.serve(async (req) => {
     )}&text=${encodeURIComponent(message)}&apikey=${encodeURIComponent(apiKey)}`;
 
     const resp = await fetch(url);
-    const body = await resp.text();
+    const respBody = await resp.text();
 
     if (!resp.ok) {
-      console.error("CallMeBot falhou", resp.status, body);
-      return json({ error: "envio falhou", details: body }, 502);
+      console.error("CallMeBot falhou", resp.status, respBody);
+      return json({ error: "envio falhou", details: respBody }, 502);
     }
 
     return json({ ok: true });

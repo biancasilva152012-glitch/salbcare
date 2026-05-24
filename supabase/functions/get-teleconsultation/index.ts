@@ -12,6 +12,32 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // SECURITY: require authentication. Previously this endpoint returned
+    // patient PII and Google Meet URLs to ANY caller with a UUID, which is a
+    // direct LGPD violation. Only the professional who owns the appointment
+    // or the matching patient (by user_id / email) may read it.
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const adminSupabase = createClient(supabaseUrl, serviceKey);
+
+    const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: userErr } = await adminSupabase.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const user = userData.user;
+    const userEmail = user.email?.toLowerCase() || "";
+
     const { teleconsultation_id, appointment_id } = await req.json();
     const lookupId = teleconsultation_id || appointment_id;
 
@@ -22,20 +48,32 @@ Deno.serve(async (req) => {
       });
     }
 
-    const adminSupabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
-
     // Try teleconsultations table first
     if (teleconsultation_id) {
       const { data: tc } = await adminSupabase
         .from("teleconsultations")
-        .select("room_url, date, duration, patient_name, status, user_id")
+        .select("room_url, date, duration, patient_name, status, user_id, patient_id")
         .eq("id", teleconsultation_id)
-        .single();
+        .maybeSingle();
 
       if (tc) {
+        // Authorization: caller must be the professional or the linked patient
+        let allowed = tc.user_id === user.id;
+        if (!allowed && tc.patient_id) {
+          const { data: pat } = await adminSupabase
+            .from("patients")
+            .select("user_id, email")
+            .eq("id", tc.patient_id)
+            .maybeSingle();
+          allowed = !!pat && (pat.user_id === user.id || pat.email?.toLowerCase() === userEmail);
+        }
+        if (!allowed) {
+          return new Response(JSON.stringify({ error: "Forbidden" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         const { data: profile } = await adminSupabase
           .from("profiles")
           .select("name, professional_type, meet_link")
@@ -62,11 +100,27 @@ Deno.serve(async (req) => {
       const id = appointment_id || teleconsultation_id;
       const { data: apt } = await adminSupabase
         .from("appointments")
-        .select("date, time, patient_name, status, user_id, appointment_type")
+        .select("date, time, patient_name, status, user_id, appointment_type, patient_id")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (apt) {
+        let allowed = apt.user_id === user.id;
+        if (!allowed && apt.patient_id) {
+          const { data: pat } = await adminSupabase
+            .from("patients")
+            .select("user_id, email")
+            .eq("id", apt.patient_id)
+            .maybeSingle();
+          allowed = !!pat && (pat.user_id === user.id || pat.email?.toLowerCase() === userEmail);
+        }
+        if (!allowed) {
+          return new Response(JSON.stringify({ error: "Forbidden" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         const { data: profile } = await adminSupabase
           .from("profiles")
           .select("name, professional_type, meet_link")
