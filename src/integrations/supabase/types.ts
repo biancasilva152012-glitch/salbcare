@@ -870,6 +870,54 @@ export type Database = {
           },
         ]
       }
+      lgpd_subject_requests: {
+        Row: {
+          created_at: string
+          export_data: Json | null
+          fulfilled_at: string | null
+          fulfilled_by: string | null
+          id: string
+          notes: string | null
+          request_type: string
+          requester_user_id: string | null
+          status: string
+          subject_email: string | null
+          subject_name: string | null
+          subject_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          export_data?: Json | null
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          id?: string
+          notes?: string | null
+          request_type: string
+          requester_user_id?: string | null
+          status?: string
+          subject_email?: string | null
+          subject_name?: string | null
+          subject_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          export_data?: Json | null
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          id?: string
+          notes?: string | null
+          request_type?: string
+          requester_user_id?: string | null
+          status?: string
+          subject_email?: string | null
+          subject_name?: string | null
+          subject_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       medical_records: {
         Row: {
           allergies: string | null
@@ -1194,9 +1242,11 @@ export type Database = {
           metadata: Json
           patient_id: string | null
           patient_name: string | null
+          prev_hash: string | null
           reason: string | null
           resource_id: string | null
           resource_table: string
+          row_hash: string | null
           user_agent: string | null
         }
         Insert: {
@@ -1209,9 +1259,11 @@ export type Database = {
           metadata?: Json
           patient_id?: string | null
           patient_name?: string | null
+          prev_hash?: string | null
           reason?: string | null
           resource_id?: string | null
           resource_table: string
+          row_hash?: string | null
           user_agent?: string | null
         }
         Update: {
@@ -1224,9 +1276,11 @@ export type Database = {
           metadata?: Json
           patient_id?: string | null
           patient_name?: string | null
+          prev_hash?: string | null
           reason?: string | null
           resource_id?: string | null
           resource_table?: string
+          row_hash?: string | null
           user_agent?: string | null
         }
         Relationships: []
@@ -1869,7 +1923,35 @@ export type Database = {
           status: string
         }[]
       }
+      export_lgpd_subject_data: {
+        Args: { _subject_user_id: string }
+        Returns: Json
+      }
       get_ambassador_spots_taken: { Args: never; Returns: number }
+      get_lgpd_requests: {
+        Args: { _limit?: number; _status?: string; _type?: string }
+        Returns: {
+          created_at: string
+          export_data: Json | null
+          fulfilled_at: string | null
+          fulfilled_by: string | null
+          id: string
+          notes: string | null
+          request_type: string
+          requester_user_id: string | null
+          status: string
+          subject_email: string | null
+          subject_name: string | null
+          subject_user_id: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "lgpd_subject_requests"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_partner_by_slug: {
         Args: { _slug: string }
         Returns: {
@@ -1918,23 +2000,30 @@ export type Database = {
       }
       get_pii_access_logs: {
         Args: {
+          _action?: string
           _actor?: string
+          _actor_email?: string
+          _from?: string
           _limit?: number
           _patient?: string
           _table?: string
+          _to?: string
         }
         Returns: {
           action: string
           actor_email: string
+          actor_status: string
           actor_user_id: string
           created_at: string
           id: string
           ip_address: string
           patient_id: string
           patient_name: string
+          prev_hash: string
           reason: string
           resource_id: string
           resource_table: string
+          row_hash: string
         }[]
       }
       get_public_professionals: {
@@ -2040,6 +2129,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      purge_pii_access_log: {
+        Args: { _retention_days?: number }
+        Returns: number
+      }
       verify_document_by_hash: {
         Args: { _hash: string }
         Returns: {
@@ -2051,6 +2144,15 @@ export type Database = {
           professional_name: string
           professional_type: string
           signed_icp: boolean
+        }[]
+      }
+      verify_pii_access_log_chain: {
+        Args: { _limit?: number }
+        Returns: {
+          first_invalid_at: string
+          first_invalid_id: string
+          ok: boolean
+          total: number
         }[]
       }
       verify_salbscore_document_by_hash: {
