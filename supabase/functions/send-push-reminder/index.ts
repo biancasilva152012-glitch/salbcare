@@ -97,11 +97,17 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // SECURITY: this is a cron-only endpoint. Require shared CRON_SECRET so
-  // anonymous callers cannot trigger Web Push fanout to all subscribers.
+  // SECURITY: cron-only endpoint. Require a shared secret to prevent anonymous
+  // Web-Push fanout. Accept either CRON_SECRET or SERVICE_ROLE_KEY.
   const cronSecret = Deno.env.get("CRON_SECRET");
-  const provided = req.headers.get("x-cron-secret");
-  if (!cronSecret || provided !== cronSecret) {
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const provided =
+    req.headers.get("x-cron-secret") ||
+    (req.headers.get("authorization") || "").replace("Bearer ", "");
+  const ok =
+    (cronSecret && provided === cronSecret) ||
+    (serviceKey && provided === serviceKey);
+  if (!ok) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
