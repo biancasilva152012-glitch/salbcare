@@ -24,14 +24,16 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     const md = session.metadata || {};
 
+    // SECURITY: do NOT return PII (patient_name, email) on a public endpoint
+    // that is reachable with only the Stripe session_id (which appears in
+    // browser history, server logs, and Referer headers). Only return the
+    // non-personal booking facts needed to render the confirmation page.
     return new Response(JSON.stringify({
       paid: session.payment_status === "paid",
       amount_paid: (session.amount_total ?? 0) / 100,
       currency: session.currency,
       procedure: md.procedure_label || md.procedure || null,
       type: md.type || null,
-      patient_name: md.patient_name || null,
-      email: md.email || session.customer_details?.email || null,
       preferred_date: md.preferred_date || null,
       time_preference: md.time_preference || null,
       remaining_balance: parseFloat(md.remaining_balance || "0"),
