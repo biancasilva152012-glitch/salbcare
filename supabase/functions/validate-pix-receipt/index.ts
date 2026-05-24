@@ -29,9 +29,23 @@ Deno.serve(async (req) => {
     }
 
     const { file_path } = await req.json();
-    if (!file_path) {
+    if (!file_path || typeof file_path !== "string") {
       return new Response(JSON.stringify({ error: "Dados incompletos" }), {
         status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // SECURITY: prevent IDOR — file_path must belong to the authenticated user.
+    // Storage convention is `${user.id}/<filename>`. Reject path traversal too.
+    const expectedPrefix = `${user.id}/`;
+    if (
+      !file_path.startsWith(expectedPrefix) ||
+      file_path.includes("..") ||
+      file_path.includes("//")
+    ) {
+      return new Response(JSON.stringify({ error: "Acesso negado ao comprovante" }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

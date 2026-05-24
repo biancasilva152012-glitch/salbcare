@@ -16,9 +16,12 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { lead_id } = await req.json().catch(() => ({}));
-    if (!lead_id || typeof lead_id !== "string") {
-      return json({ error: "lead_id obrigatório" }, 400);
+    const body = await req.json().catch(() => ({}));
+    const lead_id = typeof body?.lead_id === "string" ? body.lead_id : null;
+    const claimedEmail = typeof body?.email === "string" ? body.email.toLowerCase() : null;
+
+    if (!lead_id || !claimedEmail) {
+      return json({ error: "lead_id e email obrigatórios" }, 400);
     }
 
     const supabase = createClient(
@@ -30,11 +33,17 @@ Deno.serve(async (req) => {
       .from("leads_demo")
       .select("nome, email, whatsapp, dor_principal, created_at")
       .eq("id", lead_id)
-      .single();
+      .maybeSingle();
 
-    if (error || !lead) {
-      console.error("lead não encontrado", error);
-      return json({ error: "lead não encontrado" }, 404);
+    // SECURITY: do not leak whether a UUID exists. Treat unknown lead, email
+    // mismatch, and stale leads (>2 minutes) all as the same generic response.
+    const createdMs = lead?.created_at ? new Date(lead.created_at).getTime() : 0;
+    const fresh = createdMs > 0 && Date.now() - createdMs < 2 * 60 * 1000;
+    const emailMatches = !!lead && lead.email?.toLowerCase() === claimedEmail;
+
+    if (error || !lead || !fresh || !emailMatches) {
+      // Always return ok=true to avoid enumeration; silently skip notification.
+      return json({ ok: true });
     }
 
     const apiKey = Deno.env.get("CALLMEBOT_API_KEY");
