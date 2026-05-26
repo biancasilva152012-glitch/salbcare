@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import type { BlogLang } from "@/lib/blog/locale";
+import type { BlogLang } from "@/lib/blog/types";
 
 const SITE_URL = "https://salbcare.com";
 
