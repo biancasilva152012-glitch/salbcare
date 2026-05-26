@@ -115,6 +115,7 @@ const BlogAgendaMedica = lazyWithRetry(() => import("./pages/blog/BlogAgendaMedi
 const BlogReceituarioDigital = lazyWithRetry(() => import("./pages/blog/BlogReceituarioDigital"), "BlogReceituarioDigital");
 const BlogCnpjMedico = lazyWithRetry(() => import("./pages/blog/BlogCnpjMedico"), "BlogCnpjMedico");
 const BlogPrecoMinimoConsulta = lazyWithRetry(() => import("./pages/blog/BlogPrecoMinimoConsulta"), "BlogPrecoMinimoConsulta");
+const BlogHome = lazyWithRetry(() => import("./pages/blog/BlogHome"), "BlogHome");
 
 
 const queryClient = new QueryClient({
