@@ -24,7 +24,7 @@ const T = {
     htmlLang: "en",
     title: "SalbCare International — World-class care while you kite | Ilha do Guajiru",
     desc: "Dental, physiotherapy and online consultations in English & Spanish for kitesurfers and expats in Ilha do Guajiru, Ceará. A fraction of European prices.",
-    nav: { dental: "Dental", physio: "Physio", online: "Telehealth", book: "Book", bookFull: "Book now" },
+    nav: { dental: "Dental", physio: "Physio & Recovery", online: "Telehealth", book: "Book", bookFull: "Book now" },
     hero: {
       welcome: "WELCOME · BIENVENIDOS",
       pin: "Ilha do Guajiru · Ceará · Brazil",
