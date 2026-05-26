@@ -116,6 +116,9 @@ const BlogReceituarioDigital = lazyWithRetry(() => import("./pages/blog/BlogRece
 const BlogCnpjMedico = lazyWithRetry(() => import("./pages/blog/BlogCnpjMedico"), "BlogCnpjMedico");
 const BlogPrecoMinimoConsulta = lazyWithRetry(() => import("./pages/blog/BlogPrecoMinimoConsulta"), "BlogPrecoMinimoConsulta");
 const BlogHome = lazyWithRetry(() => import("./pages/blog/BlogHome"), "BlogHome");
+const BlogArticle = lazyWithRetry(() => import("./pages/blog/BlogArticle"), "BlogArticle");
+const AdminBlogListPage = lazyWithRetry(() => import("./pages/admin/AdminBlogListPage"), "AdminBlogListPage");
+const AdminBlogEditorPage = lazyWithRetry(() => import("./pages/admin/AdminBlogEditorPage"), "AdminBlogEditorPage");
 
 
 const queryClient = new QueryClient({
@@ -183,8 +186,7 @@ const App = () => (
               <Route path="/international/confirmed" element={<KiteConfirmed />} />
               <Route path="/kitecare/confirmed" element={<KiteConfirmed />} />
 
-              {/* Blog SEO */}
-              <Route path="/blog" element={<BlogIndex />} />
+              {/* Blog SEO — static legacy articles (PT) keep their exact paths */}
               <Route path="/blog/consulta-online-psicologo" element={<BlogConsultaPsicologo />} />
               <Route path="/blog/prontuario-digital-dentista" element={<BlogProntuarioDentista />} />
               <Route path="/blog/teleconsulta-medica" element={<BlogTeleconsultaMedica />} />
@@ -194,6 +196,19 @@ const App = () => (
               <Route path="/blog/receituario-digital" element={<BlogReceituarioDigital />} />
               <Route path="/blog/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
               <Route path="/blog/preco-minimo-consulta" element={<BlogPrecoMinimoConsulta />} />
+
+              {/* New bilingual journal — DB-backed */}
+              <Route path="/blog" element={<BlogHome />} />
+              <Route path="/blog/:slug" element={<BlogArticle />} />
+              <Route path="/pt/blog" element={<BlogHome />} />
+              <Route path="/pt/blog/:slug" element={<BlogArticle forcedLang="pt" />} />
+              <Route path="/es/blog" element={<BlogHome />} />
+              <Route path="/es/blog/:slug" element={<BlogArticle forcedLang="es" />} />
+              <Route path="/en/blog" element={<BlogHome />} />
+              <Route path="/en/blog/:slug" element={<BlogArticle forcedLang="en" />} />
+              {/* Legacy index */}
+              <Route path="/blog/index" element={<BlogIndex />} />
+
               
 
               {/* Public patient routes */}
@@ -249,6 +264,8 @@ const App = () => (
               <Route path="/admin/lgpd-requests" element={<AdminLgpdRequestsPage />} />
               <Route path="/admin/qr-generator" element={<AdminQrGeneratorPage />} />
               <Route path="/admin/qr-generator/print/:id" element={<AdminQrPrintPage />} />
+              <Route path="/admin/blog" element={<AdminBlogListPage />} />
+              <Route path="/admin/blog/:id" element={<AdminBlogEditorPage />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />
 
               <Route path="*" element={<NotFound />} />
