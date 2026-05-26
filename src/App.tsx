@@ -264,6 +264,8 @@ const App = () => (
               <Route path="/admin/lgpd-requests" element={<AdminLgpdRequestsPage />} />
               <Route path="/admin/qr-generator" element={<AdminQrGeneratorPage />} />
               <Route path="/admin/qr-generator/print/:id" element={<AdminQrPrintPage />} />
+              <Route path="/admin/blog" element={<AdminBlogListPage />} />
+              <Route path="/admin/blog/:id" element={<AdminBlogEditorPage />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />
 
               <Route path="*" element={<NotFound />} />
