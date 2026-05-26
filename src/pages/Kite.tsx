@@ -88,7 +88,7 @@ const T = {
       h1b: "Mejora tu kite.",
       sub: "Atención dental, fisioterapia y teleconsulta de primer nivel — en inglés y español, a una fracción de los precios europeos.",
       ctaIn: "Ver dental y fisio",
-      ctaOnline: "Agendar teleconsulta",
+      ctaOnline: "Appointment",
       trust: ["Pacientes europeos", "Inglés y español", "Tarjetas internacionales"],
     },
     tabs: { dental: "Dental", physio: "Fisio y recuperación", online: "Telesalud" },
