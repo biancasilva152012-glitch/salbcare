@@ -50,8 +50,8 @@ const T = {
     testimonialsH2: "What kitesurfers say",
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic." },
-      { name: "Sophie T.", flag: "🇫🇷", text: "Booked an online consultation from my pousada. Got the Meet link in less than an hour. Felt heard." },
-      { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later, I was back IN the water." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Booked a telehealth visit from my pousada. Got the Meet link in under an hour. Felt heard." },
+      { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard — shoulder was wrecked. Three physio sessions later, I was back IN the water." },
     ],
     finalH2: "Book your appointment today.",
     card: {
