@@ -201,6 +201,18 @@ export default function AdminLgpdAuditPage() {
             <Input value={patientFilter} onChange={(e) => setPatientFilter(e.target.value.trim())} placeholder="UUID" />
           </div>
           <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Status do ator</label>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {Object.entries(STATUS_LABEL).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
             <label className="text-xs text-muted-foreground">De</label>
             <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
           </div>
