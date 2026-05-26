@@ -106,7 +106,7 @@ const T = {
     testimonialsH2: "Lo que dicen los kitesurfistas",
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Limpieza rápida entre sesiones. Dentista en inglés, clínica impecable." },
-      { name: "Sophie T.", flag: "🇫🇷", text: "Reservé una consulta online desde mi pousada. Recibí el enlace de Meet en menos de una hora. Me sentí escuchada." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Agendé una teleconsulta desde mi pousada. Recibí el enlace de Meet en menos de una hora. Me sentí escuchada." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Me caí fuerte, hombro destrozado. Tres sesiones de fisio después, estaba DE VUELTA en el agua." },
     ],
     finalH2: "Reserva tu cita hoy.",
