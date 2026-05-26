@@ -53,6 +53,7 @@ export default function AdminLgpdAuditPage() {
   const [loading, setLoading] = useState(false);
   const [tableFilter, setTableFilter] = useState<string>("all");
   const [actionFilter, setActionFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [actorEmail, setActorEmail] = useState("");
   const [patientFilter, setPatientFilter] = useState("");
   const [fromDate, setFromDate] = useState<string>("");
@@ -72,6 +73,7 @@ export default function AdminLgpdAuditPage() {
         _from: fromDate ? new Date(fromDate).toISOString() : null,
         _to: toDate ? new Date(toDate + "T23:59:59").toISOString() : null,
         _actor_email: actorEmail || null,
+        _actor_status: statusFilter !== "all" ? statusFilter : null,
       } as any);
       if (error) throw error;
       setRows((data as LogRow[]) || []);
