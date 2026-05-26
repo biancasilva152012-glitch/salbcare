@@ -1998,34 +1998,64 @@ export type Database = {
           total_referrals: number
         }[]
       }
-      get_pii_access_logs: {
-        Args: {
-          _action?: string
-          _actor?: string
-          _actor_email?: string
-          _from?: string
-          _limit?: number
-          _patient?: string
-          _table?: string
-          _to?: string
-        }
-        Returns: {
-          action: string
-          actor_email: string
-          actor_status: string
-          actor_user_id: string
-          created_at: string
-          id: string
-          ip_address: string
-          patient_id: string
-          patient_name: string
-          prev_hash: string
-          reason: string
-          resource_id: string
-          resource_table: string
-          row_hash: string
-        }[]
-      }
+      get_pii_access_logs:
+        | {
+            Args: {
+              _action?: string
+              _actor?: string
+              _actor_email?: string
+              _from?: string
+              _limit?: number
+              _patient?: string
+              _table?: string
+              _to?: string
+            }
+            Returns: {
+              action: string
+              actor_email: string
+              actor_status: string
+              actor_user_id: string
+              created_at: string
+              id: string
+              ip_address: string
+              patient_id: string
+              patient_name: string
+              prev_hash: string
+              reason: string
+              resource_id: string
+              resource_table: string
+              row_hash: string
+            }[]
+          }
+        | {
+            Args: {
+              _action?: string
+              _actor?: string
+              _actor_email?: string
+              _actor_status?: string
+              _from?: string
+              _limit?: number
+              _patient?: string
+              _table?: string
+              _to?: string
+            }
+            Returns: {
+              action: string
+              actor_email: string
+              actor_status: string
+              actor_user_id: string
+              created_at: string
+              id: string
+              ip_address: string
+              patient_id: string
+              patient_name: string
+              prev_hash: string
+              reason: string
+              resource_id: string
+              resource_table: string
+              row_hash: string
+            }[]
+          }
       get_public_professionals: {
         Args: { specialty_filter?: string }
         Returns: {
