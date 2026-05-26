@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.get-kite-session]
 verify_jwt = false
+
+[functions.blog-sitemap]
+verify_jwt = false
