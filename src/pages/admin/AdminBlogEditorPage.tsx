@@ -183,6 +183,8 @@ export default function AdminBlogEditorPage() {
     patchArticle({ featured_image_url: data.publicUrl });
     setUploading(false);
   }
+  const t = trans[activeLang];
+  const previewHtml = useMemo(() => markdownToSafeHtml(t.content_markdown), [t.content_markdown]);
 
   if (loading || !article) {
     return (
@@ -192,8 +194,6 @@ export default function AdminBlogEditorPage() {
     );
   }
 
-  const t = trans[activeLang];
-  const previewHtml = useMemo(() => markdownToSafeHtml(t.content_markdown), [t.content_markdown]);
 
   return (
     <AdminLayout>
