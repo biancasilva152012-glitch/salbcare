@@ -200,8 +200,8 @@ export async function subscribeNewsletter(email: string, language: string, sourc
   return { ok: true };
 }
 
-export async function incrementViewCount(id: string): Promise<void> {
-  // Best-effort, RLS-friendly: only admins can update articles; for public views
-  // we no-op silently. To allow public counts, add a SECURITY DEFINER RPC.
-  await supabase.from("blog_articles").update({ view_count: 0 }).eq("id", id).select().maybeSingle().catch(() => {});
+export async function incrementViewCount(_id: string): Promise<void> {
+  // No-op: RLS blocks public writes to blog_articles. To enable real counting,
+  // add a SECURITY DEFINER RPC (e.g. `bump_article_view(uuid)`) and call it here.
+  return;
 }
