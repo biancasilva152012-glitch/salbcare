@@ -32,7 +32,7 @@ const T = {
       h1b: "Kite better.",
       sub: "World-class dental, physiotherapy and telehealth — in English and Spanish, at a fraction of European prices.",
       ctaIn: "See dental & physio",
-      ctaOnline: "Book a telehealth visit",
+      ctaOnline: "Appointment",
       trust: ["European patients", "English & Spanish", "International cards"],
     },
     tabs: { dental: "Dental", physio: "Physio & Recovery", online: "Telehealth" },
