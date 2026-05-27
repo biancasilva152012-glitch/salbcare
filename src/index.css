@@ -81,6 +81,13 @@ body[data-scroll-locked] {
     --hub-muted: 192 19% 58%;           /* #7FA0A8 */
     --hub-rule: 192 32% 25%;            /* #2A4A52 */
 
+    /* Blog tokens */
+    --blog-pro: 180 65% 46%;            /* teal #2ABFBF */
+    --blog-journal: 43 47% 59%;         /* gold #C9A961 */
+    --blog-cream: 36 36% 97%;           /* #FAF8F5 */
+    --blog-ink: 36 13% 9%;              /* #1A1814 */
+    --blog-muted: 36 11% 26%;           /* #4A453B */
+
     --radius: 0.75rem;
 
 
