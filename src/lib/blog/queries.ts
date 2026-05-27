@@ -4,27 +4,31 @@ import type {
   BlogArticleWithRelations,
   BlogAuthor,
   BlogCategory,
+  BlogPublication,
   BlogTag,
   BlogTranslation,
+  PublicationSlug,
 } from "./types";
 
 const ARTICLE_BASE = `
-  id, slug, author_id, category_id, featured_image_url, featured_image_alt_en,
+  id, publication_id, slug, author_id, category_id, featured_image_url, featured_image_alt_en,
   status, published_at, is_featured, read_time_minutes, view_count,
   created_at, updated_at
 `;
 
 const AUTHOR_FIELDS = `id, slug, name, role, bio_en, bio_pt, bio_es, avatar_url, linkedin_url, twitter_url, is_active`;
-const CATEGORY_FIELDS = `id, slug, name_en, name_pt, name_es, description_en, description_pt, description_es, display_order, is_active`;
-const TRANSLATION_FIELDS = `id, article_id, language, title, subtitle, excerpt, content_markdown, content_html, meta_title, meta_description, og_title, og_description, og_image_url, canonical_url, word_count`;
+const CATEGORY_FIELDS = `id, publication_id, slug, name_en, name_pt, name_es, description_en, description_pt, description_es, display_order, is_active`;
+const TRANSLATION_FIELDS = `id, article_id, language, title, subtitle, excerpt, content_markdown, content_html, meta_title, meta_description, og_title, og_description, og_image_url, canonical_url, focus_keyword, word_count`;
+const PUBLICATION_FIELDS = `id, slug, name_en, name_pt, name_es, description_en, description_pt, description_es, accent_color, default_language`;
 
 async function hydrateArticles(rows: any[]): Promise<BlogArticleWithRelations[]> {
   if (!rows.length) return [];
   const ids = rows.map((r) => r.id);
   const authorIds = Array.from(new Set(rows.map((r) => r.author_id).filter(Boolean)));
   const categoryIds = Array.from(new Set(rows.map((r) => r.category_id).filter(Boolean)));
+  const pubIds = Array.from(new Set(rows.map((r) => r.publication_id).filter(Boolean)));
 
-  const [transRes, authRes, catRes] = await Promise.all([
+  const [transRes, authRes, catRes, pubRes] = await Promise.all([
     supabase.from("blog_article_translations").select(TRANSLATION_FIELDS).in("article_id", ids),
     authorIds.length
       ? supabase.from("blog_authors").select(AUTHOR_FIELDS).in("id", authorIds)
@@ -32,21 +36,53 @@ async function hydrateArticles(rows: any[]): Promise<BlogArticleWithRelations[]>
     categoryIds.length
       ? supabase.from("blog_categories").select(CATEGORY_FIELDS).in("id", categoryIds)
       : Promise.resolve({ data: [] as any[] }),
+    pubIds.length
+      ? supabase.from("blog_publications" as any).select(PUBLICATION_FIELDS).in("id", pubIds)
+      : Promise.resolve({ data: [] as any[] }),
   ]);
 
   const translations = (transRes.data ?? []) as BlogTranslation[];
   const authors = (authRes.data ?? []) as BlogAuthor[];
   const categories = (catRes.data ?? []) as BlogCategory[];
+  const pubs = ((pubRes as any).data ?? []) as BlogPublication[];
 
   return rows.map((r) => ({
     ...(r as BlogArticle),
     author: authors.find((a) => a.id === r.author_id) ?? null,
     category: categories.find((c) => c.id === r.category_id) ?? null,
+    publication: pubs.find((p) => p.id === r.publication_id) ?? null,
     translations: translations.filter((t) => t.article_id === r.id),
   }));
 }
 
+async function getPublicationIdBySlug(slug: PublicationSlug): Promise<string | null> {
+  const { data } = await supabase
+    .from("blog_publications" as any)
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  return (data as any)?.id ?? null;
+}
+
+export async function listPublications(): Promise<BlogPublication[]> {
+  const { data } = await supabase
+    .from("blog_publications" as any)
+    .select(PUBLICATION_FIELDS)
+    .order("slug");
+  return ((data ?? []) as unknown) as BlogPublication[];
+}
+
+export async function getPublicationBySlug(slug: PublicationSlug): Promise<BlogPublication | null> {
+  const { data } = await supabase
+    .from("blog_publications" as any)
+    .select(PUBLICATION_FIELDS)
+    .eq("slug", slug)
+    .maybeSingle();
+  return (data as any) ?? null;
+}
+
 export async function listPublishedArticles(opts: {
+  publicationSlug?: PublicationSlug;
   categorySlug?: string;
   tagSlug?: string;
   authorSlug?: string;
@@ -59,12 +95,19 @@ export async function listPublishedArticles(opts: {
     .eq("status", "published")
     .order("published_at", { ascending: false });
 
+  if (opts.publicationSlug) {
+    const pid = await getPublicationIdBySlug(opts.publicationSlug);
+    if (!pid) return [];
+    q = q.eq("publication_id", pid);
+  }
+
   if (opts.categorySlug) {
-    const { data: cat } = await supabase
-      .from("blog_categories")
-      .select("id")
-      .eq("slug", opts.categorySlug)
-      .maybeSingle();
+    let catQ = supabase.from("blog_categories").select("id").eq("slug", opts.categorySlug);
+    if (opts.publicationSlug) {
+      const pid = await getPublicationIdBySlug(opts.publicationSlug);
+      if (pid) catQ = catQ.eq("publication_id", pid);
+    }
+    const { data: cat } = await catQ.maybeSingle();
     if (!cat) return [];
     q = q.eq("category_id", cat.id);
   }
@@ -103,26 +146,38 @@ export async function listPublishedArticles(opts: {
   return hydrateArticles(data);
 }
 
-export async function getFeaturedArticle(): Promise<BlogArticleWithRelations | null> {
-  const { data } = await supabase
+export async function getFeaturedArticle(publicationSlug?: PublicationSlug): Promise<BlogArticleWithRelations | null> {
+  let q = supabase
     .from("blog_articles")
     .select(ARTICLE_BASE)
     .eq("status", "published")
-    .eq("is_featured", true)
-    .limit(1)
-    .maybeSingle();
+    .eq("is_featured", true);
+  if (publicationSlug) {
+    const pid = await getPublicationIdBySlug(publicationSlug);
+    if (!pid) return null;
+    q = q.eq("publication_id", pid);
+  }
+  const { data } = await q.limit(1).maybeSingle();
   if (!data) return null;
   const [hydrated] = await hydrateArticles([data]);
   return hydrated ?? null;
 }
 
-export async function getArticleBySlug(slug: string): Promise<BlogArticleWithRelations | null> {
-  const { data } = await supabase
+export async function getArticleBySlug(
+  slug: string,
+  publicationSlug?: PublicationSlug
+): Promise<BlogArticleWithRelations | null> {
+  let q = supabase
     .from("blog_articles")
     .select(ARTICLE_BASE)
     .eq("slug", slug)
-    .eq("status", "published")
-    .maybeSingle();
+    .eq("status", "published");
+  if (publicationSlug) {
+    const pid = await getPublicationIdBySlug(publicationSlug);
+    if (!pid) return null;
+    q = q.eq("publication_id", pid);
+  }
+  const { data } = await q.maybeSingle();
   if (!data) return null;
   const [hydrated] = await hydrateArticles([data]);
   if (!hydrated) return null;
@@ -140,34 +195,32 @@ export async function getRelatedArticles(
   article: BlogArticleWithRelations,
   limit = 3
 ): Promise<BlogArticleWithRelations[]> {
-  if (!article.category_id) return [];
-  const { data } = await supabase
+  let q = supabase
     .from("blog_articles")
     .select(ARTICLE_BASE)
     .eq("status", "published")
-    .eq("category_id", article.category_id)
+    .eq("publication_id", article.publication_id)
     .neq("id", article.id)
     .order("published_at", { ascending: false })
     .limit(limit);
+  if (article.category_id) q = q.eq("category_id", article.category_id);
+  const { data } = await q;
   return hydrateArticles(data ?? []);
 }
 
-export async function listCategories(): Promise<BlogCategory[]> {
-  const { data } = await supabase
+export async function listCategories(publicationSlug?: PublicationSlug): Promise<BlogCategory[]> {
+  let q = supabase
     .from("blog_categories")
     .select(CATEGORY_FIELDS)
     .eq("is_active", true)
     .order("display_order");
+  if (publicationSlug) {
+    const pid = await getPublicationIdBySlug(publicationSlug);
+    if (!pid) return [];
+    q = q.eq("publication_id", pid);
+  }
+  const { data } = await q;
   return (data ?? []) as BlogCategory[];
-}
-
-export async function getCategoryBySlug(slug: string): Promise<BlogCategory | null> {
-  const { data } = await supabase
-    .from("blog_categories")
-    .select(CATEGORY_FIELDS)
-    .eq("slug", slug)
-    .maybeSingle();
-  return (data as BlogCategory) ?? null;
 }
 
 export async function getAuthorBySlug(slug: string): Promise<BlogAuthor | null> {
@@ -188,11 +241,16 @@ export async function getTagBySlug(slug: string): Promise<BlogTag | null> {
   return (data as BlogTag) ?? null;
 }
 
-export async function subscribeNewsletter(email: string, language: string, source: string): Promise<{ ok: boolean; error?: string }> {
+export async function subscribeNewsletter(
+  email: string,
+  language: string,
+  source: string,
+  preferred_publication?: "pro" | "journal" | "both"
+): Promise<{ ok: boolean; error?: string }> {
   if (!/^\S+@\S+\.\S+$/.test(email)) return { ok: false, error: "invalid_email" };
-  const { error } = await supabase
-    .from("newsletter_subscribers")
-    .insert({ email: email.trim().toLowerCase(), language, source });
+  const payload: any = { email: email.trim().toLowerCase(), language, source };
+  if (preferred_publication) payload.preferred_publication = preferred_publication;
+  const { error } = await supabase.from("newsletter_subscribers").insert(payload);
   if (error) {
     if (error.code === "23505") return { ok: false, error: "already_subscribed" };
     return { ok: false, error: error.message };
@@ -201,7 +259,5 @@ export async function subscribeNewsletter(email: string, language: string, sourc
 }
 
 export async function incrementViewCount(_id: string): Promise<void> {
-  // No-op: RLS blocks public writes to blog_articles. To enable real counting,
-  // add a SECURITY DEFINER RPC (e.g. `bump_article_view(uuid)`) and call it here.
   return;
 }
