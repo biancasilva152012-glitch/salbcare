@@ -3,18 +3,29 @@ import DOMPurify from "dompurify";
 
 marked.setOptions({ gfm: true, breaks: false });
 
+/**
+ * Pre-process markdown to convert custom syntax:
+ * - Lines starting with `>> ` become a `.pull-quote` aside.
+ */
+function preprocess(md: string): string {
+  return md.replace(/^>>\s+(.+)$/gm, (_m, text) => {
+    const safe = String(text).trim();
+    return `<aside class="pull-quote">${safe}</aside>`;
+  });
+}
+
 export function markdownToSafeHtml(md: string): string {
   if (!md) return "";
-  const raw = marked.parse(md) as string;
+  const raw = marked.parse(preprocess(md)) as string;
   if (typeof window === "undefined") return raw;
   return DOMPurify.sanitize(raw, {
     ADD_ATTR: ["target", "rel", "loading"],
+    ADD_TAGS: ["aside"],
   });
 }
 
 export function countWords(md: string): number {
   if (!md) return 0;
-  // Strip code fences/inline code/markdown markers, then count words
   const text = md
     .replace(/```[\s\S]*?```/g, " ")
     .replace(/`[^`]*`/g, " ")

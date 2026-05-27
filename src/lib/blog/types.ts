@@ -1,4 +1,18 @@
 export type BlogLang = "en" | "pt" | "es";
+export type PublicationSlug = "pro" | "journal";
+
+export interface BlogPublication {
+  id: string;
+  slug: PublicationSlug;
+  name_en: string;
+  name_pt: string;
+  name_es: string | null;
+  description_en: string | null;
+  description_pt: string | null;
+  description_es: string | null;
+  accent_color: string | null;
+  default_language: BlogLang;
+}
 
 export interface BlogAuthor {
   id: string;
@@ -16,6 +30,7 @@ export interface BlogAuthor {
 
 export interface BlogCategory {
   id: string;
+  publication_id: string;
   slug: string;
   name_en: string;
   name_pt: string | null;
@@ -50,11 +65,13 @@ export interface BlogTranslation {
   og_description: string | null;
   og_image_url: string | null;
   canonical_url: string | null;
+  focus_keyword: string | null;
   word_count: number | null;
 }
 
 export interface BlogArticle {
   id: string;
+  publication_id: string;
   slug: string;
   author_id: string | null;
   category_id: string | null;
@@ -72,6 +89,7 @@ export interface BlogArticle {
 export interface BlogArticleWithRelations extends BlogArticle {
   author: BlogAuthor | null;
   category: BlogCategory | null;
+  publication: BlogPublication | null;
   translations: BlogTranslation[];
   tags?: BlogTag[];
 }
@@ -110,4 +128,16 @@ export function localizedTagName(t: BlogTag, lang: BlogLang): string {
   if (lang === "pt") return t.name_pt || t.name_en;
   if (lang === "es") return t.name_es || t.name_en;
   return t.name_en;
+}
+
+export function localizedPublicationName(p: BlogPublication, lang: BlogLang): string {
+  if (lang === "pt") return p.name_pt;
+  if (lang === "es") return p.name_es || p.name_en;
+  return p.name_en;
+}
+
+export function localizedPublicationDesc(p: BlogPublication, lang: BlogLang): string {
+  if (lang === "pt") return p.description_pt || p.description_en || "";
+  if (lang === "es") return p.description_es || p.description_en || "";
+  return p.description_en || "";
 }
