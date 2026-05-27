@@ -297,6 +297,7 @@ export type Database = {
           content_html: string | null
           content_markdown: string | null
           excerpt: string | null
+          focus_keyword: string | null
           id: string
           language: string
           meta_description: string | null
@@ -314,6 +315,7 @@ export type Database = {
           content_html?: string | null
           content_markdown?: string | null
           excerpt?: string | null
+          focus_keyword?: string | null
           id?: string
           language: string
           meta_description?: string | null
@@ -331,6 +333,7 @@ export type Database = {
           content_html?: string | null
           content_markdown?: string | null
           excerpt?: string | null
+          focus_keyword?: string | null
           id?: string
           language?: string
           meta_description?: string | null
@@ -361,6 +364,7 @@ export type Database = {
           featured_image_url: string | null
           id: string
           is_featured: boolean
+          publication_id: string
           published_at: string | null
           read_time_minutes: number | null
           slug: string
@@ -376,6 +380,7 @@ export type Database = {
           featured_image_url?: string | null
           id?: string
           is_featured?: boolean
+          publication_id: string
           published_at?: string | null
           read_time_minutes?: number | null
           slug: string
@@ -391,6 +396,7 @@ export type Database = {
           featured_image_url?: string | null
           id?: string
           is_featured?: boolean
+          publication_id?: string
           published_at?: string | null
           read_time_minutes?: number | null
           slug?: string
@@ -411,6 +417,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "blog_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_articles_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "blog_publications"
             referencedColumns: ["id"]
           },
         ]
@@ -471,6 +484,7 @@ export type Database = {
           name_en: string
           name_es: string | null
           name_pt: string | null
+          publication_id: string
           slug: string
         }
         Insert: {
@@ -483,6 +497,7 @@ export type Database = {
           name_en: string
           name_es?: string | null
           name_pt?: string | null
+          publication_id: string
           slug: string
         }
         Update: {
@@ -495,6 +510,57 @@ export type Database = {
           name_en?: string
           name_es?: string | null
           name_pt?: string | null
+          publication_id?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_categories_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "blog_publications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_publications: {
+        Row: {
+          accent_color: string | null
+          created_at: string
+          default_language: string
+          description_en: string | null
+          description_es: string | null
+          description_pt: string | null
+          id: string
+          name_en: string
+          name_es: string | null
+          name_pt: string
+          slug: string
+        }
+        Insert: {
+          accent_color?: string | null
+          created_at?: string
+          default_language?: string
+          description_en?: string | null
+          description_es?: string | null
+          description_pt?: string | null
+          id?: string
+          name_en: string
+          name_es?: string | null
+          name_pt: string
+          slug: string
+        }
+        Update: {
+          accent_color?: string | null
+          created_at?: string
+          default_language?: string
+          description_en?: string | null
+          description_es?: string | null
+          description_pt?: string | null
+          id?: string
+          name_en?: string
+          name_es?: string | null
+          name_pt?: string
           slug?: string
         }
         Relationships: []
@@ -1304,6 +1370,7 @@ export type Database = {
           email: string
           id: string
           language: string | null
+          preferred_publication: string | null
           source: string | null
         }
         Insert: {
@@ -1311,6 +1378,7 @@ export type Database = {
           email: string
           id?: string
           language?: string | null
+          preferred_publication?: string | null
           source?: string | null
         }
         Update: {
@@ -1318,6 +1386,7 @@ export type Database = {
           email?: string
           id?: string
           language?: string | null
+          preferred_publication?: string | null
           source?: string | null
         }
         Relationships: []
