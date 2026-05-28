@@ -323,6 +323,17 @@ export default function AdminBlogEditorPage() {
                   <Input value={trans[l].meta_description} onChange={(e) => patchTrans(l, { meta_description: e.target.value })} />
                 </div>
               </div>
+              <div>
+                <Label className="text-xs">Focus keyword (SEO)</Label>
+                <Input
+                  value={trans[l].focus_keyword}
+                  placeholder="e.g. teleconsulta médica"
+                  onChange={(e) => patchTrans(l, { focus_keyword: e.target.value })}
+                />
+                <p className="text-[10px] opacity-50 mt-1">
+                  Primary search term this article targets. Used in Schema.org keywords + internal SEO audits.
+                </p>
+              </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-xs">Markdown</Label>
