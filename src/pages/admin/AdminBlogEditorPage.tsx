@@ -154,6 +154,7 @@ export default function AdminBlogEditorPage() {
         content_html: html || null,
         meta_title: t.meta_title || null,
         meta_description: t.meta_description || null,
+        focus_keyword: t.focus_keyword || null,
         word_count: countWords(t.content_markdown),
       };
       const { data: existing } = await supabase
