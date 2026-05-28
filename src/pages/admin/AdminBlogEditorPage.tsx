@@ -88,6 +88,7 @@ export default function AdminBlogEditorPage() {
             content_markdown: t.content_markdown ?? "",
             meta_title: t.meta_title ?? "",
             meta_description: t.meta_description ?? "",
+            focus_keyword: t.focus_keyword ?? "",
           };
         }
       });
