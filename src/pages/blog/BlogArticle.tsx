@@ -10,15 +10,17 @@ import {
   localizedTagName,
   type BlogArticleWithRelations,
   type BlogLang,
+  type PublicationSlug,
 } from "@/lib/blog/types";
-import { detectInitialLang, persistLang, BLOG_LANGS, langLabel, withLangPrefix } from "@/lib/blog/locale";
+import { detectInitialLang, persistLang, BLOG_LANGS, withLangPrefix } from "@/lib/blog/locale";
 import { markdownToSafeHtml } from "@/lib/blog/markdown";
 
 interface Props {
   forcedLang?: BlogLang;
+  publicationSlug?: PublicationSlug;
 }
 
-export default function BlogArticle({ forcedLang }: Props) {
+export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [lang, setLang] = useState<BlogLang>(forcedLang ?? detectInitialLang());
@@ -38,7 +40,7 @@ export default function BlogArticle({ forcedLang }: Props) {
     let alive = true;
     setLoading(true);
     (async () => {
-      const a = await getArticleBySlug(slug);
+      const a = await getArticleBySlug(slug, publicationSlug);
       if (!alive) return;
       if (!a) {
         setNotFound(true);
@@ -53,15 +55,24 @@ export default function BlogArticle({ forcedLang }: Props) {
     return () => {
       alive = false;
     };
-  }, [slug]);
+  }, [slug, publicationSlug]);
+
+  // Resolve actual publication (from prop or from loaded article)
+  const pub: PublicationSlug | undefined =
+    publicationSlug ?? (article?.publication?.slug as PublicationSlug | undefined);
+  const isJournal = pub === "journal";
+  const accentVar = isJournal ? "--blog-journal" : "--blog-pro";
+  const headingClass = isJournal ? "font-journal italic" : "font-pro font-bold";
+  const variant: "pro" | "journal" = isJournal ? "journal" : "pro";
+  const bgVar = isJournal ? "--brand-dark" : "--brand-dark";
 
   if (notFound) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
         <div className="text-center px-6">
-          <p className="text-xs uppercase tracking-widest mb-4" style={{ color: "hsl(var(--kite-gold))" }}>404</p>
+          <p className="text-xs uppercase tracking-widest mb-4" style={{ color: `hsl(var(${accentVar}))` }}>404</p>
           <h1 className="font-serif text-3xl mb-4">Article not found</h1>
-          <Link to={withLangPrefix("/blog", lang)} className="underline opacity-80">Back to the Journal</Link>
+          <Link to={withLangPrefix(pub ? `/blog/${pub}` : "/blog", lang)} className="underline opacity-80">Back to the blog</Link>
         </div>
       </div>
     );
@@ -84,17 +95,24 @@ export default function BlogArticle({ forcedLang }: Props) {
     );
   }
 
+  const articlePub = (article.publication?.slug as PublicationSlug | undefined) ?? pub ?? "journal";
   const html = t.content_html?.trim()
     ? t.content_html
     : markdownToSafeHtml(t.content_markdown || "");
 
   const pubDate = article.published_at || article.created_at;
-  const canonical = t.canonical_url || `${withLangPrefix(`/blog/${article.slug}`, lang)}`;
+  const canonicalPath = `/blog/${articlePub}/${article.slug}`;
+  const canonical = t.canonical_url || withLangPrefix(canonicalPath, lang);
 
   async function handleSubscribe(e: React.FormEvent) {
     e.preventDefault();
     setSubStatus("idle");
-    const res = await subscribeNewsletter(email, lang, "blog_article");
+    const res = await subscribeNewsletter(
+      email,
+      lang,
+      `blog_article_${articlePub}`,
+      articlePub === "pro" ? "pro" : "journal",
+    );
     if (res.ok) {
       setSubStatus("ok");
       setEmail("");
@@ -114,8 +132,9 @@ export default function BlogArticle({ forcedLang }: Props) {
     datePublished: pubDate,
     dateModified: article.updated_at,
     inLanguage: lang,
+    keywords: t.focus_keyword || undefined,
     author: article.author
-      ? { "@type": "Person", name: article.author.name, url: article.author.linkedin_url || undefined }
+      ? { "@type": "Person", name: article.author.name, url: `${SITE_URL}${withLangPrefix(`/blog/author/${article.author.slug}`, lang)}` }
       : undefined,
     publisher: {
       "@type": "Organization",
@@ -126,30 +145,32 @@ export default function BlogArticle({ forcedLang }: Props) {
     wordCount: t.word_count || undefined,
   };
 
+  const pubLabel = articlePub === "pro" ? "SalbCare Pro" : "The SalbCare Journal";
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Journal", item: `${SITE_URL}${withLangPrefix("/blog", lang)}` },
+      { "@type": "ListItem", position: 1, name: "Blog", item: `${SITE_URL}${withLangPrefix("/blog", lang)}` },
+      { "@type": "ListItem", position: 2, name: pubLabel, item: `${SITE_URL}${withLangPrefix(`/blog/${articlePub}`, lang)}` },
       ...(article.category
         ? [{
             "@type": "ListItem",
-            position: 2,
+            position: 3,
             name: localizedCategoryName(article.category, lang),
-            item: `${SITE_URL}${withLangPrefix(`/blog?cat=${article.category.slug}`, lang)}`,
+            item: `${SITE_URL}${withLangPrefix(`/blog/${articlePub}?cat=${article.category.slug}`, lang)}`,
           }]
         : []),
-      { "@type": "ListItem", position: article.category ? 3 : 2, name: t.title, item: `${SITE_URL}${canonical}` },
+      { "@type": "ListItem", position: article.category ? 4 : 3, name: t.title, item: `${SITE_URL}${canonical}` },
     ],
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
+    <div className="min-h-screen" style={{ background: `hsl(var(${bgVar}))`, color: "hsl(var(--kite-cream))" }}>
       <BlogSEO
         title={t.meta_title || t.title}
         description={t.meta_description || t.excerpt || ""}
         canonicalPath={canonical}
-        hreflangPath={`/blog/${article.slug}`}
+        hreflangPath={canonicalPath}
         lang={lang}
         ogImage={t.og_image_url || article.featured_image_url}
         ogType="article"
@@ -159,8 +180,8 @@ export default function BlogArticle({ forcedLang }: Props) {
       {/* Top bar */}
       <div className="border-b border-white/10">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between text-xs">
-          <Link to={withLangPrefix("/blog", lang)} className="opacity-70 hover:opacity-100 tracking-wider uppercase">
-            ← The SalbCare Journal
+          <Link to={withLangPrefix(`/blog/${articlePub}`, lang)} className="opacity-70 hover:opacity-100 tracking-wider uppercase">
+            ← {pubLabel}
           </Link>
           <div className="flex gap-2">
             {BLOG_LANGS.map((l) => (
@@ -169,10 +190,10 @@ export default function BlogArticle({ forcedLang }: Props) {
                 onClick={() => {
                   setLang(l);
                   persistLang(l);
-                  // If we have a forced lang via URL, navigate to the lang-prefixed URL too
-                  if (forcedLang) navigate(withLangPrefix(`/blog/${article.slug}`, l));
+                  if (forcedLang) navigate(withLangPrefix(`/blog/${articlePub}/${article.slug}`, l));
                 }}
-                className={`px-2 py-1 rounded ${lang === l ? "text-[hsl(var(--kite-gold))]" : "opacity-60 hover:opacity-100"}`}
+                className={`px-2 py-1 rounded ${lang === l ? "" : "opacity-60 hover:opacity-100"}`}
+                style={lang === l ? { color: `hsl(var(${accentVar}))` } : undefined}
               >
                 {l.toUpperCase()}
               </button>
@@ -185,11 +206,11 @@ export default function BlogArticle({ forcedLang }: Props) {
       <article className="max-w-3xl mx-auto px-6 pt-16 pb-24">
         <header className="mb-12">
           {article.category && (
-            <p className="text-[10px] uppercase tracking-[0.2em] mb-6" style={{ color: "hsl(var(--kite-gold))" }}>
+            <p className="text-[10px] uppercase tracking-[0.2em] mb-6" style={{ color: `hsl(var(${accentVar}))` }}>
               {localizedCategoryName(article.category, lang)}
             </p>
           )}
-          <h1 className="font-serif text-3xl md:text-5xl leading-tight mb-6" style={{ letterSpacing: "-0.01em" }}>
+          <h1 className={`text-3xl md:text-5xl leading-tight mb-6 ${headingClass}`} style={{ letterSpacing: "-0.01em" }}>
             {t.title}
           </h1>
           {t.subtitle && <p className="text-lg md:text-xl opacity-75 mb-8 leading-relaxed">{t.subtitle}</p>}
@@ -223,7 +244,7 @@ export default function BlogArticle({ forcedLang }: Props) {
           </figure>
         )}
 
-        <BlogMarkdownContent html={html} />
+        <BlogMarkdownContent html={html} variant={variant} />
 
         {/* Tags */}
         {article.tags && article.tags.length > 0 && (
@@ -234,7 +255,8 @@ export default function BlogArticle({ forcedLang }: Props) {
                 <Link
                   key={tag.id}
                   to={withLangPrefix(`/blog/tag/${tag.slug}`, lang)}
-                  className="text-xs px-3 py-1 rounded-full border border-white/15 hover:border-[hsl(var(--kite-gold))]"
+                  className="text-xs px-3 py-1 rounded-full border border-white/15"
+                  style={{ borderColor: undefined }}
                 >
                   {localizedTagName(tag, lang)}
                 </Link>
@@ -250,7 +272,12 @@ export default function BlogArticle({ forcedLang }: Props) {
               <img src={article.author.avatar_url} alt={article.author.name} className="w-14 h-14 rounded-full object-cover" />
             )}
             <div>
-              <p className="font-serif text-lg">{article.author.name}</p>
+              <Link
+                to={withLangPrefix(`/blog/author/${article.author.slug}`, lang)}
+                className={`${isJournal ? "font-journal italic" : "font-pro font-semibold"} text-lg hover:underline`}
+              >
+                {article.author.name}
+              </Link>
               {article.author.role && <p className="text-xs opacity-60 mb-2">{article.author.role}</p>}
               <p className="text-sm opacity-75 leading-relaxed">{localizedAuthorBio(article.author, lang)}</p>
             </div>
@@ -259,15 +286,19 @@ export default function BlogArticle({ forcedLang }: Props) {
 
         {/* Newsletter */}
         <aside className="mt-16 p-8 rounded-2xl" style={{ background: "hsl(var(--brand-darker))" }}>
-          <p className="text-[10px] uppercase tracking-widest mb-3" style={{ color: "hsl(var(--kite-gold))" }}>
-            {lang === "pt" ? "Assine o Journal" : lang === "es" ? "Suscríbete al Journal" : "Subscribe to the Journal"}
+          <p className="text-[10px] uppercase tracking-widest mb-3" style={{ color: `hsl(var(${accentVar}))` }}>
+            {articlePub === "pro"
+              ? (lang === "pt" ? "Newsletter SalbCare Pro" : lang === "es" ? "Newsletter SalbCare Pro" : "SalbCare Pro newsletter")
+              : (lang === "pt" ? "Assine o Journal" : lang === "es" ? "Suscríbete al Journal" : "Subscribe to the Journal")}
           </p>
-          <h3 className="font-serif text-2xl mb-4">
-            {lang === "pt"
-              ? "Pesquisa de campo. Sem ruído."
-              : lang === "es"
-              ? "Investigación de campo. Sin ruido."
-              : "Field research. No noise."}
+          <h3 className={`text-2xl mb-4 ${isJournal ? "font-journal" : "font-pro font-semibold"}`}>
+            {articlePub === "pro"
+              ? (lang === "pt" ? "Insights práticos para seu consultório."
+                 : lang === "es" ? "Insights prácticos para tu consultorio."
+                 : "Practical insights for your practice.")
+              : (lang === "pt" ? "Pesquisa de campo. Sem ruído."
+                 : lang === "es" ? "Investigación de campo. Sin ruido."
+                 : "Field research. No noise.")}
           </h3>
           <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
             <input
@@ -276,12 +307,13 @@ export default function BlogArticle({ forcedLang }: Props) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={lang === "pt" ? "Seu email" : lang === "es" ? "Tu correo" : "Your email"}
-              className="flex-1 bg-transparent border border-white/20 rounded-md px-4 py-3 text-sm focus:border-[hsl(var(--kite-gold))] focus:outline-none"
+              className="flex-1 bg-transparent border border-white/20 rounded-md px-4 py-3 text-sm focus:outline-none"
+              style={{ borderColor: undefined }}
             />
             <button
               type="submit"
               className="px-6 py-3 text-sm rounded-md font-medium"
-              style={{ background: "hsl(var(--kite-gold))", color: "hsl(var(--brand-dark))" }}
+              style={{ background: `hsl(var(${accentVar}))`, color: "hsl(var(--brand-dark))" }}
             >
               {lang === "pt" ? "Assinar" : lang === "es" ? "Suscribirme" : "Subscribe"}
             </button>
@@ -303,12 +335,13 @@ export default function BlogArticle({ forcedLang }: Props) {
               {related.map((r) => {
                 const rt = pickTranslation(r, lang);
                 if (!rt) return null;
+                const rpub = (r.publication?.slug as PublicationSlug | undefined) ?? articlePub;
                 return (
-                  <Link key={r.id} to={withLangPrefix(`/blog/${r.slug}`, lang)} className="group">
+                  <Link key={r.id} to={withLangPrefix(`/blog/${rpub}/${r.slug}`, lang)} className="group">
                     {r.featured_image_url && (
                       <img src={r.featured_image_url} alt={rt.title} loading="lazy" className="w-full h-40 object-cover rounded-md mb-4" />
                     )}
-                    <h4 className="font-serif text-lg mb-2 group-hover:opacity-80">{rt.title}</h4>
+                    <h4 className={`text-lg mb-2 group-hover:opacity-80 ${isJournal ? "font-journal" : "font-pro font-semibold"}`}>{rt.title}</h4>
                     {rt.excerpt && <p className="text-sm opacity-60 line-clamp-2">{rt.excerpt}</p>}
                   </Link>
                 );
