@@ -116,7 +116,10 @@ const BlogReceituarioDigital = lazyWithRetry(() => import("./pages/blog/BlogRece
 const BlogCnpjMedico = lazyWithRetry(() => import("./pages/blog/BlogCnpjMedico"), "BlogCnpjMedico");
 const BlogPrecoMinimoConsulta = lazyWithRetry(() => import("./pages/blog/BlogPrecoMinimoConsulta"), "BlogPrecoMinimoConsulta");
 const BlogHome = lazyWithRetry(() => import("./pages/blog/BlogHome"), "BlogHome");
+const BlogHub = lazyWithRetry(() => import("./pages/blog/BlogHub"), "BlogHub");
+const PublicationHome = lazyWithRetry(() => import("./pages/blog/PublicationHome"), "PublicationHome");
 const BlogArticle = lazyWithRetry(() => import("./pages/blog/BlogArticle"), "BlogArticle");
+const AuthorPage = lazyWithRetry(() => import("./pages/blog/AuthorPage"), "AuthorPage");
 const AdminBlogListPage = lazyWithRetry(() => import("./pages/admin/AdminBlogListPage"), "AdminBlogListPage");
 const AdminBlogEditorPage = lazyWithRetry(() => import("./pages/admin/AdminBlogEditorPage"), "AdminBlogEditorPage");
 
