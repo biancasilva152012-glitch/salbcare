@@ -116,7 +116,10 @@ const BlogReceituarioDigital = lazyWithRetry(() => import("./pages/blog/BlogRece
 const BlogCnpjMedico = lazyWithRetry(() => import("./pages/blog/BlogCnpjMedico"), "BlogCnpjMedico");
 const BlogPrecoMinimoConsulta = lazyWithRetry(() => import("./pages/blog/BlogPrecoMinimoConsulta"), "BlogPrecoMinimoConsulta");
 const BlogHome = lazyWithRetry(() => import("./pages/blog/BlogHome"), "BlogHome");
+const BlogHub = lazyWithRetry(() => import("./pages/blog/BlogHub"), "BlogHub");
+const PublicationHome = lazyWithRetry(() => import("./pages/blog/PublicationHome"), "PublicationHome");
 const BlogArticle = lazyWithRetry(() => import("./pages/blog/BlogArticle"), "BlogArticle");
+const AuthorPage = lazyWithRetry(() => import("./pages/blog/AuthorPage"), "AuthorPage");
 const AdminBlogListPage = lazyWithRetry(() => import("./pages/admin/AdminBlogListPage"), "AdminBlogListPage");
 const AdminBlogEditorPage = lazyWithRetry(() => import("./pages/admin/AdminBlogEditorPage"), "AdminBlogEditorPage");
 
@@ -197,16 +200,40 @@ const App = () => (
               <Route path="/blog/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
               <Route path="/blog/preco-minimo-consulta" element={<BlogPrecoMinimoConsulta />} />
 
-              {/* New bilingual journal — DB-backed */}
-              <Route path="/blog" element={<BlogHome />} />
-              <Route path="/blog/:slug" element={<BlogArticle />} />
-              <Route path="/pt/blog" element={<BlogHome />} />
-              <Route path="/pt/blog/:slug" element={<BlogArticle forcedLang="pt" />} />
-              <Route path="/es/blog" element={<BlogHome />} />
-              <Route path="/es/blog/:slug" element={<BlogArticle forcedLang="es" />} />
-              <Route path="/en/blog" element={<BlogHome />} />
-              <Route path="/en/blog/:slug" element={<BlogArticle forcedLang="en" />} />
-              {/* Legacy index */}
+              {/* Blog — dual-publication hub */}
+              <Route path="/blog" element={<BlogHub />} />
+              <Route path="/pt/blog" element={<BlogHub />} />
+              <Route path="/es/blog" element={<BlogHub />} />
+              <Route path="/en/blog" element={<BlogHub />} />
+
+              {/* Author page (shared across publications) */}
+              <Route path="/blog/author/:slug" element={<AuthorPage />} />
+              <Route path="/pt/blog/author/:slug" element={<AuthorPage />} />
+              <Route path="/es/blog/author/:slug" element={<AuthorPage />} />
+              <Route path="/en/blog/author/:slug" element={<AuthorPage />} />
+
+              {/* SalbCare Pro publication */}
+              <Route path="/blog/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/pt/blog/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/es/blog/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/en/blog/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" />} />
+              <Route path="/pt/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="pt" />} />
+              <Route path="/es/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="es" />} />
+              <Route path="/en/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="en" />} />
+
+              {/* The SalbCare Journal publication */}
+              <Route path="/blog/journal" element={<PublicationHome publication="journal" />} />
+              <Route path="/pt/blog/journal" element={<PublicationHome publication="journal" />} />
+              <Route path="/es/blog/journal" element={<PublicationHome publication="journal" />} />
+              <Route path="/en/blog/journal" element={<PublicationHome publication="journal" />} />
+              <Route path="/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" />} />
+              <Route path="/pt/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="pt" />} />
+              <Route path="/es/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="es" />} />
+              <Route path="/en/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="en" />} />
+
+              {/* Legacy fallbacks — slug-only routes preserved AFTER static routes above */}
+              <Route path="/blog/legacy-home" element={<BlogHome />} />
               <Route path="/blog/index" element={<BlogIndex />} />
 
               

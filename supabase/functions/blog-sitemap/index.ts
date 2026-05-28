@@ -1,5 +1,5 @@
-// Public sitemap for the SalbCare Journal (blog).
-// Lists every published article in EN/PT/ES with hreflang alternates.
+// Public sitemap for SalbCare blog (dual publications: Pro + Journal).
+// Lists every published article under /blog/{pub}/{slug} in EN/PT/ES with hreflang alternates.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const SITE = "https://salbcare.com";
@@ -9,6 +9,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "*",
 };
 
+type Lang = "en" | "pt" | "es";
+const LANGS: Lang[] = ["en", "pt", "es"];
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -17,40 +20,41 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
 
-  const { data: articles } = await supabase
-    .from("blog_articles")
-    .select("slug, updated_at, published_at, status")
-    .eq("status", "published");
+  const [{ data: pubs }, { data: articles }] = await Promise.all([
+    supabase.from("blog_publications").select("id, slug"),
+    supabase
+      .from("blog_articles")
+      .select("slug, updated_at, published_at, publication_id, status")
+      .eq("status", "published"),
+  ]);
 
-  const { data: categories } = await supabase
-    .from("blog_categories")
-    .select("slug")
-    .eq("is_active", true);
+  const pubBySlug = new Map((pubs ?? []).map((p: any) => [p.slug, p.id]));
+  const slugByPubId = new Map((pubs ?? []).map((p: any) => [p.id, p.slug]));
 
   const urls: string[] = [];
+  const now = new Date().toISOString();
 
-  const langs: Array<"en" | "pt" | "es"> = ["en", "pt", "es"];
-
-  // Blog home
-  for (const lang of langs) {
-    const base = lang === "en" ? "/blog" : `/${lang}/blog`;
-    urls.push(makeUrl(`${SITE}${base}`, new Date().toISOString(), 0.9, "/blog"));
+  // Hub
+  for (const lang of LANGS) {
+    urls.push(makeUrl(absolute("/blog", lang), now, 0.9, "/blog"));
   }
 
-  // Categories
-  for (const cat of categories ?? []) {
-    for (const lang of langs) {
-      const base = lang === "en" ? `/blog?cat=${cat.slug}` : `/${lang}/blog?cat=${cat.slug}`;
-      urls.push(makeUrl(`${SITE}${base}`, new Date().toISOString(), 0.6, `/blog?cat=${cat.slug}`));
+  // Publication homes
+  for (const pubSlug of pubBySlug.keys()) {
+    const base = `/blog/${pubSlug}`;
+    for (const lang of LANGS) {
+      urls.push(makeUrl(absolute(base, lang), now, 0.85, base));
     }
   }
 
   // Articles
   for (const a of articles ?? []) {
-    for (const lang of langs) {
-      const base = lang === "en" ? `/blog/${a.slug}` : `/${lang}/blog/${a.slug}`;
-      const lastmod = (a.updated_at || a.published_at || new Date().toISOString()).split("T")[0];
-      urls.push(makeUrl(`${SITE}${base}`, lastmod, 0.8, `/blog/${a.slug}`));
+    const pubSlug = slugByPubId.get(a.publication_id);
+    if (!pubSlug) continue;
+    const path = `/blog/${pubSlug}/${a.slug}`;
+    const lastmod = (a.updated_at || a.published_at || now).split("T")[0];
+    for (const lang of LANGS) {
+      urls.push(makeUrl(absolute(path, lang), lastmod, 0.8, path));
     }
   }
 
@@ -69,12 +73,14 @@ ${urls.join("\n")}
   });
 });
 
+function absolute(path: string, lang: Lang): string {
+  return lang === "en" ? `${SITE}${path}` : `${SITE}/${lang}${path}`;
+}
+
 function makeUrl(loc: string, lastmod: string, priority: number, hreflangPath: string): string {
-  const alts = ["en", "pt", "es"]
-    .map((l) => {
-      const href = l === "en" ? `${SITE}${hreflangPath}` : `${SITE}/${l}${hreflangPath}`;
-      return `    <xhtml:link rel="alternate" hreflang="${l}" href="${href}"/>`;
-    })
+  const alts = LANGS
+    .map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${absolute(hreflangPath, l)}"/>`)
+    .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}${hreflangPath}"/>`)
     .join("\n");
   return `  <url>
     <loc>${escapeXml(loc)}</loc>

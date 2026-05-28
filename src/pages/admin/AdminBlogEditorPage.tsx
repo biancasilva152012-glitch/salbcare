@@ -33,6 +33,7 @@ interface TransRow {
   content_markdown: string;
   meta_title: string;
   meta_description: string;
+  focus_keyword: string;
 }
 
 const emptyTrans = (language: BlogLang): TransRow => ({
@@ -43,6 +44,7 @@ const emptyTrans = (language: BlogLang): TransRow => ({
   content_markdown: "",
   meta_title: "",
   meta_description: "",
+  focus_keyword: "",
 });
 
 export default function AdminBlogEditorPage() {
@@ -86,6 +88,7 @@ export default function AdminBlogEditorPage() {
             content_markdown: t.content_markdown ?? "",
             meta_title: t.meta_title ?? "",
             meta_description: t.meta_description ?? "",
+            focus_keyword: t.focus_keyword ?? "",
           };
         }
       });
@@ -151,6 +154,7 @@ export default function AdminBlogEditorPage() {
         content_html: html || null,
         meta_title: t.meta_title || null,
         meta_description: t.meta_description || null,
+        focus_keyword: t.focus_keyword || null,
         word_count: countWords(t.content_markdown),
       };
       const { data: existing } = await supabase
@@ -318,6 +322,17 @@ export default function AdminBlogEditorPage() {
                   <Label className="text-xs">Meta description (SEO)</Label>
                   <Input value={trans[l].meta_description} onChange={(e) => patchTrans(l, { meta_description: e.target.value })} />
                 </div>
+              </div>
+              <div>
+                <Label className="text-xs">Focus keyword (SEO)</Label>
+                <Input
+                  value={trans[l].focus_keyword}
+                  placeholder="e.g. teleconsulta médica"
+                  onChange={(e) => patchTrans(l, { focus_keyword: e.target.value })}
+                />
+                <p className="text-[10px] opacity-50 mt-1">
+                  Primary search term this article targets. Used in Schema.org keywords + internal SEO audits.
+                </p>
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
