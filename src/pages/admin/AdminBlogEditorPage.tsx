@@ -33,6 +33,7 @@ interface TransRow {
   content_markdown: string;
   meta_title: string;
   meta_description: string;
+  focus_keyword: string;
 }
 
 const emptyTrans = (language: BlogLang): TransRow => ({
@@ -43,6 +44,7 @@ const emptyTrans = (language: BlogLang): TransRow => ({
   content_markdown: "",
   meta_title: "",
   meta_description: "",
+  focus_keyword: "",
 });
 
 export default function AdminBlogEditorPage() {
