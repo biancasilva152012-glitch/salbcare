@@ -21,6 +21,7 @@ export default function SharedFooter() {
           <FooterCol title="Company">
             <FooterLink to="/about">About</FooterLink>
             <FooterLink to="/contact">Contact</FooterLink>
+            <FooterLink to="/journal">Journal</FooterLink>
             <span className="text-white/30">Careers — soon</span>
           </FooterCol>
           <FooterCol title="Legal">

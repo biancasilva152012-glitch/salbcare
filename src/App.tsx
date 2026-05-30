@@ -19,9 +19,14 @@ import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 const TrackingProvider = () => { useTracking(); return null; };
+
+const JournalSlugRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/blog/journal/${slug ?? ""}`} replace />;
+};
 
 // Hide the freemium debug widget on public routes and in production.
 const FreemiumDebugPanelGate = () => {
@@ -231,6 +236,10 @@ const App = () => (
               <Route path="/pt/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="pt" />} />
               <Route path="/es/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="es" />} />
               <Route path="/en/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="en" />} />
+
+              {/* /journal short alias — redirects to canonical /blog/journal */}
+              <Route path="/journal" element={<Navigate to="/blog/journal" replace />} />
+              <Route path="/journal/:slug" element={<JournalSlugRedirect />} />
 
               {/* Legacy fallbacks — slug-only routes preserved AFTER static routes above */}
               <Route path="/blog/legacy-home" element={<BlogHome />} />
