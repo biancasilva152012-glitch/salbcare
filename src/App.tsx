@@ -19,9 +19,14 @@ import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useTracking } from "@/hooks/useTracking";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 const TrackingProvider = () => { useTracking(); return null; };
+
+const JournalSlugRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/blog/journal/${slug ?? ""}`} replace />;
+};
 
 // Hide the freemium debug widget on public routes and in production.
 const FreemiumDebugPanelGate = () => {
