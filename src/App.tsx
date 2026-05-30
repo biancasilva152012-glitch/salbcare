@@ -232,6 +232,10 @@ const App = () => (
               <Route path="/es/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="es" />} />
               <Route path="/en/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="en" />} />
 
+              {/* /journal short alias — redirects to canonical /blog/journal */}
+              <Route path="/journal" element={<Navigate to="/blog/journal" replace />} />
+              <Route path="/journal/:slug" element={<JournalSlugRedirect />} />
+
               {/* Legacy fallbacks — slug-only routes preserved AFTER static routes above */}
               <Route path="/blog/legacy-home" element={<BlogHome />} />
               <Route path="/blog/index" element={<BlogIndex />} />
