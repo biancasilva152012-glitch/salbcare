@@ -169,7 +169,11 @@ export default function Hub() {
           </div>
         </section>
 
+        {/* Journal — featured essays from The SalbCare Journal */}
+        <JournalSection />
+
         <SharedFooter />
+
       </div>
     </>
   );
