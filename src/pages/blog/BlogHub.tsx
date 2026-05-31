@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import BlogSEO, { SITE_URL } from "@/components/blog/BlogSEO";
 import { listPublishedArticles, listPublications } from "@/lib/blog/queries";
 import { pickTranslation, type BlogArticleWithRelations, type BlogLang, type BlogPublication, type PublicationSlug } from "@/lib/blog/types";
-import { detectInitialLang, persistLang, BLOG_LANGS, langLabel, withLangPrefix } from "@/lib/blog/locale";
+import { detectInitialLang, persistLang, BLOG_LANGS, langLabel, withLangPrefix, pubUrlSegment } from "@/lib/blog/locale";
 
 const I18N = {
   pt: {
@@ -74,7 +74,7 @@ export default function BlogHub() {
           "@context": "https://schema.org",
           "@type": "WebPage",
           name: "SalbCare Blog Hub",
-          url: `${SITE_URL}/blog`,
+          url: `${SITE_URL}/journal`,
           inLanguage: lang,
         }}
       />
@@ -148,7 +148,7 @@ function PubCard({
   const name = publication
     ? (lang === "pt" ? publication.name_pt : lang === "es" ? publication.name_es : publication.name_en) || publication.name_en
     : "";
-  const href = withLangPrefix(`/journal/${slug}`, lang);
+  const href = withLangPrefix(`/journal/${pubUrlSegment(slug)}`, lang);
 
   return (
     <Link to={href} className="group block rounded-2xl p-8 md:p-10 transition-all hover:translate-y-[-2px]"

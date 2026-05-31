@@ -69,7 +69,7 @@ export default function PublicationHome({ publication }: Props) {
       <div className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-xs">
           <nav className="opacity-70">
-            <Link to={withLangPrefix("/journal", lang)} className="hover:opacity-100">Blog</Link>
+            <Link to={withLangPrefix("/journal", lang)} className="hover:opacity-100">Journal</Link>
             <span className="mx-2 opacity-40">/</span>
             <span style={{ color: `hsl(var(${accentVar}))` }}>{publication === "pro" ? "Pro" : "Journal"}</span>
           </nav>

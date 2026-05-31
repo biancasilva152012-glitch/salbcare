@@ -72,7 +72,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
         <div className="text-center px-6">
           <p className="text-xs uppercase tracking-widest mb-4" style={{ color: `hsl(var(${accentVar}))` }}>404</p>
           <h1 className="font-serif text-3xl mb-4">Article not found</h1>
-          <Link to={withLangPrefix(pub ? `/journal/${pubUrlSegment(pub)}` : "/journal", lang)} className="underline opacity-80">Back to the blog</Link>
+          <Link to={withLangPrefix(pub ? `/journal/${pubUrlSegment(pub)}` : "/journal", lang)} className="underline opacity-80">Back to the Journal</Link>
         </div>
       </div>
     );
@@ -150,7 +150,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Blog", item: `${SITE_URL}${withLangPrefix("/journal", lang)}` },
+      { "@type": "ListItem", position: 1, name: "Journal", item: `${SITE_URL}${withLangPrefix("/journal", lang)}` },
       { "@type": "ListItem", position: 2, name: pubLabel, item: `${SITE_URL}${withLangPrefix(`/journal/${pubUrlSegment(articlePub)}`, lang)}` },
       ...(article.category
         ? [{

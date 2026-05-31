@@ -49,7 +49,7 @@ export default function AuthorPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
         <div className="text-center px-6">
           <h1 className="font-serif text-3xl mb-4">Author not found</h1>
-          <Link to={withLangPrefix("/journal", lang)} className="underline opacity-80">Back to the blog</Link>
+          <Link to={withLangPrefix("/journal", lang)} className="underline opacity-80">Back to the Journal</Link>
         </div>
       </div>
     );
