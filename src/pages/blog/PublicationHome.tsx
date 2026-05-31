@@ -61,7 +61,7 @@ export default function PublicationHome({ publication }: Props) {
           "@context": "https://schema.org",
           "@type": "Blog",
           name,
-          url: `${SITE_URL}/blog/${publication}`,
+          url: `${SITE_URL}/journal/${pubUrlSegment(publication)}`,
           inLanguage: lang,
         }}
       />

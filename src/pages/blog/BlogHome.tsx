@@ -52,7 +52,7 @@ export default function BlogHome() {
           "@context": "https://schema.org",
           "@type": "Blog",
           name: "SalbCare Journal",
-          url: `${SITE_URL}/blog`,
+          url: `${SITE_URL}/journal`,
           inLanguage: lang,
         }}
       />

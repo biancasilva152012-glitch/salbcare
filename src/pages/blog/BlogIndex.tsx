@@ -129,7 +129,7 @@ const BlogIndex = () => (
           "@type": "Blog",
           name: "Blog SalbCare",
           description: "Conteúdo educativo sobre sistema para consultório, prontuário eletrônico, teleconsulta e gestão financeira para profissionais de saúde.",
-          url: "https://salbcare.com.br/blog",
+          url: "https://salbcare.com.br/journal",
           publisher: {
             "@type": "Organization",
             name: "SalbCare",
@@ -142,7 +142,7 @@ const BlogIndex = () => (
           blogPost: POSTS.map((p) => ({
             "@type": "BlogPosting",
             headline: p.title,
-            url: `https://salbcare.com.br/blog/${p.slug}`,
+            url: `https://salbcare.com.br/journal/${p.slug}`,
             image: `https://salbcare.com.br${typeof p.image === "string" ? p.image : ""}`,
             datePublished: "2026-04-14",
           })),
@@ -152,7 +152,7 @@ const BlogIndex = () => (
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "https://salbcare.com.br/" },
-            { "@type": "ListItem", position: 2, name: "Blog", item: "https://salbcare.com.br/blog" },
+            { "@type": "ListItem", position: 2, name: "Journal", item: "https://salbcare.com.br/journal" },
           ],
         },
       ]}
