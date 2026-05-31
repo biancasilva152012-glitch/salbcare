@@ -23,10 +23,12 @@ import { useLocation, useParams } from "react-router-dom";
 
 const TrackingProvider = () => { useTracking(); return null; };
 
-const JournalSlugRedirect = () => {
+// Generic redirect helper that preserves a single :slug param.
+const SlugRedirect = ({ to }: { to: (slug: string) => string }) => {
   const { slug } = useParams();
-  return <Navigate to={`/blog/journal/${slug ?? ""}`} replace />;
+  return <Navigate to={to(slug ?? "")} replace />;
 };
+
 
 // Hide the freemium debug widget on public routes and in production.
 const FreemiumDebugPanelGate = () => {
