@@ -196,56 +196,101 @@ const App = () => (
               <Route path="/international/confirmed" element={<KiteConfirmed />} />
               <Route path="/kitecare/confirmed" element={<KiteConfirmed />} />
 
-              {/* Blog SEO — static legacy articles (PT) keep their exact paths */}
-              <Route path="/blog/consulta-online-psicologo" element={<BlogConsultaPsicologo />} />
-              <Route path="/blog/prontuario-digital-dentista" element={<BlogProntuarioDentista />} />
-              <Route path="/blog/teleconsulta-medica" element={<BlogTeleconsultaMedica />} />
-              <Route path="/blog/gestao-financeira-profissional-saude" element={<BlogGestaoFinanceira />} />
-              <Route path="/blog/nutricionista-online" element={<BlogNutricionistaOnline />} />
-              <Route path="/blog/agenda-medica-digital" element={<BlogAgendaMedica />} />
-              <Route path="/blog/receituario-digital" element={<BlogReceituarioDigital />} />
-              <Route path="/blog/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
-              <Route path="/blog/preco-minimo-consulta" element={<BlogPrecoMinimoConsulta />} />
+              {/* ============================================================ */}
+              {/* JOURNAL (formerly /blog) — canonical routes                  */}
+              {/* ============================================================ */}
 
-              {/* Blog — dual-publication hub */}
-              <Route path="/blog" element={<BlogHub />} />
-              <Route path="/pt/blog" element={<BlogHub />} />
-              <Route path="/es/blog" element={<BlogHub />} />
-              <Route path="/en/blog" element={<BlogHub />} />
+              {/* Static legacy SEO articles (PT) — now under /journal */}
+              <Route path="/journal/consulta-online-psicologo" element={<BlogConsultaPsicologo />} />
+              <Route path="/journal/prontuario-digital-dentista" element={<BlogProntuarioDentista />} />
+              <Route path="/journal/teleconsulta-medica" element={<BlogTeleconsultaMedica />} />
+              <Route path="/journal/gestao-financeira-profissional-saude" element={<BlogGestaoFinanceira />} />
+              <Route path="/journal/nutricionista-online" element={<BlogNutricionistaOnline />} />
+              <Route path="/journal/agenda-medica-digital" element={<BlogAgendaMedica />} />
+              <Route path="/journal/receituario-digital" element={<BlogReceituarioDigital />} />
+              <Route path="/journal/como-abrir-cnpj-medico" element={<BlogCnpjMedico />} />
+              <Route path="/journal/preco-minimo-consulta" element={<BlogPrecoMinimoConsulta />} />
 
-              {/* Author page (shared across publications) */}
-              <Route path="/blog/author/:slug" element={<AuthorPage />} />
-              <Route path="/pt/blog/author/:slug" element={<AuthorPage />} />
-              <Route path="/es/blog/author/:slug" element={<AuthorPage />} />
-              <Route path="/en/blog/author/:slug" element={<AuthorPage />} />
+              {/* Hub — presents both publications */}
+              <Route path="/journal" element={<BlogHub />} />
+              <Route path="/pt/journal" element={<BlogHub />} />
+              <Route path="/es/journal" element={<BlogHub />} />
+              <Route path="/en/journal" element={<BlogHub />} />
+
+              {/* Author page */}
+              <Route path="/journal/author/:slug" element={<AuthorPage />} />
+              <Route path="/pt/journal/author/:slug" element={<AuthorPage />} />
+              <Route path="/es/journal/author/:slug" element={<AuthorPage />} />
+              <Route path="/en/journal/author/:slug" element={<AuthorPage />} />
 
               {/* SalbCare Pro publication */}
-              <Route path="/blog/pro" element={<PublicationHome publication="pro" />} />
-              <Route path="/pt/blog/pro" element={<PublicationHome publication="pro" />} />
-              <Route path="/es/blog/pro" element={<PublicationHome publication="pro" />} />
-              <Route path="/en/blog/pro" element={<PublicationHome publication="pro" />} />
-              <Route path="/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" />} />
-              <Route path="/pt/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="pt" />} />
-              <Route path="/es/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="es" />} />
-              <Route path="/en/blog/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="en" />} />
+              <Route path="/journal/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/pt/journal/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/es/journal/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/en/journal/pro" element={<PublicationHome publication="pro" />} />
+              <Route path="/journal/pro/:slug" element={<BlogArticle publicationSlug="pro" />} />
+              <Route path="/pt/journal/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="pt" />} />
+              <Route path="/es/journal/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="es" />} />
+              <Route path="/en/journal/pro/:slug" element={<BlogArticle publicationSlug="pro" forcedLang="en" />} />
 
-              {/* The SalbCare Journal publication */}
-              <Route path="/blog/journal" element={<PublicationHome publication="journal" />} />
-              <Route path="/pt/blog/journal" element={<PublicationHome publication="journal" />} />
-              <Route path="/es/blog/journal" element={<PublicationHome publication="journal" />} />
-              <Route path="/en/blog/journal" element={<PublicationHome publication="journal" />} />
-              <Route path="/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" />} />
-              <Route path="/pt/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="pt" />} />
-              <Route path="/es/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="es" />} />
-              <Route path="/en/blog/journal/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="en" />} />
+              {/* The SalbCare Journal (international) — URL segment "main" */}
+              <Route path="/journal/main" element={<PublicationHome publication="journal" />} />
+              <Route path="/pt/journal/main" element={<PublicationHome publication="journal" />} />
+              <Route path="/es/journal/main" element={<PublicationHome publication="journal" />} />
+              <Route path="/en/journal/main" element={<PublicationHome publication="journal" />} />
+              <Route path="/journal/main/:slug" element={<BlogArticle publicationSlug="journal" />} />
+              <Route path="/pt/journal/main/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="pt" />} />
+              <Route path="/es/journal/main/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="es" />} />
+              <Route path="/en/journal/main/:slug" element={<BlogArticle publicationSlug="journal" forcedLang="en" />} />
 
-              {/* /journal short alias — redirects to canonical /blog/journal */}
-              <Route path="/journal" element={<Navigate to="/blog/journal" replace />} />
-              <Route path="/journal/:slug" element={<JournalSlugRedirect />} />
+              {/* ============================================================ */}
+              {/* 301-style redirects from old /blog/* paths → /journal/*       */}
+              {/* ============================================================ */}
+              <Route path="/blog" element={<Navigate to="/journal" replace />} />
+              <Route path="/pt/blog" element={<Navigate to="/pt/journal" replace />} />
+              <Route path="/es/blog" element={<Navigate to="/es/journal" replace />} />
+              <Route path="/en/blog" element={<Navigate to="/en/journal" replace />} />
 
-              {/* Legacy fallbacks — slug-only routes preserved AFTER static routes above */}
-              <Route path="/blog/legacy-home" element={<BlogHome />} />
-              <Route path="/blog/index" element={<BlogIndex />} />
+              <Route path="/blog/journal" element={<Navigate to="/journal/main" replace />} />
+              <Route path="/pt/blog/journal" element={<Navigate to="/pt/journal/main" replace />} />
+              <Route path="/es/blog/journal" element={<Navigate to="/es/journal/main" replace />} />
+              <Route path="/en/blog/journal" element={<Navigate to="/en/journal/main" replace />} />
+              <Route path="/blog/journal/:slug" element={<SlugRedirect to={(s) => `/journal/main/${s}`} />} />
+              <Route path="/pt/blog/journal/:slug" element={<SlugRedirect to={(s) => `/pt/journal/main/${s}`} />} />
+              <Route path="/es/blog/journal/:slug" element={<SlugRedirect to={(s) => `/es/journal/main/${s}`} />} />
+              <Route path="/en/blog/journal/:slug" element={<SlugRedirect to={(s) => `/en/journal/main/${s}`} />} />
+
+              <Route path="/blog/pro" element={<Navigate to="/journal/pro" replace />} />
+              <Route path="/pt/blog/pro" element={<Navigate to="/pt/journal/pro" replace />} />
+              <Route path="/es/blog/pro" element={<Navigate to="/es/journal/pro" replace />} />
+              <Route path="/en/blog/pro" element={<Navigate to="/en/journal/pro" replace />} />
+              <Route path="/blog/pro/:slug" element={<SlugRedirect to={(s) => `/journal/pro/${s}`} />} />
+              <Route path="/pt/blog/pro/:slug" element={<SlugRedirect to={(s) => `/pt/journal/pro/${s}`} />} />
+              <Route path="/es/blog/pro/:slug" element={<SlugRedirect to={(s) => `/es/journal/pro/${s}`} />} />
+              <Route path="/en/blog/pro/:slug" element={<SlugRedirect to={(s) => `/en/journal/pro/${s}`} />} />
+
+              <Route path="/blog/author/:slug" element={<SlugRedirect to={(s) => `/journal/author/${s}`} />} />
+              <Route path="/pt/blog/author/:slug" element={<SlugRedirect to={(s) => `/pt/journal/author/${s}`} />} />
+              <Route path="/es/blog/author/:slug" element={<SlugRedirect to={(s) => `/es/journal/author/${s}`} />} />
+              <Route path="/en/blog/author/:slug" element={<SlugRedirect to={(s) => `/en/journal/author/${s}`} />} />
+
+              {/* Legacy static articles — redirect old /blog paths to new /journal paths */}
+              <Route path="/blog/consulta-online-psicologo" element={<Navigate to="/journal/consulta-online-psicologo" replace />} />
+              <Route path="/blog/prontuario-digital-dentista" element={<Navigate to="/journal/prontuario-digital-dentista" replace />} />
+              <Route path="/blog/teleconsulta-medica" element={<Navigate to="/journal/teleconsulta-medica" replace />} />
+              <Route path="/blog/gestao-financeira-profissional-saude" element={<Navigate to="/journal/gestao-financeira-profissional-saude" replace />} />
+              <Route path="/blog/nutricionista-online" element={<Navigate to="/journal/nutricionista-online" replace />} />
+              <Route path="/blog/agenda-medica-digital" element={<Navigate to="/journal/agenda-medica-digital" replace />} />
+              <Route path="/blog/receituario-digital" element={<Navigate to="/journal/receituario-digital" replace />} />
+              <Route path="/blog/como-abrir-cnpj-medico" element={<Navigate to="/journal/como-abrir-cnpj-medico" replace />} />
+              <Route path="/blog/preco-minimo-consulta" element={<Navigate to="/journal/preco-minimo-consulta" replace />} />
+
+              {/* Legacy fallbacks */}
+              <Route path="/journal/legacy-home" element={<BlogHome />} />
+              <Route path="/journal/index" element={<BlogIndex />} />
+
+              
+
 
               
 
