@@ -18,7 +18,7 @@ const BlogTeleconsultaMedica = () => (
     <SEOHead
       title="Teleconsulta: Como Atender Pacientes Online"
       description="Como fazer teleconsulta dentro da Resolução CFM 2.314/2022. Software para clínica, prescrição digital ICP-Brasil e prontuário eletrônico para médicos online."
-      canonical={`/blog/${SLUG}`}
+      canonical={`/journal/${SLUG}`}
       ogType="article"
       ogImage={`https://salbcare.com.br${blogImage}`}
       keywords={[
@@ -75,8 +75,8 @@ const BlogTeleconsultaMedica = () => (
           <ul className="list-disc pl-5 space-y-2">
             <li>É obrigatório o <strong>consentimento informado</strong> do paciente</li>
             <li>O médico deve estar inscrito no CRM do estado onde atende</li>
-            <li>O <Link to="/blog/prontuario-digital-dentista" className="text-primary hover:underline">prontuário eletrônico</Link> é obrigatório</li>
-            <li>Receitas digitais devem ter <strong>assinatura eletrônica ICP-Brasil</strong> ou equivalente — veja o guia de <Link to="/blog/receituario-digital" className="text-primary hover:underline">prescrição digital</Link></li>
+            <li>O <Link to="/journal/prontuario-digital-dentista" className="text-primary hover:underline">prontuário eletrônico</Link> é obrigatório</li>
+            <li>Receitas digitais devem ter <strong>assinatura eletrônica ICP-Brasil</strong> ou equivalente — veja o guia de <Link to="/journal/receituario-digital" className="text-primary hover:underline">prescrição digital</Link></li>
             <li>Em emergências, o paciente deve ser encaminhado para atendimento presencial</li>
           </ul>
 
@@ -84,7 +84,7 @@ const BlogTeleconsultaMedica = () => (
           <ol className="list-decimal pl-5 space-y-2">
             <li>Escolha um sistema para profissional de saúde seguro como o <strong>SalbCare</strong></li>
             <li>Configure seu perfil com CRM, especialidade e link do Google Meet</li>
-            <li>Defina seus horários na <Link to="/blog/agenda-medica-digital" className="text-primary hover:underline">agenda online</Link></li>
+            <li>Defina seus horários na <Link to="/journal/agenda-medica-digital" className="text-primary hover:underline">agenda online</Link></li>
             <li>Receba agendamentos e atenda diretamente pela plataforma</li>
           </ol>
 
@@ -93,7 +93,7 @@ const BlogTeleconsultaMedica = () => (
             <li><strong>Sem comissão:</strong> 100% do valor da consulta é seu</li>
             <li><strong>Agenda integrada:</strong> controle de horários e pacientes em um só lugar</li>
             <li><strong>Prontuário + receituário:</strong> documentação digital com validade legal</li>
-            <li><strong>Gestão financeira:</strong> acompanhe ganhos e impostos com mentoria de IA — veja como em <Link to="/blog/gestao-financeira-profissional-saude" className="text-primary hover:underline">gestão financeira para profissionais de saúde</Link></li>
+            <li><strong>Gestão financeira:</strong> acompanhe ganhos e impostos com mentoria de IA — veja como em <Link to="/journal/gestao-financeira-profissional-saude" className="text-primary hover:underline">gestão financeira para profissionais de saúde</Link></li>
           </ul>
         </div>
 

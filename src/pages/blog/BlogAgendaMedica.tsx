@@ -18,7 +18,7 @@ const BlogAgendaMedica = () => (
     <SEOHead
       title="Agenda Online para Médicos: Como Reduzir Faltas"
       description="Sistema de agenda online para médicos: lembretes automáticos, integração com prontuário eletrônico e teleconsulta. Reduza faltas em até 40% no consultório."
-      canonical={`/blog/${SLUG}`}
+      canonical={`/journal/${SLUG}`}
       ogType="article"
       ogImage={`https://salbcare.com.br${blogImage}`}
       keywords={[
@@ -68,8 +68,8 @@ const BlogAgendaMedica = () => (
             <li><strong>Confirmação automática:</strong> reduz faltas com lembretes por WhatsApp.</li>
             <li><strong>Bloqueio de horários:</strong> defina intervalos, almoço e dias de folga.</li>
             <li><strong>Visualização diária/semanal:</strong> veja toda a semana de uma vez.</li>
-            <li><strong>Integração com <Link to="/blog/prontuario-digital-dentista" className="text-primary hover:underline">prontuário eletrônico</Link>:</strong> ao clicar no paciente, acesse o histórico completo.</li>
-            <li><strong>Suporte a <Link to="/blog/teleconsulta-medica" className="text-primary hover:underline">teleconsulta</Link>:</strong> link de videochamada gerado automaticamente.</li>
+            <li><strong>Integração com <Link to="/journal/prontuario-digital-dentista" className="text-primary hover:underline">prontuário eletrônico</Link>:</strong> ao clicar no paciente, acesse o histórico completo.</li>
+            <li><strong>Suporte a <Link to="/journal/teleconsulta-medica" className="text-primary hover:underline">teleconsulta</Link>:</strong> link de videochamada gerado automaticamente.</li>
           </ul>
 
           <h2 className="text-xl font-semibold text-foreground">Como reduzir faltas de pacientes</h2>

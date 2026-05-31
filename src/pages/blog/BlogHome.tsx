@@ -44,8 +44,8 @@ export default function BlogHome() {
       <BlogSEO
         title="SalbCare Journal"
         description={heroSub}
-        canonicalPath="/blog"
-        hreflangPath="/blog"
+        canonicalPath="/journal"
+        hreflangPath="/journal"
         lang={lang}
         ogType="website"
         jsonLd={{
@@ -89,7 +89,7 @@ export default function BlogHome() {
         if (!t) return null;
         return (
           <section className="px-6 md:px-12 max-w-6xl mx-auto mb-16">
-            <Link to={`/blog/${featured.slug}`} className="block group">
+            <Link to={`/journal/${featured.slug}`} className="block group">
               <div className="grid md:grid-cols-2 gap-8 items-center rounded-2xl overflow-hidden" style={{ background: "hsl(var(--brand-darker))" }}>
                 {featured.featured_image_url && (
                   <img
@@ -153,7 +153,7 @@ export default function BlogHome() {
               const t = pickTranslation(a, lang);
               if (!t) return null;
               return (
-                <Link key={a.id} to={`/blog/${a.slug}`} className="block group">
+                <Link key={a.id} to={`/journal/${a.slug}`} className="block group">
                   {a.featured_image_url && (
                     <img src={a.featured_image_url} alt={t.title} loading="lazy" className="w-full h-48 object-cover rounded-lg mb-4" />
                   )}

@@ -15,7 +15,7 @@ const BlogReceituarioDigital = () => (
     <SEOHead
       title="Prescrição Digital: RDC ANVISA e ICP-Brasil"
       description="Prescrição digital com validade legal: assinatura ICP-Brasil, RDC 471 da ANVISA, tipos de receita e como emitir pelo prontuário eletrônico SalbCare."
-      canonical={`/blog/${SLUG}`}
+      canonical={`/journal/${SLUG}`}
       ogType="article"
       ogImage={`https://salbcare.com.br${blogImage}`}
       keywords={["prescrição digital", "receituário digital", "ICP-Brasil", "RDC 471 ANVISA", "prontuário eletrônico", "teleconsulta"]}

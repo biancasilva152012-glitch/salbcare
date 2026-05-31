@@ -14,7 +14,7 @@ import {
   type BlogPublication,
   type PublicationSlug,
 } from "@/lib/blog/types";
-import { detectInitialLang, persistLang, BLOG_LANGS, langLabel, withLangPrefix } from "@/lib/blog/locale";
+import { detectInitialLang, persistLang, BLOG_LANGS, langLabel, withLangPrefix, pubUrlSegment } from "@/lib/blog/locale";
 
 interface Props { publication: PublicationSlug; }
 
@@ -53,8 +53,8 @@ export default function PublicationHome({ publication }: Props) {
       <BlogSEO
         title={name || (publication === "pro" ? "SalbCare Pro Blog" : "The SalbCare Journal")}
         description={desc}
-        canonicalPath={withLangPrefix(`/blog/${publication}`, lang)}
-        hreflangPath={`/blog/${publication}`}
+        canonicalPath={withLangPrefix(`/journal/${pubUrlSegment(publication)}`, lang)}
+        hreflangPath={`/journal/${pubUrlSegment(publication)}`}
         lang={lang}
         ogType="website"
         jsonLd={{
@@ -69,7 +69,7 @@ export default function PublicationHome({ publication }: Props) {
       <div className="border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-xs">
           <nav className="opacity-70">
-            <Link to={withLangPrefix("/blog", lang)} className="hover:opacity-100">Blog</Link>
+            <Link to={withLangPrefix("/journal", lang)} className="hover:opacity-100">Blog</Link>
             <span className="mx-2 opacity-40">/</span>
             <span style={{ color: `hsl(var(${accentVar}))` }}>{publication === "pro" ? "Pro" : "Journal"}</span>
           </nav>
@@ -114,7 +114,7 @@ export default function PublicationHome({ publication }: Props) {
         if (!t) return null;
         return (
           <section className="max-w-6xl mx-auto px-6 mb-16">
-            <Link to={withLangPrefix(`/blog/${publication}/${featured.slug}`, lang)} className="block group">
+            <Link to={withLangPrefix(`/journal/${pubUrlSegment(publication)}/${featured.slug}`, lang)} className="block group">
               <div className="grid md:grid-cols-2 gap-8 items-center rounded-2xl overflow-hidden" style={{ background: "hsl(var(--brand-darker))" }}>
                 {featured.featured_image_url && (
                   <img src={featured.featured_image_url} alt={featured.featured_image_alt_en || t.title}
@@ -151,7 +151,7 @@ export default function PublicationHome({ publication }: Props) {
               const t = pickTranslation(a, lang);
               if (!t) return null;
               return (
-                <Link key={a.id} to={withLangPrefix(`/blog/${publication}/${a.slug}`, lang)} className="block group">
+                <Link key={a.id} to={withLangPrefix(`/journal/${pubUrlSegment(publication)}/${a.slug}`, lang)} className="block group">
                   {a.featured_image_url && (
                     <img src={a.featured_image_url} alt={t.title} loading="lazy"
                       className={`w-full ${publication === "journal" ? "h-56" : "h-48"} object-cover rounded-lg mb-4`} />
@@ -174,7 +174,7 @@ export default function PublicationHome({ publication }: Props) {
       </section>
 
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <NewsletterInline publication={publication} lang={lang} source={`/blog/${publication}`} />
+        <NewsletterInline publication={publication} lang={lang} source={`/journal/${pubUrlSegment(publication)}`} />
       </section>
     </div>
   );

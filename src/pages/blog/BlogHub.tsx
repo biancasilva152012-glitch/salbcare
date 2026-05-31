@@ -66,8 +66,8 @@ export default function BlogHub() {
       <BlogSEO
         title="SalbCare — Blog & Journal"
         description={t.sub}
-        canonicalPath={withLangPrefix("/blog", lang)}
-        hreflangPath="/blog"
+        canonicalPath={withLangPrefix("/journal", lang)}
+        hreflangPath="/journal"
         lang={lang}
         ogType="website"
         jsonLd={{
@@ -148,7 +148,7 @@ function PubCard({
   const name = publication
     ? (lang === "pt" ? publication.name_pt : lang === "es" ? publication.name_es : publication.name_en) || publication.name_en
     : "";
-  const href = withLangPrefix(`/blog/${slug}`, lang);
+  const href = withLangPrefix(`/journal/${slug}`, lang);
 
   return (
     <Link to={href} className="group block rounded-2xl p-8 md:p-10 transition-all hover:translate-y-[-2px]"

@@ -54,7 +54,7 @@ const RelatedPosts = ({ currentSlug, limit = 3, preferSlugs = [] }: RelatedPosts
         {items.map((p) => (
           <li key={p.slug}>
             <Link
-              to={`/blog/${p.slug}`}
+              to={`/journal/${p.slug}`}
               className="group block rounded-lg border border-border/40 bg-card/60 p-4 hover:border-primary/30 transition-colors"
             >
               <p className="text-[11px] text-primary font-semibold uppercase tracking-wider">{p.category}</p>

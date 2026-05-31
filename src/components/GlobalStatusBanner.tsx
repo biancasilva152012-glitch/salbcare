@@ -39,7 +39,7 @@ const HIDDEN_PREFIXES = [
   "/precos",
   "/terms",
   "/privacy",
-  "/blog",
+  "/journal",
   "/diagnostico",
   "/p/",
   "/profissionais",

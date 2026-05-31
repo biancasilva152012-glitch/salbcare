@@ -15,7 +15,7 @@ const BlogNutricionistaOnline = () => (
     <SEOHead
       title="Nutricionista Online: Software para Nutricionista"
       description="Software para nutricionista com teleconsulta, prontuário eletrônico e agenda online. Atenda pacientes por vídeo dentro das normas do CFN. Teste grátis."
-      canonical={`/blog/${SLUG}`}
+      canonical={`/journal/${SLUG}`}
       ogType="article"
       ogImage={`https://salbcare.com.br${blogImage}`}
       keywords={["software para nutricionista", "nutricionista online", "teleconsulta", "sistema para profissional de saúde", "CFN"]}

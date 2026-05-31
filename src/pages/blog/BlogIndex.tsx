@@ -113,7 +113,7 @@ const BlogIndex = () => (
     <SEOHead
       title="Blog SalbCare | Sistema para Profissional de Saúde"
       description="Guias sobre sistema para consultório médico, prontuário eletrônico, agenda online, teleconsulta e prescrição digital. Conteúdo prático para profissionais de saúde autônomos."
-      canonical="/blog"
+      canonical="/journal"
       keywords={[
         "sistema para consultório médico",
         "prontuário eletrônico",
@@ -177,7 +177,7 @@ const BlogIndex = () => (
               transition={{ delay: i * 0.06 }}
             >
               <Link
-                to={(post as any).path ?? `/blog/${post.slug}`}
+                to={(post as any).path ?? `/journal/${post.slug}`}
                 className="group flex flex-col sm:flex-row gap-4 rounded-xl border border-border/40 bg-card/60 p-4 hover:border-primary/30 transition-all"
               >
                 {/* Thumbnail */}

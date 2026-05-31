@@ -18,7 +18,7 @@ const BlogProntuarioDentista = () => (
     <SEOHead
       title="Prontuário Eletrônico para Dentista: Guia 2026"
       description="Sistema para dentista com prontuário eletrônico, HOF, receituário e LGPD. Organize seu consultório odontológico e atenda dentro da Resolução CFO 118/2012."
-      canonical={`/blog/${SLUG}`}
+      canonical={`/journal/${SLUG}`}
       ogType="article"
       ogImage={`https://salbcare.com.br${blogImage}`}
       keywords={[
@@ -77,8 +77,8 @@ const BlogProntuarioDentista = () => (
             <li><strong>Organização:</strong> histórico completo acessível em segundos.</li>
             <li><strong>Segurança jurídica:</strong> registro com data, hora e validação digital.</li>
             <li><strong>Mobilidade:</strong> acesse de qualquer dispositivo, a qualquer momento.</li>
-            <li><strong>Receituário integrado:</strong> emita <Link to="/blog/receituario-digital" className="text-primary hover:underline">prescrição digital</Link> diretamente do prontuário.</li>
-            <li><strong>Agenda integrada:</strong> consulte horários pela <Link to="/blog/agenda-medica-digital" className="text-primary hover:underline">agenda online</Link>.</li>
+            <li><strong>Receituário integrado:</strong> emita <Link to="/journal/receituario-digital" className="text-primary hover:underline">prescrição digital</Link> diretamente do prontuário.</li>
+            <li><strong>Agenda integrada:</strong> consulte horários pela <Link to="/journal/agenda-medica-digital" className="text-primary hover:underline">agenda online</Link>.</li>
             <li><strong>Economia de espaço:</strong> sem armários de fichas físicas.</li>
           </ul>
 
