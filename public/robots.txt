@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
-Allow: /blog
-Allow: /blog/
+Allow: /journal
+Allow: /journal/
 Allow: /consulta-online
 Allow: /consulta-online/
 Allow: /profissionais

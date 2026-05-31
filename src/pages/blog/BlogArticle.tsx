@@ -12,7 +12,7 @@ import {
   type BlogLang,
   type PublicationSlug,
 } from "@/lib/blog/types";
-import { detectInitialLang, persistLang, BLOG_LANGS, withLangPrefix } from "@/lib/blog/locale";
+import { detectInitialLang, persistLang, BLOG_LANGS, withLangPrefix, pubUrlSegment } from "@/lib/blog/locale";
 import { markdownToSafeHtml } from "@/lib/blog/markdown";
 
 interface Props {
@@ -72,7 +72,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
         <div className="text-center px-6">
           <p className="text-xs uppercase tracking-widest mb-4" style={{ color: `hsl(var(${accentVar}))` }}>404</p>
           <h1 className="font-serif text-3xl mb-4">Article not found</h1>
-          <Link to={withLangPrefix(pub ? `/blog/${pub}` : "/blog", lang)} className="underline opacity-80">Back to the blog</Link>
+          <Link to={withLangPrefix(pub ? `/journal/${pubUrlSegment(pub)}` : "/journal", lang)} className="underline opacity-80">Back to the Journal</Link>
         </div>
       </div>
     );
@@ -101,7 +101,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
     : markdownToSafeHtml(t.content_markdown || "");
 
   const pubDate = article.published_at || article.created_at;
-  const canonicalPath = `/blog/${articlePub}/${article.slug}`;
+  const canonicalPath = `/journal/${pubUrlSegment(articlePub)}/${article.slug}`;
   const canonical = t.canonical_url || withLangPrefix(canonicalPath, lang);
 
   async function handleSubscribe(e: React.FormEvent) {
@@ -134,7 +134,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
     inLanguage: lang,
     keywords: t.focus_keyword || undefined,
     author: article.author
-      ? { "@type": "Person", name: article.author.name, url: `${SITE_URL}${withLangPrefix(`/blog/author/${article.author.slug}`, lang)}` }
+      ? { "@type": "Person", name: article.author.name, url: `${SITE_URL}${withLangPrefix(`/journal/author/${article.author.slug}`, lang)}` }
       : undefined,
     publisher: {
       "@type": "Organization",
@@ -150,14 +150,14 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Blog", item: `${SITE_URL}${withLangPrefix("/blog", lang)}` },
-      { "@type": "ListItem", position: 2, name: pubLabel, item: `${SITE_URL}${withLangPrefix(`/blog/${articlePub}`, lang)}` },
+      { "@type": "ListItem", position: 1, name: "Journal", item: `${SITE_URL}${withLangPrefix("/journal", lang)}` },
+      { "@type": "ListItem", position: 2, name: pubLabel, item: `${SITE_URL}${withLangPrefix(`/journal/${pubUrlSegment(articlePub)}`, lang)}` },
       ...(article.category
         ? [{
             "@type": "ListItem",
             position: 3,
             name: localizedCategoryName(article.category, lang),
-            item: `${SITE_URL}${withLangPrefix(`/blog/${articlePub}?cat=${article.category.slug}`, lang)}`,
+            item: `${SITE_URL}${withLangPrefix(`/journal/${pubUrlSegment(articlePub)}?cat=${article.category.slug}`, lang)}`,
           }]
         : []),
       { "@type": "ListItem", position: article.category ? 4 : 3, name: t.title, item: `${SITE_URL}${canonical}` },
@@ -180,7 +180,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
       {/* Top bar */}
       <div className="border-b border-white/10">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between text-xs">
-          <Link to={withLangPrefix(`/blog/${articlePub}`, lang)} className="opacity-70 hover:opacity-100 tracking-wider uppercase">
+          <Link to={withLangPrefix(`/journal/${pubUrlSegment(articlePub)}`, lang)} className="opacity-70 hover:opacity-100 tracking-wider uppercase">
             ← {pubLabel}
           </Link>
           <div className="flex gap-2">
@@ -190,7 +190,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
                 onClick={() => {
                   setLang(l);
                   persistLang(l);
-                  if (forcedLang) navigate(withLangPrefix(`/blog/${articlePub}/${article.slug}`, l));
+                  if (forcedLang) navigate(withLangPrefix(`/journal/${pubUrlSegment(articlePub)}/${article.slug}`, l));
                 }}
                 className={`px-2 py-1 rounded ${lang === l ? "" : "opacity-60 hover:opacity-100"}`}
                 style={lang === l ? { color: `hsl(var(${accentVar}))` } : undefined}
@@ -219,7 +219,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
             {article.author && (
               <span>
                 By{" "}
-                <Link to={withLangPrefix(`/blog/author/${article.author.slug}`, lang)} className="underline hover:text-[hsl(var(--kite-gold))]">
+                <Link to={withLangPrefix(`/journal/author/${article.author.slug}`, lang)} className="underline hover:text-[hsl(var(--kite-gold))]">
                   {article.author.name}
                 </Link>
               </span>
@@ -254,7 +254,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
               {article.tags.map((tag) => (
                 <Link
                   key={tag.id}
-                  to={withLangPrefix(`/blog/tag/${tag.slug}`, lang)}
+                  to={withLangPrefix(`/journal/tag/${tag.slug}`, lang)}
                   className="text-xs px-3 py-1 rounded-full border border-white/15"
                   style={{ borderColor: undefined }}
                 >
@@ -273,7 +273,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
             )}
             <div>
               <Link
-                to={withLangPrefix(`/blog/author/${article.author.slug}`, lang)}
+                to={withLangPrefix(`/journal/author/${article.author.slug}`, lang)}
                 className={`${isJournal ? "font-journal italic" : "font-pro font-semibold"} text-lg hover:underline`}
               >
                 {article.author.name}
@@ -337,7 +337,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
                 if (!rt) return null;
                 const rpub = (r.publication?.slug as PublicationSlug | undefined) ?? articlePub;
                 return (
-                  <Link key={r.id} to={withLangPrefix(`/blog/${rpub}/${r.slug}`, lang)} className="group">
+                  <Link key={r.id} to={withLangPrefix(`/journal/${pubUrlSegment(rpub)}/${r.slug}`, lang)} className="group">
                     {r.featured_image_url && (
                       <img src={r.featured_image_url} alt={rt.title} loading="lazy" className="w-full h-40 object-cover rounded-md mb-4" />
                     )}

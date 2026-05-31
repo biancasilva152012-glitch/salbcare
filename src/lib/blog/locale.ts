@@ -45,3 +45,12 @@ export const BLOG_LANGS: BlogLang[] = SUPPORTED;
 export function langLabel(lang: BlogLang): string {
   return lang === "en" ? "English" : lang === "pt" ? "Português" : "Español";
 }
+
+/**
+ * Maps a publication slug from the DB ("journal" | "pro") to its URL segment.
+ * The international "journal" publication lives at /journal/main (the hub is /journal).
+ */
+export function pubUrlSegment(slug: string | null | undefined): string {
+  return slug === "journal" ? "main" : (slug ?? "");
+}
+

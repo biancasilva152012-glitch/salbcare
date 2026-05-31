@@ -4,7 +4,9 @@ import { Helmet } from "react-helmet-async";
 import BrandLogo from "@/components/shared/BrandLogo";
 import LanguageSwitcher, { detectInitialLang, type HubLang } from "@/components/shared/LanguageSwitcher";
 import SharedFooter from "@/components/shared/SharedFooter";
+import JournalSection from "@/components/landing/JournalSection";
 import { trackCtaClick } from "@/hooks/useTracking";
+
 
 const COPY: Record<HubLang, {
   navAbout: string; navContact: string;
@@ -169,7 +171,11 @@ export default function Hub() {
           </div>
         </section>
 
+        {/* Journal — featured essays from The SalbCare Journal */}
+        <JournalSection />
+
         <SharedFooter />
+
       </div>
     </>
   );

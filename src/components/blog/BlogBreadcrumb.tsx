@@ -16,8 +16,8 @@ const BlogBreadcrumb = ({ articleTitle }: BlogBreadcrumbProps) => (
       </li>
       <ChevronRight className="h-3 w-3 shrink-0" />
       <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-        <Link to="/blog" className="hover:text-foreground transition-colors" itemProp="item">
-          <span itemProp="name">Blog</span>
+        <Link to="/journal" className="hover:text-foreground transition-colors" itemProp="item">
+          <span itemProp="name">Journal</span>
         </Link>
         <meta itemProp="position" content="2" />
       </li>

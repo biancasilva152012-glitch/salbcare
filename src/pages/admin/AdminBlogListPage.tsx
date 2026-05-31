@@ -111,7 +111,7 @@ export default function AdminBlogListPage() {
                 <td className="p-3 text-xs opacity-60">{new Date(r.updated_at).toLocaleDateString()}</td>
                 <td className="p-3 text-right space-x-3">
                   <Link to={`/admin/blog/${r.id}`} className="text-xs underline">Edit</Link>
-                  <Link to={`/blog/${pub}/${r.slug}`} target="_blank" className="text-xs underline opacity-70">View</Link>
+                  <Link to={`/journal/${pub === "journal" ? "main" : pub}/${r.slug}`} target="_blank" className="text-xs underline opacity-70">View</Link>
                   <button onClick={() => remove(r.id)} className="text-xs text-red-600 underline">Delete</button>
                 </td>
               </tr>

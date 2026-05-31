@@ -33,11 +33,11 @@ const BottomNav = memo(() => {
 
   if (!user) return null;
 
-  const hideOn = ["/", "/login", "/register", "/cadastro", "/forgot-password", "/terms", "/privacy", "/para-profissionais", "/planos", "/diagnostico", "/admin", "/profissionais", "/consulta-online", "/especialidades", "/blog", "/index", "/pronto-atendimento", "/precos"];
+  const hideOn = ["/", "/login", "/register", "/cadastro", "/forgot-password", "/terms", "/privacy", "/para-profissionais", "/planos", "/diagnostico", "/admin", "/profissionais", "/consulta-online", "/especialidades", "/journal", "/index", "/pronto-atendimento", "/precos"];
   if (hideOn.includes(location.pathname)) return null;
   if (location.pathname.startsWith("/p/")) return null;
   if (location.pathname.startsWith("/consulta-online/")) return null;
-  if (location.pathname.startsWith("/blog/")) return null;
+  if (location.pathname.startsWith("/journal/")) return null;
   if (location.pathname.startsWith("/pronto-atendimento/")) return null;
 
   return (

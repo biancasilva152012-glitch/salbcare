@@ -11,7 +11,7 @@ import {
   type BlogLang,
   type PublicationSlug,
 } from "@/lib/blog/types";
-import { detectInitialLang, persistLang, BLOG_LANGS, withLangPrefix } from "@/lib/blog/locale";
+import { detectInitialLang, persistLang, BLOG_LANGS, withLangPrefix, pubUrlSegment } from "@/lib/blog/locale";
 
 export default function AuthorPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -49,7 +49,7 @@ export default function AuthorPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
         <div className="text-center px-6">
           <h1 className="font-serif text-3xl mb-4">Author not found</h1>
-          <Link to={withLangPrefix("/blog", lang)} className="underline opacity-80">Back to the blog</Link>
+          <Link to={withLangPrefix("/journal", lang)} className="underline opacity-80">Back to the Journal</Link>
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ export default function AuthorPage() {
     description: localizedAuthorBio(author, lang) || undefined,
     image: author.avatar_url || undefined,
     sameAs: [author.linkedin_url, author.twitter_url].filter(Boolean),
-    url: `${SITE_URL}${withLangPrefix(`/blog/author/${author.slug}`, lang)}`,
+    url: `${SITE_URL}${withLangPrefix(`/journal/author/${author.slug}`, lang)}`,
     jobTitle: author.role || undefined,
   };
 
@@ -85,8 +85,8 @@ export default function AuthorPage() {
       <BlogSEO
         title={`${author.name} — SalbCare`}
         description={localizedAuthorBio(author, lang) || `${author.name}, ${author.role ?? "Author"} at SalbCare.`}
-        canonicalPath={withLangPrefix(`/blog/author/${author.slug}`, lang)}
-        hreflangPath={`/blog/author/${author.slug}`}
+        canonicalPath={withLangPrefix(`/journal/author/${author.slug}`, lang)}
+        hreflangPath={`/journal/author/${author.slug}`}
         lang={lang}
         ogType="website"
         ogImage={author.avatar_url}
@@ -95,7 +95,7 @@ export default function AuthorPage() {
 
       <div className="border-b border-white/10">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between text-xs">
-          <Link to={withLangPrefix("/blog", lang)} className="opacity-70 hover:opacity-100 tracking-wider uppercase">
+          <Link to={withLangPrefix("/journal", lang)} className="opacity-70 hover:opacity-100 tracking-wider uppercase">
             ← Blog
           </Link>
           <div className="flex gap-2">
@@ -138,7 +138,7 @@ export default function AuthorPage() {
                   {pubName}
                 </h2>
                 <Link
-                  to={withLangPrefix(`/blog/${pub}`, lang)}
+                  to={withLangPrefix(`/journal/${pubUrlSegment(pub)}`, lang)}
                   className="text-xs uppercase tracking-wider hover:opacity-80"
                   style={{ color: `hsl(var(${accentVar}))` }}
                 >
@@ -150,7 +150,7 @@ export default function AuthorPage() {
                   const t = pickTranslation(a, lang);
                   if (!t) return null;
                   return (
-                    <Link key={a.id} to={withLangPrefix(`/blog/${pub}/${a.slug}`, lang)} className="block group">
+                    <Link key={a.id} to={withLangPrefix(`/journal/${pubUrlSegment(pub)}/${a.slug}`, lang)} className="block group">
                       {a.featured_image_url && (
                         <img src={a.featured_image_url} alt={t.title} loading="lazy"
                           className="w-full h-44 object-cover rounded-lg mb-3" />

@@ -15,7 +15,7 @@ const BlogGestaoFinanceira = () => (
     <SEOHead
       title="Gestão Financeira para Profissional de Saúde"
       description="Sistema de gestão de saúde com Carnê-Leão automático, reserva de emergência, preço mínimo por consulta e mentoria com IA. Guia prático para autônomos."
-      canonical={`/blog/${SLUG}`}
+      canonical={`/journal/${SLUG}`}
       ogType="article"
       ogImage={`https://salbcare.com.br${blogImage}`}
       keywords={["sistema de gestão de saúde", "gestão financeira", "Carnê-Leão", "sistema para profissional de saúde", "preço mínimo consulta"]}

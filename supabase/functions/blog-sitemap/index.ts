@@ -36,12 +36,13 @@ Deno.serve(async (req) => {
 
   // Hub
   for (const lang of LANGS) {
-    urls.push(makeUrl(absolute("/blog", lang), now, 0.9, "/blog"));
+    urls.push(makeUrl(absolute("/journal", lang), now, 0.9, "/journal"));
   }
 
-  // Publication homes
+  // Publication homes — DB slug "journal" maps to URL segment "main"
+  const pubUrlSeg = (s: string) => (s === "journal" ? "main" : s);
   for (const pubSlug of pubBySlug.keys()) {
-    const base = `/blog/${pubSlug}`;
+    const base = `/journal/${pubUrlSeg(pubSlug as string)}`;
     for (const lang of LANGS) {
       urls.push(makeUrl(absolute(base, lang), now, 0.85, base));
     }
@@ -51,12 +52,13 @@ Deno.serve(async (req) => {
   for (const a of articles ?? []) {
     const pubSlug = slugByPubId.get(a.publication_id);
     if (!pubSlug) continue;
-    const path = `/blog/${pubSlug}/${a.slug}`;
+    const path = `/journal/${pubUrlSeg(pubSlug as string)}/${a.slug}`;
     const lastmod = (a.updated_at || a.published_at || now).split("T")[0];
     for (const lang of LANGS) {
       urls.push(makeUrl(absolute(path, lang), lastmod, 0.8, path));
     }
   }
+
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"

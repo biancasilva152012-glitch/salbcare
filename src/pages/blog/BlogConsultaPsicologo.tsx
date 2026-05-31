@@ -15,7 +15,7 @@ const BlogConsultaPsicologo = () => (
     <SEOHead
       title="Consulta Online com Psicólogo: Como Funciona"
       description="Como funciona a consulta online com psicólogo. Sistema para psicólogo aprovado pelo CFP, terapia virtual com privacidade e agendamento simples pela SalbCare."
-      canonical={`/blog/${SLUG}`}
+      canonical={`/journal/${SLUG}`}
       ogType="article"
       ogImage={`https://salbcare.com.br${blogImage}`}
       keywords={["consulta online psicólogo", "sistema para psicólogo", "terapia online", "teleconsulta", "CFP", "agenda online"]}

@@ -113,7 +113,7 @@ const BlogIndex = () => (
     <SEOHead
       title="Blog SalbCare | Sistema para Profissional de Saúde"
       description="Guias sobre sistema para consultório médico, prontuário eletrônico, agenda online, teleconsulta e prescrição digital. Conteúdo prático para profissionais de saúde autônomos."
-      canonical="/blog"
+      canonical="/journal"
       keywords={[
         "sistema para consultório médico",
         "prontuário eletrônico",
@@ -129,7 +129,7 @@ const BlogIndex = () => (
           "@type": "Blog",
           name: "Blog SalbCare",
           description: "Conteúdo educativo sobre sistema para consultório, prontuário eletrônico, teleconsulta e gestão financeira para profissionais de saúde.",
-          url: "https://salbcare.com.br/blog",
+          url: "https://salbcare.com.br/journal",
           publisher: {
             "@type": "Organization",
             name: "SalbCare",
@@ -142,7 +142,7 @@ const BlogIndex = () => (
           blogPost: POSTS.map((p) => ({
             "@type": "BlogPosting",
             headline: p.title,
-            url: `https://salbcare.com.br/blog/${p.slug}`,
+            url: `https://salbcare.com.br/journal/${p.slug}`,
             image: `https://salbcare.com.br${typeof p.image === "string" ? p.image : ""}`,
             datePublished: "2026-04-14",
           })),
@@ -152,7 +152,7 @@ const BlogIndex = () => (
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "https://salbcare.com.br/" },
-            { "@type": "ListItem", position: 2, name: "Blog", item: "https://salbcare.com.br/blog" },
+            { "@type": "ListItem", position: 2, name: "Journal", item: "https://salbcare.com.br/journal" },
           ],
         },
       ]}
@@ -177,7 +177,7 @@ const BlogIndex = () => (
               transition={{ delay: i * 0.06 }}
             >
               <Link
-                to={(post as any).path ?? `/blog/${post.slug}`}
+                to={(post as any).path ?? `/journal/${post.slug}`}
                 className="group flex flex-col sm:flex-row gap-4 rounded-xl border border-border/40 bg-card/60 p-4 hover:border-primary/30 transition-all"
               >
                 {/* Thumbnail */}

@@ -17,7 +17,7 @@ export interface BlogPostingSchemaInput {
 export const SITE_URL = "https://salbcare.com.br";
 
 export function buildBlogPostingSchema(input: BlogPostingSchemaInput) {
-  const url = `${SITE_URL}/blog/${input.slug}`;
+  const url = `${SITE_URL}/journal/${input.slug}`;
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -47,8 +47,8 @@ export function buildBreadcrumbSchema(articleTitle: string, slug: string) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
-      { "@type": "ListItem", position: 3, name: articleTitle, item: `${SITE_URL}/blog/${slug}` },
+      { "@type": "ListItem", position: 2, name: "Journal", item: `${SITE_URL}/journal` },
+      { "@type": "ListItem", position: 3, name: articleTitle, item: `${SITE_URL}/journal/${slug}` },
     ],
   };
 }
