@@ -94,6 +94,7 @@ const Index = () => {
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
                 <li><Link to="/about" className="salb-footer-link" style={linkStyle}>About</Link></li>
                 <li><Link to="/contact" className="salb-footer-link" style={linkStyle}>Contact</Link></li>
+                <li><Link to="/journal" className="salb-footer-link" style={linkStyle}>Journal</Link></li>
                 <li><Link to="/terms" className="salb-footer-link" style={linkStyle}>Terms</Link></li>
                 <li><Link to="/privacy" className="salb-footer-link" style={linkStyle}>Privacy</Link></li>
               </ul>
