@@ -156,6 +156,7 @@ const ONLINE_IDS: { id: string; type: "online"; total: number }[] = [
 export default function Kite() {
   const [scrolled, setScrolled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [waModalOpen, setWaModalOpen] = useState(false);
   const [selected, setSelected] = useState<KiteProcedure | null>(null);
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
