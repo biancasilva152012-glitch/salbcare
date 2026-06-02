@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import KiteBookingModal, { type KiteProcedure } from "@/components/kite/KiteBookingModal";
+import KiteWhatsappBookingModal from "@/components/kite/KiteWhatsappBookingModal";
 import logoSalb from "/pwa-icon-512.png";
 import { Globe, Lock } from "lucide-react";
 
@@ -155,6 +156,7 @@ const ONLINE_IDS: { id: string; type: "online"; total: number }[] = [
 export default function Kite() {
   const [scrolled, setScrolled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [waModalOpen, setWaModalOpen] = useState(false);
   const [selected, setSelected] = useState<KiteProcedure | null>(null);
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
@@ -408,7 +410,7 @@ export default function Kite() {
               {t.hero.ctaIn} →
             </button>
             <button
-              onClick={() => scrollTo("online-section")}
+              onClick={() => setWaModalOpen(true)}
               className="kite-focus rounded-full font-semibold transition-all duration-200 hover:bg-white/10 w-full sm:w-auto"
               style={{
                 background: "transparent",
@@ -440,19 +442,16 @@ export default function Kite() {
       <section id="services" className="px-5 py-16 md:py-24">
         <div className="max-w-5xl mx-auto">
           <Tabs defaultValue="dental">
-            <div className="overflow-x-auto -mx-5 px-5 mb-10" style={{ scrollbarWidth: "none" }}>
+            <div className="flex justify-center mb-10 -mx-5 px-5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
               <TabsList
-                className="inline-flex w-auto sm:w-full sm:max-w-2xl sm:mx-auto bg-white border border-black/5 p-1 rounded-full h-auto gap-1"
+                className="inline-flex mx-auto bg-white border border-black/5 p-1 rounded-full h-auto gap-1"
                 style={{ boxShadow: "0 1px 3px rgba(13,27,42,0.04)" }}
               >
                 {(["dental", "physio", "online"] as const).map((k) => (
                   <TabsTrigger
                     key={k}
                     value={k}
-                    className="kite-focus rounded-full py-2.5 px-5 text-sm md:text-base font-semibold transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:opacity-60"
-                    style={{
-                      // active background applied via data attribute selector below
-                    }}
+                    className="kite-focus rounded-full py-2.5 px-5 text-sm md:text-base font-semibold transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:opacity-60 whitespace-nowrap"
                   >
                     {t.tabs[k]}
                   </TabsTrigger>
@@ -593,6 +592,7 @@ export default function Kite() {
       </footer>
 
       <KiteBookingModal open={modalOpen} onOpenChange={setModalOpen} procedure={selected} lang={lang} />
+      <KiteWhatsappBookingModal open={waModalOpen} onOpenChange={setWaModalOpen} lang={lang} />
     </div>
   );
 }
