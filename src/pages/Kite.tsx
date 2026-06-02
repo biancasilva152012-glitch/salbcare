@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import KiteBookingModal, { type KiteProcedure } from "@/components/kite/KiteBookingModal";
+import KiteWhatsappBookingModal from "@/components/kite/KiteWhatsappBookingModal";
 import logoSalb from "/pwa-icon-512.png";
 import { Globe, Lock } from "lucide-react";
 
