@@ -592,6 +592,7 @@ export default function Kite() {
       </footer>
 
       <KiteBookingModal open={modalOpen} onOpenChange={setModalOpen} procedure={selected} lang={lang} />
+      <KiteWhatsappBookingModal open={waModalOpen} onOpenChange={setWaModalOpen} lang={lang} />
     </div>
   );
 }
