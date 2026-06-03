@@ -106,69 +106,53 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Journal index -->
+  <!-- Journal hub + publications -->
   <url>
     <loc>https://salbcare.com.br/journal</loc>
-    <lastmod>2026-05-02</lastmod>
+    <lastmod>2026-06-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>https://salbcare.com.br/journal/main</loc>
+    <lastmod>2026-06-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://salbcare.com.br/journal/pro</loc>
+    <lastmod>2026-06-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
 
-  <!-- Journal posts -->
-  <url>
-    <loc>https://salbcare.com.br/journal/preco-minimo-consulta</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/consulta-online-psicologo</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/prontuario-digital-dentista</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/teleconsulta-medica</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/gestao-financeira-profissional-saude</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/nutricionista-online</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/agenda-medica-digital</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/receituario-digital</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://salbcare.com.br/journal/como-abrir-cnpj-medico</loc>
-    <lastmod>2026-05-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+  <!-- Legacy Journal posts (PT) -->
+  <url><loc>https://salbcare.com.br/journal/preco-minimo-consulta</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://salbcare.com.br/journal/consulta-online-psicologo</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://salbcare.com.br/journal/prontuario-digital-dentista</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://salbcare.com.br/journal/teleconsulta-medica</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://salbcare.com.br/journal/gestao-financeira-profissional-saude</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://salbcare.com.br/journal/nutricionista-online</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://salbcare.com.br/journal/agenda-medica-digital</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://salbcare.com.br/journal/receituario-digital</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://salbcare.com.br/journal/como-abrir-cnpj-medico</loc><lastmod>2026-05-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- SalbCare Pro articles (PT) -->
+  <url><loc>https://salbcare.com.br/journal/pro/como-comprovar-renda-profissional-saude-autonomo</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/pro/quanto-cobrar-pela-consulta-metodo-simples</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/pro/cinco-erros-financeiros-profissional-autonomo</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/pro/mei-me-ou-autonomo-profissionais-saude</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/pro/organizar-financeiro-consultorio-30-minutos-semana</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/pro/como-atrair-pacientes-particular-sem-convenio</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+
+  <!-- The SalbCare Journal articles (EN) -->
+  <url><loc>https://salbcare.com.br/journal/main/health-sanctuary-tourism-restorative-not-luxurious</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/main/kitesurfing-ceara-common-injuries-recovery</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/main/sun-salt-skin-traveler-guide-brazilian-coast</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/main/doctor-abroad-language-barrier-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/main/quiet-luxury-recovering-by-the-sea</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://salbcare.com.br/journal/main/digital-nomad-guide-healthcare-brazil</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+
 
   <!-- Legal -->
   <url>

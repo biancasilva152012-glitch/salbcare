@@ -110,37 +110,33 @@ export default function KiteWhatsappBookingModal({ open, onOpenChange, lang = "e
       return;
     }
 
-    setSubmitting(true);
-    try {
-      const { error } = await supabase.functions.invoke("kite-whatsapp-booking", {
-        body: { service, date, time, name: name.trim(), email: email.trim() },
-      });
-      if (error) {
-        setSubmitting(false);
-        setErrors({ form: c.errors.saveFailed });
-        return;
-      }
-    } catch {
-      setSubmitting(false);
-      setErrors({ form: c.errors.saveFailed });
-      return;
-    }
-
     const serviceLabel = c.services[service as ServiceKey];
     const lines = [
-      c.msgIntro,
-      `Service: ${serviceLabel}`,
-      `Date: ${date}`,
-      `Time: ${time}`,
+      "Olá! Gostaria de marcar um horário na SalbCare.",
+      `Serviço: ${serviceLabel}`,
+      `Data preferida: ${date}`,
+      `Horário preferido: ${time}`,
     ];
-    if (name.trim()) lines.push(`Name: ${name.trim()}`);
+    if (name.trim()) lines.push(`Nome: ${name.trim()}`);
     if (email.trim()) lines.push(`Email: ${email.trim()}`);
-    const text = lines.map(encodeURIComponent).join("%0A");
+    const text = encodeURIComponent(lines.join("\n"));
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+
+    // Open WhatsApp synchronously inside the click gesture so popup blockers
+    // don't intercept it. Save to DB in the background — we don't block the redirect.
     window.open(url, "_blank", "noopener,noreferrer");
+
+    setSubmitting(true);
+    supabase.functions
+      .invoke("kite-whatsapp-booking", {
+        body: { service, date, time, name: name.trim(), email: email.trim() },
+      })
+      .catch((err) => console.warn("[kite-whatsapp-booking] save failed", err));
+
     reset();
     onOpenChange(false);
   }
+
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) reset(); onOpenChange(o); }}>
