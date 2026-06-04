@@ -198,6 +198,7 @@ export default function AdminKiteBookingsPage() {
                     <th className="text-left px-4 py-3 font-medium">Data preferida</th>
                     <th className="text-left px-4 py-3 font-medium">Status</th>
                     <th className="text-left px-4 py-3 font-medium">Ação</th>
+                    <th className="text-left px-4 py-3 font-medium">Detalhes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.04]">
