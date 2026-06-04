@@ -144,6 +144,9 @@ export default function AdminKiteBookingsPage() {
               Atualizar
             </Button>
           </div>
+        </div>
+
+
 
         {/* Filters */}
         <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4 space-y-3">
