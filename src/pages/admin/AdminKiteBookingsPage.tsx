@@ -238,6 +238,14 @@ export default function AdminKiteBookingsPage() {
                           )}
                         </select>
                       </td>
+                      <td className="px-4 py-3">
+                        <Link
+                          to={`/admin/kite-bookings/${b.id}`}
+                          className="inline-flex items-center gap-1 text-blue-300 hover:text-blue-200 text-[11px] font-medium"
+                        >
+                          Ver <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
