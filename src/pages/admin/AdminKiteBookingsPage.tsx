@@ -114,17 +114,36 @@ export default function AdminKiteBookingsPage() {
               Auditoria de reservas vindas do fluxo WhatsApp e Stripe.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-            className="border-white/10 text-white/70 hover:bg-white/5"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isFetching ? "animate-spin" : ""}`} />
-            Atualizar
-          </Button>
-        </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportCsv(filtered)}
+              disabled={isLoading || filtered.length === 0}
+              className="border-white/10 text-white/70 hover:bg-white/5"
+            >
+              <FileDown className="h-3.5 w-3.5 mr-1.5" /> CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportPdf(filtered)}
+              disabled={isLoading || filtered.length === 0}
+              className="border-white/10 text-white/70 hover:bg-white/5"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" /> PDF
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="border-white/10 text-white/70 hover:bg-white/5"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isFetching ? "animate-spin" : ""}`} />
+              Atualizar
+            </Button>
+          </div>
 
         {/* Filters */}
         <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4 space-y-3">
