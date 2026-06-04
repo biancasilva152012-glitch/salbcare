@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Authenticated can insert own access log" ON public.pii_access_log;
