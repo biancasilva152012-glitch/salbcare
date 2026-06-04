@@ -48,6 +48,54 @@ function statusBadge(s: string) {
   );
 }
 
+function exportCsv(rows: Booking[]) {
+  const headers = ["Created", "Patient", "Email", "Service", "Type", "Date", "Time", "Status", "Paid", "Remaining", "Notes"];
+  const escape = (v: any) => {
+    const s = v == null ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const lines = [headers.join(",")];
+  for (const b of rows) {
+    lines.push([
+      new Date(b.created_at).toISOString(),
+      b.patient_name, b.email, b.procedure, b.type,
+      b.preferred_date || "", b.time_preference || "",
+      b.status, b.amount_paid, b.remaining_balance, b.notes || "",
+    ].map(escape).join(","));
+  }
+  const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `kite-bookings-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportPdf(rows: Booking[]) {
+  const doc = new jsPDF({ orientation: "landscape" });
+  doc.setFontSize(14);
+  doc.text("SalbCare Kite — Reservas", 14, 14);
+  doc.setFontSize(9);
+  doc.text(`Gerado em ${new Date().toLocaleString("pt-BR")} · ${rows.length} registros`, 14, 20);
+  autoTable(doc, {
+    startY: 26,
+    head: [["Criada", "Paciente", "Email", "Serviço", "Data", "Hora", "Status"]],
+    body: rows.map((b) => [
+      new Date(b.created_at).toLocaleString("pt-BR"),
+      b.patient_name,
+      b.email,
+      `${b.procedure} (${b.type})`,
+      b.preferred_date || "—",
+      b.time_preference || "—",
+      b.status,
+    ]),
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [13, 27, 42] },
+  });
+  doc.save(`kite-bookings-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
 export default function AdminKiteBookingsPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
