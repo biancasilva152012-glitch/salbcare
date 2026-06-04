@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Search } from "lucide-react";
+import { Loader2, RefreshCw, Search, FileDown, FileText, ExternalLink } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type Booking = {
   id: string;
