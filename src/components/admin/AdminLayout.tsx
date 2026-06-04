@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { label: "Auditoria LGPD", icon: FileLock2, path: "/admin/lgpd-audit" },
   { label: "Solicitações LGPD", icon: FileLock2, path: "/admin/lgpd-requests" },
   { label: "QR Pousadas", icon: QrCode, path: "/admin/qr-generator" },
+  { label: "Reservas Kite", icon: Wind, path: "/admin/kite-bookings" },
   { label: "Configurações", icon: Settings, path: "/admin/settings" },
 ];
 
