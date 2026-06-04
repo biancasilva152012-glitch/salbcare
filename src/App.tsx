@@ -90,6 +90,7 @@ const AdminLgpdRequestsPage = lazyWithRetry(() => import("./pages/admin/AdminLgp
 const AdminQrGeneratorPage = lazyWithRetry(() => import("./pages/admin/AdminQrGeneratorPage"), "AdminQrGeneratorPage");
 const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintPage"), "AdminQrPrintPage");
 const AdminKiteBookingsPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingsPage"), "AdminKiteBookingsPage");
+const AdminKiteBookingDetailPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingDetailPage"), "AdminKiteBookingDetailPage");
 const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
 const Hub = lazyWithRetry(() => import("./pages/Hub"), "Hub");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
@@ -349,6 +350,7 @@ const App = () => (
               <Route path="/admin/qr-generator" element={<AdminQrGeneratorPage />} />
               <Route path="/admin/qr-generator/print/:id" element={<AdminQrPrintPage />} />
               <Route path="/admin/kite-bookings" element={<AdminKiteBookingsPage />} />
+              <Route path="/admin/kite-bookings/:id" element={<AdminKiteBookingDetailPage />} />
               <Route path="/admin/blog" element={<AdminBlogListPage />} />
               <Route path="/admin/blog/:id" element={<AdminBlogEditorPage />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />

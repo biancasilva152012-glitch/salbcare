@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Search } from "lucide-react";
+import { Loader2, RefreshCw, Search, FileDown, FileText, ExternalLink } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type Booking = {
   id: string;
@@ -43,6 +46,54 @@ function statusBadge(s: string) {
       {label}
     </span>
   );
+}
+
+function exportCsv(rows: Booking[]) {
+  const headers = ["Created", "Patient", "Email", "Service", "Type", "Date", "Time", "Status", "Paid", "Remaining", "Notes"];
+  const escape = (v: any) => {
+    const s = v == null ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const lines = [headers.join(",")];
+  for (const b of rows) {
+    lines.push([
+      new Date(b.created_at).toISOString(),
+      b.patient_name, b.email, b.procedure, b.type,
+      b.preferred_date || "", b.time_preference || "",
+      b.status, b.amount_paid, b.remaining_balance, b.notes || "",
+    ].map(escape).join(","));
+  }
+  const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `kite-bookings-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportPdf(rows: Booking[]) {
+  const doc = new jsPDF({ orientation: "landscape" });
+  doc.setFontSize(14);
+  doc.text("SalbCare Kite — Reservas", 14, 14);
+  doc.setFontSize(9);
+  doc.text(`Gerado em ${new Date().toLocaleString("pt-BR")} · ${rows.length} registros`, 14, 20);
+  autoTable(doc, {
+    startY: 26,
+    head: [["Criada", "Paciente", "Email", "Serviço", "Data", "Hora", "Status"]],
+    body: rows.map((b) => [
+      new Date(b.created_at).toLocaleString("pt-BR"),
+      b.patient_name,
+      b.email,
+      `${b.procedure} (${b.type})`,
+      b.preferred_date || "—",
+      b.time_preference || "—",
+      b.status,
+    ]),
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [13, 27, 42] },
+  });
+  doc.save(`kite-bookings-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
 export default function AdminKiteBookingsPage() {
@@ -111,17 +162,39 @@ export default function AdminKiteBookingsPage() {
               Auditoria de reservas vindas do fluxo WhatsApp e Stripe.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-            className="border-white/10 text-white/70 hover:bg-white/5"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isFetching ? "animate-spin" : ""}`} />
-            Atualizar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportCsv(filtered)}
+              disabled={isLoading || filtered.length === 0}
+              className="border-white/10 text-white/70 hover:bg-white/5"
+            >
+              <FileDown className="h-3.5 w-3.5 mr-1.5" /> CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportPdf(filtered)}
+              disabled={isLoading || filtered.length === 0}
+              className="border-white/10 text-white/70 hover:bg-white/5"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" /> PDF
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="border-white/10 text-white/70 hover:bg-white/5"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isFetching ? "animate-spin" : ""}`} />
+              Atualizar
+            </Button>
+          </div>
         </div>
+
+
 
         {/* Filters */}
         <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4 space-y-3">
@@ -173,6 +246,7 @@ export default function AdminKiteBookingsPage() {
                     <th className="text-left px-4 py-3 font-medium">Data preferida</th>
                     <th className="text-left px-4 py-3 font-medium">Status</th>
                     <th className="text-left px-4 py-3 font-medium">Ação</th>
+                    <th className="text-left px-4 py-3 font-medium">Detalhes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.04]">
@@ -211,6 +285,14 @@ export default function AdminKiteBookingsPage() {
                             ),
                           )}
                         </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Link
+                          to={`/admin/kite-bookings/${b.id}`}
+                          className="inline-flex items-center gap-1 text-blue-300 hover:text-blue-200 text-[11px] font-medium"
+                        >
+                          Ver <ExternalLink className="h-3 w-3" />
+                        </Link>
                       </td>
                     </tr>
                   ))}
