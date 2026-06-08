@@ -262,17 +262,45 @@ export default function AdminKiteBookingsPage() {
           </div>
         </div>
 
-
+        {/* Platform snapshot */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Inscritos (profissionais)", value: snapshot?.signups ?? "—" },
+            { label: "Pagantes / Trial", value: snapshot?.paying ?? "—" },
+            { label: "Reservas Kite (total)", value: snapshot?.kite ?? "—" },
+          ].map((m) => (
+            <div key={m.label} className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4">
+              <p className="text-[10px] uppercase tracking-wide text-white/40">{m.label}</p>
+              <p className="text-2xl font-bold text-white mt-1">{m.value}</p>
+            </div>
+          ))}
+        </div>
 
         {/* Filters */}
         <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4 space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+          <div className="grid sm:grid-cols-[1fr_auto_auto] gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nome, email ou observação…"
+                className="pl-9 bg-[hsl(220,20%,8%)] border-white/10 text-white placeholder:text-white/30"
+              />
+            </div>
             <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nome, email ou observação…"
-              className="pl-9 bg-[hsl(220,20%,8%)] border-white/10 text-white placeholder:text-white/30"
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              aria-label="Data inicial"
+            />
+            <Input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              aria-label="Data final"
             />
           </div>
           <div className="flex flex-wrap gap-2">
