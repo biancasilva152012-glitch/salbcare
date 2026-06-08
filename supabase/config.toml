@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.kite-whatsapp-booking]
 verify_jwt = false
+
+[functions.kite-bookings-retry]
+verify_jwt = false
