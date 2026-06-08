@@ -51,6 +51,8 @@ function statusBadge(s: string) {
 export default function AdminKiteBookingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [resending, setResending] = useState(false);
 
   const { data: booking, isLoading } = useQuery({
     queryKey: ["admin-kite-booking", id],
