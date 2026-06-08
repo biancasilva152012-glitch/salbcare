@@ -163,6 +163,9 @@ export default function AdminKiteBookingsPage() {
     },
     staleTime: 60_000,
   });
+
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ["admin-kite-bookings"],
     queryFn: async (): Promise<Booking[]> => {
       const { data, error } = await supabase
         .from("kite_bookings")
