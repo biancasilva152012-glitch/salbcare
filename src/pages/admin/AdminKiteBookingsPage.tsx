@@ -139,9 +139,30 @@ export default function AdminKiteBookingsPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
 
-  const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["admin-kite-bookings"],
+  // Quick platform snapshot for admin: signups + paying users + kite total.
+  const { data: snapshot } = useQuery({
+    queryKey: ["admin-kite-snapshot"],
+    queryFn: async () => {
+      const [profilesTotal, profilesPaying, kiteTotal] = await Promise.all([
+        supabase.from("profiles").select("id", { count: "exact", head: true }).eq("user_type", "professional"),
+        supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .eq("user_type", "professional")
+          .in("payment_status", ["active", "trialing", "paid"]),
+        supabase.from("kite_bookings").select("id", { count: "exact", head: true }),
+      ]);
+      return {
+        signups: profilesTotal.count ?? 0,
+        paying: profilesPaying.count ?? 0,
+        kite: kiteTotal.count ?? 0,
+      };
+    },
+    staleTime: 60_000,
+  });
     queryFn: async (): Promise<Booking[]> => {
       const { data, error } = await supabase
         .from("kite_bookings")
