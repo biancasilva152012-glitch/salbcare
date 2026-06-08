@@ -48,19 +48,52 @@ function statusBadge(s: string) {
   );
 }
 
-function exportCsv(rows: Booking[]) {
-  const headers = ["Created", "Patient", "Email", "Service", "Type", "Date", "Time", "Status", "Paid", "Remaining", "Notes"];
+type BookingEventAgg = {
+  retry_count: number;
+  last_event_type: string | null;
+  last_event_at: string | null;
+  events_summary: string;
+};
+
+async function fetchEventAggregates(ids: string[]): Promise<Record<string, BookingEventAgg>> {
+  const out: Record<string, BookingEventAgg> = {};
+  if (ids.length === 0) return out;
+  const { data } = await supabase
+    .from("kite_booking_events")
+    .select("booking_id,event_type,created_at")
+    .in("booking_id", ids)
+    .order("created_at", { ascending: true });
+  for (const row of (data || []) as any[]) {
+    const a = out[row.booking_id] || { retry_count: 0, last_event_type: null, last_event_at: null, events_summary: "" };
+    if (row.event_type === "retry_attempt" || row.event_type === "manual_resend") a.retry_count += 1;
+    a.last_event_type = row.event_type;
+    a.last_event_at = row.created_at;
+    a.events_summary = (a.events_summary ? a.events_summary + " → " : "") + row.event_type;
+    out[row.booking_id] = a;
+  }
+  return out;
+}
+
+async function exportCsv(rows: Booking[]) {
+  const agg = await fetchEventAggregates(rows.map((b) => b.id));
+  const headers = [
+    "Created", "Patient", "Email", "Service", "Type", "Date", "Time",
+    "Status", "Paid", "Remaining", "Notes",
+    "Retries", "LastEvent", "LastEventAt", "Timeline",
+  ];
   const escape = (v: any) => {
     const s = v == null ? "" : String(v);
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const lines = [headers.join(",")];
   for (const b of rows) {
+    const a = agg[b.id] || { retry_count: 0, last_event_type: "", last_event_at: "", events_summary: "" };
     lines.push([
       new Date(b.created_at).toISOString(),
       b.patient_name, b.email, b.procedure, b.type,
       b.preferred_date || "", b.time_preference || "",
       b.status, b.amount_paid, b.remaining_balance, b.notes || "",
+      a.retry_count, a.last_event_type || "", a.last_event_at || "", a.events_summary,
     ].map(escape).join(","));
   }
   const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -72,7 +105,8 @@ function exportCsv(rows: Booking[]) {
   URL.revokeObjectURL(url);
 }
 
-function exportPdf(rows: Booking[]) {
+async function exportPdf(rows: Booking[]) {
+  const agg = await fetchEventAggregates(rows.map((b) => b.id));
   const doc = new jsPDF({ orientation: "landscape" });
   doc.setFontSize(14);
   doc.text("SalbCare Kite — Reservas", 14, 14);
@@ -80,17 +114,22 @@ function exportPdf(rows: Booking[]) {
   doc.text(`Gerado em ${new Date().toLocaleString("pt-BR")} · ${rows.length} registros`, 14, 20);
   autoTable(doc, {
     startY: 26,
-    head: [["Criada", "Paciente", "Email", "Serviço", "Data", "Hora", "Status"]],
-    body: rows.map((b) => [
-      new Date(b.created_at).toLocaleString("pt-BR"),
-      b.patient_name,
-      b.email,
-      `${b.procedure} (${b.type})`,
-      b.preferred_date || "—",
-      b.time_preference || "—",
-      b.status,
-    ]),
-    styles: { fontSize: 8 },
+    head: [["Criada", "Paciente", "Serviço", "Data", "Hora", "Status", "Retries", "Último evento", "Timeline"]],
+    body: rows.map((b) => {
+      const a = agg[b.id] || { retry_count: 0, last_event_type: "—", events_summary: "—" };
+      return [
+        new Date(b.created_at).toLocaleString("pt-BR"),
+        b.patient_name,
+        `${b.procedure} (${b.type})`,
+        b.preferred_date || "—",
+        b.time_preference || "—",
+        b.status,
+        String(a.retry_count),
+        a.last_event_type || "—",
+        a.events_summary || "—",
+      ];
+    }),
+    styles: { fontSize: 7 },
     headStyles: { fillColor: [13, 27, 42] },
   });
   doc.save(`kite-bookings-${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -100,6 +139,30 @@ export default function AdminKiteBookingsPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+
+  // Quick platform snapshot for admin: signups + paying users + kite total.
+  const { data: snapshot } = useQuery({
+    queryKey: ["admin-kite-snapshot"],
+    queryFn: async () => {
+      const [profilesTotal, profilesPaying, kiteTotal] = await Promise.all([
+        supabase.from("profiles").select("id", { count: "exact", head: true }).eq("user_type", "professional"),
+        supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .eq("user_type", "professional")
+          .in("payment_status", ["active", "trialing", "paid"]),
+        supabase.from("kite_bookings").select("id", { count: "exact", head: true }),
+      ]);
+      return {
+        signups: profilesTotal.count ?? 0,
+        paying: profilesPaying.count ?? 0,
+        kite: kiteTotal.count ?? 0,
+      };
+    },
+    staleTime: 60_000,
+  });
 
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ["admin-kite-bookings"],
@@ -134,8 +197,13 @@ export default function AdminKiteBookingsPage() {
   const filtered = useMemo(() => {
     const list = data || [];
     const q = search.trim().toLowerCase();
+    const fromTs = fromDate ? new Date(fromDate + "T00:00:00").getTime() : null;
+    const toTs = toDate ? new Date(toDate + "T23:59:59").getTime() : null;
     return list.filter((b) => {
       if (statusFilter !== "all" && b.status !== statusFilter) return false;
+      const t = new Date(b.created_at).getTime();
+      if (fromTs && t < fromTs) return false;
+      if (toTs && t > toTs) return false;
       if (!q) return true;
       return (
         b.patient_name?.toLowerCase().includes(q) ||
@@ -143,7 +211,7 @@ export default function AdminKiteBookingsPage() {
         (b.notes || "").toLowerCase().includes(q)
       );
     });
-  }, [data, search, statusFilter]);
+  }, [data, search, statusFilter, fromDate, toDate]);
 
   const counts = useMemo(() => {
     const list = data || [];
@@ -194,17 +262,45 @@ export default function AdminKiteBookingsPage() {
           </div>
         </div>
 
-
+        {/* Platform snapshot */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Inscritos (profissionais)", value: snapshot?.signups ?? "—" },
+            { label: "Pagantes / Trial", value: snapshot?.paying ?? "—" },
+            { label: "Reservas Kite (total)", value: snapshot?.kite ?? "—" },
+          ].map((m) => (
+            <div key={m.label} className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4">
+              <p className="text-[10px] uppercase tracking-wide text-white/40">{m.label}</p>
+              <p className="text-2xl font-bold text-white mt-1">{m.value}</p>
+            </div>
+          ))}
+        </div>
 
         {/* Filters */}
         <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4 space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+          <div className="grid sm:grid-cols-[1fr_auto_auto] gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nome, email ou observação…"
+                className="pl-9 bg-[hsl(220,20%,8%)] border-white/10 text-white placeholder:text-white/30"
+              />
+            </div>
             <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nome, email ou observação…"
-              className="pl-9 bg-[hsl(220,20%,8%)] border-white/10 text-white placeholder:text-white/30"
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              aria-label="Data inicial"
+            />
+            <Input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              aria-label="Data final"
             />
           </div>
           <div className="flex flex-wrap gap-2">

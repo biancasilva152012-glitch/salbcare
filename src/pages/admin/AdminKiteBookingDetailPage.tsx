@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, MessageCircle, Clock, User, Mail, Calendar, Tag } from "lucide-react";
+import { ArrowLeft, Loader2, MessageCircle, Clock, User, Mail, Calendar, Tag, RefreshCw } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { WHATSAPP_NUMBER } from "@/lib/whatsapp";
 
 type Booking = {
@@ -50,6 +51,8 @@ function statusBadge(s: string) {
 export default function AdminKiteBookingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [resending, setResending] = useState(false);
 
   const { data: booking, isLoading } = useQuery({
     queryKey: ["admin-kite-booking", id],
@@ -143,7 +146,7 @@ export default function AdminKiteBookingDetailPage() {
                   </div>
                 )}
 
-                <div className="mt-5">
+                <div className="mt-5 flex flex-wrap gap-2">
                   <a
                     href={waUrl}
                     target="_blank"
@@ -152,6 +155,37 @@ export default function AdminKiteBookingDetailPage() {
                   >
                     <MessageCircle className="h-4 w-4" /> Abrir WhatsApp do paciente
                   </a>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={resending}
+                    onClick={async () => {
+                      if (!booking) return;
+                      setResending(true);
+                      try {
+                        const { error } = await supabase.functions.invoke("kite-whatsapp-booking", {
+                          body: { retry_booking_id: booking.id, attempt: 1 },
+                        });
+                        if (error) throw error;
+                        await supabase.from("kite_booking_events").insert({
+                          booking_id: booking.id,
+                          event_type: "manual_resend",
+                          note: `Admin acionou reenvio manual em ${new Date().toISOString()}`,
+                        });
+                        toast({ title: "Reenvio registrado", description: "Abrindo WhatsApp…" });
+                        window.open(waUrl, "_blank", "noopener,noreferrer");
+                        qc.invalidateQueries({ queryKey: ["admin-kite-booking-events", booking.id] });
+                        qc.invalidateQueries({ queryKey: ["admin-kite-booking", booking.id] });
+                      } catch (err: any) {
+                        toast({ title: "Falha ao reenviar", description: err.message, variant: "destructive" });
+                      } finally {
+                        setResending(false);
+                      }
+                    }}
+                    className="border-white/10 text-white/80 hover:bg-white/5 h-10"
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-1.5 ${resending ? "animate-spin" : ""}`} /> Reenviar WhatsApp
+                  </Button>
                 </div>
               </div>
             </div>
