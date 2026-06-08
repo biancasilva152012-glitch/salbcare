@@ -197,8 +197,13 @@ export default function AdminKiteBookingsPage() {
   const filtered = useMemo(() => {
     const list = data || [];
     const q = search.trim().toLowerCase();
+    const fromTs = fromDate ? new Date(fromDate + "T00:00:00").getTime() : null;
+    const toTs = toDate ? new Date(toDate + "T23:59:59").getTime() : null;
     return list.filter((b) => {
       if (statusFilter !== "all" && b.status !== statusFilter) return false;
+      const t = new Date(b.created_at).getTime();
+      if (fromTs && t < fromTs) return false;
+      if (toTs && t > toTs) return false;
       if (!q) return true;
       return (
         b.patient_name?.toLowerCase().includes(q) ||
@@ -206,7 +211,7 @@ export default function AdminKiteBookingsPage() {
         (b.notes || "").toLowerCase().includes(q)
       );
     });
-  }, [data, search, statusFilter]);
+  }, [data, search, statusFilter, fromDate, toDate]);
 
   const counts = useMemo(() => {
     const list = data || [];
