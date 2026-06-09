@@ -26,6 +26,7 @@ const ESSENTIAL_FEATURES = [
   { text: "Teleconsulta integrada", included: true },
   { text: "Receita e Atestado Digital (PDF)", included: true },
   { text: "Agenda inteligente de consultas", included: true },
+  { text: "Agendamento online por link privado", included: true },
   { text: "100% do valor das consultas é seu", included: true },
 ];
 

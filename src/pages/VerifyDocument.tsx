@@ -140,9 +140,9 @@ const VerifyDocument = () => {
                 <p className="text-[10px] text-muted-foreground break-all">
                   Hash: {hash}
                 </p>
-                <Link to="/profissionais" className="block">
+                <Link to="/" className="block">
                   <Button variant="outline" size="sm" className="w-full">
-                    Ver outros profissionais SalbCare
+                    Voltar ao início
                   </Button>
                 </Link>
               </div>
