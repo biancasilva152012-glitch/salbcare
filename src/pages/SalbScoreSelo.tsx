@@ -76,8 +76,8 @@ const SalbScoreSelo = () => {
           <p className="text-sm text-muted-foreground">
             Este profissional não possui um selo SalbScore público ativo.
           </p>
-          <Link to="/profissionais">
-            <Button variant="outline" size="sm">Ver profissionais SalbCare</Button>
+          <Link to="/">
+            <Button variant="outline" size="sm">Voltar ao início</Button>
           </Link>
         </div>
       </div>
@@ -192,9 +192,9 @@ const SalbScoreSelo = () => {
           </div>
         )}
 
-        <Link to={`/p/${data.profile_slug}`} className="block">
+        <Link to={`/agendar/${data.profile_slug}`} className="block">
           <Button className="w-full" style={{ background: "#00B4A0" }}>
-            Ver perfil completo <ExternalLink className="h-3.5 w-3.5 ml-1" />
+            Agendar consulta <ExternalLink className="h-3.5 w-3.5 ml-1" />
           </Button>
         </Link>
 

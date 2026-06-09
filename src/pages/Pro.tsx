@@ -63,7 +63,7 @@ const Pro = () => {
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <Eyebrow>SalbCare Pro</Eyebrow>
           <h1 className="pro-h1" style={{ color: "#fff", fontWeight: 700, letterSpacing: "-0.01em", margin: 0 }}>
-            Sua vitrine de pacientes,<br />seu controle para a gestão.
+            Seu consultório digital,<br />seu controle para a gestão.
           </h1>
           <p style={{ marginTop: 20, color: TEXT_MUTED, fontSize: 17, lineHeight: 1.5, maxWidth: 600, marginInline: "auto" }}>
             A plataforma completa para profissionais de saúde autônomos: capte mais pacientes, organize sua agenda, e tenha clareza total sobre seu lucro real.
@@ -87,7 +87,7 @@ const Pro = () => {
             </h2>
           </div>
           <div className="pro-grid-4">
-            <Pillar Icon={Users} title="Atraia mais pacientes" body="Perfil público profissional. Agendamento online 24h. Sem cobrança de comissão como outras plataformas." />
+            <Pillar Icon={Users} title="Receba seus pacientes" body="Link de agendamento privado que você compartilha por WhatsApp. Agendamento online 24h. Sem comissão." />
             <Pillar Icon={Calendar} title="Organize sua agenda" body="Agenda inteligente, lembretes automáticos via WhatsApp, e teleconsulta integrada com Google Meet em um clique." />
             <Pillar Icon={LineChart} title="Controle seu financeiro" body="Saiba exatamente quanto entra, quanto sai, e quanto você lucra de verdade. Sem planilhas, sem chutes." />
             <Pillar Icon={ShieldCheck} title="Esqueça o Carnê-Leão" body="Contabilidade especializada em saúde, prontuário digital seguro, e conformidade com CFM, ANVISA e LGPD garantidas." />

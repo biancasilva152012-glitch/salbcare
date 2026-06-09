@@ -100,7 +100,7 @@ const KiteConfirmed = lazyWithRetry(() => import("./pages/KiteConfirmed"), "Kite
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
 // Index é eager (rota raiz)
-const PublicProfile = lazyWithRetry(() => import("./pages/PublicProfile"), "PublicProfile");
+const BookingPublic = lazyWithRetry(() => import("./pages/BookingPublic"), "BookingPublic");
 const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 const SpecialtyListing = lazyWithRetry(() => import("./pages/SpecialtyListing"), "SpecialtyListing");
 const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
@@ -112,7 +112,7 @@ const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
 const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
 const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
 const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
-const PublicProfessionals = lazyWithRetry(() => import("./pages/PublicProfessionals"), "PublicProfessionals");
+
 const Pricing = lazyWithRetry(() => import("./pages/Pricing"), "Pricing");
 const BlogIndex = lazyWithRetry(() => import("./pages/blog/BlogIndex"), "BlogIndex");
 const BlogConsultaPsicologo = lazyWithRetry(() => import("./pages/blog/BlogConsultaPsicologo"), "BlogConsultaPsicologo");
@@ -183,9 +183,11 @@ const App = () => (
               {/* /para-profissionais e /index → redirect 301-like para a raiz unificada */}
               <Route path="/para-profissionais" element={<Navigate to="/" replace />} />
               <Route path="/index" element={<Navigate to="/" replace />} />
-              <Route path="/p/:slug" element={<PublicProfile />} />
+              {/* Public booking link (replaces old public profile /p/:slug and /profissionais directory) */}
+              <Route path="/agendar/:token" element={<BookingPublic />} />
+              <Route path="/p/:slug" element={<SlugRedirect to={(s) => `/agendar/${s}`} />} />
+              <Route path="/profissionais" element={<Navigate to="/" replace />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
-              <Route path="/profissionais" element={<PublicProfessionals />} />
               <Route path="/planos" element={<Pricing />} />
               <Route path="/precos" element={<Pricing />} />
               <Route path="/experimente" element={<Experimente />} />

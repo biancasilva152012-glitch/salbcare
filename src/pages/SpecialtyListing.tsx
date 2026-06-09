@@ -126,7 +126,7 @@ const SpecialtyListing = () => {
                           </p>
                         )}
                         <Button asChild variant="outline" size="sm" className="mt-auto">
-                          <Link to={`/p/${slug}`}>Ver perfil</Link>
+                          <Link to={`/agendar/${slug}`}>Agendar</Link>
                         </Button>
                       </CardContent>
                     </Card>
