@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import GuestDashboard from "@/components/guest/GuestDashboard";
 import GuestSyncReminderBanner from "@/components/GuestSyncReminderBanner";
+import BookingLinkBlock from "@/components/BookingLinkBlock";
 
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import { useFinancialHealth } from "@/hooks/useFinancialHealth";
@@ -284,6 +285,16 @@ const Dashboard = () => {
             <h1 className="text-xl font-bold sm:text-2xl">{profile?.name || "Profissional"}</h1>
           </motion.div>
         )}
+
+        {/* Link de agendamento privado (substitui o antigo perfil público) */}
+        {user && (
+          <BookingLinkBlock
+            userId={user.id}
+            profileName={profile?.name}
+            profileSlug={profile?.profile_slug}
+          />
+        )}
+
 
         {/* Push Notification Banner */}
         {isSupported && !isSubscribed && (
