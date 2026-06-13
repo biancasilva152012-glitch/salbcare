@@ -219,7 +219,7 @@ ${totalExpenses > 0 ? `Seus gastos de R$ ${fmt(totalExpenses)} comem ${lucroPct 
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...safeMessages,
         ],
         stream: true,
       }),
