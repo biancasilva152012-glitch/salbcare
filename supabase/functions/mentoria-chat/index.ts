@@ -44,6 +44,47 @@ serve(async (req) => {
       });
     }
 
+    // Sanitize: strip any client-supplied 'system' or other roles to prevent
+    // prompt injection. Cap message count and content length.
+    const safeMessages = messages
+      .filter((m: any) => m && (m.role === "user" || m.role === "assistant"))
+      .slice(-50)
+      .map((m: any) => ({
+        role: m.role,
+        content: String(m.content ?? "").slice(0, 8000),
+      }));
+    if (safeMessages.length === 0) {
+      return new Response(JSON.stringify({ error: "Messages required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Server-side plan enforcement (mirrors usePremiumFeature client gate).
+    const admin = createClient(
+      supabaseUrl,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: hasPlan } = await admin.rpc("has_active_paid_plan", { _user_id: user.id });
+    if (!hasPlan) {
+      // Free tier: allow a small monthly quota matching FREE_LIMITS.mentorshipMessages (5).
+      const monthStart = new Date();
+      monthStart.setUTCDate(1);
+      monthStart.setUTCHours(0, 0, 0, 0);
+      const { count } = await admin
+        .from("mentorship_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("professional_id", user.id)
+        .eq("role", "user")
+        .gte("created_at", monthStart.toISOString());
+      if ((count ?? 0) >= 5) {
+        return new Response(
+          JSON.stringify({ error: "plan_required", message: "Limite gratuito atingido. Faça upgrade para o plano Essencial." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
     // ── Fetch rich financial context ──────────────────────────────
     const now = new Date();
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
