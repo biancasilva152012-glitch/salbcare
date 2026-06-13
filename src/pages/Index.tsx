@@ -583,10 +583,15 @@ const Index = () => {
           <div className="salb-container" data-fade>
             <h2
               className="salb-serif"
-              style={{ fontSize: "clamp(24px, 3vw, 32px)", color: "#fff", textAlign: "center", margin: "0 0 32px" }}
+              style={{ fontSize: "clamp(24px, 3vw, 32px)", color: "#fff", textAlign: "center", margin: "0 0 8px" }}
             >
               {t.how.title}
             </h2>
+            <p
+              style={{ color: TEXT_MUTED, fontSize: 15, textAlign: "center", margin: "0 0 32px" }}
+            >
+              {t.how.subtitle}
+            </p>
             <ol
               style={{
                 listStyle: "none", padding: 0, margin: 0,
