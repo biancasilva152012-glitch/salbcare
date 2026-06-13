@@ -106,8 +106,8 @@ const COPY: Record<HubLang, Copy> = {
       steps: [
         "The patient chooses the service",
         "Book online via SalbCare (R$50)",
-        "Visit the clinic",
-        "Pay the rest on arrival",
+        "Visits the clinic",
+        "Pays the rest on arrival",
       ],
     },
     where: {
@@ -180,8 +180,8 @@ const COPY: Record<HubLang, Copy> = {
       steps: [
         "O paciente escolhe o serviço",
         "Reserva online pela SalbCare (R$50)",
-        "Visite a clínica",
-        "Pague o restante ao chegar",
+        "Visita a clínica",
+        "Paga o restante ao chegar",
       ],
     },
     where: {
