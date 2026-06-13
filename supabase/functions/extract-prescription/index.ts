@@ -37,6 +37,19 @@ serve(async (req) => {
       });
     }
 
+    // Server-side plan enforcement — prescription extraction is premium-only.
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+    const { data: hasPlan } = await admin.rpc("has_active_paid_plan", { _user_id: userData.user.id });
+    if (!hasPlan) {
+      return new Response(
+        JSON.stringify({ error: "plan_required", message: "Recurso exclusivo do plano Essencial." }),
+        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
