@@ -26,9 +26,20 @@ function json(status: number, body: unknown) {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  // Auth: accept either CRON_SECRET or the service-role key as bearer.
+  const cronSecret = Deno.env.get("CRON_SECRET");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const provided = (req.headers.get("authorization") || "").replace("Bearer ", "").trim();
+  const authorized =
+    (cronSecret && provided === cronSecret) ||
+    (provided && provided === serviceKey);
+  if (!authorized) {
+    return json(403, { error: "Forbidden" });
+  }
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    serviceKey,
   );
 
   const now = Date.now();
