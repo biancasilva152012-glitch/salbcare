@@ -102,9 +102,10 @@ const COPY: Record<HubLang, Copy> = {
     },
     how: {
       title: "How it works",
+      subtitle: "Patient journey to your clinic",
       steps: [
         "Choose your service",
-        "Reserve online (R$50)",
+        "Book online via SalbCare (R$50)",
         "Visit the clinic",
         "Pay the rest on arrival",
       ],
@@ -175,9 +176,10 @@ const COPY: Record<HubLang, Copy> = {
     },
     how: {
       title: "Como funciona",
+      subtitle: "A jornada do paciente até sua clínica",
       steps: [
         "Escolha o serviço",
-        "Reserve online (R$50)",
+        "Reserva online pela SalbCare (R$50)",
         "Visite a clínica",
         "Pague o restante ao chegar",
       ],
@@ -248,9 +250,10 @@ const COPY: Record<HubLang, Copy> = {
     },
     how: {
       title: "Cómo funciona",
+      subtitle: "El recorrido del paciente hasta su clínica",
       steps: [
         "Elige el servicio",
-        "Reserva online (R$50)",
+        "Reserva online por SalbCare (R$50)",
         "Visita la clínica",
         "Paga el resto al llegar",
       ],
