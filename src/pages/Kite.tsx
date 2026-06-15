@@ -23,7 +23,7 @@ const BRAND = {
 const T = {
   en: {
     htmlLang: "en",
-    title: "SalbCare International — World-class care while you kite | Ilha do Guajiru",
+    title: "SalbCare International · World-class care while you kite | Ilha do Guajiru",
     desc: "Dental, physiotherapy and online consultations in English & Spanish for kitesurfers and expats in Ilha do Guajiru, Ceará. A fraction of European prices.",
     nav: { dental: "Dental", physio: "Physio & Recovery", online: "Telehealth", book: "Book", bookFull: "Book now" },
     hero: {
@@ -37,7 +37,7 @@ const T = {
       trust: ["European patients", "English & Spanish", "International cards"],
     },
     tabs: { dental: "Dental", physio: "Physio & Recovery", online: "Telehealth" },
-    dentalIntro: "In-person care at our clinic in Ilha do Guajiru. Pay R$50 online to reserve your spot — settle the balance at the clinic.",
+    dentalIntro: "In-person care at our clinic in Ilha do Guajiru. Pay R$50 online to reserve your spot. You settle the balance at the clinic.",
     physioIntro: "Sore from kiting? Our physiotherapist specializes in kite recovery and sports massage.",
     onlineIntro: "Telehealth visits over Google Meet. Same-day availability. Pay in full and get your Meet link within 2 hours.",
     inPersonBanner: "Your R$50 holds the appointment. Pay the remaining balance at the clinic on the day of your visit.",
@@ -52,7 +52,7 @@ const T = {
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic." },
       { name: "Sophie T.", flag: "🇫🇷", text: "Booked a telehealth visit from my pousada. Got the Meet link in under an hour. Felt heard." },
-      { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard — shoulder was wrecked. Three physio sessions later, I was back IN the water." },
+      { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later, I was back IN the water." },
     ],
     finalH2: "Book your appointment today.",
     card: {
@@ -79,7 +79,7 @@ const T = {
   },
   es: {
     htmlLang: "es",
-    title: "SalbCare International — Atención de primer nivel mientras haces kite | Ilha do Guajiru",
+    title: "SalbCare International · Atención de primer nivel mientras haces kite | Ilha do Guajiru",
     desc: "Odontología, fisioterapia y consultas online en inglés y español para kitesurfistas y expatriados en Ilha do Guajiru, Ceará. Una fracción de los precios europeos.",
     nav: { dental: "Dental", physio: "Fisio y recuperación", online: "Telesalud", book: "Reservar", bookFull: "Reservar" },
     hero: {
@@ -93,7 +93,7 @@ const T = {
       trust: ["Pacientes europeos", "Inglés y español", "Tarjetas internacionales"],
     },
     tabs: { dental: "Dental", physio: "Fisio y recuperación", online: "Telesalud" },
-    dentalIntro: "Atención presencial en nuestra clínica de Ilha do Guajiru. Paga R$50 en línea para reservar tu cupo — el resto se abona en la clínica.",
+    dentalIntro: "Atención presencial en nuestra clínica de Ilha do Guajiru. Paga R$50 en línea para reservar tu cupo. El resto se abona en la clínica.",
     physioIntro: "¿Adolorido del kite? Nuestro fisioterapeuta se especializa en recuperación post-kite y masaje deportivo.",
     onlineIntro: "Teleconsultas por Google Meet. Disponibilidad el mismo día. Paga el total y recibe el enlace de Meet en hasta 2 horas.",
     inPersonBanner: "Tus R$50 reservan la cita. Paga el saldo restante en la clínica el día de tu visita.",
