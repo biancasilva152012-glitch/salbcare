@@ -391,11 +391,13 @@ const Index = () => {
         <section
           className="salb-section"
           style={{
-            paddingTop: 140,
-            paddingBottom: 96,
+            paddingTop: 160,
+            paddingBottom: 110,
             position: "relative",
-            backgroundImage:
-              "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(63,208,189,0.10) 0%, transparent 60%)",
+            overflow: "hidden",
+            backgroundImage: `linear-gradient(180deg, rgba(11,28,38,0.72) 0%, rgba(11,28,38,0.88) 55%, ${NAVY_BOTTOM} 100%), url(${heroGuajiru})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 35%",
           }}
         >
           <div className="salb-container" style={{ textAlign: "center", maxWidth: 820 }}>
@@ -625,7 +627,7 @@ const Index = () => {
               className="salb-serif"
               style={{ fontSize: "clamp(22px, 2.6vw, 28px)", color: "#fff", margin: "14px 0 10px" }}
             >
-              📍 {t.where.line}
+              {t.where.line}
             </p>
             <p style={{ color: TEXT_MUTED, fontSize: 15, margin: 0 }}>{t.where.next}</p>
           </div>
