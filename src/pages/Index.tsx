@@ -515,8 +515,26 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ORIGIN — emotional storytelling */}
+        <section className="salb-section" style={{ paddingTop: 24, paddingBottom: 24 }}>
+          <div className="salb-container" data-fade style={{ maxWidth: 760 }}>
+            <p className="salb-eyebrow">{t.origin.eyebrow}</p>
+            <h2
+              className="salb-serif"
+              style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#fff", lineHeight: 1.15, margin: "14px 0 22px" }}
+            >
+              {t.origin.title}
+            </h2>
+            <p style={{ color: TEXT, fontSize: "clamp(16px, 1.7vw, 18px)", lineHeight: 1.7, margin: "0 0 18px" }}>
+              {t.origin.body}
+            </p>
+            <p style={{ color: GOLD, fontSize: 13.5, fontStyle: "italic", margin: 0 }}>— {t.origin.signature}</p>
+          </div>
+        </section>
+
         {/* WHAT */}
         <section className="salb-section" style={{ paddingTop: 24 }}>
+
           <div className="salb-container" style={{ textAlign: "center" }}>
             <p
               data-fade
