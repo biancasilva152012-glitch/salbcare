@@ -550,25 +550,23 @@ export default function Kite() {
 }
 
 function ProcedureCard({
-  id, type, total, eu, t, onBook,
+  id, locationType, total, eu, t, onBook,
 }: {
   id: string;
-  type: "presencial" | "online";
+  locationType: LocationType;
   total: number;
   eu?: number;
   t: (typeof T)[Lang];
-  onBook: (id: string, type: "presencial" | "online", total: number) => void;
+  onBook: (id: string, total: number) => void;
 }) {
-  const isOnline = type === "online";
   const label = t.procedures[id] || id;
-  const amountCharged = isOnline ? total : BOOKING_FEE;
+  const locationLabel = t.locationLabels[locationType];
   return (
     <div className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex flex-col">
       <h3 className="kite-h text-xl mb-2" style={{ color: BRAND.ink }}>{label}</h3>
-      {t.descriptions?.[id] && (
-        <p className="text-sm mb-4" style={{ color: BRAND.muted }}>{t.descriptions[id]}</p>
+      {locationLabel && (
+        <p className="text-sm mb-4" style={{ color: BRAND.muted }}>{locationLabel}</p>
       )}
-      {!t.descriptions?.[id] && <div className="mb-2" />}
 
       <div className="mb-4">
         <p className="price-tnum text-2xl font-bold" style={{ color: BRAND.ink }}>
@@ -578,35 +576,21 @@ function ProcedureCard({
       </div>
 
       <div className="mb-6">
-        {isOnline ? (
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
-            style={{
-              background: "rgba(0,180,160,0.10)",
-              color: BRAND.tealDark,
-              padding: "8px 14px",
-            }}
-          >
-            <Lock className="w-3 h-3" aria-hidden />
-            {t.card.tagFull}
-          </span>
-        ) : (
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
-            style={{
-              background: "#FEF3C7",
-              color: "#92400E",
-              padding: "8px 14px",
-            }}
-          >
-            <Lock className="w-3 h-3" aria-hidden />
-            {t.card.tagPartial}
-          </span>
-        )}
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
+          style={{
+            background: "#FEF3C7",
+            color: "#92400E",
+            padding: "8px 14px",
+          }}
+        >
+          <Lock className="w-3 h-3" aria-hidden />
+          {t.card.tagPartial}
+        </span>
       </div>
 
       <button
-        onClick={() => onBook(id, type, total)}
+        onClick={() => onBook(id, total)}
         className="kite-focus mt-auto w-full rounded-full text-white font-semibold transition-all duration-200 hover:brightness-110"
         style={{
           background: BRAND.teal,
@@ -614,7 +598,7 @@ function ProcedureCard({
           boxShadow: "0 4px 14px rgba(0,180,160,0.30)",
         }}
       >
-        {isOnline ? t.card.ctaOnline(amountCharged) : t.card.ctaIn(amountCharged)} →
+        {t.card.ctaIn(BOOKING_FEE)} →
       </button>
     </div>
   );
