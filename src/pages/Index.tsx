@@ -25,11 +25,20 @@ type Copy = {
   hero: {
     eyebrow: string;
     headline: string;
+    headlineAccent: string;
     subhead: string;
     ctaCare: string;
     ctaClinic: string;
   };
+  origin: { eyebrow: string; title: string; body: string; signature: string };
   what: { title: string; line: string; cards: [string, string, string]; cardDescs: [string, string, string] };
+  cycle: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    demand: { title: string; body: string };
+    supply: { title: string; body: string };
+  };
   kite: {
     eyebrow: string;
     title: string;
@@ -57,12 +66,20 @@ const COPY: Record<HubLang, Copy> = {
   en: {
     nav: { care: "I need care", clinics: "I'm a clinic" },
     hero: {
-      eyebrow: "ILHA DO GUAJIRU · CEARÁ",
-      headline: "Care that travels with you.",
+      eyebrow: "BORN ON THE COAST OF BRAZIL",
+      headline: "Healthcare without borders.",
+      headlineAccent: "Built for people everywhere.",
       subhead:
-        "Hurt or sick while traveling? We connect you to trusted local care, in your language, the same day.",
-      ctaCare: "Book care",
+        "SalbCare is the infrastructure of care for people in motion. We start where the world travels, and we follow it home.",
+      ctaCare: "I need care",
       ctaClinic: "I'm a clinic",
+    },
+    origin: {
+      eyebrow: "OUR STORY",
+      title: "It started on a beach in Ceará.",
+      body:
+        "A dentist watching travelers from all over the world arrive in Ilha do Guajiru, a small kite spot in the Brazilian northeast. Some got hurt. Some got sick. None knew where to go, who to trust, or how to be understood. So we built the thing we wished existed. A small, human network that travels with the patient.",
+      signature: "Bianca, founder. Dentist in Guajiru.",
     },
     what: {
       title: "What is SalbCare",
@@ -73,6 +90,20 @@ const COPY: Record<HubLang, Copy> = {
         "English and Spanish on the line. No translation apps.",
         "See the cost before you book. No surprises later.",
       ],
+    },
+    cycle: {
+      eyebrow: "HOW SALBCARE WORKS",
+      title: "Travelers create demand. Clinics become the network.",
+      body:
+        "SalbCare is one company with two sides. Together they form a cycle. Care follows the patient. Clinics grow with them.",
+      demand: {
+        title: "SalbCare Kite",
+        body: "The traveler side. We help people get cared for in places they don't know, in a language they understand.",
+      },
+      supply: {
+        title: "SalbCare Pro",
+        body: "The clinic side. The infrastructure that lets local clinics receive patients from anywhere in the world.",
+      },
     },
     kite: {
       eyebrow: "FOR TRAVELERS · SALBCARE KITE",
@@ -131,12 +162,20 @@ const COPY: Record<HubLang, Copy> = {
   pt: {
     nav: { care: "Preciso de atendimento", clinics: "Sou uma clínica" },
     hero: {
-      eyebrow: "ILHA DO GUAJIRU · CEARÁ",
-      headline: "Cuidado que viaja com você.",
+      eyebrow: "NASCEMOS NO LITORAL DO BRASIL",
+      headline: "Saúde sem fronteiras.",
+      headlineAccent: "Feita para gente em qualquer lugar.",
       subhead:
-        "Se machucou ou ficou doente em viagem? A gente conecta você a um cuidado local de confiança, no seu idioma, no mesmo dia.",
-      ctaCare: "Reservar atendimento",
+        "A SalbCare é a infraestrutura de saúde para pessoas em movimento. Começamos onde o mundo viaja, e seguimos junto até em casa.",
+      ctaCare: "Preciso de atendimento",
       ctaClinic: "Sou uma clínica",
+    },
+    origin: {
+      eyebrow: "NOSSA HISTÓRIA",
+      title: "Começou numa praia no Ceará.",
+      body:
+        "Uma dentista vendo turistas do mundo todo chegarem na Ilha do Guajiru, um pequeno spot de kite no nordeste do Brasil. Uns se machucavam. Outros ficavam doentes. Ninguém sabia para onde ir, em quem confiar ou como se fazer entender. Então construímos o que faltava. Uma rede pequena, humana, que viaja com o paciente.",
+      signature: "Bianca, fundadora. Dentista no Guajiru.",
     },
     what: {
       title: "O que é a SalbCare",
@@ -147,6 +186,20 @@ const COPY: Record<HubLang, Copy> = {
         "Inglês e espanhol no atendimento. Sem tradutor.",
         "Você vê o preço antes de reservar. Sem surpresa depois.",
       ],
+    },
+    cycle: {
+      eyebrow: "COMO A SALBCARE FUNCIONA",
+      title: "Viajantes geram demanda. Clínicas viram a rede.",
+      body:
+        "A SalbCare é uma empresa com dois lados. Juntos formam um ciclo. O cuidado segue o paciente. As clínicas crescem com ele.",
+      demand: {
+        title: "SalbCare Kite",
+        body: "O lado do viajante. Ajudamos pessoas a serem cuidadas em lugares que não conhecem, num idioma que entendem.",
+      },
+      supply: {
+        title: "SalbCare Pro",
+        body: "O lado da clínica. A infraestrutura que permite que clínicas locais recebam pacientes do mundo todo.",
+      },
     },
     kite: {
       eyebrow: "PARA VIAJANTES · SALBCARE KITE",
@@ -205,12 +258,20 @@ const COPY: Record<HubLang, Copy> = {
   es: {
     nav: { care: "Necesito atención", clinics: "Soy una clínica" },
     hero: {
-      eyebrow: "ILHA DO GUAJIRU · CEARÁ",
-      headline: "Atención que viaja contigo.",
+      eyebrow: "NACIMOS EN LA COSTA DE BRASIL",
+      headline: "Salud sin fronteras.",
+      headlineAccent: "Hecha para gente en cualquier lugar.",
       subhead:
-        "¿Te lastimaste o te enfermaste de viaje? Te conectamos con atención local de confianza, en tu idioma, el mismo día.",
-      ctaCare: "Reservar atención",
+        "SalbCare es la infraestructura de salud para personas en movimiento. Empezamos donde el mundo viaja y lo seguimos hasta casa.",
+      ctaCare: "Necesito atención",
       ctaClinic: "Soy una clínica",
+    },
+    origin: {
+      eyebrow: "NUESTRA HISTORIA",
+      title: "Empezó en una playa de Ceará.",
+      body:
+        "Una dentista viendo a viajeros de todo el mundo llegar a Ilha do Guajiru, un pequeño spot de kite en el noreste de Brasil. Algunos se lastimaban. Otros se enfermaban. Nadie sabía a dónde ir, en quién confiar ni cómo hacerse entender. Así que construimos lo que faltaba. Una red pequeña, humana, que viaja con el paciente.",
+      signature: "Bianca, fundadora. Dentista en Guajiru.",
     },
     what: {
       title: "Qué es SalbCare",
@@ -221,6 +282,20 @@ const COPY: Record<HubLang, Copy> = {
         "Inglés y español al teléfono. Sin traductor.",
         "Ves el precio antes de reservar. Sin sorpresas después.",
       ],
+    },
+    cycle: {
+      eyebrow: "CÓMO FUNCIONA SALBCARE",
+      title: "Los viajeros generan demanda. Las clínicas son la red.",
+      body:
+        "SalbCare es una empresa con dos lados. Juntos forman un ciclo. El cuidado sigue al paciente. Las clínicas crecen con él.",
+      demand: {
+        title: "SalbCare Kite",
+        body: "El lado del viajero. Ayudamos a personas a recibir atención en lugares que no conocen, en un idioma que entienden.",
+      },
+      supply: {
+        title: "SalbCare Pro",
+        body: "El lado de la clínica. La infraestructura que permite a clínicas locales recibir pacientes de todo el mundo.",
+      },
     },
     kite: {
       eyebrow: "PARA VIAJEROS · SALBCARE KITE",
@@ -323,8 +398,8 @@ const Index = () => {
   return (
     <>
       <SEOHead
-        title="SalbCare · Care that travels with you"
-        description="Trusted healthcare for travelers in Ilha do Guajiru, Ceará. In your language, the same day. Book online, pay the rest at the clinic."
+        title="SalbCare · Healthcare without borders"
+        description="SalbCare is the infrastructure of care for people in motion. Born on the coast of Brazil, built for travelers and clinics everywhere."
         canonical="/"
         jsonLd={jsonLd}
       />
@@ -408,6 +483,9 @@ const Index = () => {
               style={{ fontSize: "clamp(36px, 6vw, 64px)", lineHeight: 1.05, margin: "20px 0 18px", color: "#fff" }}
             >
               {t.hero.headline}
+              <span style={{ display: "block", color: TEAL, fontStyle: "italic", fontWeight: 500 }}>
+                {t.hero.headlineAccent}
+              </span>
             </h1>
             <p
               data-fade
@@ -437,8 +515,26 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ORIGIN — emotional storytelling */}
+        <section className="salb-section" style={{ paddingTop: 24, paddingBottom: 24 }}>
+          <div className="salb-container" data-fade style={{ maxWidth: 760 }}>
+            <p className="salb-eyebrow">{t.origin.eyebrow}</p>
+            <h2
+              className="salb-serif"
+              style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#fff", lineHeight: 1.15, margin: "14px 0 22px" }}
+            >
+              {t.origin.title}
+            </h2>
+            <p style={{ color: TEXT, fontSize: "clamp(16px, 1.7vw, 18px)", lineHeight: 1.7, margin: "0 0 18px" }}>
+              {t.origin.body}
+            </p>
+            <p style={{ color: GOLD, fontSize: 13.5, fontStyle: "italic", margin: 0 }}>— {t.origin.signature}</p>
+          </div>
+        </section>
+
         {/* WHAT */}
         <section className="salb-section" style={{ paddingTop: 24 }}>
+
           <div className="salb-container" style={{ textAlign: "center" }}>
             <p
               data-fade
@@ -474,6 +570,45 @@ const Index = () => {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CYCLE — two sides of one company */}
+        <section className="salb-section" style={{ paddingTop: 32 }}>
+          <div className="salb-container" data-fade>
+            <div style={{ textAlign: "center", maxWidth: 720, margin: "0 auto 36px" }}>
+              <p className="salb-eyebrow">{t.cycle.eyebrow}</p>
+              <h2
+                className="salb-serif"
+                style={{ fontSize: "clamp(26px, 3.4vw, 36px)", color: "#fff", lineHeight: 1.15, margin: "14px 0 14px" }}
+              >
+                {t.cycle.title}
+              </h2>
+              <p style={{ color: TEXT_MUTED, fontSize: 16, lineHeight: 1.6, margin: 0 }}>{t.cycle.body}</p>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: 16,
+                alignItems: "stretch",
+              }}
+            >
+              <div className="salb-card" style={{ borderColor: "rgba(201,164,92,0.28)" }}>
+                <p className="salb-eyebrow" style={{ color: GOLD }}>DEMAND</p>
+                <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
+                  {t.cycle.demand.title}
+                </h3>
+                <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.demand.body}</p>
+              </div>
+              <div className="salb-card" style={{ borderColor: "rgba(63,208,189,0.28)" }}>
+                <p className="salb-eyebrow" style={{ color: TEAL }}>INFRASTRUCTURE</p>
+                <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
+                  {t.cycle.supply.title}
+                </h3>
+                <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.supply.body}</p>
+              </div>
             </div>
           </div>
         </section>
