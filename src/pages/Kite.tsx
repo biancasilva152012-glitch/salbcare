@@ -20,49 +20,49 @@ const BRAND = {
   muted: "#6B7280",
 };
 
+type LocationType = "at_hotel" | "at_clinic";
+
 const T = {
   en: {
     htmlLang: "en",
     title: "SalbCare International · World-class care while you kite | Ilha do Guajiru",
-    desc: "Dental, physiotherapy and online consultations in English & Spanish for kitesurfers and expats in Ilha do Guajiru, Ceará. A fraction of European prices.",
-    nav: { dental: "Dental", physio: "Physio & Recovery", online: "Telehealth", book: "Book", bookFull: "Book now" },
+    desc: "Dental and physiotherapy in English and Spanish for kitesurfers and expats in Ilha do Guajiru, Ceará. A fraction of European prices.",
+    nav: { dental: "Dental", physio: "Physio & Recovery", book: "Book", bookFull: "Book now" },
     hero: {
       welcome: "WELCOME · BIENVENIDOS",
       pin: "Ilha do Guajiru · Ceará · Brazil",
       h1a: "Feel good.",
       h1b: "Kite better.",
-      sub: "World-class dental, physiotherapy and telehealth, in English and Spanish, at a fraction of European prices.",
+      sub: "World-class dental and physiotherapy, in English and Spanish, at a fraction of European prices.",
       ctaIn: "See dental & physio",
-      ctaOnline: "Appointment",
       trust: ["European patients", "English & Spanish", "International cards"],
     },
-    tabs: { dental: "Dental", physio: "Physio & Recovery", online: "Telehealth" },
+    tabs: { dental: "Dental", physio: "Physio & Recovery" },
     dentalIntro: "In-person care at our clinic in Ilha do Guajiru. Pay R$50 online to reserve your spot. You settle the balance at the clinic.",
     physioIntro: "Sore from kiting? Our physiotherapist specializes in kite recovery and sports massage.",
-    onlineIntro: "Telehealth visits over Google Meet. Same-day availability. Pay in full and get your Meet link within 2 hours.",
     inPersonBanner: "Your R$50 holds the appointment. Pay the remaining balance at the clinic on the day of your visit.",
     how: {
       h2: "How it works",
-      inLabel: "IN-PERSON",
-      onlineLabel: "TELEHEALTH",
-      inSteps: ["Choose your procedure", "Pay the R$50 booking fee", "Visit the clinic", "Pay the remaining balance"],
-      onlineSteps: ["Choose your consultation", "Pay in full", "Receive your Google Meet link", "Join from anywhere"],
+      inLabel: "HOW TO BOOK",
+      inSteps: ["Choose your procedure", "Pay the R$50 booking fee", "Meet at the clinic or at your hotel", "Pay the remaining balance"],
     },
     testimonialsH2: "What kitesurfers say",
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic." },
-      { name: "Sophie T.", flag: "🇫🇷", text: "Booked a telehealth visit from my pousada. Got the Meet link in under an hour. Felt heard." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Physio came straight to my pousada. Two sessions and my lower back was finally free." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later, I was back IN the water." },
     ],
     finalH2: "Book your appointment today.",
     card: {
       total: "total",
       euCompare: (eu: number) => `€${eu} in Europe`,
-      tagFull: "Full payment",
       tagPartial: "R$50 now, balance at the clinic",
-      ctaOnline: (n: number) => `Book & pay R$${n}`,
       ctaIn: (n: number) => `Reserve for R$${n}`,
     },
+    locationLabels: {
+      at_hotel: "The professional comes to your hotel.",
+      at_clinic: "Attended at the clinic.",
+    } as Record<LocationType, string>,
     procedures: {
       "dental-cleaning":  "Cleaning & Check-up",
       "dental-whitening": "Teeth Whitening",
@@ -71,59 +71,48 @@ const T = {
       "physio-massage":       "Sports Massage (60 min)",
       "physio-postural":      "Postural Assessment",
       "physio-package":       "Full Recovery Package (3 sessions)",
-      "telehealth-psychology":    "Psychology",
-      "telehealth-nutrition":     "Nutrition",
-      "telehealth-physio-online": "Physiotherapy",
-      "telehealth-medicine":      "General Medicine",
-    } as Record<string, string>,
-    descriptions: {
-      "physio-kite-recovery": "The physiotherapist comes to your hotel.",
-      "physio-package":       "The physiotherapist comes to your hotel.",
-      "telehealth-physio-online": "The physiotherapist comes to your hotel.",
     } as Record<string, string>,
   },
   es: {
     htmlLang: "es",
     title: "SalbCare International · Atención de primer nivel mientras haces kite | Ilha do Guajiru",
-    desc: "Odontología, fisioterapia y consultas online en inglés y español para kitesurfistas y expatriados en Ilha do Guajiru, Ceará. Una fracción de los precios europeos.",
-    nav: { dental: "Dental", physio: "Fisio y recuperación", online: "Telesalud", book: "Reservar", bookFull: "Reservar" },
+    desc: "Odontología y fisioterapia en inglés y español para kitesurfistas y expatriados en Ilha do Guajiru, Ceará. Una fracción de los precios europeos.",
+    nav: { dental: "Dental", physio: "Fisio y recuperación", book: "Reservar", bookFull: "Reservar" },
     hero: {
       welcome: "BIENVENIDOS · WELCOME",
       pin: "Ilha do Guajiru · Ceará · Brasil",
       h1a: "Siéntete bien.",
       h1b: "Mejora tu kite.",
-      sub: "Atención dental, fisioterapia y teleconsulta de primer nivel, en inglés y español, a una fracción de los precios europeos.",
+      sub: "Atención dental y fisioterapia de primer nivel, en inglés y español, a una fracción de los precios europeos.",
       ctaIn: "Ver dental y fisio",
-      ctaOnline: "Appointment",
       trust: ["Pacientes europeos", "Inglés y español", "Tarjetas internacionales"],
     },
-    tabs: { dental: "Dental", physio: "Fisio y recuperación", online: "Telesalud" },
+    tabs: { dental: "Dental", physio: "Fisio y recuperación" },
     dentalIntro: "Atención presencial en nuestra clínica de Ilha do Guajiru. Paga R$50 en línea para reservar tu cupo. El resto se abona en la clínica.",
     physioIntro: "¿Adolorido del kite? Nuestro fisioterapeuta se especializa en recuperación post-kite y masaje deportivo.",
-    onlineIntro: "Teleconsultas por Google Meet. Disponibilidad el mismo día. Paga el total y recibe el enlace de Meet en hasta 2 horas.",
     inPersonBanner: "Tus R$50 reservan la cita. Paga el saldo restante en la clínica el día de tu visita.",
     how: {
       h2: "Cómo funciona",
-      inLabel: "PRESENCIAL",
-      onlineLabel: "TELESALUD",
-      inSteps: ["Elige tu procedimiento", "Paga la tarifa de reserva de R$50", "Asiste a la clínica", "Paga el saldo restante"],
-      onlineSteps: ["Elige tu consulta", "Paga el total", "Recibe tu enlace de Google Meet", "Conéctate desde cualquier lugar"],
+      inLabel: "CÓMO RESERVAR",
+      inSteps: ["Elige tu procedimiento", "Paga la tarifa de reserva de R$50", "Atención en la clínica o en tu hotel", "Paga el saldo restante"],
     },
     testimonialsH2: "Lo que dicen los kitesurfistas",
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Limpieza rápida entre sesiones. Dentista en inglés, clínica impecable." },
-      { name: "Sophie T.", flag: "🇫🇷", text: "Agendé una teleconsulta desde mi pousada. Recibí el enlace de Meet en menos de una hora. Me sentí escuchada." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "El fisio vino directo a mi pousada. Dos sesiones y mi lumbar quedó libre." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Me caí fuerte, hombro destrozado. Tres sesiones de fisio después, estaba DE VUELTA en el agua." },
     ],
     finalH2: "Reserva tu cita hoy.",
     card: {
       total: "total",
       euCompare: (eu: number) => `€${eu} en Europa`,
-      tagFull: "Pago completo",
       tagPartial: "R$50 ahora, saldo en la clínica",
-      ctaOnline: (n: number) => `Reservar y pagar R$${n}`,
       ctaIn: (n: number) => `Reservar por R$${n}`,
     },
+    locationLabels: {
+      at_hotel: "El profesional va a tu hotel.",
+      at_clinic: "Atendido en la clínica.",
+    } as Record<LocationType, string>,
     procedures: {
       "dental-cleaning":  "Limpieza y revisión",
       "dental-whitening": "Blanqueamiento dental",
@@ -132,35 +121,27 @@ const T = {
       "physio-massage":       "Masaje deportivo (60 min)",
       "physio-postural":      "Evaluación postural",
       "physio-package":       "Paquete recuperación completa (3 sesiones)",
-      "telehealth-psychology":    "Psicología",
-      "telehealth-nutrition":     "Nutrición",
-      "telehealth-physio-online": "Fisioterapia",
-      "telehealth-medicine":      "Medicina general",
-    } as Record<string, string>,
-    descriptions: {
-      "physio-kite-recovery": "El fisioterapeuta va a tu hotel.",
-      "physio-package":       "El fisioterapeuta va a tu hotel.",
-      "telehealth-physio-online": "El fisioterapeuta va a tu hotel.",
     } as Record<string, string>,
   },
 } as const;
 
-const DENTAL_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
-  { id: "dental-cleaning",  type: "presencial", total: 200, eu: 120 },
-  { id: "dental-whitening", type: "presencial", total: 480, eu: 350 },
-  { id: "dental-exam",      type: "presencial", total: 200, eu: 90 },
+type KiteServiceItem = {
+  id: string;
+  total: number;
+  eu: number;
+  locationType: LocationType;
+};
+
+const DENTAL_IDS: KiteServiceItem[] = [
+  { id: "dental-cleaning",  total: 200, eu: 120, locationType: "at_clinic" },
+  { id: "dental-whitening", total: 480, eu: 350, locationType: "at_clinic" },
+  { id: "dental-exam",      total: 200, eu: 90,  locationType: "at_clinic" },
 ];
-const PHYSIO_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
-  { id: "physio-kite-recovery", type: "presencial", total: 200, eu: 90 },
-  { id: "physio-massage",       type: "presencial", total: 180, eu: 80 },
-  { id: "physio-postural",      type: "presencial", total: 160, eu: 70 },
-  { id: "physio-package",       type: "presencial", total: 480, eu: 240 },
-];
-const ONLINE_IDS: { id: string; type: "online"; total: number }[] = [
-  { id: "telehealth-psychology",    type: "online", total: 280 },
-  { id: "telehealth-nutrition",     type: "online", total: 220 },
-  { id: "telehealth-physio-online", type: "online", total: 240 },
-  { id: "telehealth-medicine",      type: "online", total: 200 },
+const PHYSIO_IDS: KiteServiceItem[] = [
+  { id: "physio-kite-recovery", total: 200, eu: 90,  locationType: "at_hotel" },
+  { id: "physio-massage",       total: 180, eu: 80,  locationType: "at_hotel" },
+  { id: "physio-postural",      total: 160, eu: 70,  locationType: "at_hotel" },
+  { id: "physio-package",       total: 480, eu: 240, locationType: "at_hotel" },
 ];
 
 export default function Kite() {
@@ -207,10 +188,9 @@ export default function Kite() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const openBooking = (id: string, type: "presencial" | "online", total: number) => {
+  const openBooking = (id: string, total: number) => {
     const label = t.procedures[id] || id;
-    const amountCharged = type === "online" ? total : BOOKING_FEE;
-    setSelected({ id, label, type, amountCharged, totalPrice: total });
+    setSelected({ id, label, type: "presencial", amountCharged: BOOKING_FEE, totalPrice: total });
     setModalOpen(true);
   };
 
@@ -301,13 +281,6 @@ export default function Kite() {
               style={{ color: scrolled ? BRAND.ink : "#fff" }}
             >
               {t.nav.dental}
-            </button>
-            <button
-              onClick={() => scrollTo("online-section")}
-              className="kite-focus hidden md:inline rounded-md hover:opacity-70 px-1"
-              style={{ color: scrolled ? BRAND.ink : "#fff" }}
-            >
-              {t.nav.online}
             </button>
 
             {/* Language toggle — collapses to globe on very small screens */}
@@ -419,19 +392,6 @@ export default function Kite() {
             >
               {t.hero.ctaIn} →
             </button>
-            <button
-              onClick={() => setWaModalOpen(true)}
-              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:bg-white/10 w-full sm:w-auto"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1.5px solid rgba(255,255,255,0.55)",
-                minHeight: 56,
-                padding: "0 28px",
-              }}
-            >
-              {t.hero.ctaOnline} →
-            </button>
           </div>
 
           <div
@@ -457,7 +417,7 @@ export default function Kite() {
                 className="inline-flex mx-auto bg-white border border-black/5 p-1 rounded-full h-auto gap-1"
                 style={{ boxShadow: "0 1px 3px rgba(13,27,42,0.04)" }}
               >
-                {(["dental", "physio", "online"] as const).map((k) => (
+                {(["dental", "physio"] as const).map((k) => (
                   <TabsTrigger
                     key={k}
                     value={k}
@@ -480,7 +440,7 @@ export default function Kite() {
               </p>
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
                 {DENTAL_IDS.map((p) => (
-                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
+                  <ProcedureCard key={p.id} id={p.id} locationType={p.locationType} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
                 ))}
               </div>
               <InfoBanner text={t.inPersonBanner} />
@@ -492,22 +452,10 @@ export default function Kite() {
               </p>
               <div className="grid sm:grid-cols-2 gap-5">
                 {PHYSIO_IDS.map((p) => (
-                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
+                  <ProcedureCard key={p.id} id={p.id} locationType={p.locationType} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
                 ))}
               </div>
               <InfoBanner text={t.inPersonBanner} />
-            </TabsContent>
-
-            <TabsContent value="online">
-              <div id="online-section" />
-              <p className="text-center max-w-2xl mx-auto mb-8" style={{ color: BRAND.muted }}>
-                {t.onlineIntro}
-              </p>
-              <div className="grid sm:grid-cols-2 gap-5">
-                {ONLINE_IDS.map((p) => (
-                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} t={t} onBook={openBooking} />
-                ))}
-              </div>
             </TabsContent>
           </Tabs>
         </div>
@@ -517,36 +465,30 @@ export default function Kite() {
       <section style={{ background: BRAND.ink, color: BRAND.cream }} className="px-5 py-20">
         <div className="max-w-5xl mx-auto">
           <h2 className="kite-h text-3xl md:text-4xl text-center mb-12">{t.how.h2}</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              { label: t.how.inLabel, steps: t.how.inSteps },
-              { label: t.how.onlineLabel, steps: t.how.onlineSteps },
-            ].map((col) => (
-              <div
-                key={col.label}
-                style={{
-                  background: "#0F2A33",
-                  border: "1px solid rgba(42, 191, 191, 0.15)",
-                  borderRadius: 12,
-                  padding: 32,
-                }}
+          <div className="max-w-2xl mx-auto">
+            <div
+              style={{
+                background: "#0F2A33",
+                border: "1px solid rgba(42, 191, 191, 0.15)",
+                borderRadius: 12,
+                padding: 32,
+              }}
+            >
+              <p
+                className="text-xs uppercase mb-6 font-semibold"
+                style={{ color: "#2ABFBF", letterSpacing: "0.15em" }}
               >
-                <p
-                  className="text-xs uppercase mb-6 font-semibold"
-                  style={{ color: "#2ABFBF", letterSpacing: "0.15em" }}
-                >
-                  {col.label}
-                </p>
-                <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
-                  {col.steps.map((s, i) => (
-                    <li key={s} style={{ display: "flex", gap: 12, color: "#fff", lineHeight: 1.6 }}>
-                      <span style={{ color: "#2ABFBF", fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ))}
+                {t.how.inLabel}
+              </p>
+              <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+                {t.how.inSteps.map((s, i) => (
+                  <li key={s} style={{ display: "flex", gap: 12, color: "#fff", lineHeight: 1.6 }}>
+                    <span style={{ color: "#2ABFBF", fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                    <span>{s}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
       </section>
@@ -608,25 +550,23 @@ export default function Kite() {
 }
 
 function ProcedureCard({
-  id, type, total, eu, t, onBook,
+  id, locationType, total, eu, t, onBook,
 }: {
   id: string;
-  type: "presencial" | "online";
+  locationType: LocationType;
   total: number;
   eu?: number;
   t: (typeof T)[Lang];
-  onBook: (id: string, type: "presencial" | "online", total: number) => void;
+  onBook: (id: string, total: number) => void;
 }) {
-  const isOnline = type === "online";
   const label = t.procedures[id] || id;
-  const amountCharged = isOnline ? total : BOOKING_FEE;
+  const locationLabel = t.locationLabels[locationType];
   return (
     <div className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex flex-col">
       <h3 className="kite-h text-xl mb-2" style={{ color: BRAND.ink }}>{label}</h3>
-      {t.descriptions?.[id] && (
-        <p className="text-sm mb-4" style={{ color: BRAND.muted }}>{t.descriptions[id]}</p>
+      {locationLabel && (
+        <p className="text-sm mb-4" style={{ color: BRAND.muted }}>{locationLabel}</p>
       )}
-      {!t.descriptions?.[id] && <div className="mb-2" />}
 
       <div className="mb-4">
         <p className="price-tnum text-2xl font-bold" style={{ color: BRAND.ink }}>
@@ -636,35 +576,21 @@ function ProcedureCard({
       </div>
 
       <div className="mb-6">
-        {isOnline ? (
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
-            style={{
-              background: "rgba(0,180,160,0.10)",
-              color: BRAND.tealDark,
-              padding: "8px 14px",
-            }}
-          >
-            <Lock className="w-3 h-3" aria-hidden />
-            {t.card.tagFull}
-          </span>
-        ) : (
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
-            style={{
-              background: "#FEF3C7",
-              color: "#92400E",
-              padding: "8px 14px",
-            }}
-          >
-            <Lock className="w-3 h-3" aria-hidden />
-            {t.card.tagPartial}
-          </span>
-        )}
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
+          style={{
+            background: "#FEF3C7",
+            color: "#92400E",
+            padding: "8px 14px",
+          }}
+        >
+          <Lock className="w-3 h-3" aria-hidden />
+          {t.card.tagPartial}
+        </span>
       </div>
 
       <button
-        onClick={() => onBook(id, type, total)}
+        onClick={() => onBook(id, total)}
         className="kite-focus mt-auto w-full rounded-full text-white font-semibold transition-all duration-200 hover:brightness-110"
         style={{
           background: BRAND.teal,
@@ -672,7 +598,7 @@ function ProcedureCard({
           boxShadow: "0 4px 14px rgba(0,180,160,0.30)",
         }}
       >
-        {isOnline ? t.card.ctaOnline(amountCharged) : t.card.ctaIn(amountCharged)} →
+        {t.card.ctaIn(BOOKING_FEE)} →
       </button>
     </div>
   );
