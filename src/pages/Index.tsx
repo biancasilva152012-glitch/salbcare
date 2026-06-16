@@ -398,8 +398,8 @@ const Index = () => {
   return (
     <>
       <SEOHead
-        title="SalbCare · Care that travels with you"
-        description="Trusted healthcare for travelers in Ilha do Guajiru, Ceará. In your language, the same day. Book online, pay the rest at the clinic."
+        title="SalbCare · Healthcare without borders"
+        description="SalbCare is the infrastructure of care for people in motion. Born on the coast of Brazil, built for travelers and clinics everywhere."
         canonical="/"
         jsonLd={jsonLd}
       />
