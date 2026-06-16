@@ -79,7 +79,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "It started on a beach in Ceará.",
       body:
         "A dentist watching travelers from all over the world arrive in Ilha do Guajiru, a small kite spot in the Brazilian northeast. Some got hurt. Some got sick. None knew where to go, who to trust, or how to be understood. So we built the thing we wished existed. A small, human network that travels with the patient.",
-      signature: "Bianca, founder. Dentist in Guajiru.",
+      signature: "Bianca Albuquerque, dental surgeon with an MBA in business management, in Ceará.",
     },
     what: {
       title: "What is SalbCare",
@@ -175,7 +175,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "Começou numa praia no Ceará.",
       body:
         "Uma dentista vendo turistas do mundo todo chegarem na Ilha do Guajiru, um pequeno spot de kite no nordeste do Brasil. Uns se machucavam. Outros ficavam doentes. Ninguém sabia para onde ir, em quem confiar ou como se fazer entender. Então construímos o que faltava. Uma rede pequena, humana, que viaja com o paciente.",
-      signature: "Bianca, fundadora. Dentista no Guajiru.",
+      signature: "Bianca Albuquerque, cirurgiã-dentista com MBA em gestão de negócios, no Ceará.",
     },
     what: {
       title: "O que é a SalbCare",
@@ -271,7 +271,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "Empezó en una playa de Ceará.",
       body:
         "Una dentista viendo a viajeros de todo el mundo llegar a Ilha do Guajiru, un pequeño spot de kite en el noreste de Brasil. Algunos se lastimaban. Otros se enfermaban. Nadie sabía a dónde ir, en quién confiar ni cómo hacerse entender. Así que construimos lo que faltaba. Una red pequeña, humana, que viaja con el paciente.",
-      signature: "Bianca, fundadora. Dentista en Guajiru.",
+      signature: "Bianca Albuquerque, cirujana dentista con MBA en gestión de negocios, en Ceará.",
     },
     what: {
       title: "Qué es SalbCare",
