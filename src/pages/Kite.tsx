@@ -134,8 +134,13 @@ const T = {
       "physio-package":       "Paquete recuperación completa (3 sesiones)",
       "telehealth-psychology":    "Psicología",
       "telehealth-nutrition":     "Nutrición",
-      "telehealth-physio-online": "Fisioterapia (online)",
+      "telehealth-physio-online": "Fisioterapia",
       "telehealth-medicine":      "Medicina general",
+    } as Record<string, string>,
+    descriptions: {
+      "physio-kite-recovery": "El fisioterapeuta va a tu hotel.",
+      "physio-package":       "El fisioterapeuta va a tu hotel.",
+      "telehealth-physio-online": "El fisioterapeuta va a tu hotel.",
     } as Record<string, string>,
   },
 } as const;
