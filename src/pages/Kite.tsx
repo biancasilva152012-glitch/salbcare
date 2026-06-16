@@ -188,10 +188,9 @@ export default function Kite() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const openBooking = (id: string, type: "presencial" | "online", total: number) => {
+  const openBooking = (id: string, total: number) => {
     const label = t.procedures[id] || id;
-    const amountCharged = type === "online" ? total : BOOKING_FEE;
-    setSelected({ id, label, type, amountCharged, totalPrice: total });
+    setSelected({ id, label, type: "presencial", amountCharged: BOOKING_FEE, totalPrice: total });
     setModalOpen(true);
   };
 
