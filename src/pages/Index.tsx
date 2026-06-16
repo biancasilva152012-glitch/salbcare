@@ -66,12 +66,20 @@ const COPY: Record<HubLang, Copy> = {
   en: {
     nav: { care: "I need care", clinics: "I'm a clinic" },
     hero: {
-      eyebrow: "ILHA DO GUAJIRU · CEARÁ",
-      headline: "Care that travels with you.",
+      eyebrow: "BORN ON THE COAST OF BRAZIL",
+      headline: "Healthcare without borders.",
+      headlineAccent: "Built for people everywhere.",
       subhead:
-        "Hurt or sick while traveling? We connect you to trusted local care, in your language, the same day.",
-      ctaCare: "Book care",
+        "SalbCare is the infrastructure of care for people in motion. We start where the world travels, and we follow it home.",
+      ctaCare: "I need care",
       ctaClinic: "I'm a clinic",
+    },
+    origin: {
+      eyebrow: "OUR STORY",
+      title: "It started on a beach in Ceará.",
+      body:
+        "A dentist watching travelers from all over the world arrive in Ilha do Guajiru, a small kite spot in the Brazilian northeast. Some got hurt. Some got sick. None knew where to go, who to trust, or how to be understood. So we built the thing we wished existed. A small, human network that travels with the patient.",
+      signature: "Bianca, founder. Dentist in Guajiru.",
     },
     what: {
       title: "What is SalbCare",
@@ -82,6 +90,20 @@ const COPY: Record<HubLang, Copy> = {
         "English and Spanish on the line. No translation apps.",
         "See the cost before you book. No surprises later.",
       ],
+    },
+    cycle: {
+      eyebrow: "HOW SALBCARE WORKS",
+      title: "Travelers create demand. Clinics become the network.",
+      body:
+        "SalbCare is one company with two sides. Together they form a cycle. Care follows the patient. Clinics grow with them.",
+      demand: {
+        title: "SalbCare Kite",
+        body: "The traveler side. We help people get cared for in places they don't know, in a language they understand.",
+      },
+      supply: {
+        title: "SalbCare Pro",
+        body: "The clinic side. The infrastructure that lets local clinics receive patients from anywhere in the world.",
+      },
     },
     kite: {
       eyebrow: "FOR TRAVELERS · SALBCARE KITE",
