@@ -622,7 +622,11 @@ function ProcedureCard({
   const amountCharged = isOnline ? total : BOOKING_FEE;
   return (
     <div className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex flex-col">
-      <h3 className="kite-h text-xl mb-4" style={{ color: BRAND.ink }}>{label}</h3>
+      <h3 className="kite-h text-xl mb-2" style={{ color: BRAND.ink }}>{label}</h3>
+      {t.descriptions?.[id] && (
+        <p className="text-sm mb-4" style={{ color: BRAND.muted }}>{t.descriptions[id]}</p>
+      )}
+      {!t.descriptions?.[id] && <div className="mb-2" />}
 
       <div className="mb-4">
         <p className="price-tnum text-2xl font-bold" style={{ color: BRAND.ink }}>
