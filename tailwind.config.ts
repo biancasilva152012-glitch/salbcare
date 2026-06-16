@@ -16,6 +16,8 @@ export default {
       fontFamily: {
         heading: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
         body: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['"Fraunces"', 'Georgia', 'serif'],
+        display: ['"Fraunces"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -70,18 +72,38 @@ export default {
           dark: "hsl(var(--brand-dark))",
           darker: "hsl(var(--brand-darker))",
         },
+        hub: {
+          muted: "hsl(var(--hub-muted))",
+          rule: "hsl(var(--hub-rule))",
+        },
+
+        /* Editorial dark system (SalbCare landing/marketing) */
+        salb: {
+          bg: "var(--salb-bg-900)",
+          "bg-alt": "var(--salb-bg-800)",
+          surface: "var(--salb-surface)",
+          "surface-raised": "var(--salb-surface-raised)",
+        },
+        ink: {
+          100: "var(--ink-100)",
+          300: "var(--ink-300)",
+          500: "var(--ink-500)",
+        },
         pro: {
+          DEFAULT: "var(--pro)",
+          bright: "var(--pro-bright)",
+          soft: "var(--pro-soft)",
           accent: "hsl(var(--pro-accent))",
           "accent-light": "hsl(var(--pro-accent-light))",
         },
         kite: {
+          DEFAULT: "var(--kite)",
+          bright: "var(--kite-bright)",
+          soft: "var(--kite-soft)",
+          cyan: "var(--kite-cyan)",
           gold: "hsl(var(--kite-gold))",
           "gold-light": "hsl(var(--kite-gold-light))",
           cream: "hsl(var(--kite-cream))",
-        },
-        hub: {
-          muted: "hsl(var(--hub-muted))",
-          rule: "hsl(var(--hub-rule))",
         },
       },
 

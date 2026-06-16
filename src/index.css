@@ -104,6 +104,35 @@ body[data-scroll-locked] {
     --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
     --shadow-card-hover: 0 8px 30px rgba(15, 23, 42, 0.08);
     --shadow-glow: 0 4px 14px rgba(0, 180, 160, 0.30);
+
+    /* ============================================================
+       SalbCare editorial design system — dark navy + dual accents.
+       Consumed via `.salb-bg`, `text-ink-*`, `bg-surface`,
+       `text-pro`, `text-kite` and the `.salb-*` component utilities.
+       Does NOT override existing semantic tokens used by dashboards.
+       ============================================================ */
+    --salb-bg-900: #0E1A2E;
+    --salb-bg-800: #122438;
+    --salb-surface: #16293D;
+    --salb-surface-raised: #1B3047;
+    --salb-border: rgba(255, 255, 255, 0.08);
+    --salb-border-strong: rgba(255, 255, 255, 0.14);
+
+    --ink-100: #EAF1F5;
+    --ink-300: #9FB2C0;
+    --ink-500: #6B7E8E;
+
+    --pro: #2A9D90;
+    --pro-bright: #35BCAB;
+    --pro-soft: rgba(42, 157, 144, 0.12);
+
+    --kite: #D9B679;
+    --kite-bright: #E6C68C;
+    --kite-soft: rgba(217, 182, 121, 0.12);
+    --kite-cyan: #17A4BA;
+
+    --shadow-editorial: 0 8px 30px rgba(0, 0, 0, 0.25);
+    --shadow-editorial-lg: 0 18px 50px rgba(0, 0, 0, 0.35);
   }
 }
 
@@ -286,6 +315,133 @@ body[data-scroll-locked] {
     transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
     transition-duration: 320ms;
   }
+
+  /* ============================================================
+     SalbCare editorial utilities — premium dark surface system.
+     Opt-in: only surfaces that use `.salb-bg` adopt the new look.
+     ============================================================ */
+  .salb-bg {
+    background: var(--salb-bg-900);
+    color: var(--ink-100);
+  }
+  .salb-bg-alt { background: var(--salb-bg-800); color: var(--ink-100); }
+  .salb-surface { background: var(--salb-surface); color: var(--ink-100); }
+
+  .salb-eyebrow {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    color: var(--pro);
+  }
+  .salb-eyebrow-kite { color: var(--kite); }
+
+  .salb-display {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink-100);
+  }
+  .salb-h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--ink-100);
+  }
+  .salb-h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 1.2;
+    color: var(--ink-100);
+  }
+  .salb-body {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-300);
+  }
+  .salb-muted { color: var(--ink-500); }
+
+  /* Editorial card */
+  .salb-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 40%), var(--salb-surface);
+    border: 1px solid var(--salb-border);
+    border-radius: 22px;
+    padding: 32px;
+    box-shadow: var(--shadow-editorial);
+  }
+  @media (min-width: 768px) {
+    .salb-card { padding: 40px; }
+  }
+  .salb-card-raised {
+    background: var(--salb-surface-raised);
+    border-color: var(--salb-border-strong);
+  }
+
+  /* Pill buttons — accent-aware */
+  .salb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 28px;
+    border-radius: 9999px;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1;
+    min-height: 48px;
+    transition: filter 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .salb-btn-pro { background: var(--pro); color: #0E1A2E; }
+  .salb-btn-pro:hover { filter: brightness(1.06); transform: translateY(-1px); background: var(--pro-bright); }
+  .salb-btn-kite { background: var(--kite); color: #0E1A2E; }
+  .salb-btn-kite:hover { filter: brightness(1.06); transform: translateY(-1px); background: var(--kite-bright); }
+  .salb-btn-ghost {
+    background: transparent;
+    color: var(--ink-100);
+    border-color: var(--salb-border-strong);
+  }
+  .salb-btn-ghost:hover { background: rgba(255,255,255,0.04); }
+
+  /* Checklist row */
+  .salb-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: var(--ink-100);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .salb-check::before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-top: 4px;
+    flex-shrink: 0;
+    background-color: var(--pro);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center / contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center / contain no-repeat;
+  }
+  .salb-check-kite::before { background-color: var(--kite); }
+
+  /* Section rhythm */
+  .salb-section { padding: 56px 24px; }
+  @media (min-width: 768px) { .salb-section { padding: 112px 40px; } }
+  .salb-container { max-width: 1120px; margin: 0 auto; }
+
+  /* Numeric tabular alignment for prices */
+  .salb-tabular { font-variant-numeric: tabular-nums; }
 }
 
 /* Skeleton shimmer — usado em avatares de depoimentos */
