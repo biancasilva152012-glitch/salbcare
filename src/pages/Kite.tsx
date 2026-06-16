@@ -466,36 +466,30 @@ export default function Kite() {
       <section style={{ background: BRAND.ink, color: BRAND.cream }} className="px-5 py-20">
         <div className="max-w-5xl mx-auto">
           <h2 className="kite-h text-3xl md:text-4xl text-center mb-12">{t.how.h2}</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              { label: t.how.inLabel, steps: t.how.inSteps },
-              { label: t.how.onlineLabel, steps: t.how.onlineSteps },
-            ].map((col) => (
-              <div
-                key={col.label}
-                style={{
-                  background: "#0F2A33",
-                  border: "1px solid rgba(42, 191, 191, 0.15)",
-                  borderRadius: 12,
-                  padding: 32,
-                }}
+          <div className="max-w-2xl mx-auto">
+            <div
+              style={{
+                background: "#0F2A33",
+                border: "1px solid rgba(42, 191, 191, 0.15)",
+                borderRadius: 12,
+                padding: 32,
+              }}
+            >
+              <p
+                className="text-xs uppercase mb-6 font-semibold"
+                style={{ color: "#2ABFBF", letterSpacing: "0.15em" }}
               >
-                <p
-                  className="text-xs uppercase mb-6 font-semibold"
-                  style={{ color: "#2ABFBF", letterSpacing: "0.15em" }}
-                >
-                  {col.label}
-                </p>
-                <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
-                  {col.steps.map((s, i) => (
-                    <li key={s} style={{ display: "flex", gap: 12, color: "#fff", lineHeight: 1.6 }}>
-                      <span style={{ color: "#2ABFBF", fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ))}
+                {t.how.inLabel}
+              </p>
+              <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+                {t.how.inSteps.map((s, i) => (
+                  <li key={s} style={{ display: "flex", gap: 12, color: "#fff", lineHeight: 1.6 }}>
+                    <span style={{ color: "#2ABFBF", fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                    <span>{s}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
       </section>
