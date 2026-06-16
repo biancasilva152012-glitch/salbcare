@@ -574,6 +574,45 @@ const Index = () => {
           </div>
         </section>
 
+        {/* CYCLE — two sides of one company */}
+        <section className="salb-section" style={{ paddingTop: 32 }}>
+          <div className="salb-container" data-fade>
+            <div style={{ textAlign: "center", maxWidth: 720, margin: "0 auto 36px" }}>
+              <p className="salb-eyebrow">{t.cycle.eyebrow}</p>
+              <h2
+                className="salb-serif"
+                style={{ fontSize: "clamp(26px, 3.4vw, 36px)", color: "#fff", lineHeight: 1.15, margin: "14px 0 14px" }}
+              >
+                {t.cycle.title}
+              </h2>
+              <p style={{ color: TEXT_MUTED, fontSize: 16, lineHeight: 1.6, margin: 0 }}>{t.cycle.body}</p>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: 16,
+                alignItems: "stretch",
+              }}
+            >
+              <div className="salb-card" style={{ borderColor: "rgba(201,164,92,0.28)" }}>
+                <p className="salb-eyebrow" style={{ color: GOLD }}>DEMAND</p>
+                <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
+                  {t.cycle.demand.title}
+                </h3>
+                <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.demand.body}</p>
+              </div>
+              <div className="salb-card" style={{ borderColor: "rgba(63,208,189,0.28)" }}>
+                <p className="salb-eyebrow" style={{ color: TEAL }}>INFRASTRUCTURE</p>
+                <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
+                  {t.cycle.supply.title}
+                </h3>
+                <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.supply.body}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* KITE — active layer */}
         <section className="salb-section" id="travelers">
           <div className="salb-container" data-fade>
