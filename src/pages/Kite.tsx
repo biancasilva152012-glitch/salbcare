@@ -418,7 +418,7 @@ export default function Kite() {
                 className="inline-flex mx-auto bg-white border border-black/5 p-1 rounded-full h-auto gap-1"
                 style={{ boxShadow: "0 1px 3px rgba(13,27,42,0.04)" }}
               >
-                {(["dental", "physio", "online"] as const).map((k) => (
+                {(["dental", "physio"] as const).map((k) => (
                   <TabsTrigger
                     key={k}
                     value={k}
@@ -441,7 +441,7 @@ export default function Kite() {
               </p>
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
                 {DENTAL_IDS.map((p) => (
-                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
+                  <ProcedureCard key={p.id} id={p.id} locationType={p.locationType} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
                 ))}
               </div>
               <InfoBanner text={t.inPersonBanner} />
@@ -453,22 +453,10 @@ export default function Kite() {
               </p>
               <div className="grid sm:grid-cols-2 gap-5">
                 {PHYSIO_IDS.map((p) => (
-                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
+                  <ProcedureCard key={p.id} id={p.id} locationType={p.locationType} total={p.total} eu={p.eu} t={t} onBook={openBooking} />
                 ))}
               </div>
               <InfoBanner text={t.inPersonBanner} />
-            </TabsContent>
-
-            <TabsContent value="online">
-              <div id="online-section" />
-              <p className="text-center max-w-2xl mx-auto mb-8" style={{ color: BRAND.muted }}>
-                {t.onlineIntro}
-              </p>
-              <div className="grid sm:grid-cols-2 gap-5">
-                {ONLINE_IDS.map((p) => (
-                  <ProcedureCard key={p.id} id={p.id} type={p.type} total={p.total} t={t} onBook={openBooking} />
-                ))}
-              </div>
             </TabsContent>
           </Tabs>
         </div>
