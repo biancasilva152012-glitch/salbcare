@@ -104,6 +104,35 @@ body[data-scroll-locked] {
     --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
     --shadow-card-hover: 0 8px 30px rgba(15, 23, 42, 0.08);
     --shadow-glow: 0 4px 14px rgba(0, 180, 160, 0.30);
+
+    /* ============================================================
+       SalbCare editorial design system — dark navy + dual accents.
+       Consumed via `.salb-bg`, `text-ink-*`, `bg-surface`,
+       `text-pro`, `text-kite` and the `.salb-*` component utilities.
+       Does NOT override existing semantic tokens used by dashboards.
+       ============================================================ */
+    --salb-bg-900: #0E1A2E;
+    --salb-bg-800: #122438;
+    --salb-surface: #16293D;
+    --salb-surface-raised: #1B3047;
+    --salb-border: rgba(255, 255, 255, 0.08);
+    --salb-border-strong: rgba(255, 255, 255, 0.14);
+
+    --ink-100: #EAF1F5;
+    --ink-300: #9FB2C0;
+    --ink-500: #6B7E8E;
+
+    --pro: #2A9D90;
+    --pro-bright: #35BCAB;
+    --pro-soft: rgba(42, 157, 144, 0.12);
+
+    --kite: #D9B679;
+    --kite-bright: #E6C68C;
+    --kite-soft: rgba(217, 182, 121, 0.12);
+    --kite-cyan: #17A4BA;
+
+    --shadow-editorial: 0 8px 30px rgba(0, 0, 0, 0.25);
+    --shadow-editorial-lg: 0 18px 50px rgba(0, 0, 0, 0.35);
   }
 }
 
