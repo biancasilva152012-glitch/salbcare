@@ -73,8 +73,13 @@ const T = {
       "physio-package":       "Full Recovery Package (3 sessions)",
       "telehealth-psychology":    "Psychology",
       "telehealth-nutrition":     "Nutrition",
-      "telehealth-physio-online": "Physiotherapy (online)",
+      "telehealth-physio-online": "Physiotherapy",
       "telehealth-medicine":      "General Medicine",
+    } as Record<string, string>,
+    descriptions: {
+      "physio-kite-recovery": "The physiotherapist comes to your hotel.",
+      "physio-package":       "The physiotherapist comes to your hotel.",
+      "telehealth-physio-online": "The physiotherapist comes to your hotel.",
     } as Record<string, string>,
   },
   es: {
@@ -129,8 +134,13 @@ const T = {
       "physio-package":       "Paquete recuperación completa (3 sesiones)",
       "telehealth-psychology":    "Psicología",
       "telehealth-nutrition":     "Nutrición",
-      "telehealth-physio-online": "Fisioterapia (online)",
+      "telehealth-physio-online": "Fisioterapia",
       "telehealth-medicine":      "Medicina general",
+    } as Record<string, string>,
+    descriptions: {
+      "physio-kite-recovery": "El fisioterapeuta va a tu hotel.",
+      "physio-package":       "El fisioterapeuta va a tu hotel.",
+      "telehealth-physio-online": "El fisioterapeuta va a tu hotel.",
     } as Record<string, string>,
   },
 } as const;
@@ -612,7 +622,11 @@ function ProcedureCard({
   const amountCharged = isOnline ? total : BOOKING_FEE;
   return (
     <div className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex flex-col">
-      <h3 className="kite-h text-xl mb-4" style={{ color: BRAND.ink }}>{label}</h3>
+      <h3 className="kite-h text-xl mb-2" style={{ color: BRAND.ink }}>{label}</h3>
+      {t.descriptions?.[id] && (
+        <p className="text-sm mb-4" style={{ color: BRAND.muted }}>{t.descriptions[id]}</p>
+      )}
+      {!t.descriptions?.[id] && <div className="mb-2" />}
 
       <div className="mb-4">
         <p className="price-tnum text-2xl font-bold" style={{ color: BRAND.ink }}>
