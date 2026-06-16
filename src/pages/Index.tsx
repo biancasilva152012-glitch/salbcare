@@ -483,6 +483,9 @@ const Index = () => {
               style={{ fontSize: "clamp(36px, 6vw, 64px)", lineHeight: 1.05, margin: "20px 0 18px", color: "#fff" }}
             >
               {t.hero.headline}
+              <span style={{ display: "block", color: TEAL, fontStyle: "italic", fontWeight: 500 }}>
+                {t.hero.headlineAccent}
+              </span>
             </h1>
             <p
               data-fade
