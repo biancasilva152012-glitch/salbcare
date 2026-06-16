@@ -125,22 +125,23 @@ const T = {
   },
 } as const;
 
-const DENTAL_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
-  { id: "dental-cleaning",  type: "presencial", total: 200, eu: 120 },
-  { id: "dental-whitening", type: "presencial", total: 480, eu: 350 },
-  { id: "dental-exam",      type: "presencial", total: 200, eu: 90 },
+type KiteServiceItem = {
+  id: string;
+  total: number;
+  eu: number;
+  locationType: LocationType;
+};
+
+const DENTAL_IDS: KiteServiceItem[] = [
+  { id: "dental-cleaning",  total: 200, eu: 120, locationType: "at_clinic" },
+  { id: "dental-whitening", total: 480, eu: 350, locationType: "at_clinic" },
+  { id: "dental-exam",      total: 200, eu: 90,  locationType: "at_clinic" },
 ];
-const PHYSIO_IDS: { id: string; type: "presencial"; total: number; eu: number }[] = [
-  { id: "physio-kite-recovery", type: "presencial", total: 200, eu: 90 },
-  { id: "physio-massage",       type: "presencial", total: 180, eu: 80 },
-  { id: "physio-postural",      type: "presencial", total: 160, eu: 70 },
-  { id: "physio-package",       type: "presencial", total: 480, eu: 240 },
-];
-const ONLINE_IDS: { id: string; type: "online"; total: number }[] = [
-  { id: "telehealth-psychology",    type: "online", total: 280 },
-  { id: "telehealth-nutrition",     type: "online", total: 220 },
-  { id: "telehealth-physio-online", type: "online", total: 240 },
-  { id: "telehealth-medicine",      type: "online", total: 200 },
+const PHYSIO_IDS: KiteServiceItem[] = [
+  { id: "physio-kite-recovery", total: 200, eu: 90,  locationType: "at_hotel" },
+  { id: "physio-massage",       total: 180, eu: 80,  locationType: "at_hotel" },
+  { id: "physio-postural",      total: 160, eu: 70,  locationType: "at_hotel" },
+  { id: "physio-package",       total: 480, eu: 240, locationType: "at_hotel" },
 ];
 
 export default function Kite() {
