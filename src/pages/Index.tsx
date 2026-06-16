@@ -162,12 +162,20 @@ const COPY: Record<HubLang, Copy> = {
   pt: {
     nav: { care: "Preciso de atendimento", clinics: "Sou uma clínica" },
     hero: {
-      eyebrow: "ILHA DO GUAJIRU · CEARÁ",
-      headline: "Cuidado que viaja com você.",
+      eyebrow: "NASCEMOS NO LITORAL DO BRASIL",
+      headline: "Saúde sem fronteiras.",
+      headlineAccent: "Feita para gente em qualquer lugar.",
       subhead:
-        "Se machucou ou ficou doente em viagem? A gente conecta você a um cuidado local de confiança, no seu idioma, no mesmo dia.",
-      ctaCare: "Reservar atendimento",
+        "A SalbCare é a infraestrutura de saúde para pessoas em movimento. Começamos onde o mundo viaja, e seguimos junto até em casa.",
+      ctaCare: "Preciso de atendimento",
       ctaClinic: "Sou uma clínica",
+    },
+    origin: {
+      eyebrow: "NOSSA HISTÓRIA",
+      title: "Começou numa praia no Ceará.",
+      body:
+        "Uma dentista vendo turistas do mundo todo chegarem na Ilha do Guajiru, um pequeno spot de kite no nordeste do Brasil. Uns se machucavam. Outros ficavam doentes. Ninguém sabia para onde ir, em quem confiar ou como se fazer entender. Então construímos o que faltava. Uma rede pequena, humana, que viaja com o paciente.",
+      signature: "Bianca, fundadora. Dentista no Guajiru.",
     },
     what: {
       title: "O que é a SalbCare",
@@ -178,6 +186,20 @@ const COPY: Record<HubLang, Copy> = {
         "Inglês e espanhol no atendimento. Sem tradutor.",
         "Você vê o preço antes de reservar. Sem surpresa depois.",
       ],
+    },
+    cycle: {
+      eyebrow: "COMO A SALBCARE FUNCIONA",
+      title: "Viajantes geram demanda. Clínicas viram a rede.",
+      body:
+        "A SalbCare é uma empresa com dois lados. Juntos formam um ciclo. O cuidado segue o paciente. As clínicas crescem com ele.",
+      demand: {
+        title: "SalbCare Kite",
+        body: "O lado do viajante. Ajudamos pessoas a serem cuidadas em lugares que não conhecem, num idioma que entendem.",
+      },
+      supply: {
+        title: "SalbCare Pro",
+        body: "O lado da clínica. A infraestrutura que permite que clínicas locais recebam pacientes do mundo todo.",
+      },
     },
     kite: {
       eyebrow: "PARA VIAJANTES · SALBCARE KITE",
