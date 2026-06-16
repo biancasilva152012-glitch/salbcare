@@ -393,19 +393,6 @@ export default function Kite() {
             >
               {t.hero.ctaIn} →
             </button>
-            <button
-              onClick={() => setWaModalOpen(true)}
-              className="kite-focus rounded-full font-semibold transition-all duration-200 hover:bg-white/10 w-full sm:w-auto"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1.5px solid rgba(255,255,255,0.55)",
-                minHeight: 56,
-                padding: "0 28px",
-              }}
-            >
-              {t.hero.ctaOnline} →
-            </button>
           </div>
 
           <div
