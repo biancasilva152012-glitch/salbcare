@@ -25,11 +25,20 @@ type Copy = {
   hero: {
     eyebrow: string;
     headline: string;
+    headlineAccent: string;
     subhead: string;
     ctaCare: string;
     ctaClinic: string;
   };
+  origin: { eyebrow: string; title: string; body: string; signature: string };
   what: { title: string; line: string; cards: [string, string, string]; cardDescs: [string, string, string] };
+  cycle: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    demand: { title: string; body: string };
+    supply: { title: string; body: string };
+  };
   kite: {
     eyebrow: string;
     title: string;
