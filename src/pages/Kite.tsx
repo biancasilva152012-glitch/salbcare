@@ -283,13 +283,6 @@ export default function Kite() {
             >
               {t.nav.dental}
             </button>
-            <button
-              onClick={() => scrollTo("online-section")}
-              className="kite-focus hidden md:inline rounded-md hover:opacity-70 px-1"
-              style={{ color: scrolled ? BRAND.ink : "#fff" }}
-            >
-              {t.nav.online}
-            </button>
 
             {/* Language toggle — collapses to globe on very small screens */}
             <div
