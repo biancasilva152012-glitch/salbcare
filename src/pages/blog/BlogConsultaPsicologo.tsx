@@ -17,7 +17,7 @@ const BlogConsultaPsicologo = () => (
       description="Como funciona a consulta online com psicólogo. Sistema para psicólogo aprovado pelo CFP, terapia virtual com privacidade e agendamento simples pela SalbCare."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={["consulta online psicólogo", "sistema para psicólogo", "terapia online", "teleconsulta", "CFP", "agenda online"]}
       publishedTime="2026-04-14"
       modifiedTime="2026-05-02"

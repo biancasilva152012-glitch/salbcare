@@ -17,7 +17,7 @@ const BlogGestaoFinanceira = () => (
       description="Sistema de gestão de saúde com Carnê-Leão automático, reserva de emergência, preço mínimo por consulta e mentoria com IA. Guia prático para autônomos."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={["sistema de gestão de saúde", "gestão financeira", "Carnê-Leão", "sistema para profissional de saúde", "preço mínimo consulta"]}
       publishedTime="2026-04-14"
       modifiedTime="2026-05-02"

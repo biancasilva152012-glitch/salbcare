@@ -54,11 +54,11 @@ const PublicSalbScore = () => {
           name="description"
           content="O SalbScore é a primeira pontuação de saúde financeira para profissionais autônomos da saúde no Brasil. Comprove renda, conquiste crédito e seja reconhecido pelo mercado."
         />
-        <link rel="canonical" href="https://salbcare.com.br/salbscore" />
+        <link rel="canonical" href="https://salbcare.com/salbscore" />
         <meta property="og:title" content="SalbScore — Identidade financeira do profissional de saúde" />
         <meta property="og:description" content="Sua pontuação oficial de saúde financeira. De 0 a 1000. Construída com seus atendimentos reais na SalbCare." />
-        <meta property="og:url" content="https://salbcare.com.br/salbscore" />
-        <meta property="og:image" content="https://salbcare.com.br/og-image.png" />
+        <meta property="og:url" content="https://salbcare.com/salbscore" />
+        <meta property="og:image" content="https://salbcare.com/og-image.png" />
       </Helmet>
 
       <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>

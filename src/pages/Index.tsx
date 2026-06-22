@@ -389,8 +389,8 @@ const Index = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "SalbCare",
-    url: "https://salbcare.com.br",
-    logo: "https://salbcare.com.br/pwa-icon-512.png",
+    url: "https://salbcare.com",
+    logo: "https://salbcare.com/pwa-icon-512.png",
     description:
       "Healthcare infrastructure for people in motion. Trusted care for international travelers, starting in Ilha do Guajiru, Ceará.",
   };

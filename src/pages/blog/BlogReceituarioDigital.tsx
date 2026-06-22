@@ -17,7 +17,7 @@ const BlogReceituarioDigital = () => (
       description="Prescrição digital com validade legal: assinatura ICP-Brasil, RDC 471 da ANVISA, tipos de receita e como emitir pelo prontuário eletrônico SalbCare."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={["prescrição digital", "receituário digital", "ICP-Brasil", "RDC 471 ANVISA", "prontuário eletrônico", "teleconsulta"]}
       publishedTime="2026-04-14"
       modifiedTime="2026-05-02"
