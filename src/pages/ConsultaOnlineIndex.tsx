@@ -54,6 +54,8 @@ const ConsultaOnlineIndex = () => {
       </div>
 
       <SEOHead
+
+        noindex={true}
         title="Consulta Online com Profissionais de Saúde | SalbCare"
         description="Agende sua consulta online com médicos, psicólogos, nutricionistas, dentistas e fisioterapeutas. Atendimento em todo o Brasil, sem sair de casa."
         canonical="/consulta-online"

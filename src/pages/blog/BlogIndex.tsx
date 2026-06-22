@@ -111,6 +111,7 @@ const POSTS = [
 const BlogIndex = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Blog SalbCare | Sistema para Profissional de Saúde"
       description="Guias sobre sistema para consultório médico, prontuário eletrônico, agenda online, teleconsulta e prescrição digital. Conteúdo prático para profissionais de saúde autônomos."
       canonical="/journal"

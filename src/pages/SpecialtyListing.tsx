@@ -65,6 +65,7 @@ const SpecialtyListing = () => {
   return (
     <>
       <SEOHead
+        noindex={true}
         title={`${config.title} | SalbCare`}
         description={config.description}
         canonical={`/${specialty}`}

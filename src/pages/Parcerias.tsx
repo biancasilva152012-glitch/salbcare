@@ -100,6 +100,7 @@ const Parcerias = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
+        noindex={true}
         title="Parcerias para Farmácias e Laboratórios | SALBCARE"
         description="Conecte sua farmácia ou laboratório ao ecossistema SALBCARE. Receba receitas digitais e pedidos de exame de médicos verificados. 60 dias grátis."
         canonical="/parcerias"

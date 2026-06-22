@@ -108,6 +108,7 @@ const SalbScoreSelo = () => {
       }}
     >
       <SEOHead
+        noindex={true}
         title={`${data.professional_name} — Selo Verificado SalbCare`}
         description={`SalbScore verificado de ${data.professional_name}. ${faixa?.desc ?? ""}`}
       />

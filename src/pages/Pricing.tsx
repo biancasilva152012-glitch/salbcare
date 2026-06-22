@@ -48,6 +48,7 @@ export default function Pricing() {
   return (
     <>
       <SEOHead
+        noindex={true}
         title="Planos e Preços | SalbCare"
         description="Compare os planos Grátis e Essencial da SalbCare. Gerencie sua prática de saúde a partir de R$0/mês."
         canonical="/planos"

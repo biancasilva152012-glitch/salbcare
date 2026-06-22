@@ -13,6 +13,7 @@ const TITLE = "Como Abrir CNPJ Médico: Guia Completo para Profissionais de Saú
 const BlogCnpjMedico = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Como Abrir CNPJ Médico: Guia Completo 2026"
       description="Passo a passo para abrir CNPJ médico: tipos de empresa, regime tributário, documentos e custos. Reduza impostos em até 70% com sistema de gestão de saúde."
       canonical={`/journal/${SLUG}`}
