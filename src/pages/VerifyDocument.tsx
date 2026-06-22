@@ -88,6 +88,7 @@ const VerifyDocument = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <SEOHead
+        noindex={true}
         title="Verificar Documento | SALBCARE"
         description="Verifique a autenticidade de documentos digitais e comprovantes SalbScore emitidos pela plataforma SalbCare."
       />

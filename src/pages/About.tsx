@@ -12,6 +12,7 @@ export default function About() {
           name="description"
           content="SalbCare is a healthcare platform built around one belief: access to good care shouldn't depend on where you are, what language you speak, or how much you earn."
         />
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href="https://salbcare.com/about" />
       </Helmet>
 

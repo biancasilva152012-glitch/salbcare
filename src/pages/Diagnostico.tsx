@@ -163,6 +163,7 @@ const Diagnostico = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
+        noindex={true}
         title="Diagnóstico Financeiro Gratuito para Profissionais de Saúde | SALBCARE"
         description="Descubra em 2 minutos se você está pagando imposto correto. Gratuito, sem cadastro. Para médicos, psicólogos, nutricionistas e mais."
         canonical="/diagnostico"

@@ -13,6 +13,7 @@ const TITLE = "Consulta Online com Psicólogo: Como Funciona, Benefícios e Como
 const BlogConsultaPsicologo = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Consulta Online com Psicólogo: Como Funciona"
       description="Como funciona a consulta online com psicólogo. Sistema para psicólogo aprovado pelo CFP, terapia virtual com privacidade e agendamento simples pela SalbCare."
       canonical={`/journal/${SLUG}`}

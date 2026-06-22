@@ -167,6 +167,7 @@ export default function BlogArticle({ forcedLang, publicationSlug }: Props) {
   return (
     <div className="min-h-screen" style={{ background: `hsl(var(${bgVar}))`, color: "hsl(var(--kite-cream))" }}>
       <BlogSEO
+        noindex={true}
         title={t.meta_title || t.title}
         description={t.meta_description || t.excerpt || ""}
         canonicalPath={canonical}

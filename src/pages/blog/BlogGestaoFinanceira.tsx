@@ -13,6 +13,7 @@ const TITLE = "Gestão Financeira para Profissionais de Saúde: Guia Prático pa
 const BlogGestaoFinanceira = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Gestão Financeira para Profissional de Saúde"
       description="Sistema de gestão de saúde com Carnê-Leão automático, reserva de emergência, preço mínimo por consulta e mentoria com IA. Guia prático para autônomos."
       canonical={`/journal/${SLUG}`}

@@ -69,7 +69,7 @@ const SalbScoreSelo = () => {
   if (isError || !data) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <SEOHead title="Selo não encontrado | SalbCare" description="Este selo público não foi encontrado." />
+        <SEOHead noindex={true} title="Selo não encontrado | SalbCare" description="Este selo público não foi encontrado." />
         <div className="text-center space-y-3 max-w-sm">
           <ShieldCheck className="h-10 w-10 text-muted-foreground mx-auto" />
           <h1 className="text-lg font-semibold">Selo não encontrado</h1>
@@ -108,6 +108,7 @@ const SalbScoreSelo = () => {
       }}
     >
       <SEOHead
+        noindex={true}
         title={`${data.professional_name} — Selo Verificado SalbCare`}
         description={`SalbScore verificado de ${data.professional_name}. ${faixa?.desc ?? ""}`}
       />

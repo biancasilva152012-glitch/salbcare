@@ -83,6 +83,7 @@ const PrecoMinimoCalculator = () => {
 const BlogPrecoMinimoConsulta = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Preço Mínimo da Consulta: Calculadora Grátis"
       description="Calculadora gratuita de preço mínimo por consulta para profissionais de saúde. Sistema de gestão de saúde com cálculo de custos fixos, variáveis e margem de lucro."
       canonical={`/journal/${SLUG}`}

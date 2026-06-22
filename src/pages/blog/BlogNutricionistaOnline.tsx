@@ -13,6 +13,7 @@ const TITLE = "Nutricionista Online: Como Funciona a Consulta por Vídeo e Como 
 const BlogNutricionistaOnline = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Nutricionista Online: Software para Nutricionista"
       description="Software para nutricionista com teleconsulta, prontuário eletrônico e agenda online. Atenda pacientes por vídeo dentro das normas do CFN. Teste grátis."
       canonical={`/journal/${SLUG}`}

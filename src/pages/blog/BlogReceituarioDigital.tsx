@@ -13,6 +13,7 @@ const TITLE = "Receituário Digital: Como Emitir Prescrição Eletrônica com Va
 const BlogReceituarioDigital = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Prescrição Digital: RDC ANVISA e ICP-Brasil"
       description="Prescrição digital com validade legal: assinatura ICP-Brasil, RDC 471 da ANVISA, tipos de receita e como emitir pelo prontuário eletrônico SalbCare."
       canonical={`/journal/${SLUG}`}

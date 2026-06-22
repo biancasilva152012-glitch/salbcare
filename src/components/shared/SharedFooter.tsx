@@ -6,23 +6,15 @@ export default function SharedFooter() {
   return (
     <footer className="bg-brand-darker text-white/70">
       <div className="container mx-auto px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="space-y-3">
             <BrandLogo variant="white" />
             <p className="text-sm text-white/50 max-w-xs">
-              Healthcare, made human. Built in Brazil, available worldwide.
+              Care, without borders.
             </p>
           </div>
-          <FooterCol title="Products">
-            <FooterLink to="/pro">SalbCare Pro</FooterLink>
-            <FooterLink to="/kite">SalbCare Kite</FooterLink>
-            <span className="text-white/30">SalbCare Dental — soon</span>
-          </FooterCol>
-          <FooterCol title="Company">
-            <FooterLink to="/about">About</FooterLink>
-            <FooterLink to="/contact">Contact</FooterLink>
-            <FooterLink to="/journal">Journal</FooterLink>
-            <span className="text-white/30">Careers — soon</span>
+          <FooterCol title="Care">
+            <FooterLink to="/kite">Book care (Kite season)</FooterLink>
           </FooterCol>
           <FooterCol title="Legal">
             <FooterLink to="/privacy">Privacy</FooterLink>

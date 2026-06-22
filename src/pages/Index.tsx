@@ -353,7 +353,7 @@ const COPY: Record<HubLang, Copy> = {
   },
 };
 
-const waitlistHref = `mailto:biancadealbuquerquep@gmail.com?subject=SalbCare%20Pro%20%E2%80%94%20Clinic%20Waitlist`;
+// Pro waitlist link kept in copy strings for next season; not rendered this season.
 
 const Index = () => {
   const [lang, setLang] = useState<HubLang>("en");
@@ -505,13 +505,6 @@ const Index = () => {
               >
                 {t.hero.ctaCare}
               </Link>
-              <a
-                href="#clinics"
-                className="salb-btn salb-btn-ghost"
-                onClick={() => trackCtaClick("home_hero_pro", "homepage", { lang })}
-              >
-                {t.hero.ctaClinic}
-              </a>
             </div>
           </div>
         </section>
@@ -529,7 +522,7 @@ const Index = () => {
             <p style={{ color: TEXT, fontSize: "clamp(16px, 1.7vw, 18px)", lineHeight: 1.7, margin: "0 0 18px" }}>
               {t.origin.body}
             </p>
-            <p style={{ color: GOLD, fontSize: 13.5, fontStyle: "italic", margin: 0 }}>— {t.origin.signature}</p>
+            <p style={{ color: GOLD, fontSize: 13.5, fontStyle: "italic", margin: 0 }}>{t.origin.signature}</p>
           </div>
         </section>
 
@@ -575,147 +568,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* CYCLE — two sides of one company */}
-        <section className="salb-section" style={{ paddingTop: 32 }}>
-          <div className="salb-container" data-fade>
-            <div style={{ textAlign: "center", maxWidth: 720, margin: "0 auto 36px" }}>
-              <p className="salb-eyebrow">{t.cycle.eyebrow}</p>
-              <h2
-                className="salb-serif"
-                style={{ fontSize: "clamp(26px, 3.4vw, 36px)", color: "#fff", lineHeight: 1.15, margin: "14px 0 14px" }}
-              >
-                {t.cycle.title}
-              </h2>
-              <p style={{ color: TEXT_MUTED, fontSize: 16, lineHeight: 1.6, margin: 0 }}>{t.cycle.body}</p>
-            </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                gap: 16,
-                alignItems: "stretch",
-              }}
-            >
-              <div className="salb-card" style={{ borderColor: "rgba(201,164,92,0.28)" }}>
-                <p className="salb-eyebrow" style={{ color: GOLD }}>DEMAND</p>
-                <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
-                  {t.cycle.demand.title}
-                </h3>
-                <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.demand.body}</p>
-              </div>
-              <div className="salb-card" style={{ borderColor: "rgba(63,208,189,0.28)" }}>
-                <p className="salb-eyebrow" style={{ color: TEAL }}>INFRASTRUCTURE</p>
-                <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
-                  {t.cycle.supply.title}
-                </h3>
-                <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.supply.body}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* KITE — active layer */}
-        <section className="salb-section" id="travelers">
-          <div className="salb-container" data-fade>
-            <div
-              className="salb-card"
-              style={{
-                padding: "40px clamp(24px, 4vw, 56px)",
-                background:
-                  `linear-gradient(155deg, ${NAVY_CARD} 0%, ${NAVY_BOTTOM} 100%), radial-gradient(circle at 90% 0%, rgba(201,164,92,0.15), transparent 55%)`,
-                backgroundBlendMode: "screen",
-                borderColor: "rgba(201,164,92,0.25)",
-              }}
-            >
-              <p className="salb-eyebrow">{t.kite.eyebrow}</p>
-              <h2
-                className="salb-serif"
-                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#fff", lineHeight: 1.1, margin: "14px 0 18px" }}
-              >
-                {t.kite.title}
-              </h2>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", display: "grid", gap: 10 }}>
-                {t.kite.bullets.map((b) => (
-                  <li key={b} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: TEXT, fontSize: 15.5 }}>
-                    <span style={{ color: TEAL, fontWeight: 700, marginTop: 1 }}>✓</span>
-                    {b}
-                  </li>
-                ))}
-              </ul>
-              <p style={{ color: TEXT_MUTED, fontSize: 14.5, margin: "0 0 8px" }}>{t.kite.trust}</p>
-              <p style={{ color: TEXT_MUTED, fontSize: 13.5, margin: "0 0 24px", lineHeight: 1.55 }}>{t.kite.flow}</p>
-              <Link
-                to="/kite"
-                className="salb-btn salb-btn-primary"
-                onClick={() => trackCtaClick("home_kite_section", "homepage", { lang })}
-              >
-                {t.kite.cta}
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* PRO — waitlist */}
-        <section className="salb-section" id="clinics">
-          <div className="salb-container" data-fade>
-            <div
-              className="salb-card"
-              style={{
-                padding: "40px clamp(24px, 4vw, 56px)",
-                background:
-                  `linear-gradient(155deg, ${NAVY_BOTTOM} 0%, ${NAVY_CARD} 100%), radial-gradient(circle at 90% 0%, rgba(63,208,189,0.14), transparent 55%)`,
-                backgroundBlendMode: "screen",
-                borderColor: "rgba(63,208,189,0.22)",
-              }}
-            >
-              <p className="salb-eyebrow" style={{ color: TEAL }}>{t.pro.eyebrow}</p>
-              <h2
-                className="salb-serif"
-                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#fff", lineHeight: 1.1, margin: "14px 0 12px" }}
-              >
-                {t.pro.title}
-              </h2>
-              <p style={{ color: TEXT_MUTED, fontSize: 16, margin: "0 0 20px", lineHeight: 1.55 }}>{t.pro.intro}</p>
-              <ul
-                style={{
-                  listStyle: "none", padding: 0, margin: "0 0 22px",
-                  display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10,
-                }}
-              >
-                {t.pro.bullets.map((b) => (
-                  <li key={b} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: TEXT, fontSize: 15 }}>
-                    <span style={{ color: TEAL, fontWeight: 700, marginTop: 1 }}>·</span>
-                    {b}
-                  </li>
-                ))}
-              </ul>
-              <p
-                style={{
-                  display: "inline-block",
-                  padding: "6px 12px",
-                  borderRadius: 999,
-                  background: "rgba(201,164,92,0.12)",
-                  color: GOLD,
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  letterSpacing: "0.04em",
-                  margin: "0 0 22px",
-                }}
-              >
-                {t.pro.label}
-              </p>
-              <div>
-                <a
-                  href={waitlistHref}
-                  className="salb-btn salb-btn-ghost"
-                  onClick={() => trackCtaClick("home_pro_waitlist", "homepage", { lang })}
-                >
-                  {t.pro.cta}
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* CYCLE and PRO sections removed for the Kite season. SalbCare Pro returns next season. */}
 
         {/* HOW IT WORKS */}
         <section className="salb-section">
@@ -812,13 +665,6 @@ const Index = () => {
               >
                 {t.finalCta.ctaCare}
               </Link>
-              <a
-                href={waitlistHref}
-                className="salb-btn salb-btn-ghost"
-                onClick={() => trackCtaClick("home_final_pro", "homepage", { lang })}
-              >
-                {t.finalCta.ctaClinic}
-              </a>
             </div>
           </div>
         </section>
@@ -849,22 +695,18 @@ const Index = () => {
 
               <div>
                 <h3 style={{ color: "#fff", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12 }}>
-                  Products
+                  Care
                 </h3>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-                  <li><Link to="/kite" className="salb-link">SalbCare Kite</Link></li>
-                  <li><a href={waitlistHref} className="salb-link">SalbCare Pro (waitlist)</a></li>
+                  <li><Link to="/kite" className="salb-link">Book care (Kite season)</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h3 style={{ color: "#fff", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12 }}>
-                  Company
+                  Legal
                 </h3>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-                  <li><Link to="/about" className="salb-link">About</Link></li>
-                  <li><Link to="/contact" className="salb-link">Contact</Link></li>
-                  <li><Link to="/journal" className="salb-link">Journal</Link></li>
                   <li><Link to="/terms" className="salb-link">Terms</Link></li>
                   <li><Link to="/privacy" className="salb-link">Privacy</Link></li>
                 </ul>

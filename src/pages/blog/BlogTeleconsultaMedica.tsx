@@ -16,6 +16,7 @@ const MODIFIED = "2026-05-02";
 const BlogTeleconsultaMedica = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Teleconsulta: Como Atender Pacientes Online"
       description="Como fazer teleconsulta dentro da Resolução CFM 2.314/2022. Software para clínica, prescrição digital ICP-Brasil e prontuário eletrônico para médicos online."
       canonical={`/journal/${SLUG}`}

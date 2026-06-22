@@ -16,6 +16,7 @@ const MODIFIED = "2026-05-02";
 const BlogProntuarioDentista = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Prontuário Eletrônico para Dentista: Guia 2026"
       description="Sistema para dentista com prontuário eletrônico, HOF, receituário e LGPD. Organize seu consultório odontológico e atenda dentro da Resolução CFO 118/2012."
       canonical={`/journal/${SLUG}`}

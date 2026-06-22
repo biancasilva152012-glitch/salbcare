@@ -64,6 +64,7 @@ export default function BlogHub() {
   return (
     <div className="min-h-screen" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
       <BlogSEO
+        noindex={true}
         title="SalbCare — Blog & Journal"
         description={t.sub}
         canonicalPath={withLangPrefix("/journal", lang)}

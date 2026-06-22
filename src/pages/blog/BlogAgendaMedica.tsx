@@ -16,6 +16,7 @@ const MODIFIED = "2026-05-02";
 const BlogAgendaMedica = () => (
   <>
     <SEOHead
+      noindex={true}
       title="Agenda Online para Médicos: Como Reduzir Faltas"
       description="Sistema de agenda online para médicos: lembretes automáticos, integração com prontuário eletrônico e teleconsulta. Reduza faltas em até 40% no consultório."
       canonical={`/journal/${SLUG}`}
