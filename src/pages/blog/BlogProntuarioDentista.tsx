@@ -20,7 +20,7 @@ const BlogProntuarioDentista = () => (
       description="Sistema para dentista com prontuário eletrônico, HOF, receituário e LGPD. Organize seu consultório odontológico e atenda dentro da Resolução CFO 118/2012."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={[
         "prontuário eletrônico",
         "sistema para dentista",

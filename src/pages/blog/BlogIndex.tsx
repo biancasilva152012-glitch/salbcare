@@ -129,21 +129,21 @@ const BlogIndex = () => (
           "@type": "Blog",
           name: "Blog SalbCare",
           description: "Conteúdo educativo sobre sistema para consultório, prontuário eletrônico, teleconsulta e gestão financeira para profissionais de saúde.",
-          url: "https://salbcare.com.br/journal",
+          url: "https://salbcare.com/journal",
           publisher: {
             "@type": "Organization",
             name: "SalbCare",
-            url: "https://salbcare.com.br",
+            url: "https://salbcare.com",
             logo: {
               "@type": "ImageObject",
-              url: "https://salbcare.com.br/og-image.png",
+              url: "https://salbcare.com/og-image.png",
             },
           },
           blogPost: POSTS.map((p) => ({
             "@type": "BlogPosting",
             headline: p.title,
-            url: `https://salbcare.com.br/journal/${p.slug}`,
-            image: `https://salbcare.com.br${typeof p.image === "string" ? p.image : ""}`,
+            url: `https://salbcare.com/journal/${p.slug}`,
+            image: `https://salbcare.com${typeof p.image === "string" ? p.image : ""}`,
             datePublished: "2026-04-14",
           })),
         },
@@ -151,8 +151,8 @@ const BlogIndex = () => (
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://salbcare.com.br/" },
-            { "@type": "ListItem", position: 2, name: "Journal", item: "https://salbcare.com.br/journal" },
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://salbcare.com/" },
+            { "@type": "ListItem", position: 2, name: "Journal", item: "https://salbcare.com/journal" },
           ],
         },
       ]}

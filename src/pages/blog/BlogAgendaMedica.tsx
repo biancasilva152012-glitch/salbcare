@@ -20,7 +20,7 @@ const BlogAgendaMedica = () => (
       description="Sistema de agenda online para médicos: lembretes automáticos, integração com prontuário eletrônico e teleconsulta. Reduza faltas em até 40% no consultório."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={[
         "agenda online para médicos",
         "sistema para consultório médico",

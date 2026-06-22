@@ -17,7 +17,7 @@ const BlogNutricionistaOnline = () => (
       description="Software para nutricionista com teleconsulta, prontuário eletrônico e agenda online. Atenda pacientes por vídeo dentro das normas do CFN. Teste grátis."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={["software para nutricionista", "nutricionista online", "teleconsulta", "sistema para profissional de saúde", "CFN"]}
       publishedTime="2026-04-14"
       modifiedTime="2026-05-02"

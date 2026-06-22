@@ -17,7 +17,7 @@ interface SEOHeadProps {
   modifiedTime?: string;
 }
 
-const SITE_URL = "https://salbcare.com.br";
+const SITE_URL = "https://salbcare.com";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 const SEOHead = ({

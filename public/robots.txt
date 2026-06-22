@@ -26,5 +26,5 @@ Disallow: /onboarding
 Disallow: /checkout
 Disallow: /patient-dashboard
 
-Sitemap: https://salbcare.com.br/sitemap.xml
+Sitemap: https://salbcare.com/sitemap.xml
 Sitemap: https://fevrdqmqmbahmeaymplq.supabase.co/functions/v1/blog-sitemap

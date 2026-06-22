@@ -20,7 +20,7 @@ const BlogTeleconsultaMedica = () => (
       description="Como fazer teleconsulta dentro da Resolução CFM 2.314/2022. Software para clínica, prescrição digital ICP-Brasil e prontuário eletrônico para médicos online."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={[
         "teleconsulta",
         "teleconsulta médica",

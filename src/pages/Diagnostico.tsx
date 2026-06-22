@@ -171,7 +171,7 @@ const Diagnostico = () => {
           "@type": "WebPage",
           name: "Diagnóstico Financeiro Gratuito — SALBCARE",
           description: "Descubra em 2 minutos se você está pagando imposto correto.",
-          url: "https://salbcare.com.br/diagnostico",
+          url: "https://salbcare.com/diagnostico",
         }}
       />
 

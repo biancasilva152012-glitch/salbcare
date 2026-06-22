@@ -14,7 +14,7 @@ export interface BlogPostingSchemaInput {
   keywords?: string[];
 }
 
-export const SITE_URL = "https://salbcare.com.br";
+export const SITE_URL = "https://salbcare.com";
 
 export function buildBlogPostingSchema(input: BlogPostingSchemaInput) {
   const url = `${SITE_URL}/journal/${input.slug}`;

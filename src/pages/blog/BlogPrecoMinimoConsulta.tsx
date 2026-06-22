@@ -87,7 +87,7 @@ const BlogPrecoMinimoConsulta = () => (
       description="Calculadora gratuita de preço mínimo por consulta para profissionais de saúde. Sistema de gestão de saúde com cálculo de custos fixos, variáveis e margem de lucro."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={["preço mínimo consulta", "calculadora preço consulta", "sistema de gestão de saúde", "gestão financeira", "profissional autônomo"]}
       publishedTime="2026-04-14"
       modifiedTime="2026-05-02"

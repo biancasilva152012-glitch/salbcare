@@ -17,7 +17,7 @@ const BlogCnpjMedico = () => (
       description="Passo a passo para abrir CNPJ médico: tipos de empresa, regime tributário, documentos e custos. Reduza impostos em até 70% com sistema de gestão de saúde."
       canonical={`/journal/${SLUG}`}
       ogType="article"
-      ogImage={`https://salbcare.com.br${blogImage}`}
+      ogImage={`https://salbcare.com${blogImage}`}
       keywords={["CNPJ médico", "como abrir CNPJ", "Simples Nacional", "Lucro Presumido", "sistema para profissional de saúde", "PJ médico"]}
       publishedTime="2026-04-14"
       modifiedTime="2026-05-02"

@@ -62,7 +62,7 @@ const ConsultaOnlineIndex = () => {
           "@type": "MedicalBusiness",
           name: "SalbCare — Consulta Online",
           description: "Plataforma de teleconsulta com profissionais de saúde habilitados em todo o Brasil.",
-          url: "https://salbcare.com.br/consulta-online",
+          url: "https://salbcare.com/consulta-online",
         }}
       />
 
