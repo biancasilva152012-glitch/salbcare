@@ -50,7 +50,7 @@ export default function BlogSEO({
       <html lang={htmlLang} />
       <title>{fullTitle}</title>
       {description && <meta name="description" content={description} />}
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {noindex && <meta name="robots" content="noindex, follow" />}
       <link rel="canonical" href={url} />
 
       <meta property="og:title" content={fullTitle} />
