@@ -353,7 +353,7 @@ const COPY: Record<HubLang, Copy> = {
   },
 };
 
-const waitlistHref = `mailto:biancadealbuquerquep@gmail.com?subject=SalbCare%20Pro%20%E2%80%94%20Clinic%20Waitlist`;
+// Pro waitlist link kept in copy strings for next season; not rendered this season.
 
 const Index = () => {
   const [lang, setLang] = useState<HubLang>("en");
