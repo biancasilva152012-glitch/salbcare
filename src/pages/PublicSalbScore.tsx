@@ -54,6 +54,7 @@ const PublicSalbScore = () => {
           name="description"
           content="O SalbScore é a primeira pontuação de saúde financeira para profissionais autônomos da saúde no Brasil. Comprove renda, conquiste crédito e seja reconhecido pelo mercado."
         />
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href="https://salbcare.com/salbscore" />
         <meta property="og:title" content="SalbScore — Identidade financeira do profissional de saúde" />
         <meta property="og:description" content="Sua pontuação oficial de saúde financeira. De 0 a 1000. Construída com seus atendimentos reais na SalbCare." />

@@ -12,6 +12,7 @@ export default function Contact() {
       <Helmet>
         <title>Contact SalbCare</title>
         <meta name="description" content="Reach the SalbCare team by email or WhatsApp. Support for professionals (Pro) and travelers (Kite)." />
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href="https://salbcare.com/contact" />
       </Helmet>
 

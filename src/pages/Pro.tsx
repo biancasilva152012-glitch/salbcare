@@ -29,6 +29,7 @@ const Pro = () => {
       <Helmet>
         <title>SalbCare Pro — A plataforma para profissionais de saúde autônomos</title>
         <meta name="description" content="Capte mais pacientes, organize sua agenda e tenha clareza total sobre seu lucro real. 0% de comissão. Teste 7 dias grátis." />
+        <meta name="robots" content="noindex, follow" />
       </Helmet>
 
       <style>{`
