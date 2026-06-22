@@ -42,6 +42,7 @@ export default function BlogHome() {
   return (
     <div className="min-h-screen" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
       <BlogSEO
+        noindex={true}
         title="SalbCare Journal"
         description={heroSub}
         canonicalPath="/journal"

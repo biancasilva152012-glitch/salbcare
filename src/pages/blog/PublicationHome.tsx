@@ -51,6 +51,7 @@ export default function PublicationHome({ publication }: Props) {
   return (
     <div className="min-h-screen" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
       <BlogSEO
+        noindex={true}
         title={name || (publication === "pro" ? "SalbCare Pro Blog" : "The SalbCare Journal")}
         description={desc}
         canonicalPath={withLangPrefix(`/journal/${pubUrlSegment(publication)}`, lang)}

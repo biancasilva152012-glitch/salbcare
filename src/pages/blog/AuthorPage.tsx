@@ -83,6 +83,7 @@ export default function AuthorPage() {
   return (
     <div className="min-h-screen" style={{ background: "hsl(var(--brand-dark))", color: "hsl(var(--kite-cream))" }}>
       <BlogSEO
+        noindex={true}
         title={`${author.name} — SalbCare`}
         description={localizedAuthorBio(author, lang) || `${author.name}, ${author.role ?? "Author"} at SalbCare.`}
         canonicalPath={withLangPrefix(`/journal/author/${author.slug}`, lang)}
