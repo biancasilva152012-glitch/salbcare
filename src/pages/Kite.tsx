@@ -25,8 +25,8 @@ type LocationType = "at_hotel" | "at_clinic";
 const T = {
   en: {
     htmlLang: "en",
-    title: "SalbCare International · World-class care while you kite | Ilha do Guajiru",
-    desc: "Dental and physiotherapy in English and Spanish for kitesurfers and expats in Ilha do Guajiru, Ceará. A fraction of European prices.",
+    title: "SalbCare Kite | Trusted Care on Brazil's Kite Coast",
+    desc: "Coming to kite in Guajiru? Book trusted dental and health care with SalbCare and reserve your spot with a R$50 deposit. Care, without borders.",
     nav: { dental: "Dental", physio: "Physio & Recovery", book: "Book", bookFull: "Book now" },
     hero: {
       welcome: "WELCOME · BIENVENIDOS",
@@ -75,8 +75,8 @@ const T = {
   },
   es: {
     htmlLang: "es",
-    title: "SalbCare International · Atención de primer nivel mientras haces kite | Ilha do Guajiru",
-    desc: "Odontología y fisioterapia en inglés y español para kitesurfistas y expatriados en Ilha do Guajiru, Ceará. Una fracción de los precios europeos.",
+    title: "SalbCare Kite | Atención de confianza en la costa kite de Brasil",
+    desc: "¿Vienes a hacer kite a Guajiru? Reserva atención dental y de salud de confianza con SalbCare con un depósito de R$50. Care, without borders.",
     nav: { dental: "Dental", physio: "Fisio y recuperación", book: "Reservar", bookFull: "Reservar" },
     hero: {
       welcome: "BIENVENIDOS · WELCOME",
