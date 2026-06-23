@@ -4,8 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/generate-sitemap.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/generate-sitemap.mjs && node scripts/check-seo-assets.mjs",
     "build": "vite build",
+    "postbuild": "node scripts/prerender-routes.mjs && node scripts/check-rendered-seo.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -13,7 +16,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "check:edge-functions": "node scripts/check-edge-functions.mjs"
+    "check:edge-functions": "node scripts/check-edge-functions.mjs",
+    "check:seo": "node scripts/check-rendered-seo.mjs",
+    "check:seo:live": "node scripts/check-rendered-seo.mjs --base=https://salbcare.com"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
