@@ -72,6 +72,21 @@ const T = {
       "physio-postural":      "Postural Assessment",
       "physio-package":       "Full Recovery Package (3 sessions)",
     } as Record<string, string>,
+    trustH2: "Book with confidence",
+    trustItems: [
+      { title: "Secure payment", body: "Your R$50 deposit is processed by Stripe with bank-grade encryption. International cards accepted." },
+      { title: "Verified professionals", body: "Every dentist and physiotherapist is licensed in Brazil with an active council registration (CRO / CREFITO)." },
+      { title: "Refund guarantee", body: "Cancel free of charge up to 48h before your appointment and get a full R$50 refund. After 48h the deposit is non-refundable but can be rescheduled within 30 days." },
+    ],
+    meet: {
+      h2: "Meet your dentist",
+      sub: "Friendly, English-speaking professionals who treat European travelers every week.",
+      cards: [
+        { name: "Dr. [Name] [Surname]", role: "Lead Dentist", credential: "CRO-CE [number] · 12+ years", langs: "EN · ES · PT", note: "[Placeholder bio — replace with real text]" },
+        { name: "Dr. [Name] [Surname]", role: "Physiotherapist", credential: "CREFITO-CE [number] · Kite recovery specialist", langs: "EN · PT", note: "[Placeholder bio — replace with real text]" },
+      ],
+      cta: "Book a session",
+    },
   },
   es: {
     htmlLang: "es",
@@ -122,6 +137,21 @@ const T = {
       "physio-postural":      "Evaluación postural",
       "physio-package":       "Paquete recuperación completa (3 sesiones)",
     } as Record<string, string>,
+    trustH2: "Reserva con confianza",
+    trustItems: [
+      { title: "Pago seguro", body: "Tu depósito de R$50 se procesa por Stripe con cifrado de nivel bancario. Se aceptan tarjetas internacionales." },
+      { title: "Profesionales verificados", body: "Todos los dentistas y fisioterapeutas tienen licencia en Brasil con registro activo (CRO / CREFITO)." },
+      { title: "Garantía de reembolso", body: "Cancela sin costo hasta 48h antes de tu cita y recibe el reembolso total de R$50. Después de 48h el depósito no es reembolsable pero puedes reagendar dentro de 30 días." },
+    ],
+    meet: {
+      h2: "Conoce a tu dentista",
+      sub: "Profesionales amables que hablan inglés y atienden a viajeros europeos todas las semanas.",
+      cards: [
+        { name: "Dra. [Nombre] [Apellido]", role: "Dentista principal", credential: "CRO-CE [número] · 12+ años", langs: "EN · ES · PT", note: "[Bio placeholder — reemplaza con texto real]" },
+        { name: "Dr. [Nombre] [Apellido]", role: "Fisioterapeuta", credential: "CREFITO-CE [número] · Especialista recuperación kite", langs: "EN · PT", note: "[Bio placeholder — reemplaza con texto real]" },
+      ],
+      cta: "Reservar una sesión",
+    },
   },
 } as const;
 
