@@ -705,13 +705,13 @@ const Index = () => {
                 {t.pro.label}
               </p>
               <div>
-                <a
-                  href={waitlistHref}
+                <Link
+                  to="/pro"
                   className="salb-btn salb-btn-ghost"
                   onClick={() => trackCtaClick("home_pro_waitlist", "homepage", { lang })}
                 >
                   {t.pro.cta}
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -812,13 +812,13 @@ const Index = () => {
               >
                 {t.finalCta.ctaCare}
               </Link>
-              <a
-                href={waitlistHref}
+              <Link
+                to="/pro"
                 className="salb-btn salb-btn-ghost"
                 onClick={() => trackCtaClick("home_final_pro", "homepage", { lang })}
               >
                 {t.finalCta.ctaClinic}
-              </a>
+              </Link>
             </div>
           </div>
         </section>
