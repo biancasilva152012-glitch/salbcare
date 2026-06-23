@@ -353,7 +353,8 @@ const COPY: Record<HubLang, Copy> = {
   },
 };
 
-const waitlistHref = `mailto:biancadealbuquerquep@gmail.com?subject=SalbCare%20Pro%20%E2%80%94%20Clinic%20Waitlist`;
+// Pro CTAs now route to /pro (noindex). Waitlist mailto kept here as reference for next season:
+// mailto:biancadealbuquerquep@gmail.com?subject=SalbCare%20Pro%20%E2%80%94%20Clinic%20Waitlist
 
 const Index = () => {
   const [lang, setLang] = useState<HubLang>("en");
