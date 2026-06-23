@@ -25,8 +25,8 @@ type LocationType = "at_hotel" | "at_clinic";
 const T = {
   en: {
     htmlLang: "en",
-    title: "SalbCare Kite | Trusted Care on Brazil's Kite Coast",
-    desc: "Coming to kite in Guajiru? Book trusted dental and health care with SalbCare and reserve your spot with a R$50 deposit. Care, without borders.",
+    title: "SalbCare Kite | Health and Wellness on Brazil's Kite Coast",
+    desc: "Visiting Ilha do Guajiru or the Ceara kite coast? Book trusted care with SalbCare Kite and reserve your session with a R$50 deposit.",
     nav: { dental: "Dental", physio: "Physio & Recovery", book: "Book", bookFull: "Book now" },
     hero: {
       welcome: "WELCOME · BIENVENIDOS",
@@ -78,20 +78,11 @@ const T = {
       { title: "Verified professionals", body: "Every dentist and physiotherapist is licensed in Brazil with an active council registration (CRO / CREFITO)." },
       { title: "Refund guarantee", body: "Cancel free of charge up to 48h before your appointment and get a full R$50 refund. After 48h the deposit is non-refundable but can be rescheduled within 30 days." },
     ],
-    meet: {
-      h2: "Meet your dentist",
-      sub: "Friendly, English-speaking professionals who treat European travelers every week.",
-      cards: [
-        { name: "Dr. [Name] [Surname]", role: "Lead Dentist", credential: "CRO-CE [number] · 12+ years", langs: "EN · ES · PT", note: "[Placeholder bio - replace with real text]" },
-        { name: "Dr. [Name] [Surname]", role: "Physiotherapist", credential: "CREFITO-CE [number] · Kite recovery specialist", langs: "EN · PT", note: "[Placeholder bio - replace with real text]" },
-      ],
-      cta: "Book a session",
-    },
   },
   es: {
     htmlLang: "es",
-    title: "SalbCare Kite | Atención de confianza en la costa kite de Brasil",
-    desc: "¿Vienes a hacer kite a Guajiru? Reserva atención dental y de salud de confianza con SalbCare con un depósito de R$50. Care, without borders.",
+    title: "SalbCare Kite | Salud y bienestar en la costa kite de Brasil",
+    desc: "¿Visitas Ilha do Guajiru o la costa kite de Ceará? Reserva atención de confianza con SalbCare Kite con un depósito de R$50.",
     nav: { dental: "Dental", physio: "Fisio y recuperación", book: "Reservar", bookFull: "Reservar" },
     hero: {
       welcome: "BIENVENIDOS · WELCOME",
