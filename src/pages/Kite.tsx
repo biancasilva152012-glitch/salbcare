@@ -491,6 +491,106 @@ export default function Kite() {
         </div>
       </section>
 
+      {/* Trust strip — Stripe seal, verified professionals, refund guarantee */}
+      <section className="px-5 py-16 md:py-20" style={{ background: "#fff" }}>
+        <div className="max-w-5xl mx-auto">
+          <h2 className="kite-h text-3xl md:text-4xl text-center mb-10" style={{ color: BRAND.ink }}>
+            {t.trustH2}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-5">
+            {t.trustItems.map((item, i) => (
+              <div
+                key={item.title}
+                className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex flex-col"
+              >
+                <div
+                  className="inline-flex items-center justify-center mb-4 rounded-full"
+                  style={{ width: 44, height: 44, background: "rgba(0,180,160,0.10)", color: BRAND.tealDark }}
+                  aria-hidden
+                >
+                  {i === 0 && (
+                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  )}
+                  {i === 1 && (
+                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" />
+                    </svg>
+                  )}
+                  {i === 2 && (
+                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 12a9 9 0 1 0 3-6.7" />
+                      <polyline points="3 4 3 10 9 10" />
+                    </svg>
+                  )}
+                </div>
+                <h3 className="kite-h text-lg mb-2" style={{ color: BRAND.ink }}>{item.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: BRAND.muted }}>{item.body}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Powered-by Stripe seal */}
+          <div className="flex items-center justify-center gap-2 mt-8 text-xs" style={{ color: BRAND.muted }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <span>Secured by</span>
+            <span className="font-bold tracking-tight" style={{ color: "#635BFF" }}>Stripe</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Meet your dentist — placeholder cards */}
+      <section className="px-5 py-16 md:py-20" style={{ background: BRAND.cream }}>
+        <div className="max-w-5xl mx-auto">
+          <h2 className="kite-h text-3xl md:text-4xl text-center mb-3" style={{ color: BRAND.ink }}>
+            {t.meet.h2}
+          </h2>
+          <p className="text-center mb-10 max-w-2xl mx-auto" style={{ color: BRAND.muted }}>
+            {t.meet.sub}
+          </p>
+          <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            {t.meet.cards.map((m) => (
+              <div key={m.name} className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex gap-4 items-start">
+                {/* Placeholder avatar */}
+                <div
+                  className="flex-shrink-0 rounded-full flex items-center justify-center"
+                  style={{ width: 72, height: 72, background: "rgba(0,180,160,0.12)", color: BRAND.tealDark, fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 600 }}
+                  aria-label="Photo placeholder"
+                >
+                  {m.name.replace(/^Dr[a]?\.\s*/, "").charAt(1) || "•"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="kite-h text-lg" style={{ color: BRAND.ink }}>{m.name}</h3>
+                  <p className="text-sm font-semibold mt-0.5" style={{ color: BRAND.tealDark }}>{m.role}</p>
+                  <p className="text-xs mt-1" style={{ color: BRAND.muted }}>{m.credential}</p>
+                  <p className="text-xs mt-1" style={{ color: BRAND.muted }}>{m.langs}</p>
+                  <p className="text-sm mt-3" style={{ color: BRAND.ink, opacity: 0.75 }}>{m.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-10">
+            <button
+              onClick={() => scrollTo("services")}
+              className="kite-focus rounded-full text-white font-semibold transition-all duration-200 hover:brightness-110"
+              style={{
+                background: BRAND.teal,
+                padding: "12px 28px",
+                minHeight: 48,
+                boxShadow: "0 4px 14px rgba(0,180,160,0.30)",
+              }}
+            >
+              {t.meet.cta} →
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
       <section style={{ background: BRAND.ink, color: BRAND.cream }} className="px-5 py-20">
         <div className="max-w-5xl mx-auto">
