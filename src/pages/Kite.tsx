@@ -134,15 +134,6 @@ const T = {
       { title: "Profesionales verificados", body: "Todos los dentistas y fisioterapeutas tienen licencia en Brasil con registro activo (CRO / CREFITO)." },
       { title: "Garantía de reembolso", body: "Cancela sin costo hasta 48h antes de tu cita y recibe el reembolso total de R$50. Después de 48h el depósito no es reembolsable pero puedes reagendar dentro de 30 días." },
     ],
-    meet: {
-      h2: "Conoce a tu dentista",
-      sub: "Profesionales amables que hablan inglés y atienden a viajeros europeos todas las semanas.",
-      cards: [
-        { name: "Dra. [Nombre] [Apellido]", role: "Dentista principal", credential: "CRO-CE [número] · 12+ años", langs: "EN · ES · PT", note: "[Bio placeholder - reemplaza con texto real]" },
-        { name: "Dr. [Nombre] [Apellido]", role: "Fisioterapeuta", credential: "CREFITO-CE [número] · Especialista recuperación kite", langs: "EN · PT", note: "[Bio placeholder - reemplaza con texto real]" },
-      ],
-      cta: "Reservar una sesión",
-    },
   },
 } as const;
 
@@ -535,52 +526,8 @@ export default function Kite() {
         </div>
       </section>
 
-      {/* Meet your dentist — placeholder cards */}
-      <section className="px-5 py-16 md:py-20" style={{ background: BRAND.cream }}>
-        <div className="max-w-5xl mx-auto">
-          <h2 className="kite-h text-3xl md:text-4xl text-center mb-3" style={{ color: BRAND.ink }}>
-            {t.meet.h2}
-          </h2>
-          <p className="text-center mb-10 max-w-2xl mx-auto" style={{ color: BRAND.muted }}>
-            {t.meet.sub}
-          </p>
-          <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-            {t.meet.cards.map((m) => (
-              <div key={m.name} className="kite-card bg-white border border-black/5 rounded-2xl p-6 flex gap-4 items-start">
-                {/* Placeholder avatar */}
-                <div
-                  className="flex-shrink-0 rounded-full flex items-center justify-center"
-                  style={{ width: 72, height: 72, background: "rgba(0,180,160,0.12)", color: BRAND.tealDark, fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 600 }}
-                  aria-label="Photo placeholder"
-                >
-                  {m.name.replace(/^Dr[a]?\.\s*/, "").charAt(1) || "•"}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="kite-h text-lg" style={{ color: BRAND.ink }}>{m.name}</h3>
-                  <p className="text-sm font-semibold mt-0.5" style={{ color: BRAND.tealDark }}>{m.role}</p>
-                  <p className="text-xs mt-1" style={{ color: BRAND.muted }}>{m.credential}</p>
-                  <p className="text-xs mt-1" style={{ color: BRAND.muted }}>{m.langs}</p>
-                  <p className="text-sm mt-3" style={{ color: BRAND.ink, opacity: 0.75 }}>{m.note}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-10">
-            <button
-              onClick={() => scrollTo("services")}
-              className="kite-focus rounded-full text-white font-semibold transition-all duration-200 hover:brightness-110"
-              style={{
-                background: BRAND.teal,
-                padding: "12px 28px",
-                minHeight: 48,
-                boxShadow: "0 4px 14px rgba(0,180,160,0.30)",
-              }}
-            >
-              {t.meet.cta} →
-            </button>
-          </div>
-        </div>
-      </section>
+
+
 
       {/* How it works */}
       <section style={{ background: BRAND.ink, color: BRAND.cream }} className="px-5 py-20">
