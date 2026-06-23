@@ -5,9 +5,9 @@
  * Roda no build local (não substitui Lighthouse). Garante que:
  *  - existe um único <h1>
  *  - title e meta description estão presentes e dentro dos limites
- *  - JSON-LD Organization, Product (SalbScore) e FAQPage estão válidos
+ *  - JSON-LD Organization, Product (SalbCare) e FAQPage estão válidos
  *  - imagens críticas têm alt text
- *  - a animação do círculo SalbScore não usa efeitos custosos (filter blur em loop, etc.)
+ *  - a animação do círculo SalbCare não usa efeitos custosos (filter blur em loop, etc.)
  *
  * Uso: `node scripts/check-landing-seo.mjs`
  * Falha (exit 1) se encontrar erros bloqueantes; warnings não falham o build.
@@ -43,7 +43,7 @@ if (h1Count === 0) errors.push("Nenhum <h1> encontrado em Index.tsx.");
 else if (h1Count > 1) errors.push(`Múltiplos <h1> (${h1Count}). Mantenha apenas um na landing.`);
 else ok.push("H1 único.");
 
-// 3. JSON-LD presente — Organization, Product/SalbScore, FAQPage
+// 3. JSON-LD presente — Organization, Product/SalbCare, FAQPage
 const jsonLdBlocks = [...src.matchAll(/application\/ld\+json[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
 const inlineJsonLd = [...src.matchAll(/(?:jsonLd|schema)\s*=\s*(\{[\s\S]*?\n\s*\})/g)].map((m) => m[1]);
 const allJson = [...jsonLdBlocks, ...inlineJsonLd];
@@ -57,10 +57,10 @@ for (const t of requiredTypes) {
     warnings.push(`JSON-LD ${t} não encontrado (recomendado para SEO).`);
   }
 }
-if (/SalbScore/i.test(jsonLdSrc) && /"@type":\s*"Product"/.test(jsonLdSrc)) {
-  ok.push("JSON-LD Product (SalbScore) presente.");
+if (/SalbCare/i.test(jsonLdSrc) && /"@type":\s*"Product"/.test(jsonLdSrc)) {
+  ok.push("JSON-LD Product (SalbCare) presente.");
 } else {
-  warnings.push("JSON-LD Product (SalbScore) não encontrado.");
+  warnings.push("JSON-LD Product (SalbCare) não encontrado.");
 }
 
 // Validar parseabilidade dos blocos JSON-LD inline
@@ -76,7 +76,7 @@ const imgsSemAlt = imgs.filter((attrs) => !/\balt\s*=/.test(attrs));
 if (imgsSemAlt.length > 0) errors.push(`${imgsSemAlt.length} <img> sem alt em Index.tsx.`);
 else if (imgs.length > 0) ok.push(`${imgs.length} <img> com alt.`);
 
-// 5. Performance da animação SalbScore — bloqueia padrões custosos
+// 5. Performance da animação SalbCare — bloqueia padrões custosos
 const blurInLoop = /animate=\{[^}]*filter:\s*["'`]blur/.test(src);
 if (blurInLoop) warnings.push("Animação com 'filter: blur' detectada — custo alto de pintura.");
 const heavyAnim = /animate=\{[^}]*boxShadow/.test(src);
