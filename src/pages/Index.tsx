@@ -400,7 +400,7 @@ const Index = () => {
     <>
       <SEOHead
         title="SalbCare | Healthcare Without Borders"
-        description="SalbCare connects travelers to trusted dental and health care on Brazil's kite coast in Guajiru, Ceará. Quality care, simple booking. Care, without borders."
+        description="SalbCare connects international travelers on Brazil's kite coast with trusted local health and wellness care. Book in minutes, care without borders."
         keywords="healthcare brazil, dental care brazil, health tourism brazil, medical tourism brazil, dentist guajiru, dentist ceara, kitesurf guajiru, care without borders, salbcare"
         canonical="/"
         jsonLd={jsonLd}
