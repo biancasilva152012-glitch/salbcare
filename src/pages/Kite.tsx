@@ -274,7 +274,7 @@ export default function Kite() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <Link
             to="/"
-            aria-label="SalbCare — Home"
+            aria-label="SalbCare Home"
             className="kite-focus flex items-center gap-2 rounded-md"
           >
             <img src={logoSalb} alt="SalbCare" width={32} height={32} style={{ width: 32, height: 32 }} />
