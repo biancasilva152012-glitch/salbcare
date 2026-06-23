@@ -30,9 +30,9 @@ async function fetchHtml(route) {
   return readFileSync(file, "utf8");
 }
 
-function findOne(re, html) {
+function findOne(re, html, group = 1) {
   const m = html.match(re);
-  return m ? m[1] : null;
+  return m ? m[group] : null;
 }
 
 function validate(route, html) {
@@ -41,23 +41,23 @@ function validate(route, html) {
   if (!title) errors.push("missing <title>");
   else if (title.trim() !== route.title) errors.push(`title mismatch: got "${title.trim()}"`);
 
-  const desc = findOne(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i, html);
+  const desc = findOne(/<meta\s+name=(["'])description\1\s+content=(["'])([\s\S]*?)\2/i, html, 3);
   if (!desc) errors.push("missing meta description");
   else if (desc !== route.description) errors.push(`description mismatch: got "${desc.slice(0, 60)}..."`);
 
-  const canon = findOne(/<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']/i, html);
+  const canon = findOne(/<link\s+rel=(["'])canonical\1\s+href=(["'])([\s\S]*?)\2/i, html, 3);
   if (!canon) errors.push("missing canonical");
   else if (canon !== route.canonical) errors.push(`canonical mismatch: got "${canon}"`);
 
-  const ogUrl = findOne(/<meta\s+property=["']og:url["']\s+content=["']([^"']+)["']/i, html);
+  const ogUrl = findOne(/<meta\s+property=(["'])og:url\1\s+content=(["'])([\s\S]*?)\2/i, html, 3);
   if (!ogUrl) errors.push("missing og:url");
   else if (ogUrl !== route.ogUrl) errors.push(`og:url mismatch: got "${ogUrl}"`);
 
-  const ogTitle = findOne(/<meta\s+property=["']og:title["']\s+content=["']([^"']+)["']/i, html);
+  const ogTitle = findOne(/<meta\s+property=(["'])og:title\1\s+content=(["'])([\s\S]*?)\2/i, html, 3);
   if (!ogTitle) errors.push("missing og:title");
   else if (ogTitle !== route.title) errors.push(`og:title mismatch: got "${ogTitle}"`);
 
-  if (!/<script[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/i.test(html)) {
+  if (!/<script[^>]*type=(["'])application\/ld\+json\1[^>]*>[\s\S]*?<\/script>/i.test(html)) {
     errors.push("missing JSON-LD block");
   }
 
