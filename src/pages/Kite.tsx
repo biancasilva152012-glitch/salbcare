@@ -82,8 +82,8 @@ const T = {
       h2: "Meet your dentist",
       sub: "Friendly, English-speaking professionals who treat European travelers every week.",
       cards: [
-        { name: "Dr. [Name] [Surname]", role: "Lead Dentist", credential: "CRO-CE [number] · 12+ years", langs: "EN · ES · PT", note: "[Placeholder bio — replace with real text]" },
-        { name: "Dr. [Name] [Surname]", role: "Physiotherapist", credential: "CREFITO-CE [number] · Kite recovery specialist", langs: "EN · PT", note: "[Placeholder bio — replace with real text]" },
+        { name: "Dr. [Name] [Surname]", role: "Lead Dentist", credential: "CRO-CE [number] · 12+ years", langs: "EN · ES · PT", note: "[Placeholder bio - replace with real text]" },
+        { name: "Dr. [Name] [Surname]", role: "Physiotherapist", credential: "CREFITO-CE [number] · Kite recovery specialist", langs: "EN · PT", note: "[Placeholder bio - replace with real text]" },
       ],
       cta: "Book a session",
     },
@@ -147,8 +147,8 @@ const T = {
       h2: "Conoce a tu dentista",
       sub: "Profesionales amables que hablan inglés y atienden a viajeros europeos todas las semanas.",
       cards: [
-        { name: "Dra. [Nombre] [Apellido]", role: "Dentista principal", credential: "CRO-CE [número] · 12+ años", langs: "EN · ES · PT", note: "[Bio placeholder — reemplaza con texto real]" },
-        { name: "Dr. [Nombre] [Apellido]", role: "Fisioterapeuta", credential: "CREFITO-CE [número] · Especialista recuperación kite", langs: "EN · PT", note: "[Bio placeholder — reemplaza con texto real]" },
+        { name: "Dra. [Nombre] [Apellido]", role: "Dentista principal", credential: "CRO-CE [número] · 12+ años", langs: "EN · ES · PT", note: "[Bio placeholder - reemplaza con texto real]" },
+        { name: "Dr. [Nombre] [Apellido]", role: "Fisioterapeuta", credential: "CREFITO-CE [número] · Especialista recuperación kite", langs: "EN · PT", note: "[Bio placeholder - reemplaza con texto real]" },
       ],
       cta: "Reservar una sesión",
     },
