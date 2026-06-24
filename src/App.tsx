@@ -104,6 +104,7 @@ const BookingPublic = lazyWithRetry(() => import("./pages/BookingPublic"), "Book
 const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
 const SpecialtyListing = lazyWithRetry(() => import("./pages/SpecialtyListing"), "SpecialtyListing");
 const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
+const Parcerias = lazyWithRetry(() => import("./pages/Parcerias"), "Parcerias");
 const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
 const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"), "PaymentSuccess");
 const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
@@ -188,6 +189,7 @@ const App = () => (
               <Route path="/p/:slug" element={<SlugRedirect to={(s) => `/agendar/${s}`} />} />
               <Route path="/profissionais" element={<Navigate to="/" replace />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
+              <Route path="/parcerias" element={<Parcerias />} />
               <Route path="/planos" element={<Pricing />} />
               <Route path="/precos" element={<Pricing />} />
               <Route path="/experimente" element={<Experimente />} />
