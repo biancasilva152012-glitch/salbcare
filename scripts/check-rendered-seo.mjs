@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Validates the prerendered HTML on disk (or a live URL) for every route in
 // the SEO manifest. Checks title, meta description, canonical, og:url,
-// og:title, og:description, twitter:title, and at least one JSON-LD block.
+// og:title, og:description, og:image, twitter:title, twitter:image, and at
+// least one JSON-LD block.
 //
 // Usage:
 //   node scripts/check-rendered-seo.mjs                 # checks ./dist
@@ -9,7 +10,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ROUTES } from "./seo-routes.mjs";
+import { ROUTES, DEFAULT_OG_IMAGE } from "./seo-routes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = resolve(__dirname, "..", "dist");
@@ -35,13 +36,24 @@ function findOne(re, html, group = 1) {
   return m ? m[group] : null;
 }
 
+function metaContent(html, attr, name) {
+  // attr: "name" or "property"
+  const re = new RegExp(
+    `<meta\\s+${attr}=(["'])${name}\\1\\s+content=(["'])([\\s\\S]*?)\\2`,
+    "i",
+  );
+  return findOne(re, html, 3);
+}
+
 function validate(route, html) {
   const errors = [];
+  const expectedImage = route.ogImage || DEFAULT_OG_IMAGE;
+
   const title = findOne(/<title>([\s\S]*?)<\/title>/i, html);
   if (!title) errors.push("missing <title>");
   else if (title.trim() !== route.title) errors.push(`title mismatch: got "${title.trim()}"`);
 
-  const desc = findOne(/<meta\s+name=(["'])description\1\s+content=(["'])([\s\S]*?)\2/i, html, 3);
+  const desc = metaContent(html, "name", "description");
   if (!desc) errors.push("missing meta description");
   else if (desc !== route.description) errors.push(`description mismatch: got "${desc.slice(0, 60)}..."`);
 
@@ -49,13 +61,24 @@ function validate(route, html) {
   if (!canon) errors.push("missing canonical");
   else if (canon !== route.canonical) errors.push(`canonical mismatch: got "${canon}"`);
 
-  const ogUrl = findOne(/<meta\s+property=(["'])og:url\1\s+content=(["'])([\s\S]*?)\2/i, html, 3);
+  const ogUrl = metaContent(html, "property", "og:url");
   if (!ogUrl) errors.push("missing og:url");
   else if (ogUrl !== route.ogUrl) errors.push(`og:url mismatch: got "${ogUrl}"`);
 
-  const ogTitle = findOne(/<meta\s+property=(["'])og:title\1\s+content=(["'])([\s\S]*?)\2/i, html, 3);
+  const ogTitle = metaContent(html, "property", "og:title");
   if (!ogTitle) errors.push("missing og:title");
   else if (ogTitle !== route.title) errors.push(`og:title mismatch: got "${ogTitle}"`);
+
+  const ogDesc = metaContent(html, "property", "og:description");
+  if (!ogDesc) errors.push("missing og:description");
+  else if (ogDesc !== route.description) errors.push(`og:description mismatch: got "${ogDesc.slice(0, 60)}..."`);
+
+  const ogImage = metaContent(html, "property", "og:image");
+  if (!ogImage) errors.push("missing og:image");
+  else if (ogImage !== expectedImage) errors.push(`og:image mismatch: got "${ogImage}"`);
+
+  const twImage = metaContent(html, "name", "twitter:image");
+  if (!twImage) errors.push("missing twitter:image");
 
   if (!/<script[^>]*type=(["'])application\/ld\+json\1[^>]*>[\s\S]*?<\/script>/i.test(html)) {
     errors.push("missing JSON-LD block");
