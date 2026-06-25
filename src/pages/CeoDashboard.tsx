@@ -40,7 +40,21 @@ const CeoDashboard = () => {
     if (authLoading) return;
     if (!user) { navigate("/login", { replace: true }); return; }
     if (!isAdminEmail(user.email)) { navigate("/dashboard", { replace: true }); return; }
-    setAuthorized(true);
+    // SECURITY: server-side authorization — never trust the client-side email allowlist alone.
+    let cancelled = false;
+    (async () => {
+      const { data: isAdmin, error } = await supabase.rpc("has_role", {
+        _user_id: user.id,
+        _role: "admin",
+      });
+      if (cancelled) return;
+      if (error || !isAdmin) {
+        navigate("/dashboard", { replace: true });
+        return;
+      }
+      setAuthorized(true);
+    })();
+    return () => { cancelled = true; };
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
