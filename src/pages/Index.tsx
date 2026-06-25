@@ -518,15 +518,8 @@ const Index = () => {
               data-fade
               style={{ marginTop: 16, display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}
             >
-              <Link
-                to="/hub"
-                className="salb-btn salb-btn-primary"
-                onClick={() => trackCtaClick("home_hero_hub", "homepage", { lang })}
-              >
-                Explore Care Hub
-              </Link>
               <a
-                href="https://chat.whatsapp.com/KVHchlB6w6d1CWpI8I3EBZ?s=cl&p=i&mlu=0&amv=0"
+                href="https://chat.whatsapp.com/KVHchlB6w6d1CWpI8I3EBZ"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="salb-btn salb-btn-ghost"
@@ -535,6 +528,7 @@ const Index = () => {
                 Join WhatsApp Community
               </a>
             </div>
+
           </div>
         </section>
 
