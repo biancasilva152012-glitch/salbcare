@@ -147,17 +147,24 @@ Responda APENAS com um JSON válido neste formato exato:
     }
 
     if (result.validated) {
+      // SECURITY: never auto-activate accounts from AI receipt analysis — only
+      // Stripe webhooks (or manual admin approval) may set `active`. AI is a
+      // triage signal, not a payment gateway.
       await supabase
         .from("profiles")
         .update({
-          payment_status: "active",
+          payment_status: "pending_approval",
           plan: resolvedPlan,
           trial_start_date: new Date().toISOString(),
         })
         .eq("user_id", user.id);
 
       return new Response(
-        JSON.stringify({ validated: true, reason: "Pagamento confirmado automaticamente!" }),
+        JSON.stringify({
+          validated: false,
+          manual_review: true,
+          reason: "Comprovante recebido. Aguarde a confirmação manual do pagamento.",
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } else {
