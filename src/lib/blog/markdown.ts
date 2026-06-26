@@ -7,9 +7,21 @@ marked.setOptions({ gfm: true, breaks: false });
  * Pre-process markdown to convert custom syntax:
  * - Lines starting with `>> ` become a `.pull-quote` aside.
  */
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function preprocess(md: string): string {
   return md.replace(/^>>\s+(.+)$/gm, (_m, text) => {
-    const safe = String(text).trim();
+    // Escape user content before interpolating into HTML so that even if
+    // DOMPurify is bypassed (SSR / non-browser callers), no raw HTML can
+    // be injected via the custom `>> ` syntax.
+    const safe = escapeHtml(String(text).trim());
     return `<aside class="pull-quote">${safe}</aside>`;
   });
 }
