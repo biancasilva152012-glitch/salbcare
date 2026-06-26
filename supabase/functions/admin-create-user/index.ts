@@ -32,6 +32,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (!originAllowed(req)) return originForbidden(corsHeaders);
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -50,6 +52,16 @@ serve(async (req) => {
       _role: "admin",
     });
     if (!isAdmin) throw new Error("Forbidden");
+
+    // Rate limit by IP + admin id — caps any single-admin abuse or
+    // compromised-token scripted user creation.
+    const blocked = await enforceLimits({
+      ip: getClientIp(req),
+      identifier: userData.user.id,
+      action: "sensitive",
+      corsHeaders,
+    });
+    if (blocked) return blocked;
 
     const body = (await req.json()) as CreateUserPayload;
 
