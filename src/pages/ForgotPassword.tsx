@@ -17,13 +17,23 @@ const ForgotPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+    // Reset goes through the `auth-gate` to apply per-email + per-IP rate
+    // limiting. The response shape is constant so attackers cannot probe
+    // whether an address is registered (anti-enumeration).
+    const { data, error } = await supabase.functions.invoke("auth-gate", {
+      body: {
+        action: "reset",
+        email,
+        redirectTo: `${window.location.origin}/reset-password`,
+      },
     });
     setLoading(false);
-    if (error) {
-      toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
+    if (!error && (data as any)?.ok) {
+      setSent(true);
+    } else if ((data as any)?.error === "rate_limited") {
+      toast.error((data as any)?.message || "Muitas tentativas. Tente em alguns minutos.");
     } else {
+      // Generic — never reveals whether the email exists.
       setSent(true);
     }
   };

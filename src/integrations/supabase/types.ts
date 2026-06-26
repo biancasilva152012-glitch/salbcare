@@ -203,6 +203,45 @@ export type Database = {
           },
         ]
       }
+      auth_rate_limits: {
+        Row: {
+          action: string
+          attempts: number
+          created_at: string
+          id: string
+          key_type: string
+          key_value: string
+          last_attempt: string
+          locked_until: string | null
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          action: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          key_type: string
+          key_value: string
+          last_attempt?: string
+          locked_until?: string | null
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          key_type?: string
+          key_value?: string
+          last_attempt?: string
+          locked_until?: string | null
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       b2b_prospects: {
         Row: {
           assigned_to: string | null
@@ -2301,6 +2340,20 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      check_and_record_rate_limit: {
+        Args: {
+          _action: string
+          _key_type: string
+          _key_value: string
+          _window_seconds?: number
+        }
+        Returns: {
+          allowed: boolean
+          attempts: number
+          locked_until: string
+          reason: string
+        }[]
+      }
       check_email_user_type: { Args: { check_email: string }; Returns: string }
       check_rls_health: {
         Args: never
@@ -2319,6 +2372,10 @@ export type Database = {
           message: string
           status: string
         }[]
+      }
+      clear_rate_limit: {
+        Args: { _action: string; _key_type: string; _key_value: string }
+        Returns: undefined
       }
       export_lgpd_subject_data: {
         Args: { _subject_user_id: string }

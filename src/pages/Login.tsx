@@ -39,19 +39,33 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
+    // Login goes through the `auth-gate` edge function which enforces
+    // progressive rate limiting (per email + per IP) and returns a generic
+    // error to prevent user enumeration. Successful response carries the
+    // Supabase session which we hand back to the client SDK.
+    const { data: gateData, error: gateError } = await supabase.functions.invoke("auth-gate", {
+      body: { action: "login", email, password },
+    });
+    if (gateError || !gateData?.ok || !gateData?.session) {
       setLoading(false);
-      const msg = error.message.toLowerCase();
-      if (msg.includes("invalid") || msg.includes("credentials") || msg.includes("password")) {
-        toast.error("E-mail ou senha incorretos. Esqueceu sua senha?");
-      } else if (msg.includes("network") || msg.includes("fetch")) {
-        toast.error("Sem conexão no momento. Verifique sua internet.");
+      const code = (gateData as any)?.error;
+      if (code === "rate_limited") {
+        toast.error((gateData as any)?.message || "Muitas tentativas. Tente em alguns minutos.");
       } else {
-        toast.error("Ocorreu um erro. Tente novamente ou fale com o suporte.");
+        toast.error("E-mail ou senha incorretos. Esqueceu sua senha?");
       }
       return;
     }
+    const { data: sessionData, error: setErr } = await supabase.auth.setSession({
+      access_token: gateData.session.access_token,
+      refresh_token: gateData.session.refresh_token,
+    });
+    if (setErr || !sessionData.user) {
+      setLoading(false);
+      toast.error("Não foi possível iniciar a sessão. Tente novamente.");
+      return;
+    }
+    const authData = { user: sessionData.user };
     if (authData.user) {
       // Check admin role first — admins always go to /admin
       const { data: isAdmin } = await supabase.rpc("has_role", {

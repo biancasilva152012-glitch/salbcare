@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { enforceLimits, getClientIp, originAllowed, originForbidden } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,6 +32,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (!originAllowed(req)) return originForbidden(corsHeaders);
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -49,6 +52,16 @@ serve(async (req) => {
       _role: "admin",
     });
     if (!isAdmin) throw new Error("Forbidden");
+
+    // Rate limit by IP + admin id — caps any single-admin abuse or
+    // compromised-token scripted user creation.
+    const blocked = await enforceLimits({
+      ip: getClientIp(req),
+      identifier: userData.user.id,
+      action: "sensitive",
+      corsHeaders,
+    });
+    if (blocked) return blocked;
 
     const body = (await req.json()) as CreateUserPayload;
 
