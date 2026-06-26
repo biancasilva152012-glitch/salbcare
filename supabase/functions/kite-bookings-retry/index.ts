@@ -26,13 +26,15 @@ function json(status: number, body: unknown) {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  // Auth: accept either CRON_SECRET or the service-role key as bearer.
+  // Auth: only accept CRON_SECRET. We intentionally do NOT accept the
+  // service-role key here — service keys should never be transmitted as
+  // bearer tokens by external callers (CDNs/proxies can log them and any
+  // leak compromises the entire database). Use a dedicated, rotatable
+  // CRON_SECRET configured in Supabase secrets and in pg_cron.
   const cronSecret = Deno.env.get("CRON_SECRET");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const provided = (req.headers.get("authorization") || "").replace("Bearer ", "").trim();
-  const authorized =
-    (cronSecret && provided === cronSecret) ||
-    (provided && provided === serviceKey);
+  const authorized = !!(cronSecret && provided && provided === cronSecret);
   if (!authorized) {
     return json(403, { error: "Forbidden" });
   }

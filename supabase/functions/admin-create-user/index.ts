@@ -71,7 +71,18 @@ serve(async (req) => {
       throw new Error("Invalid email");
     }
 
-    const origin = req.headers.get("origin") || "https://salbcare.com";
+    // Whitelist of allowed origins for invite redirect — prevents an
+    // attacker-controlled Origin header from steering Supabase invites
+    // to a phishing domain.
+    const ALLOWED_ORIGINS = [
+      "https://salbcare.com",
+      "https://www.salbcare.com",
+      "https://salbcare.com.br",
+      "https://www.salbcare.com.br",
+      "https://salbcare.lovable.app",
+    ];
+    const rawOrigin = req.headers.get("origin") || "";
+    const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : "https://salbcare.com";
     const redirectTo = `${origin}/login`;
 
     // Send invite (user defines own password via magic link)

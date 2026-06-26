@@ -137,34 +137,73 @@ serve(async (req) => {
         });
       }
 
-      case "suspend_user": {
-        const { user_id } = params;
-        await supabase
-          .from("profiles")
-          .update({ payment_status: "suspended" })
-          .eq("user_id", user_id);
-        return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      case "activate_user": {
-        const { user_id } = params;
-        await supabase
-          .from("profiles")
-          .update({ payment_status: "active" })
-          .eq("user_id", user_id);
-        return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
+      case "suspend_user":
+      case "activate_user":
       case "change_plan": {
-        const { user_id, plan } = params;
-        await supabase
+        const { user_id, plan } = params as { user_id?: string; plan?: string };
+
+        // Validate UUID shape to prevent malformed/predicate-bypass inputs.
+        const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!user_id || !UUID_RE.test(user_id)) {
+          return new Response(JSON.stringify({ error: "Invalid user_id" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Block admins from mutating themselves or other admins via this surface.
+        if (user_id === userData.user.id) {
+          return new Response(JSON.stringify({ error: "Cannot modify your own account here" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { data: targetIsAdmin } = await supabase.rpc("has_role", {
+          _user_id: user_id,
+          _role: "admin",
+        });
+        if (targetIsAdmin) {
+          return new Response(JSON.stringify({ error: "Cannot modify another admin" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        let update: Record<string, unknown> = {};
+        if (action === "suspend_user") update = { payment_status: "suspended" };
+        else if (action === "activate_user") update = { payment_status: "active" };
+        else {
+          // change_plan — whitelist allowed plans
+          const ALLOWED_PLANS = ["essencial_mensal", "essencial_anual", "free", "trial"];
+          if (!plan || !ALLOWED_PLANS.includes(plan)) {
+            return new Response(JSON.stringify({ error: "Invalid plan" }), {
+              status: 400,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          update = { plan };
+        }
+
+        const { error: updateErr } = await supabase
           .from("profiles")
-          .update({ plan })
+          .update(update)
           .eq("user_id", user_id);
+        if (updateErr) {
+          return new Response(JSON.stringify({ error: updateErr.message }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Audit log (best-effort).
+        await supabase.from("admin_logs").insert({
+          admin_user_id: userData.user.id,
+          action,
+          target_table: "profiles",
+          target_id: user_id,
+          details: update,
+        });
+
         return new Response(JSON.stringify({ ok: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
