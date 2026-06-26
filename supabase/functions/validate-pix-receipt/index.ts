@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { enforceLimits, getClientIp, originAllowed, originForbidden } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,6 +11,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Origin allowlist — defense-in-depth against browser-driven abuse.
+  if (!originAllowed(req)) return originForbidden(corsHeaders);
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -33,6 +37,15 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Rate limit by IP + user.id — caps abusive re-validation loops.
+    const blocked = await enforceLimits({
+      ip: getClientIp(req),
+      identifier: user.id,
+      action: "sensitive",
+      corsHeaders,
+    });
+    if (blocked) return blocked;
 
     const { file_path } = await req.json();
     if (!file_path || typeof file_path !== "string") {
