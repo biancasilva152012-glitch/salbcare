@@ -36,8 +36,28 @@ serve(async (req) => {
     );
 
     // === Retry path: re-attempt against an existing booking that errored ===
+    // SECURITY: retry can mutate any booking by id, so it MUST require an
+    // authenticated admin (or the CRON_SECRET). The standard create path
+    // below remains public because the Kite booking flow is anonymous.
     const retryId = s(body.retry_booking_id, 64);
     if (retryId) {
+      const cronSecret = Deno.env.get("CRON_SECRET");
+      const provided = (req.headers.get("authorization") || "").replace("Bearer ", "").trim();
+      let authorized = !!(cronSecret && provided && provided === cronSecret);
+
+      if (!authorized && provided) {
+        // Validate as a user JWT and require admin role.
+        const { data: userData } = await supabase.auth.getUser(provided);
+        if (userData?.user) {
+          const { data: isAdmin } = await supabase.rpc("has_role", {
+            _user_id: userData.user.id,
+            _role: "admin",
+          });
+          authorized = !!isAdmin;
+        }
+      }
+      if (!authorized) return json(403, { error: "Forbidden" });
+
       const { data: existing, error: fetchErr } = await supabase
         .from("kite_bookings")
         .select("id,status")
