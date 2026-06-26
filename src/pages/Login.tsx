@@ -56,16 +56,16 @@ const Login = () => {
       }
       return;
     }
-    const { error: setErr } = await supabase.auth.setSession({
+    const { data: sessionData, error: setErr } = await supabase.auth.setSession({
       access_token: gateData.session.access_token,
       refresh_token: gateData.session.refresh_token,
     });
-    if (setErr) {
+    if (setErr || !sessionData.user) {
       setLoading(false);
       toast.error("Não foi possível iniciar a sessão. Tente novamente.");
       return;
     }
-    const { data: authData } = await supabase.auth.getUser();
+    const authData = { user: sessionData.user };
     if (authData.user) {
       // Check admin role first — admins always go to /admin
       const { data: isAdmin } = await supabase.rpc("has_role", {
