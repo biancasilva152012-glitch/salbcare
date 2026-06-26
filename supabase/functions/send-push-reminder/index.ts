@@ -12,6 +12,28 @@ const corsHeaders = {
  * Implements RFC 8291 / RFC 8188 simplified via the Web Push protocol.
  */
 
+// SECURITY: Allowlist of known browser push service hosts. Prevents SSRF where
+// an authenticated user could insert an attacker-controlled `endpoint` into
+// `push_subscriptions` and have this cron POST to arbitrary URLs.
+const ALLOWED_PUSH_HOSTS = [
+  /(^|\.)googleapis\.com$/i,                  // FCM (fcm.googleapis.com)
+  /(^|\.)push\.services\.mozilla\.com$/i,     // Mozilla autopush
+  /(^|\.)notify\.windows\.com$/i,             // WNS
+  /(^|\.)push\.apple\.com$/i,                 // Safari/APNs web push
+];
+
+function isAllowedPushEndpoint(endpoint: string): boolean {
+  try {
+    const u = new URL(endpoint);
+    if (u.protocol !== "https:") return false;
+    return ALLOWED_PUSH_HOSTS.some((re) => re.test(u.hostname));
+  } catch {
+    return false;
+  }
+}
+
+
+
 async function sendWebPush(
   subscription: { endpoint: string; p256dh: string; auth: string },
   payload: string,
