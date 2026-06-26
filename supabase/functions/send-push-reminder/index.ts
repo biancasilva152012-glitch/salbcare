@@ -12,6 +12,28 @@ const corsHeaders = {
  * Implements RFC 8291 / RFC 8188 simplified via the Web Push protocol.
  */
 
+// SECURITY: Allowlist of known browser push service hosts. Prevents SSRF where
+// an authenticated user could insert an attacker-controlled `endpoint` into
+// `push_subscriptions` and have this cron POST to arbitrary URLs.
+const ALLOWED_PUSH_HOSTS = [
+  /(^|\.)googleapis\.com$/i,                  // FCM (fcm.googleapis.com)
+  /(^|\.)push\.services\.mozilla\.com$/i,     // Mozilla autopush
+  /(^|\.)notify\.windows\.com$/i,             // WNS
+  /(^|\.)push\.apple\.com$/i,                 // Safari/APNs web push
+];
+
+function isAllowedPushEndpoint(endpoint: string): boolean {
+  try {
+    const u = new URL(endpoint);
+    if (u.protocol !== "https:") return false;
+    return ALLOWED_PUSH_HOSTS.some((re) => re.test(u.hostname));
+  } catch {
+    return false;
+  }
+}
+
+
+
 async function sendWebPush(
   subscription: { endpoint: string; p256dh: string; auth: string },
   payload: string,
@@ -150,6 +172,21 @@ serve(async (req) => {
     let sentCount = 0;
 
     for (const sub of subscriptions) {
+      // SECURITY: skip endpoints that aren't known browser push services.
+      // Optionally delete the offending row so cron stops re-processing it.
+      if (!isAllowedPushEndpoint(sub.endpoint)) {
+        console.warn("Rejecting non-allowlisted push endpoint", {
+          user_id: sub.user_id,
+          host: (() => { try { return new URL(sub.endpoint).hostname; } catch { return "invalid-url"; } })(),
+        });
+        await supabase
+          .from("push_subscriptions")
+          .delete()
+          .eq("user_id", sub.user_id)
+          .eq("endpoint", sub.endpoint);
+        continue;
+      }
+
       // Check if user has any income this week
       const { count } = await supabase
         .from("financial_transactions")
