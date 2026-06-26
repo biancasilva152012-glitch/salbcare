@@ -172,6 +172,21 @@ serve(async (req) => {
     let sentCount = 0;
 
     for (const sub of subscriptions) {
+      // SECURITY: skip endpoints that aren't known browser push services.
+      // Optionally delete the offending row so cron stops re-processing it.
+      if (!isAllowedPushEndpoint(sub.endpoint)) {
+        console.warn("Rejecting non-allowlisted push endpoint", {
+          user_id: sub.user_id,
+          host: (() => { try { return new URL(sub.endpoint).hostname; } catch { return "invalid-url"; } })(),
+        });
+        await supabase
+          .from("push_subscriptions")
+          .delete()
+          .eq("user_id", sub.user_id)
+          .eq("endpoint", sub.endpoint);
+        continue;
+      }
+
       // Check if user has any income this week
       const { count } = await supabase
         .from("financial_transactions")
