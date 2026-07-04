@@ -73,6 +73,7 @@ const SyncGuestDataDone = lazyWithRetry(() => import("./pages/SyncGuestDataDone"
 const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
 const GuestEntry = lazyWithRetry(() => import("./pages/GuestEntry"), "GuestEntry");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
+const OAuthConsent = lazyWithRetry(() => import("./pages/OAuthConsent"), "OAuthConsent");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
 const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"), "AdminOverviewPage");
 const AdminUsersPage = lazyWithRetry(() => import("./pages/admin/AdminUsersPage"), "AdminUsersPage");
@@ -179,6 +180,7 @@ const App = () => (
               <Route path="/cadastro" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               {/* /para-profissionais e /index → redirect 301-like para a raiz unificada */}
