@@ -28,6 +28,7 @@ interface AuthContextType {
   loading: boolean;
   userType: UserType;
   userTypeLoading: boolean;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
   subscription: SubscriptionState;
   refreshSubscription: () => Promise<void>;
@@ -49,6 +50,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   userType: null,
   userTypeLoading: true,
+  isAdmin: false,
   signOut: async () => {},
   subscription: defaultSub,
   refreshSubscription: async () => {},
