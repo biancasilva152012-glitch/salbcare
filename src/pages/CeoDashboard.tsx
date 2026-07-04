@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { isAdminEmail } from "@/config/admin";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,8 +39,7 @@ const CeoDashboard = () => {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/login", { replace: true }); return; }
-    if (!isAdminEmail(user.email)) { navigate("/dashboard", { replace: true }); return; }
-    // SECURITY: server-side authorization — never trust the client-side email allowlist alone.
+    // SECURITY: authorization is DB-role only — no client email allowlist.
     let cancelled = false;
     (async () => {
       const { data: isAdmin, error } = await supabase.rpc("has_role", {
