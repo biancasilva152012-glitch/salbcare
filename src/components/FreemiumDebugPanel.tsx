@@ -17,7 +17,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { isAdminEmail } from "@/config/admin";
+
 import {
   DEMO_LIMITS,
   getModuleUsage,
@@ -77,11 +77,11 @@ const buildSnapshot = (
 };
 
 export default function FreemiumDebugPanel() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { usageByModule, isFree } = useFreemiumLimits();
   const isDev = import.meta.env.DEV;
-  const isAdmin = isAdminEmail(user?.email);
   const enabled = isDev || isAdmin;
+
 
   const [open, setOpen] = useState(() => {
     if (typeof window === "undefined") return false;

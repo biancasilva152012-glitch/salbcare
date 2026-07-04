@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { isAdminEmail } from "@/config/admin";
+
 import { logPremiumRouteBlock, type PremiumRouteReason } from "@/lib/premiumRouteAudit";
 
 interface PremiumRouteProps {
@@ -17,7 +17,7 @@ interface PremiumRouteProps {
  * AND record an audit row so the user (and admins) can inspect why.
  */
 const PremiumRoute = ({ children, module }: PremiumRouteProps) => {
-  const { user, loading, subscription, userType, userTypeLoading } = useAuth();
+  const { user, loading, subscription, userType, userTypeLoading, isAdmin } = useAuth();
   const location = useLocation();
 
   const stillLoading =
@@ -25,7 +25,7 @@ const PremiumRoute = ({ children, module }: PremiumRouteProps) => {
 
   const hasAccess =
     !!user &&
-    (isAdminEmail(user.email) ||
+    (isAdmin ||
       subscription.subscribed ||
       subscription.paymentStatus === "active" ||
       subscription.trialDaysRemaining > 0);
@@ -78,7 +78,7 @@ const PremiumRoute = ({ children, module }: PremiumRouteProps) => {
 
   if (userType === "patient") return <Navigate to="/patient-dashboard" replace />;
 
-  if (isAdminEmail(user.email)) return <>{children}</>;
+  if (isAdmin) return <>{children}</>;
 
   if (!hasAccess) {
     const back = encodeURIComponent(location.pathname);

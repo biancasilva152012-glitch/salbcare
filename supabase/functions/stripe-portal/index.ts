@@ -81,7 +81,9 @@ serve(async (req) => {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: msg }), {
+    console.error("[stripe-portal] error", msg);
+    // SECURITY: return a generic error; details stay in server logs.
+    return new Response(JSON.stringify({ error: "Request failed" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

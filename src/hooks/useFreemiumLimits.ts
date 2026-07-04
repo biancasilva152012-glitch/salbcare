@@ -1,7 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { isAdminEmail } from "@/config/admin";
 
 /**
  * Free tier monthly/total ceilings. These mirror the demo limits in
@@ -38,9 +37,9 @@ export type FreemiumModuleUsage = {
 };
 
 export function useFreemiumLimits() {
-  const { user, subscription } = useAuth();
+  const { user, subscription, isAdmin } = useAuth();
 
-  const isAdmin = isAdminEmail(user?.email);
+
   const isPaid =
     subscription.subscribed ||
     subscription.paymentStatus === "active" ||

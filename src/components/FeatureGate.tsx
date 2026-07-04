@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useFeatureGate, Feature } from "@/hooks/useFeatureGate";
 import { PLANS } from "@/config/plans";
 import { openVersionedSubscriptionRoute } from "@/utils/subscriptionNavigation";
-import { isAdminEmail } from "@/config/admin";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface FeatureGateProps {
@@ -20,9 +19,9 @@ const PLAN_BENEFITS = [
 
 const FeatureGate = ({ feature, children }: FeatureGateProps) => {
   const { hasAccess, requiredPlan } = useFeatureGate();
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
 
-  if (isAdminEmail(user?.email)) return <>{children}</>;
+  if (isAdmin) return <>{children}</>;
   if (hasAccess(feature)) return <>{children}</>;
 
   const plan = PLANS.basic;

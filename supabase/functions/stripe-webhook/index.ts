@@ -46,12 +46,9 @@ serve(async (req) => {
     );
   } catch (err) {
     logInitError("client_initialization", err);
+    // SECURITY: never leak init details / library import URLs to the client.
     return new Response(
-      JSON.stringify({
-        error: "Initialization failed",
-        message: err instanceof Error ? err.message : String(err),
-        imports: IMPORT_URLS,
-      }),
+      JSON.stringify({ error: "Service unavailable" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }

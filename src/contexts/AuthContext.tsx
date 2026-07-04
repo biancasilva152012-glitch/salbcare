@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getPlanByProductId, PlanKey, getTrialDaysRemaining } from "@/config/plans";
-import { isAdminEmail } from "@/config/admin";
+
 import {
   invokeCheckSubscriptionWithRetry,
   readSubscriptionCache,
@@ -28,6 +28,7 @@ interface AuthContextType {
   loading: boolean;
   userType: UserType;
   userTypeLoading: boolean;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
   subscription: SubscriptionState;
   refreshSubscription: () => Promise<void>;
@@ -49,6 +50,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   userType: null,
   userTypeLoading: true,
+  isAdmin: false,
   signOut: async () => {},
   subscription: defaultSub,
   refreshSubscription: async () => {},
@@ -96,9 +98,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userType, setUserType] = useState<UserType>(null);
   const [userTypeLoading, setUserTypeLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionState>(defaultSub);
+  const [isAdmin, setIsAdmin] = useState(false);
   const subCheckInFlight = useRef(false);
   const lastCheckTime = useRef(0);
   const sessionRef = useRef<Session | null>(null);
+
+  const fetchIsAdmin = useCallback(async (userId: string) => {
+    try {
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+      setIsAdmin(!error && data === true);
+    } catch {
+      setIsAdmin(false);
+    }
+  }, []);
 
   const fetchUserType = useCallback(async (userId: string) => {
     setUserTypeLoading(true);
@@ -125,18 +140,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const currentSession = sessionRef.current;
 
     try {
-      // Admin bypass — always return full access
-      if (isAdminEmail(currentSession?.user?.email)) {
-        setSubscription({
-          subscribed: true,
-          plan: "basic" as PlanKey,
-          subscriptionEnd: null,
-          loading: false,
-          trialDaysRemaining: 0,
-          paymentStatus: "active",
-          needsOnboarding: false,
+      const currentUserId = currentSession?.user?.id;
+      // Admin bypass — verify via DB `has_role` (not by matching a hardcoded email).
+      if (currentUserId) {
+        const { data: adminOk } = await supabase.rpc("has_role", {
+          _user_id: currentUserId,
+          _role: "admin",
         });
-        return;
+        if (adminOk === true) {
+          setSubscription({
+            subscribed: true,
+            plan: "basic" as PlanKey,
+            subscriptionEnd: null,
+            loading: false,
+            trialDaysRemaining: 0,
+            paymentStatus: "active",
+            needsOnboarding: false,
+          });
+          return;
+        }
       }
 
       const userId = currentSession?.user?.id;
@@ -202,6 +224,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(newSession);
       setLoading(false);
       if (newSession?.user) {
+        fetchIsAdmin(newSession.user.id);
         fetchUserType(newSession.user.id).then(() => {
           if (_event === "SIGNED_IN") {
             supabase
@@ -229,6 +252,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUserType(null);
         setUserTypeLoading(false);
+        setIsAdmin(false);
         setSubscription({ ...defaultSub, loading: false });
       }
     });
@@ -238,6 +262,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(initSession);
       initialCheckDone = true;
       if (initSession?.user) {
+        fetchIsAdmin(initSession.user.id);
         fetchUserType(initSession.user.id).finally(() => setLoading(false));
         checkSubscription();
       } else {
@@ -267,6 +292,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       loading,
       userType,
       userTypeLoading,
+      isAdmin,
       signOut,
       subscription,
       refreshSubscription: checkSubscription,

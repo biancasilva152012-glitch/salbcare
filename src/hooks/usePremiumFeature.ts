@@ -1,5 +1,4 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { isAdminEmail } from "@/config/admin";
 
 /**
  * Hook único para checar se o usuário tem direito a recursos exclusivos do
@@ -13,9 +12,9 @@ import { isAdminEmail } from "@/config/admin";
  * RLS no backend para impedir bypass via console ou requisições diretas.
  */
 export function usePremiumFeature() {
-  const { user, subscription } = useAuth();
+  const { subscription, isAdmin } = useAuth();
 
-  const isAdmin = isAdminEmail(user?.email);
+
   const isPaid =
     subscription.subscribed ||
     subscription.paymentStatus === "active" ||
