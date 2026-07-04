@@ -140,18 +140,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const currentSession = sessionRef.current;
 
     try {
-      // Admin bypass — always return full access
-      if (isAdminEmail(currentSession?.user?.email)) {
-        setSubscription({
-          subscribed: true,
-          plan: "basic" as PlanKey,
-          subscriptionEnd: null,
-          loading: false,
-          trialDaysRemaining: 0,
-          paymentStatus: "active",
-          needsOnboarding: false,
+      const currentUserId = currentSession?.user?.id;
+      // Admin bypass — verify via DB `has_role` (not by matching a hardcoded email).
+      if (currentUserId) {
+        const { data: adminOk } = await supabase.rpc("has_role", {
+          _user_id: currentUserId,
+          _role: "admin",
         });
-        return;
+        if (adminOk === true) {
+          setSubscription({
+            subscribed: true,
+            plan: "basic" as PlanKey,
+            subscriptionEnd: null,
+            loading: false,
+            trialDaysRemaining: 0,
+            paymentStatus: "active",
+            needsOnboarding: false,
+          });
+          return;
+        }
       }
 
       const userId = currentSession?.user?.id;
