@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { isAdminEmail } from "@/config/admin";
+
 
 export interface SubscriptionData {
   status: string | null; // 'trialing' | 'active' | 'past_due' | 'canceled' | null
@@ -34,7 +34,7 @@ const defaultState: SubscriptionData = {
 };
 
 export function useSubscription(): SubscriptionData {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [data, setData] = useState<SubscriptionData>(defaultState);
   const fetched = useRef(false);
 
@@ -44,8 +44,8 @@ export function useSubscription(): SubscriptionData {
       return;
     }
 
-    // Admin bypass — full access always
-    if (isAdminEmail(user.email)) {
+    // Admin bypass — full access always (verified via DB role).
+    if (isAdmin) {
       setData({
         status: "active",
         plan: "clinic",
@@ -62,6 +62,7 @@ export function useSubscription(): SubscriptionData {
       });
       return;
     }
+
 
     try {
       const { data: prof, error } = await supabase
@@ -115,7 +116,7 @@ export function useSubscription(): SubscriptionData {
     } catch {
       setData({ ...defaultState, isLoading: false });
     }
-  }, [user]);
+  }, [user, isAdmin]);
 
   useEffect(() => {
     if (!fetched.current && user) {
