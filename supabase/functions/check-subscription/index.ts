@@ -147,6 +147,8 @@ serve(async (req) => {
     );
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    return fallbackResponse("UNEXPECTED_ERROR", msg);
+    console.error("[check-subscription] unexpected", msg);
+    // SECURITY: don't leak raw error messages to callers.
+    return fallbackResponse("UNEXPECTED_ERROR", "Request failed");
   }
 });

@@ -42,12 +42,9 @@ serve(async (req) => {
     stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
   } catch (err) {
     logInitError("client_initialization", err);
+    // SECURITY: never leak init details / library import URLs to the client.
     return new Response(
-      JSON.stringify({
-        error: "Initialization failed",
-        message: err instanceof Error ? err.message : String(err),
-        imports: IMPORT_URLS,
-      }),
+      JSON.stringify({ error: "Service unavailable" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
@@ -101,7 +98,8 @@ serve(async (req) => {
       "[customer-portal] ❌ Request failed",
       JSON.stringify({ error: msg, stack, imports: IMPORT_URLS })
     );
-    return new Response(JSON.stringify({ error: msg, imports: IMPORT_URLS }), {
+    // SECURITY: return a generic error to the client; details stay in server logs.
+    return new Response(JSON.stringify({ error: "Request failed" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

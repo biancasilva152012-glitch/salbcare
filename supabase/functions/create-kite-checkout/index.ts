@@ -119,7 +119,8 @@ serve(async (req) => {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[create-kite-checkout]", msg);
-    return new Response(JSON.stringify({ error: msg }), {
+    // SECURITY: return a generic error; details stay in server logs.
+    return new Response(JSON.stringify({ error: "Request failed" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
