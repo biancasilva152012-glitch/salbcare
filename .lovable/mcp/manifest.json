@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://fevrdqmqmbahmeaymplq.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "salbcare-mcp",
+      "version": "0.1.0",
+      "title": "SALBCARE"
+    },
+    "tools": [
+      {
+        "name": "list_patients",
+        "title": "List patients",
+        "description": "List the signed-in professional's patients (name, contact, created_at).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 50,
+              "description": "Max rows to return",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "search": {
+              "description": "Optional case-insensitive name filter",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_appointments",
+        "title": "List appointments",
+        "description": "List the signed-in professional's appointments within an optional date range.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "ISO date (YYYY-MM-DD) — lower bound, inclusive",
+              "type": "string"
+            },
+            "to": {
+              "description": "ISO date (YYYY-MM-DD) — upper bound, inclusive",
+              "type": "string"
+            },
+            "limit": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "financial_summary",
+        "title": "Financial summary",
+        "description": "Aggregate the signed-in professional's income, expenses, and balance from their financial transactions.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "ISO date (YYYY-MM-DD) — lower bound, inclusive",
+              "type": "string"
+            },
+            "to": {
+              "description": "ISO date (YYYY-MM-DD) — upper bound, inclusive",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
