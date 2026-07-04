@@ -98,9 +98,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userType, setUserType] = useState<UserType>(null);
   const [userTypeLoading, setUserTypeLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionState>(defaultSub);
+  const [isAdmin, setIsAdmin] = useState(false);
   const subCheckInFlight = useRef(false);
   const lastCheckTime = useRef(0);
   const sessionRef = useRef<Session | null>(null);
+
+  const fetchIsAdmin = useCallback(async (userId: string) => {
+    try {
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+      setIsAdmin(!error && data === true);
+    } catch {
+      setIsAdmin(false);
+    }
+  }, []);
 
   const fetchUserType = useCallback(async (userId: string) => {
     setUserTypeLoading(true);
@@ -204,6 +217,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(newSession);
       setLoading(false);
       if (newSession?.user) {
+        fetchIsAdmin(newSession.user.id);
         fetchUserType(newSession.user.id).then(() => {
           if (_event === "SIGNED_IN") {
             supabase
@@ -231,6 +245,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUserType(null);
         setUserTypeLoading(false);
+        setIsAdmin(false);
         setSubscription({ ...defaultSub, loading: false });
       }
     });
@@ -240,6 +255,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(initSession);
       initialCheckDone = true;
       if (initSession?.user) {
+        fetchIsAdmin(initSession.user.id);
         fetchUserType(initSession.user.id).finally(() => setLoading(false));
         checkSubscription();
       } else {
@@ -269,6 +285,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       loading,
       userType,
       userTypeLoading,
+      isAdmin,
       signOut,
       subscription,
       refreshSubscription: checkSubscription,
