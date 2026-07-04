@@ -103,6 +103,17 @@ export const ROUTES = [
     priority: "0.7",
   },
   {
+    path: "/hub",
+    title: "SalbCare Hub | Wind, Care and Community on Brazil's Kite Coast",
+    description:
+      "Daily wind bulletin, trusted local healthcare and the kitesurf community hub for Ilha do Guajiru, Prea, Jericoacoara and Cumbuco. Join on WhatsApp.",
+    canonical: `${SITE}/hub`,
+    ogUrl: `${SITE}/hub`,
+    changefreq: "daily",
+    priority: "0.8",
+    htmlLang: "en",
+  },
+  {
     path: "/journal",
     title: "Blog SalbCare | Conteúdo para Profissionais de Saúde",
     description:
