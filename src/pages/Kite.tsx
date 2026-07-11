@@ -642,7 +642,7 @@ export default function Kite() {
       </section>
 
       {/* SalbCare Local Partner Network */}
-      <LocalPartnerNetwork lang={lang === "es" ? "es" : "en"} />
+      <LocalPartnerNetwork lang={lang} />
 
       {/* Final CTA */}
       <section
