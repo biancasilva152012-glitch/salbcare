@@ -1327,6 +1327,60 @@ export type Database = {
         }
         Relationships: []
       }
+      local_partners: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          description: string | null
+          featured: boolean
+          id: string
+          image_url: string | null
+          instagram: string | null
+          location: string | null
+          name: string
+          sort_order: number
+          subcategory: string | null
+          updated_at: string
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          created_at?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          instagram?: string | null
+          location?: string | null
+          name: string
+          sort_order?: number
+          subcategory?: string | null
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          instagram?: string | null
+          location?: string | null
+          name?: string
+          sort_order?: number
+          subcategory?: string | null
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       medical_records: {
         Row: {
           allergies: string | null
