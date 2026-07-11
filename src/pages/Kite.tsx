@@ -364,7 +364,7 @@ export default function Kite() {
               aria-label="Language"
             >
               <Globe className="hide-xs hidden sm:hidden w-3.5 h-3.5 mx-1.5 opacity-60" aria-hidden />
-              {(["en", "es"] as const).map((l) => (
+              {(["pt", "en", "es"] as const).map((l) => (
                 <button
                   key={l}
                   onClick={() => setLang(l)}
