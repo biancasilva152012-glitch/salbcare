@@ -10,7 +10,7 @@ import { Globe, Lock } from "lucide-react";
 
 const BOOKING_FEE = 50;
 
-type Lang = "en" | "es";
+type Lang = "en" | "es" | "pt";
 
 // SalbCare brand palette (matches main site)
 const BRAND = {
