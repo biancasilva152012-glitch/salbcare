@@ -23,24 +23,32 @@ interface Partner {
 
 const COPY = {
   en: {
-    tag: "SALBCARE LOCAL PARTNER NETWORK",
-    h2: "SalbCare Local Partner Network",
-    sub: "Trusted healthcare and local partners selected by SalbCare.",
-    body: "Find reliable healthcare services, accommodations and local experiences recommended by our network.",
+    tag: "SALBCARE LOCAL NETWORK",
+    h2: "Everything you need, connected locally",
+    sub: "SalbCare connects you with trusted local partners for healthcare, accommodation, food and experiences around Ilha do Guajiru.",
+    body: "From healthcare support to local experiences, discover trusted partners selected by SalbCare.",
     verified: "SalbCare Verified Partner",
-    become: "Become a SalbCare Partner",
+    trust:
+      "All partners are carefully selected by SalbCare to provide a safer and better experience for our community.",
+    ctaLead: "Are you a local business or healthcare professional?",
+    ctaSub: "Join the SalbCare Partner Network",
+    become: "Become a Partner",
     empty: "New partners are being added to the network.",
-    contact: "Contact",
+    contact: "Learn more",
   },
   es: {
-    tag: "RED DE PARCEROS SALBCARE",
-    h2: "SalbCare Local Partner Network",
-    sub: "Socios de salud y locales confiables, seleccionados por SalbCare.",
-    body: "Encuentra servicios de salud, hospedaje y experiencias locales recomendadas por nuestra red.",
+    tag: "SALBCARE LOCAL NETWORK",
+    h2: "Todo lo que necesitas, conectado localmente",
+    sub: "SalbCare te conecta con socios locales de confianza para salud, hospedaje, gastronomía y experiencias en la Ilha do Guajiru.",
+    body: "Desde apoyo en salud hasta experiencias locales, descubre socios seleccionados por SalbCare.",
     verified: "SalbCare Verified Partner",
-    become: "Become a SalbCare Partner",
+    trust:
+      "Todos los socios son cuidadosamente seleccionados por SalbCare para brindar una experiencia más segura y mejor a nuestra comunidad.",
+    ctaLead: "¿Eres un negocio local o profesional de la salud?",
+    ctaSub: "Únete a la red de socios SalbCare",
+    become: "Become a Partner",
     empty: "Nuevos socios están siendo añadidos a la red.",
-    contact: "Contactar",
+    contact: "Saber más",
   },
 } satisfies Record<Lang, Record<string, string>>;
 
