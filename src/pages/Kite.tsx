@@ -681,13 +681,17 @@ export default function Kite() {
       {/* Floating WhatsApp — visible throughout the page and booking flow */}
       <a
         href={`https://wa.me/5588996924700?text=${encodeURIComponent(
-          lang === "es"
+          lang === "pt"
+            ? "Olá! Estou na página da SalbCare Kite e gostaria de agendar uma consulta."
+            : lang === "es"
             ? "¡Hola! Estoy en la página de SalbCare Kite y quiero reservar una cita."
             : "Hi! I'm on the SalbCare Kite page and I'd like to book an appointment."
         )}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={lang === "es" ? "Chatear por WhatsApp" : "Chat on WhatsApp"}
+        aria-label={
+          lang === "pt" ? "Falar no WhatsApp" : lang === "es" ? "Chatear por WhatsApp" : "Chat on WhatsApp"
+        }
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full pl-3 pr-4 py-3 text-white font-semibold text-sm shadow-lg hover:brightness-110 transition"
         style={{ backgroundColor: "#25D366", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
       >
