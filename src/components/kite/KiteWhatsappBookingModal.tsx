@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { CheckCircle2, AlertTriangle, Loader2, RotateCw } from "lucide-react";
 
-type Lang = "en" | "es";
+type Lang = "en" | "es" | "pt";
 
 type Props = {
   open: boolean;
