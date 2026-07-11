@@ -361,6 +361,8 @@ const App = () => (
               <Route path="/admin/kite-bookings/:id" element={<AdminKiteBookingDetailPage />} />
               <Route path="/admin/blog" element={<AdminBlogListPage />} />
               <Route path="/admin/blog/:id" element={<AdminBlogEditorPage />} />
+              <Route path="/admin/local-partners" element={<AdminLocalPartnersPage />} />
+              <Route path="/partnership" element={<Partnership />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />
 
               <Route path="*" element={<NotFound />} />
