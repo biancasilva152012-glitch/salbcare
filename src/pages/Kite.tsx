@@ -251,7 +251,7 @@ export default function Kite() {
       } catch {}
     }
     const langParam = params.get("lang");
-    if (langParam === "es" || langParam === "en") setLang(langParam);
+    if (langParam === "es" || langParam === "en" || langParam === "pt") setLang(langParam);
 
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
