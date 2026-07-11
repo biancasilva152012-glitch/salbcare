@@ -285,6 +285,8 @@ export default function Kite() {
         <link rel="canonical" href="https://salbcare.com/kite" />
         <link rel="alternate" hrefLang="en" href="https://salbcare.com/kite?lang=en" />
         <link rel="alternate" hrefLang="es" href="https://salbcare.com/kite?lang=es" />
+        <link rel="alternate" hrefLang="pt" href="https://salbcare.com/kite?lang=pt" />
+        <link rel="alternate" hrefLang="pt-BR" href="https://salbcare.com/kite?lang=pt" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
