@@ -581,6 +581,9 @@ export default function Kite() {
         </div>
       </section>
 
+      {/* SalbCare Local Partner Network */}
+      <LocalPartnerNetwork lang={lang === "es" ? "es" : "en"} />
+
       {/* Final CTA */}
       <section
         className="px-5 py-20"
