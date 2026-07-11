@@ -221,9 +221,11 @@ export default function Kite() {
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
     const saved = localStorage.getItem("kite_lang") as Lang | null;
-    if (saved === "en" || saved === "es") return saved;
+    if (saved === "en" || saved === "es" || saved === "pt") return saved;
     const browser = navigator.language?.toLowerCase() || "";
-    return browser.startsWith("es") ? "es" : "en";
+    if (browser.startsWith("pt")) return "pt";
+    if (browser.startsWith("es")) return "es";
+    return "en";
   });
 
   const t = T[lang];
