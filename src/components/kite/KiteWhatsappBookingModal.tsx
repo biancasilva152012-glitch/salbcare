@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { CheckCircle2, AlertTriangle, Loader2, RotateCw } from "lucide-react";
 
-type Lang = "en" | "es";
+type Lang = "en" | "es" | "pt";
 
 type Props = {
   open: boolean;
@@ -92,6 +92,44 @@ const COPY = {
     openWa: "Abrir WhatsApp",
     close: "Cerrar",
     retry: "Reintentar",
+  },
+  pt: {
+    title: "Agendar uma consulta",
+    desc: "Escolha serviço, data e horário — continuamos pelo WhatsApp para confirmar.",
+    service: "Serviço",
+    services: { dental: "Odontologia", physio: "Fisio & Recuperação", telehealth: "Telemedicina" },
+    date: "Data preferida",
+    time: "Horário preferido",
+    name: "Seu nome (opcional)",
+    namePh: "Como podemos te chamar?",
+    email: "E-mail (opcional)",
+    emailPh: "voce@exemplo.com",
+    cta: "Confirmar no WhatsApp →",
+    sending: "Salvando…",
+    note: "Confirmaremos a disponibilidade manualmente pelo WhatsApp.",
+    errors: {
+      service: "Por favor escolha um serviço.",
+      date: "Escolha uma data válida (hoje ou posterior).",
+      time: "Por favor escolha um horário.",
+      name: "O nome deve ter menos de 80 caracteres.",
+      email: "Digite um e-mail válido.",
+      saveFailed: "Não conseguimos salvar sua solicitação. Tentando novamente…",
+      saveFailedFinal: "Não conseguimos salvar sua solicitação após várias tentativas. Continue pelo WhatsApp.",
+    },
+    statusTitles: {
+      pending_whatsapp: "Reserva salva — aguardando confirmação no WhatsApp",
+      confirmado: "Reserva confirmada",
+      erro: "Não conseguimos salvar sua reserva",
+    },
+    statusHints: {
+      pending_whatsapp: "Salvamos sua solicitação. Continue pelo WhatsApp para definir o horário.",
+      confirmado: "Sua reserva está confirmada. Você ainda pode nos chamar no WhatsApp.",
+      erro: "Você pode tentar novamente ou continuar pelo WhatsApp — atenderemos manualmente.",
+    },
+    retrying: (n: number, max: number) => `Tentando novamente… (tentativa ${n}/${max})`,
+    openWa: "Abrir WhatsApp",
+    close: "Fechar",
+    retry: "Tentar novamente",
   },
 } as const;
 

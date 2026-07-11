@@ -10,7 +10,7 @@ import { Globe, Lock } from "lucide-react";
 
 const BOOKING_FEE = 50;
 
-type Lang = "en" | "es";
+type Lang = "en" | "es" | "pt";
 
 // SalbCare brand palette (matches main site)
 const BRAND = {
@@ -136,6 +136,62 @@ const T = {
       { title: "Garantía de reembolso", body: "Cancela sin costo hasta 48h antes de tu cita y recibe el reembolso total de R$50. Después de 48h el depósito no es reembolsable pero puedes reagendar dentro de 30 días." },
     ],
   },
+  pt: {
+    htmlLang: "pt-BR",
+    title: "SalbCare Kite | Saúde e bem-estar na costa do kite no Brasil",
+    desc: "Visitando a Ilha do Guajiru ou a costa do kite no Ceará? Agende atendimento de confiança com a SalbCare Kite e reserve com um depósito de R$50.",
+    nav: { dental: "Odontologia", physio: "Fisio & Recuperação", book: "Agendar", bookFull: "Agendar agora" },
+    hero: {
+      welcome: "BEM-VINDO · WELCOME",
+      pin: "Ilha do Guajiru · Ceará · Brasil",
+      h1a: "Sinta-se bem.",
+      h1b: "Voe melhor.",
+      sub: "Odontologia e fisioterapia de alto nível, em português, inglês e espanhol, a uma fração dos preços europeus.",
+      ctaIn: "Ver odontologia & fisio",
+      trust: ["Pacientes internacionais", "Português, inglês & espanhol", "Cartões internacionais"],
+    },
+    tabs: { dental: "Odontologia", physio: "Fisio & Recuperação" },
+    dentalIntro: "Atendimento presencial na nossa clínica em Ilha do Guajiru. Pague R$50 online para reservar. O restante é acertado na clínica.",
+    physioIntro: "Dores após o kite? Nosso fisioterapeuta é especializado em recuperação pós-kite e massagem esportiva.",
+    inPersonBanner: "Os R$50 seguram o horário. Você paga o valor restante na clínica no dia do atendimento.",
+    how: {
+      h2: "Como funciona",
+      inLabel: "COMO AGENDAR",
+      inSteps: ["Escolha seu procedimento", "Pague a taxa de R$50", "Atendimento na clínica ou no seu hotel", "Pague o valor restante"],
+    },
+    testimonialsH2: "O que dizem os kitesurfistas",
+    testimonials: [
+      { name: "Lars M.", flag: "🇩🇪", text: "Limpeza rápida entre sessões. Dentista que fala inglês, clínica impecável." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "O fisio veio direto à minha pousada. Duas sessões e minha lombar liberada." },
+      { name: "Pieter V.", flag: "🇳🇱", text: "Cai forte, ombro destruído. Três sessões depois, estava de volta na água." },
+    ],
+    finalH2: "Agende sua consulta hoje.",
+    card: {
+      total: "total",
+      euCompare: (eu: number) => `€${eu} na Europa`,
+      tagPartial: "R$50 agora, restante na clínica",
+      ctaIn: (n: number) => `Reservar por R$${n}`,
+    },
+    locationLabels: {
+      at_hotel: "O profissional vai até o seu hotel.",
+      at_clinic: "Atendimento na clínica.",
+    } as Record<LocationType, string>,
+    procedures: {
+      "dental-cleaning":  "Limpeza e avaliação",
+      "dental-whitening": "Clareamento dental",
+      "dental-exam":      "Avaliação bucal completa",
+      "physio-kite-recovery": "Sessão de recuperação pós-kite",
+      "physio-massage":       "Massagem esportiva (60 min)",
+      "physio-postural":      "Avaliação postural",
+      "physio-package":       "Pacote recuperação completa (3 sessões)",
+    } as Record<string, string>,
+    trustH2: "Reserve com confiança",
+    trustItems: [
+      { title: "Pagamento seguro", body: "Seu depósito de R$50 é processado pela Stripe com criptografia bancária. Aceitamos cartões internacionais." },
+      { title: "Profissionais verificados", body: "Todos os dentistas e fisioterapeutas têm registro ativo no Brasil (CRO / CREFITO)." },
+      { title: "Garantia de reembolso", body: "Cancele sem custo até 48h antes da consulta e receba o reembolso total de R$50. Após 48h o depósito não é reembolsável, mas pode ser reagendado em até 30 dias." },
+    ],
+  },
 } as const;
 
 type KiteServiceItem = {
@@ -165,9 +221,11 @@ export default function Kite() {
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
     const saved = localStorage.getItem("kite_lang") as Lang | null;
-    if (saved === "en" || saved === "es") return saved;
+    if (saved === "en" || saved === "es" || saved === "pt") return saved;
     const browser = navigator.language?.toLowerCase() || "";
-    return browser.startsWith("es") ? "es" : "en";
+    if (browser.startsWith("pt")) return "pt";
+    if (browser.startsWith("es")) return "es";
+    return "en";
   });
 
   const t = T[lang];
@@ -193,7 +251,7 @@ export default function Kite() {
       } catch {}
     }
     const langParam = params.get("lang");
-    if (langParam === "es" || langParam === "en") setLang(langParam);
+    if (langParam === "es" || langParam === "en" || langParam === "pt") setLang(langParam);
 
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -227,6 +285,8 @@ export default function Kite() {
         <link rel="canonical" href="https://salbcare.com/kite" />
         <link rel="alternate" hrefLang="en" href="https://salbcare.com/kite?lang=en" />
         <link rel="alternate" hrefLang="es" href="https://salbcare.com/kite?lang=es" />
+        <link rel="alternate" hrefLang="pt" href="https://salbcare.com/kite?lang=pt" />
+        <link rel="alternate" hrefLang="pt-BR" href="https://salbcare.com/kite?lang=pt" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
@@ -304,7 +364,7 @@ export default function Kite() {
               aria-label="Language"
             >
               <Globe className="hide-xs hidden sm:hidden w-3.5 h-3.5 mx-1.5 opacity-60" aria-hidden />
-              {(["en", "es"] as const).map((l) => (
+              {(["pt", "en", "es"] as const).map((l) => (
                 <button
                   key={l}
                   onClick={() => setLang(l)}
@@ -582,7 +642,7 @@ export default function Kite() {
       </section>
 
       {/* SalbCare Local Partner Network */}
-      <LocalPartnerNetwork lang={lang === "es" ? "es" : "en"} />
+      <LocalPartnerNetwork lang={lang} />
 
       {/* Final CTA */}
       <section
@@ -621,13 +681,17 @@ export default function Kite() {
       {/* Floating WhatsApp — visible throughout the page and booking flow */}
       <a
         href={`https://wa.me/5588996924700?text=${encodeURIComponent(
-          lang === "es"
+          lang === "pt"
+            ? "Olá! Estou na página da SalbCare Kite e gostaria de agendar uma consulta."
+            : lang === "es"
             ? "¡Hola! Estoy en la página de SalbCare Kite y quiero reservar una cita."
             : "Hi! I'm on the SalbCare Kite page and I'd like to book an appointment."
         )}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={lang === "es" ? "Chatear por WhatsApp" : "Chat on WhatsApp"}
+        aria-label={
+          lang === "pt" ? "Falar no WhatsApp" : lang === "es" ? "Chatear por WhatsApp" : "Chat on WhatsApp"
+        }
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full pl-3 pr-4 py-3 text-white font-semibold text-sm shadow-lg hover:brightness-110 transition"
         style={{ backgroundColor: "#25D366", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
       >

@@ -15,11 +15,13 @@ export type KiteProcedure = {
   totalPrice: number;
 };
 
+type Lang = "en" | "es" | "pt";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   procedure: KiteProcedure | null;
-  lang?: "en" | "es";
+  lang?: Lang;
 };
 
 const COPY = {
@@ -66,6 +68,28 @@ const COPY = {
     err: "No se pudo iniciar el checkout",
     waHelp: "¿Necesitas ayuda? Chatea con nosotros en WhatsApp",
     waMsg: (label: string) => `¡Hola! Quiero reservar una cita de ${label} con SalbCare en Guajiru.`,
+  },
+  pt: {
+    step: (n: number, total: number) => `Passo ${n} de ${total}`,
+    step1Title: "Escolha data e horário",
+    step2Title: "Seus dados e depósito",
+    onlineBadge: "Pagamento integral agora. Link do Meet enviado após confirmação.",
+    partial: (paid: number, rest: number) => `R$ ${paid} agora + R$ ${rest} na clínica`,
+    date: "Data preferida",
+    timeLabel: "Horário preferido",
+    times: { morning: "Manhã", afternoon: "Tarde", any: "Qualquer" } as Record<string, string>,
+    name: "Nome completo",
+    email: "E-mail",
+    next: "Próximo →",
+    back: "← Voltar",
+    cta: (n: number, online: boolean) => online ? `Pagar R$ ${n} →` : `Pagar R$ ${n} de depósito →`,
+    redirecting: "Redirecionando para pagamento seguro…",
+    secure: "Pagamento seguro via Stripe. Cartões internacionais aceitos.",
+    missingDate: "Por favor escolha uma data",
+    missingContact: "Por favor preencha seu nome e e-mail",
+    err: "Não foi possível iniciar o checkout",
+    waHelp: "Precisa de ajuda? Fale conosco no WhatsApp",
+    waMsg: (label: string) => `Olá! Quero agendar uma consulta de ${label} com a SalbCare em Guajiru.`,
   },
 };
 
