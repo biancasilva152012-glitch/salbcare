@@ -23,24 +23,32 @@ interface Partner {
 
 const COPY = {
   en: {
-    tag: "SALBCARE LOCAL PARTNER NETWORK",
-    h2: "SalbCare Local Partner Network",
-    sub: "Trusted healthcare and local partners selected by SalbCare.",
-    body: "Find reliable healthcare services, accommodations and local experiences recommended by our network.",
+    tag: "SALBCARE LOCAL NETWORK",
+    h2: "Everything you need, connected locally",
+    sub: "SalbCare connects you with trusted local partners for healthcare, accommodation, food and experiences around Ilha do Guajiru.",
+    body: "From healthcare support to local experiences, discover trusted partners selected by SalbCare.",
     verified: "SalbCare Verified Partner",
-    become: "Become a SalbCare Partner",
+    trust:
+      "All partners are carefully selected by SalbCare to provide a safer and better experience for our community.",
+    ctaLead: "Are you a local business or healthcare professional?",
+    ctaSub: "Join the SalbCare Partner Network",
+    become: "Become a Partner",
     empty: "New partners are being added to the network.",
-    contact: "Contact",
+    contact: "Learn more",
   },
   es: {
-    tag: "RED DE PARCEROS SALBCARE",
-    h2: "SalbCare Local Partner Network",
-    sub: "Socios de salud y locales confiables, seleccionados por SalbCare.",
-    body: "Encuentra servicios de salud, hospedaje y experiencias locales recomendadas por nuestra red.",
+    tag: "SALBCARE LOCAL NETWORK",
+    h2: "Todo lo que necesitas, conectado localmente",
+    sub: "SalbCare te conecta con socios locales de confianza para salud, hospedaje, gastronomía y experiencias en la Ilha do Guajiru.",
+    body: "Desde apoyo en salud hasta experiencias locales, descubre socios seleccionados por SalbCare.",
     verified: "SalbCare Verified Partner",
-    become: "Become a SalbCare Partner",
+    trust:
+      "Todos los socios son cuidadosamente seleccionados por SalbCare para brindar una experiencia más segura y mejor a nuestra comunidad.",
+    ctaLead: "¿Eres un negocio local o profesional de la salud?",
+    ctaSub: "Únete a la red de socios SalbCare",
+    become: "Become a Partner",
     empty: "Nuevos socios están siendo añadidos a la red.",
-    contact: "Contactar",
+    contact: "Saber más",
   },
 } satisfies Record<Lang, Record<string, string>>;
 
@@ -121,21 +129,51 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
           </div>
         )}
 
-        <div className="text-center mt-10">
+        {/* Trust message */}
+        <div className="mt-10 flex flex-col items-center gap-3 text-center">
+          <div
+            className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full"
+            style={{ background: `${BRAND.teal}15`, color: BRAND.tealDark }}
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {t.verified}
+          </div>
+          <p
+            className="text-sm max-w-2xl leading-relaxed"
+            style={{ color: BRAND.ink, opacity: 0.7 }}
+          >
+            {t.trust}
+          </p>
+        </div>
+
+        {/* Become a Partner CTA */}
+        <div
+          className="mt-12 rounded-2xl p-6 md:p-8 border border-black/[0.06] flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left"
+          style={{ background: "#fff", boxShadow: "0 2px 12px rgba(13,27,42,0.04)" }}
+        >
+          <div>
+            <div className="text-sm font-semibold" style={{ color: BRAND.ink }}>
+              {t.ctaLead}
+            </div>
+            <div className="text-xs mt-1" style={{ color: BRAND.ink, opacity: 0.6 }}>
+              {t.ctaSub}
+            </div>
+          </div>
           <Link
             to="/partnership"
-            className="inline-flex items-center gap-2 rounded-full font-semibold transition-all duration-200 hover:brightness-110"
+            className="inline-flex items-center gap-2 rounded-full font-semibold transition-all duration-200 hover:brightness-110 whitespace-nowrap"
             style={{
               background: BRAND.ink,
               color: "#fff",
-              minHeight: 52,
-              padding: "0 28px",
-              fontSize: 15,
+              minHeight: 48,
+              padding: "0 24px",
+              fontSize: 14,
             }}
           >
             {t.become} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+
       </div>
     </section>
   );
