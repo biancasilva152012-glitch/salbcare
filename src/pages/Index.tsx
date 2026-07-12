@@ -271,7 +271,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "Empezó en una playa de Ceará.",
       body:
         "Una dentista viendo a viajeros de todo el mundo llegar a Ilha do Guajiru, un pequeño spot de kite en el noreste de Brasil. Algunos se lastimaban. Otros se enfermaban. Nadie sabía a dónde ir, en quién confiar ni cómo hacerse entender. Así que construimos lo que faltaba. Una red pequeña, humana, que viaja con el paciente.",
-      signature: "Bianca Albuquerque, cirujana dentista con MBA en gestión de negocios, en Ceará.",
+      signature: "Bianca Albuquerque, cirujana dentista con MBA en gestión de negocios.",
     },
     what: {
       title: "Qué es SalbCare",
