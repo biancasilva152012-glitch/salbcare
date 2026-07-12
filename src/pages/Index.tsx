@@ -612,20 +612,30 @@ const Index = () => {
                 alignItems: "stretch",
               }}
             >
-              <div className="salb-card" style={{ borderColor: "rgba(201,164,92,0.28)" }}>
+              <Link
+                to="/kite"
+                className="salb-card salb-cycle-card"
+                style={{ borderColor: "rgba(201,164,92,0.28)", cursor: "pointer", textDecoration: "none", display: "block" }}
+                onClick={() => trackCtaClick("home_cycle_kite", "homepage", { lang })}
+              >
                 <p className="salb-eyebrow" style={{ color: GOLD }}>DEMAND</p>
                 <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
                   {t.cycle.demand.title}
                 </h3>
                 <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.demand.body}</p>
-              </div>
-              <div className="salb-card" style={{ borderColor: "rgba(63,208,189,0.28)" }}>
+              </Link>
+              <Link
+                to="/partnership"
+                className="salb-card salb-cycle-card"
+                style={{ borderColor: "rgba(63,208,189,0.28)", cursor: "pointer", textDecoration: "none", display: "block" }}
+                onClick={() => trackCtaClick("home_cycle_pro", "homepage", { lang })}
+              >
                 <p className="salb-eyebrow" style={{ color: TEAL }}>INFRASTRUCTURE</p>
                 <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
                   {t.cycle.supply.title}
                 </h3>
                 <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.supply.body}</p>
-              </div>
+              </Link>
             </div>
           </div>
         </section>
