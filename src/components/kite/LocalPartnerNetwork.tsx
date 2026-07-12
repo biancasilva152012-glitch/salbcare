@@ -359,6 +359,7 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
                   learnMoreLabel={t.learnMore}
                   openDetailsLabel={t.openDetails(p.name)}
                   categoryLabel={catLabels[p.category] || p.category}
+                  description={pickDescription(p, lang)}
                   onOpen={() => setActive(p)}
                 />
               ))}
