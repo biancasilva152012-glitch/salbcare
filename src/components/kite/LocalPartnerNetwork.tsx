@@ -25,11 +25,19 @@ interface Partner {
   subcategory: string | null;
   location: string | null;
   description: string | null;
+  description_en: string | null;
+  description_es: string | null;
   image_url: string | null;
   whatsapp: string | null;
   instagram: string | null;
   website: string | null;
   featured: boolean;
+}
+
+function pickDescription(p: Partner, lang: Lang): string | null {
+  if (lang === "en") return p.description_en ?? p.description ?? null;
+  if (lang === "es") return p.description_es ?? p.description ?? null;
+  return p.description ?? null;
 }
 
 const HEALTHCARE_CATEGORIES = new Set(["dental", "doctor", "physio", "rehab"]);
