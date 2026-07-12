@@ -732,7 +732,7 @@ const Index = () => {
               </p>
               <div>
                 <Link
-                  to="/pro"
+                  to="/partnership"
                   className="salb-btn salb-btn-ghost"
                   onClick={() => trackCtaClick("home_pro_waitlist", "homepage", { lang })}
                 >
