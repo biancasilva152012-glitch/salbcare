@@ -31,7 +31,7 @@ const T = {
     nav: { dental: "Dental", physio: "Physio & Recovery", book: "Book", bookFull: "Book now" },
     hero: {
       welcome: "WELCOME · BIENVENIDOS",
-      pin: "Ilha do Guajiru · Ceará · Brazil",
+      pin: "Ceará · Brasil",
       h1a: "Feel good.",
       h1b: "Kite better.",
       sub: "World-class dental and physiotherapy, in English and Spanish, at a fraction of European prices.",
@@ -87,7 +87,7 @@ const T = {
     nav: { dental: "Dental", physio: "Fisio y recuperación", book: "Reservar", bookFull: "Reservar" },
     hero: {
       welcome: "BIENVENIDOS · WELCOME",
-      pin: "Ilha do Guajiru · Ceará · Brasil",
+      pin: "Ceará · Brasil",
       h1a: "Siéntete bien.",
       h1b: "Mejora tu kite.",
       sub: "Atención dental y fisioterapia de primer nivel, en inglés y español, a una fracción de los precios europeos.",
@@ -143,7 +143,7 @@ const T = {
     nav: { dental: "Odontologia", physio: "Fisio & Recuperação", book: "Agendar", bookFull: "Agendar agora" },
     hero: {
       welcome: "BEM-VINDO · WELCOME",
-      pin: "Ilha do Guajiru · Ceará · Brasil",
+      pin: "Ceará · Brasil",
       h1a: "Sinta-se bem.",
       h1b: "Voe melhor.",
       sub: "Odontologia e fisioterapia de alto nível, em português, inglês e espanhol, a uma fração dos preços europeus.",
