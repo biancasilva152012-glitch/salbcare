@@ -575,7 +575,7 @@ function PartnerDetailsModal({
             <img
               src={partner.image_url}
               alt={`${partner.name} — ${categoryLabel}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
             />
           ) : (
             <div
