@@ -27,8 +27,8 @@ const Pro = () => {
   return (
     <div style={{ background: DEEP_TEAL, minHeight: "100vh", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#fff" }}>
       <Helmet>
-        <title>SalbCare Pro. A plataforma para profissionais de saúde autônomos</title>
-        <meta name="description" content="Capte mais pacientes, organize sua agenda e tenha clareza total sobre seu lucro real. 0% de comissão. Teste 7 dias grátis." />
+        <title>SalbCare Pro. Vitrine para profissionais de saúde aprovados pela nossa curadoria</title>
+        <meta name="description" content="SalbCare Pro é uma vitrine que conecta pacientes a profissionais de saúde aprovados pela curadoria SalbCare. 0% de comissão." />
         <meta name="robots" content="noindex, follow" />
       </Helmet>
 
