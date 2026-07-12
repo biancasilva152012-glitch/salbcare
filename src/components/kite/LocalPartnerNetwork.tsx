@@ -502,9 +502,9 @@ function PartnerCard({
             <span className="truncate">{p.location}</span>
           </div>
         )}
-        {p.description && (
+        {description && (
           <p className="text-xs leading-relaxed flex-1 mb-3 line-clamp-3" style={{ color: BRAND.ink, opacity: 0.75 }}>
-            {p.description}
+            {description}
           </p>
         )}
         <div className="mt-auto">
