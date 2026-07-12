@@ -506,13 +506,13 @@ const Index = () => {
               >
                 {t.hero.ctaCare}
               </Link>
-              <a
-                href="#clinics"
+              <Link
+                to="/partnership"
                 className="salb-btn salb-btn-ghost"
                 onClick={() => trackCtaClick("home_hero_pro", "homepage", { lang })}
               >
                 {t.hero.ctaClinic}
-              </a>
+              </Link>
             </div>
             <div
               data-fade
