@@ -403,9 +403,9 @@ export default function Kite() {
         id="top"
         className="relative overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(13,27,42,0.78) 0%, rgba(13,27,42,0.55) 55%, rgba(0,140,124,0.65) 100%), url(${heroGuajiru})`,
+          backgroundImage: `linear-gradient(180deg, rgba(11,28,38,0.72) 0%, rgba(11,28,38,0.88) 55%, rgba(11,28,38,0.95) 100%), url(${heroGuajiru})`,
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "center 35%",
           color: "#fff",
         }}
       >
