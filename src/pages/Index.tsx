@@ -294,7 +294,7 @@ const COPY: Record<HubLang, Copy> = {
       },
       supply: {
         title: "SalbCare Pro",
-        body: "El lado de la clínica. La infraestructura que permite a clínicas locales recibir pacientes de todo el mundo.",
+        body: "El lado de la clínica. Una vitrina que presenta clínicas locales aprobadas a pacientes que necesitan atención cerca.",
       },
     },
     kite: {
