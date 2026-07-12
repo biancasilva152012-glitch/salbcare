@@ -608,13 +608,13 @@ function PartnerDetailsModal({
             )}
           </div>
 
-          {partner.description && (
+          {description && (
             <div>
               <div className="text-[11px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: BRAND.ink, opacity: 0.5 }}>
                 {t.about}
               </div>
               <p className="text-sm leading-relaxed" style={{ color: BRAND.ink, opacity: 0.85 }}>
-                {partner.description}
+                {description}
               </p>
             </div>
           )}
