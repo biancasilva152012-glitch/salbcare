@@ -633,46 +633,20 @@ function PartnerDetailsModal({
             </div>
           )}
 
-          {(partner.whatsapp || partner.instagram || partner.website) && (
+          {partner.instagram && (
             <div>
               <div className="text-[11px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: BRAND.ink, opacity: 0.5 }}>
-                {t.contactSection}
+                {t.socials}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {waHref && (
-                  <a
-                    href={waHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4"
-                    style={{ background: "#25D366", color: "#fff", minHeight: 40 }}
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" aria-hidden /> WhatsApp
-                  </a>
-                )}
-                {partner.instagram && (
-                  <a
-                    href={`https://instagram.com/${partner.instagram.replace(/^@/, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
-                    style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
-                  >
-                    <Instagram className="h-3.5 w-3.5" aria-hidden /> @{partner.instagram.replace(/^@/, "")}
-                  </a>
-                )}
-                {partner.website && (
-                  <a
-                    href={partner.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
-                    style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
-                  >
-                    <Globe className="h-3.5 w-3.5" aria-hidden /> Website
-                  </a>
-                )}
-              </div>
+              <a
+                href={`https://instagram.com/${partner.instagram.replace(/^@/, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
+                style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
+              >
+                <Instagram className="h-3.5 w-3.5" aria-hidden /> @{partner.instagram.replace(/^@/, "")}
+              </a>
             </div>
           )}
 
