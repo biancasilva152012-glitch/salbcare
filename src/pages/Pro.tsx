@@ -64,10 +64,10 @@ const Pro = () => {
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <Eyebrow>SalbCare Pro</Eyebrow>
           <h1 className="pro-h1" style={{ color: "#fff", fontWeight: 700, letterSpacing: "-0.01em", margin: 0 }}>
-            Seu consultório digital,<br />seu controle para a gestão.
+            Uma vitrine com curadoria<br />para sua clínica.
           </h1>
           <p style={{ marginTop: 20, color: TEXT_MUTED, fontSize: 17, lineHeight: 1.5, maxWidth: 600, marginInline: "auto" }}>
-            A plataforma completa para profissionais de saúde autônomos: capte mais pacientes, organize sua agenda, e tenha clareza total sobre seu lucro real.
+            SalbCare Pro é uma vitrine que conecta pacientes a profissionais de saúde aprovados pela curadoria SalbCare. Você aparece para o paciente certo no momento certo. Sem comissão sobre suas consultas.
           </p>
           <div style={{ marginTop: 32 }}>
             <Link to="/register" className="pro-cta" style={{ background: TEAL, color: DEEP_TEAL, borderRadius: 999, padding: "16px 28px", fontWeight: 700, fontSize: 15, display: "inline-block", textDecoration: "none" }}>
