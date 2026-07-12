@@ -543,7 +543,6 @@ function PartnerDetailsModal({
   t: (typeof COPY)[Lang];
   categoryLabel: string;
 }) {
-  const { waHref, contactHref } = buildContactHref(partner, t.waMsg);
   const assistHref = assistanceHref(t.assistanceMsg(partner.name, categoryLabel));
 
   return (
