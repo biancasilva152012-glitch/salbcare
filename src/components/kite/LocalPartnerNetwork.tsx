@@ -1,8 +1,20 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, ShieldCheck, ArrowRight, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
+import {
+  MapPin,
+  ShieldCheck,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  MessageCircle,
+  Instagram,
+  Globe,
+  X,
+  HeartPulse,
+} from "lucide-react";
+import { WHATSAPP_NUMBER } from "@/lib/whatsapp";
 
 const BRAND = { teal: "#00B4A0", tealDark: "#008C7C", ink: "#0D1B2A", cream: "#F8F9FA" };
 
@@ -37,10 +49,20 @@ const COPY: Record<Lang, {
   become: string;
   empty: string;
   contact: string;
+  learnMore: string;
+  about: string;
+  services: string;
+  location: string;
+  contactSection: string;
+  socials: string;
+  requestAssistance: string;
+  close: string;
   waMsg: (name: string) => string;
+  assistanceMsg: (name: string, category: string) => string;
   scrollLeft: string;
   scrollRight: string;
   carouselLabel: string;
+  openDetails: (name: string) => string;
 }> = {
   en: {
     tag: "SALBCARE LOCAL NETWORK",
@@ -57,11 +79,22 @@ const COPY: Record<Lang, {
     become: "Become a Partner",
     empty: "New partners are being added to the network.",
     contact: "Contact Partner",
+    learnMore: "Learn More",
+    about: "About",
+    services: "Services & specialties",
+    location: "Location",
+    contactSection: "Contact",
+    socials: "Social",
+    requestAssistance: "Request Healthcare Assistance",
+    close: "Close",
     waMsg: (name) =>
       `Hello! I found ${name} through SalbCare Local Network and I'd like more information.`,
+    assistanceMsg: (name, category) =>
+      `Hi SalbCare — I'd like healthcare assistance regarding your verified partner ${name} (${category}). Can you help me arrange an appointment?`,
     scrollLeft: "Scroll partners left",
     scrollRight: "Scroll partners right",
     carouselLabel: "SalbCare Local Network partners",
+    openDetails: (name) => `Open details for ${name}`,
   },
   es: {
     tag: "SALBCARE LOCAL NETWORK",
@@ -78,11 +111,22 @@ const COPY: Record<Lang, {
     become: "Become a Partner",
     empty: "Nuevos socios están siendo añadidos a la red.",
     contact: "Contactar socio",
+    learnMore: "Ver más",
+    about: "Sobre",
+    services: "Servicios y especialidades",
+    location: "Ubicación",
+    contactSection: "Contacto",
+    socials: "Redes",
+    requestAssistance: "Solicitar asistencia médica",
+    close: "Cerrar",
     waMsg: (name) =>
       `¡Hola! Encontré a ${name} por medio de SalbCare Local Network y quisiera más información.`,
+    assistanceMsg: (name, category) =>
+      `Hola SalbCare — Me gustaría asistencia médica con su socio verificado ${name} (${category}). ¿Pueden ayudarme a coordinar una cita?`,
     scrollLeft: "Desplazar socios a la izquierda",
     scrollRight: "Desplazar socios a la derecha",
     carouselLabel: "Socios de SalbCare Local Network",
+    openDetails: (name) => `Ver detalles de ${name}`,
   },
   pt: {
     tag: "SALBCARE LOCAL NETWORK",
@@ -99,11 +143,22 @@ const COPY: Record<Lang, {
     become: "Become a Partner",
     empty: "Novos parceiros estão sendo adicionados à rede.",
     contact: "Falar com parceiro",
+    learnMore: "Saiba mais",
+    about: "Sobre",
+    services: "Serviços e especialidades",
+    location: "Localização",
+    contactSection: "Contato",
+    socials: "Redes sociais",
+    requestAssistance: "Solicitar atendimento pela SalbCare",
+    close: "Fechar",
     waMsg: (name) =>
       `Olá! Encontrei ${name} pela SalbCare Local Network e gostaria de mais informações.`,
+    assistanceMsg: (name, category) =>
+      `Olá SalbCare — gostaria de atendimento pela parceira verificada ${name} (${category}). Podem me ajudar a agendar?`,
     scrollLeft: "Rolar parceiros para a esquerda",
     scrollRight: "Rolar parceiros para a direita",
     carouselLabel: "Parceiros da SalbCare Local Network",
+    openDetails: (name) => `Abrir detalhes de ${name}`,
   },
 };
 
@@ -146,10 +201,29 @@ const CATEGORY_LABEL: Record<Lang, Record<string, string>> = {
   },
 };
 
+function buildContactHref(p: Partner, waMsgBuilder: (name: string) => string) {
+  const waHref = p.whatsapp
+    ? `https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(waMsgBuilder(p.name))}`
+    : null;
+  const fallbackHref = !waHref
+    ? p.website
+      ? p.website
+      : p.instagram
+      ? `https://instagram.com/${p.instagram.replace(/^@/, "")}`
+      : null
+    : null;
+  return { waHref, contactHref: waHref || fallbackHref };
+}
+
+function assistanceHref(msg: string) {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
 export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
   const t = COPY[lang];
   const catLabels = CATEGORY_LABEL[lang];
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState<Partner | null>(null);
 
   const { data: partners = [], isLoading } = useQuery<Partner[]>({
     queryKey: ["local-partners-public"],
@@ -174,7 +248,6 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
   const scrollBy = (dir: 1 | -1) => {
     const el = scrollerRef.current;
     if (!el) return;
-    // Card width (~280) + gap (20). Scroll by ~1 card on mobile, more on desktop.
     const step = Math.max(el.clientWidth * 0.85, 300);
     el.scrollBy({ left: step * dir, behavior: "smooth" });
   };
@@ -256,7 +329,6 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
           </p>
         ) : (
           <div className="relative">
-            {/* Desktop nav arrows */}
             <button
               type="button"
               onClick={() => scrollBy(-1)}
@@ -293,15 +365,17 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
                   total={partners.length}
                   verifiedLabel={t.verified}
                   contactLabel={t.contact}
+                  learnMoreLabel={t.learnMore}
+                  openDetailsLabel={t.openDetails(p.name)}
                   categoryLabel={catLabels[p.category] || p.category}
                   waMsgBuilder={t.waMsg}
+                  onOpen={() => setActive(p)}
                 />
               ))}
             </div>
           </div>
         )}
 
-        {/* Trust message + badge */}
         <div className="mt-10 flex flex-col items-center gap-3 text-center">
           <div
             className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full"
@@ -323,7 +397,6 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
           )}
         </div>
 
-        {/* Become a Partner CTA */}
         <div
           className="mt-10 sm:mt-12 rounded-2xl p-5 sm:p-6 md:p-8 border border-black/[0.06] flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-5 text-center md:text-left"
           style={{ background: "#fff", boxShadow: "0 2px 12px rgba(13,27,42,0.04)" }}
@@ -351,6 +424,15 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
           </Link>
         </div>
       </div>
+
+      {active && (
+        <PartnerDetailsModal
+          partner={active}
+          onClose={() => setActive(null)}
+          t={t}
+          categoryLabel={catLabels[active.category] || active.category}
+        />
+      )}
     </section>
   );
 }
@@ -361,28 +443,24 @@ function PartnerCard({
   total,
   verifiedLabel,
   contactLabel,
+  learnMoreLabel,
+  openDetailsLabel,
   categoryLabel,
   waMsgBuilder,
+  onOpen,
 }: {
   p: Partner;
   index: number;
   total: number;
   verifiedLabel: string;
   contactLabel: string;
+  learnMoreLabel: string;
+  openDetailsLabel: string;
   categoryLabel: string;
   waMsgBuilder: (name: string) => string;
+  onOpen: () => void;
 }) {
-  const waHref = p.whatsapp
-    ? `https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(waMsgBuilder(p.name))}`
-    : null;
-  const fallbackHref = !waHref
-    ? p.website
-      ? p.website
-      : p.instagram
-      ? `https://instagram.com/${p.instagram.replace(/^@/, "")}`
-      : null
-    : null;
-  const contactHref = waHref || fallbackHref;
+  const { waHref, contactHref } = buildContactHref(p, waMsgBuilder);
 
   return (
     <article
@@ -392,8 +470,11 @@ function PartnerCard({
       className="lpn-card min-w-[85%] xs:min-w-[75%] sm:min-w-[280px] sm:max-w-[280px] md:min-w-[300px] md:max-w-[300px] snap-start rounded-2xl overflow-hidden bg-white border border-black/[0.06] flex flex-col"
       style={{ boxShadow: "0 2px 12px rgba(13,27,42,0.06)" }}
     >
-      <div
-        className="relative h-40"
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={openDetailsLabel}
+        className="lpn-btn-focus relative h-40 block w-full text-left"
         style={{ background: `linear-gradient(135deg, ${BRAND.teal}20 0%, ${BRAND.ink}10 100%)` }}
       >
         {p.image_url ? (
@@ -419,7 +500,7 @@ function PartnerCard({
           <ShieldCheck className="h-3 w-3" aria-hidden />
           {verifiedLabel}
         </div>
-      </div>
+      </button>
       <div className="p-4 flex-1 flex flex-col">
         <div className="text-[10px] font-semibold tracking-widest uppercase mb-1" style={{ color: BRAND.teal }}>
           {categoryLabel}
@@ -429,34 +510,240 @@ function PartnerCard({
         </h3>
         {p.location && (
           <div className="flex items-center gap-1 text-xs mb-2" style={{ color: BRAND.ink, opacity: 0.6 }}>
-            <MapPin className="h-3 w-3" aria-hidden />
-            {p.location}
+            <MapPin className="h-3 w-3 shrink-0" aria-hidden />
+            <span className="truncate">{p.location}</span>
           </div>
         )}
         {p.description && (
-          <p className="text-xs leading-relaxed flex-1 mb-3" style={{ color: BRAND.ink, opacity: 0.75 }}>
+          <p className="text-xs leading-relaxed flex-1 mb-3 line-clamp-3" style={{ color: BRAND.ink, opacity: 0.75 }}>
             {p.description}
           </p>
         )}
-        {contactHref && (
-          <a
-            href={contactHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${contactLabel}: ${p.name}`}
-            className="lpn-btn-focus mt-auto inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
+        <div className="mt-auto flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={onOpen}
+            className="lpn-btn-focus inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
             style={{
-              background: waHref ? "#25D366" : `${BRAND.teal}15`,
-              color: waHref ? "#fff" : BRAND.tealDark,
+              background: BRAND.ink,
+              color: "#fff",
               minHeight: 44,
               padding: "0 16px",
             }}
           >
-            {waHref && <MessageCircle className="h-3.5 w-3.5" aria-hidden />}
-            {contactLabel}
-          </a>
-        )}
+            {learnMoreLabel}
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+          </button>
+          {contactHref && (
+            <a
+              href={contactHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${contactLabel}: ${p.name}`}
+              className="lpn-btn-focus inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
+              style={{
+                background: waHref ? "#25D366" : `${BRAND.teal}15`,
+                color: waHref ? "#fff" : BRAND.tealDark,
+                minHeight: 44,
+                padding: "0 16px",
+              }}
+            >
+              {waHref && <MessageCircle className="h-3.5 w-3.5" aria-hidden />}
+              {contactLabel}
+            </a>
+          )}
+        </div>
       </div>
     </article>
+  );
+}
+
+function PartnerDetailsModal({
+  partner,
+  onClose,
+  t,
+  categoryLabel,
+}: {
+  partner: Partner;
+  onClose: () => void;
+  t: (typeof COPY)[Lang];
+  categoryLabel: string;
+}) {
+  const { waHref, contactHref } = buildContactHref(partner, t.waMsg);
+  const assistHref = assistanceHref(t.assistanceMsg(partner.name, categoryLabel));
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lpn-details-title"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full sm:max-w-2xl max-h-[92vh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={t.close}
+          className="lpn-btn-focus absolute top-3 right-3 z-10 h-10 w-10 rounded-full bg-white/95 shadow flex items-center justify-center"
+          style={{ color: BRAND.ink }}
+        >
+          <X className="h-5 w-5" aria-hidden />
+        </button>
+
+        <div
+          className="relative h-56 sm:h-64"
+          style={{ background: `linear-gradient(135deg, ${BRAND.teal}20 0%, ${BRAND.ink}10 100%)` }}
+        >
+          {partner.image_url ? (
+            <img
+              src={partner.image_url}
+              alt={`${partner.name} — ${categoryLabel}`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center text-6xl font-bold"
+              style={{ color: BRAND.tealDark, opacity: 0.4 }}
+              aria-hidden
+            >
+              {partner.name.charAt(0)}
+            </div>
+          )}
+          <div
+            className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full"
+            style={{ background: "#fff", color: BRAND.tealDark }}
+          >
+            <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+            {t.verified}
+          </div>
+        </div>
+
+        <div className="p-5 sm:p-7 space-y-5">
+          <div>
+            <div className="text-[10px] font-semibold tracking-widest uppercase mb-1" style={{ color: BRAND.teal }}>
+              {categoryLabel}
+            </div>
+            <h3 id="lpn-details-title" className="text-2xl font-bold" style={{ color: BRAND.ink }}>
+              {partner.name}
+            </h3>
+            {partner.subcategory && (
+              <div className="text-sm mt-1" style={{ color: BRAND.ink, opacity: 0.7 }}>
+                {partner.subcategory}
+              </div>
+            )}
+          </div>
+
+          {partner.description && (
+            <div>
+              <div className="text-[11px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: BRAND.ink, opacity: 0.5 }}>
+                {t.about}
+              </div>
+              <p className="text-sm leading-relaxed" style={{ color: BRAND.ink, opacity: 0.85 }}>
+                {partner.description}
+              </p>
+            </div>
+          )}
+
+          {partner.location && (
+            <div>
+              <div className="text-[11px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: BRAND.ink, opacity: 0.5 }}>
+                {t.location}
+              </div>
+              <div className="flex items-start gap-1.5 text-sm" style={{ color: BRAND.ink, opacity: 0.85 }}>
+                <MapPin className="h-4 w-4 mt-0.5 shrink-0" aria-hidden />
+                <span>{partner.location}</span>
+              </div>
+            </div>
+          )}
+
+          {(partner.whatsapp || partner.instagram || partner.website) && (
+            <div>
+              <div className="text-[11px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: BRAND.ink, opacity: 0.5 }}>
+                {t.contactSection}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {waHref && (
+                  <a
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4"
+                    style={{ background: "#25D366", color: "#fff", minHeight: 40 }}
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" aria-hidden /> WhatsApp
+                  </a>
+                )}
+                {partner.instagram && (
+                  <a
+                    href={`https://instagram.com/${partner.instagram.replace(/^@/, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
+                    style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
+                  >
+                    <Instagram className="h-3.5 w-3.5" aria-hidden /> @{partner.instagram.replace(/^@/, "")}
+                  </a>
+                )}
+                {partner.website && (
+                  <a
+                    href={partner.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
+                    style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
+                  >
+                    <Globe className="h-3.5 w-3.5" aria-hidden /> Website
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="pt-2 border-t" style={{ borderColor: `${BRAND.ink}10` }}>
+            <a
+              href={assistHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="lpn-btn-focus mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 hover:brightness-110"
+              style={{
+                background: BRAND.teal,
+                color: "#fff",
+                minHeight: 52,
+                padding: "0 20px",
+                fontSize: 15,
+              }}
+            >
+              <HeartPulse className="h-4 w-4" aria-hidden />
+              {t.requestAssistance}
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </a>
+            {HEALTHCARE_CATEGORIES.has(partner.category) && (
+              <p
+                className="text-[11px] mt-3 leading-relaxed italic text-center"
+                style={{ color: BRAND.ink, opacity: 0.55 }}
+              >
+                {t.healthcareDisclaimer}
+              </p>
+            )}
+          </div>
+
+          {contactHref && !waHref && (
+            <a
+              href={contactHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="lpn-btn-focus inline-flex w-full items-center justify-center gap-1.5 rounded-full text-xs font-semibold"
+              style={{ background: `${BRAND.teal}15`, color: BRAND.tealDark, minHeight: 44 }}
+            >
+              {t.contact}
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
