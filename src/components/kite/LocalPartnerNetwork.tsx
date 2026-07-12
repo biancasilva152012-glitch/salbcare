@@ -79,7 +79,7 @@ const COPY: Record<Lang, {
     trust:
       "All partners are carefully selected by SalbCare to provide a safer and better experience for our community.",
     healthcareDisclaimer:
-      "Consultation prices are set by each professional. SalbCare only curates the network — we do not set fees.",
+      "Consultation prices are set by each professional. SalbCare only curates the network. We do not set fees.",
     ctaLead: "Are you a local business or healthcare professional?",
     ctaSub: "Join the SalbCare Partner Network",
     become: "Become a Partner",
@@ -96,7 +96,7 @@ const COPY: Record<Lang, {
     waMsg: (name) =>
       `Hello! I found ${name} through SalbCare Local Network and I'd like more information.`,
     assistanceMsg: (name, category) =>
-      `Hi SalbCare — I'd like healthcare assistance regarding your verified partner ${name} (${category}). Can you help me arrange an appointment?`,
+      `Hi SalbCare. I'd like healthcare assistance regarding your verified partner ${name} (${category}). Can you help me arrange an appointment?`,
     scrollLeft: "Scroll partners left",
     scrollRight: "Scroll partners right",
     carouselLabel: "SalbCare Local Network partners",
@@ -111,7 +111,7 @@ const COPY: Record<Lang, {
     trust:
       "Todos los socios son cuidadosamente seleccionados por SalbCare para brindar una experiencia más segura y mejor a nuestra comunidad.",
     healthcareDisclaimer:
-      "Los precios de la consulta los define cada profesional. SalbCare solo hace la curaduría de la red — no fijamos tarifas.",
+      "Los precios de la consulta los define cada profesional. SalbCare solo hace la curaduría de la red. No fijamos tarifas.",
     ctaLead: "¿Eres un negocio local o profesional de la salud?",
     ctaSub: "Únete a la red de socios SalbCare",
     become: "Become a Partner",
@@ -128,7 +128,7 @@ const COPY: Record<Lang, {
     waMsg: (name) =>
       `¡Hola! Encontré a ${name} por medio de SalbCare Local Network y quisiera más información.`,
     assistanceMsg: (name, category) =>
-      `Hola SalbCare — Me gustaría asistencia médica con su socio verificado ${name} (${category}). ¿Pueden ayudarme a coordinar una cita?`,
+      `Hola SalbCare. Me gustaría asistencia médica con su socio verificado ${name} (${category}). ¿Pueden ayudarme a coordinar una cita?`,
     scrollLeft: "Desplazar socios a la izquierda",
     scrollRight: "Desplazar socios a la derecha",
     carouselLabel: "Socios de SalbCare Local Network",
@@ -143,7 +143,7 @@ const COPY: Record<Lang, {
     trust:
       "Todos os parceiros são cuidadosamente selecionados pela SalbCare para oferecer uma experiência mais segura e melhor para nossa comunidade.",
     healthcareDisclaimer:
-      "Os valores das consultas são definidos por cada profissional. A SalbCare apenas faz a curadoria da rede — nós não definimos os preços.",
+      "Os valores das consultas são definidos por cada profissional. A SalbCare apenas faz a curadoria da rede. Nós não definimos os preços.",
     ctaLead: "Você é um negócio local ou profissional de saúde?",
     ctaSub: "Junte-se à rede de parceiros da SalbCare",
     become: "Become a Partner",
@@ -160,7 +160,7 @@ const COPY: Record<Lang, {
     waMsg: (name) =>
       `Olá! Encontrei ${name} pela SalbCare Local Network e gostaria de mais informações.`,
     assistanceMsg: (name, category) =>
-      `Olá SalbCare — gostaria de atendimento pela parceira verificada ${name} (${category}). Podem me ajudar a agendar?`,
+      `Olá SalbCare, gostaria de atendimento pela parceira verificada ${name} (${category}). Podem me ajudar a agendar?`,
     scrollLeft: "Rolar parceiros para a esquerda",
     scrollRight: "Rolar parceiros para a direita",
     carouselLabel: "Parceiros da SalbCare Local Network",
