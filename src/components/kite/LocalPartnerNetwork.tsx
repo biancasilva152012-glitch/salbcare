@@ -199,20 +199,6 @@ const CATEGORY_LABEL: Record<Lang, Record<string, string>> = {
   },
 };
 
-function buildContactHref(p: Partner, waMsgBuilder: (name: string) => string) {
-  const waHref = p.whatsapp
-    ? `https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(waMsgBuilder(p.name))}`
-    : null;
-  const fallbackHref = !waHref
-    ? p.website
-      ? p.website
-      : p.instagram
-      ? `https://instagram.com/${p.instagram.replace(/^@/, "")}`
-      : null
-    : null;
-  return { waHref, contactHref: waHref || fallbackHref };
-}
-
 function assistanceHref(msg: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
