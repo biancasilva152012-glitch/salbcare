@@ -222,7 +222,7 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("local_partners" as any)
-        .select("id,name,category,subcategory,location,description,image_url,whatsapp,instagram,website,featured")
+        .select("id,name,category,subcategory,location,description,description_en,description_es,image_url,whatsapp,instagram,website,featured")
         .eq("active", true)
         .order("featured", { ascending: false })
         .order("sort_order", { ascending: false })
