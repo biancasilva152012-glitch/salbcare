@@ -364,11 +364,9 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
                   index={i}
                   total={partners.length}
                   verifiedLabel={t.verified}
-                  contactLabel={t.contact}
                   learnMoreLabel={t.learnMore}
                   openDetailsLabel={t.openDetails(p.name)}
                   categoryLabel={catLabels[p.category] || p.category}
-                  waMsgBuilder={t.waMsg}
                   onOpen={() => setActive(p)}
                 />
               ))}
