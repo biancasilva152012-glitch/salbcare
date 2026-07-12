@@ -8,9 +8,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  MessageCircle,
   Instagram,
-  Globe,
   X,
   HeartPulse,
 } from "lucide-react";
