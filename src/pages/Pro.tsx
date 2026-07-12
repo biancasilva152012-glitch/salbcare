@@ -27,7 +27,7 @@ const Pro = () => {
   return (
     <div style={{ background: DEEP_TEAL, minHeight: "100vh", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#fff" }}>
       <Helmet>
-        <title>SalbCare Pro — A plataforma para profissionais de saúde autônomos</title>
+        <title>SalbCare Pro. A plataforma para profissionais de saúde autônomos</title>
         <meta name="description" content="Capte mais pacientes, organize sua agenda e tenha clareza total sobre seu lucro real. 0% de comissão. Teste 7 dias grátis." />
         <meta name="robots" content="noindex, follow" />
       </Helmet>
@@ -121,11 +121,11 @@ const Pro = () => {
           </p>
           <div style={{ marginTop: 32, background: CARD_BG, borderLeft: `4px solid ${TEAL}`, borderRadius: 8, padding: 28, textAlign: "left" }}>
             <p style={{ color: "#fff", fontSize: 16, lineHeight: 1.55, margin: 0 }}>
-              7 em cada 10 profissionais de saúde autônomos no Brasil não conseguem responder essa pergunta com precisão. Eles acham que estão lucrando — até olharem os números de verdade.
+              7 em cada 10 profissionais de saúde autônomos no Brasil não conseguem responder essa pergunta com precisão. Eles acham que estão lucrando. Até olharem os números de verdade.
             </p>
           </div>
           <p style={{ marginTop: 14, color: TEXT_MUTED, fontSize: 12, fontStyle: "italic" }}>
-            Pesquisa setorial 2025 — fontes disponíveis sob solicitação
+            Pesquisa setorial 2025. Fontes disponíveis sob solicitação
           </p>
         </div>
       </section>
