@@ -422,6 +422,7 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
           onClose={() => setActive(null)}
           t={t}
           categoryLabel={catLabels[active.category] || active.category}
+          description={pickDescription(active, lang)}
         />
       )}
     </section>
