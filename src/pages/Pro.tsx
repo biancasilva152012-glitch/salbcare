@@ -27,8 +27,8 @@ const Pro = () => {
   return (
     <div style={{ background: DEEP_TEAL, minHeight: "100vh", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#fff" }}>
       <Helmet>
-        <title>SalbCare Pro — A plataforma para profissionais de saúde autônomos</title>
-        <meta name="description" content="Capte mais pacientes, organize sua agenda e tenha clareza total sobre seu lucro real. 0% de comissão. Teste 7 dias grátis." />
+        <title>SalbCare Pro. Vitrine para profissionais de saúde aprovados pela nossa curadoria</title>
+        <meta name="description" content="SalbCare Pro é uma vitrine que conecta pacientes a profissionais de saúde aprovados pela curadoria SalbCare. 0% de comissão." />
         <meta name="robots" content="noindex, follow" />
       </Helmet>
 
@@ -64,10 +64,10 @@ const Pro = () => {
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <Eyebrow>SalbCare Pro</Eyebrow>
           <h1 className="pro-h1" style={{ color: "#fff", fontWeight: 700, letterSpacing: "-0.01em", margin: 0 }}>
-            Seu consultório digital,<br />seu controle para a gestão.
+            Uma vitrine com curadoria<br />para sua clínica.
           </h1>
           <p style={{ marginTop: 20, color: TEXT_MUTED, fontSize: 17, lineHeight: 1.5, maxWidth: 600, marginInline: "auto" }}>
-            A plataforma completa para profissionais de saúde autônomos: capte mais pacientes, organize sua agenda, e tenha clareza total sobre seu lucro real.
+            SalbCare Pro é uma vitrine que conecta pacientes a profissionais de saúde aprovados pela curadoria SalbCare. Você aparece para o paciente certo no momento certo. Sem comissão sobre suas consultas.
           </p>
           <div style={{ marginTop: 32 }}>
             <Link to="/register" className="pro-cta" style={{ background: TEAL, color: DEEP_TEAL, borderRadius: 999, padding: "16px 28px", fontWeight: 700, fontSize: 15, display: "inline-block", textDecoration: "none" }}>
@@ -121,11 +121,11 @@ const Pro = () => {
           </p>
           <div style={{ marginTop: 32, background: CARD_BG, borderLeft: `4px solid ${TEAL}`, borderRadius: 8, padding: 28, textAlign: "left" }}>
             <p style={{ color: "#fff", fontSize: 16, lineHeight: 1.55, margin: 0 }}>
-              7 em cada 10 profissionais de saúde autônomos no Brasil não conseguem responder essa pergunta com precisão. Eles acham que estão lucrando — até olharem os números de verdade.
+              7 em cada 10 profissionais de saúde autônomos no Brasil não conseguem responder essa pergunta com precisão. Eles acham que estão lucrando. Até olharem os números de verdade.
             </p>
           </div>
           <p style={{ marginTop: 14, color: TEXT_MUTED, fontSize: 12, fontStyle: "italic" }}>
-            Pesquisa setorial 2025 — fontes disponíveis sob solicitação
+            Pesquisa setorial 2025. Fontes disponíveis sob solicitação
           </p>
         </div>
       </section>

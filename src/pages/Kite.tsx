@@ -6,6 +6,7 @@ import KiteBookingModal, { type KiteProcedure } from "@/components/kite/KiteBook
 import KiteWhatsappBookingModal from "@/components/kite/KiteWhatsappBookingModal";
 import LocalPartnerNetwork from "@/components/kite/LocalPartnerNetwork";
 import logoSalb from "/pwa-icon-512.png";
+import heroGuajiru from "@/assets/hero-guajiru-kite.jpg";
 import { Globe, Lock } from "lucide-react";
 
 const BOOKING_FEE = 50;
@@ -31,7 +32,7 @@ const T = {
     nav: { dental: "Dental", physio: "Physio & Recovery", book: "Book", bookFull: "Book now" },
     hero: {
       welcome: "WELCOME · BIENVENIDOS",
-      pin: "Ilha do Guajiru · Ceará · Brazil",
+      pin: "Ceará · Brasil",
       h1a: "Feel good.",
       h1b: "Kite better.",
       sub: "World-class dental and physiotherapy, in English and Spanish, at a fraction of European prices.",
@@ -87,7 +88,7 @@ const T = {
     nav: { dental: "Dental", physio: "Fisio y recuperación", book: "Reservar", bookFull: "Reservar" },
     hero: {
       welcome: "BIENVENIDOS · WELCOME",
-      pin: "Ilha do Guajiru · Ceará · Brasil",
+      pin: "Ceará · Brasil",
       h1a: "Siéntete bien.",
       h1b: "Mejora tu kite.",
       sub: "Atención dental y fisioterapia de primer nivel, en inglés y español, a una fracción de los precios europeos.",
@@ -143,7 +144,7 @@ const T = {
     nav: { dental: "Odontologia", physio: "Fisio & Recuperação", book: "Agendar", bookFull: "Agendar agora" },
     hero: {
       welcome: "BEM-VINDO · WELCOME",
-      pin: "Ilha do Guajiru · Ceará · Brasil",
+      pin: "Ceará · Brasil",
       h1a: "Sinta-se bem.",
       h1b: "Voe melhor.",
       sub: "Odontologia e fisioterapia de alto nível, em português, inglês e espanhol, a uma fração dos preços europeus.",
@@ -400,14 +401,16 @@ export default function Kite() {
       {/* Hero */}
       <section
         id="top"
-        className="relative"
+        className="relative overflow-hidden"
         style={{
-          background: `linear-gradient(135deg, ${BRAND.ink} 0%, #1a3a4a 50%, ${BRAND.tealDark} 100%)`,
+          backgroundImage: `linear-gradient(135deg, rgba(13,27,42,0.78) 0%, rgba(13,27,42,0.55) 55%, rgba(0,140,124,0.65) 100%), url(${heroGuajiru})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           color: "#fff",
         }}
       >
         <div
-          className="mx-auto text-center px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20 flex flex-col items-center"
+          className="relative mx-auto text-center px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20 flex flex-col items-center"
           style={{ maxWidth: 1200 }}
         >
           <span

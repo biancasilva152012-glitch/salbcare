@@ -25,11 +25,19 @@ interface Partner {
   subcategory: string | null;
   location: string | null;
   description: string | null;
+  description_en: string | null;
+  description_es: string | null;
   image_url: string | null;
   whatsapp: string | null;
   instagram: string | null;
   website: string | null;
   featured: boolean;
+}
+
+function pickDescription(p: Partner, lang: Lang): string | null {
+  if (lang === "en") return p.description_en ?? p.description ?? null;
+  if (lang === "es") return p.description_es ?? p.description ?? null;
+  return p.description ?? null;
 }
 
 const HEALTHCARE_CATEGORIES = new Set(["dental", "doctor", "physio", "rehab"]);
@@ -71,7 +79,7 @@ const COPY: Record<Lang, {
     trust:
       "All partners are carefully selected by SalbCare to provide a safer and better experience for our community.",
     healthcareDisclaimer:
-      "Consultation prices are set by each professional. SalbCare only curates the network — we do not set fees.",
+      "Consultation prices are set by each professional. SalbCare only curates the network. We do not set fees.",
     ctaLead: "Are you a local business or healthcare professional?",
     ctaSub: "Join the SalbCare Partner Network",
     become: "Become a Partner",
@@ -88,7 +96,7 @@ const COPY: Record<Lang, {
     waMsg: (name) =>
       `Hello! I found ${name} through SalbCare Local Network and I'd like more information.`,
     assistanceMsg: (name, category) =>
-      `Hi SalbCare — I'd like healthcare assistance regarding your verified partner ${name} (${category}). Can you help me arrange an appointment?`,
+      `Hi SalbCare. I'd like healthcare assistance regarding your verified partner ${name} (${category}). Can you help me arrange an appointment?`,
     scrollLeft: "Scroll partners left",
     scrollRight: "Scroll partners right",
     carouselLabel: "SalbCare Local Network partners",
@@ -103,7 +111,7 @@ const COPY: Record<Lang, {
     trust:
       "Todos los socios son cuidadosamente seleccionados por SalbCare para brindar una experiencia más segura y mejor a nuestra comunidad.",
     healthcareDisclaimer:
-      "Los precios de la consulta los define cada profesional. SalbCare solo hace la curaduría de la red — no fijamos tarifas.",
+      "Los precios de la consulta los define cada profesional. SalbCare solo hace la curaduría de la red. No fijamos tarifas.",
     ctaLead: "¿Eres un negocio local o profesional de la salud?",
     ctaSub: "Únete a la red de socios SalbCare",
     become: "Become a Partner",
@@ -120,7 +128,7 @@ const COPY: Record<Lang, {
     waMsg: (name) =>
       `¡Hola! Encontré a ${name} por medio de SalbCare Local Network y quisiera más información.`,
     assistanceMsg: (name, category) =>
-      `Hola SalbCare — Me gustaría asistencia médica con su socio verificado ${name} (${category}). ¿Pueden ayudarme a coordinar una cita?`,
+      `Hola SalbCare. Me gustaría asistencia médica con su socio verificado ${name} (${category}). ¿Pueden ayudarme a coordinar una cita?`,
     scrollLeft: "Desplazar socios a la izquierda",
     scrollRight: "Desplazar socios a la derecha",
     carouselLabel: "Socios de SalbCare Local Network",
@@ -135,7 +143,7 @@ const COPY: Record<Lang, {
     trust:
       "Todos os parceiros são cuidadosamente selecionados pela SalbCare para oferecer uma experiência mais segura e melhor para nossa comunidade.",
     healthcareDisclaimer:
-      "Os valores das consultas são definidos por cada profissional. A SalbCare apenas faz a curadoria da rede — nós não definimos os preços.",
+      "Os valores das consultas são definidos por cada profissional. A SalbCare apenas faz a curadoria da rede. Nós não definimos os preços.",
     ctaLead: "Você é um negócio local ou profissional de saúde?",
     ctaSub: "Junte-se à rede de parceiros da SalbCare",
     become: "Become a Partner",
@@ -152,7 +160,7 @@ const COPY: Record<Lang, {
     waMsg: (name) =>
       `Olá! Encontrei ${name} pela SalbCare Local Network e gostaria de mais informações.`,
     assistanceMsg: (name, category) =>
-      `Olá SalbCare — gostaria de atendimento pela parceira verificada ${name} (${category}). Podem me ajudar a agendar?`,
+      `Olá SalbCare, gostaria de atendimento pela parceira verificada ${name} (${category}). Podem me ajudar a agendar?`,
     scrollLeft: "Rolar parceiros para a esquerda",
     scrollRight: "Rolar parceiros para a direita",
     carouselLabel: "Parceiros da SalbCare Local Network",
@@ -214,7 +222,7 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("local_partners" as any)
-        .select("id,name,category,subcategory,location,description,image_url,whatsapp,instagram,website,featured")
+        .select("id,name,category,subcategory,location,description,description_en,description_es,image_url,whatsapp,instagram,website,featured")
         .eq("active", true)
         .order("featured", { ascending: false })
         .order("sort_order", { ascending: false })
@@ -351,6 +359,7 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
                   learnMoreLabel={t.learnMore}
                   openDetailsLabel={t.openDetails(p.name)}
                   categoryLabel={catLabels[p.category] || p.category}
+                  description={pickDescription(p, lang)}
                   onOpen={() => setActive(p)}
                 />
               ))}
@@ -413,6 +422,7 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
           onClose={() => setActive(null)}
           t={t}
           categoryLabel={catLabels[active.category] || active.category}
+          description={pickDescription(active, lang)}
         />
       )}
     </section>
@@ -427,6 +437,7 @@ function PartnerCard({
   learnMoreLabel,
   openDetailsLabel,
   categoryLabel,
+  description,
   onOpen,
 }: {
   p: Partner;
@@ -436,6 +447,7 @@ function PartnerCard({
   learnMoreLabel: string;
   openDetailsLabel: string;
   categoryLabel: string;
+  description: string | null;
   onOpen: () => void;
 }) {
   return (
@@ -456,7 +468,7 @@ function PartnerCard({
         {p.image_url ? (
           <img
             src={p.image_url}
-            alt={`${p.name} — ${categoryLabel}`}
+            alt={`${p.name}, ${categoryLabel}`}
             loading="lazy"
             className="w-full h-full object-cover object-center"
           />
@@ -490,9 +502,9 @@ function PartnerCard({
             <span className="truncate">{p.location}</span>
           </div>
         )}
-        {p.description && (
+        {description && (
           <p className="text-xs leading-relaxed flex-1 mb-3 line-clamp-3" style={{ color: BRAND.ink, opacity: 0.75 }}>
-            {p.description}
+            {description}
           </p>
         )}
         <div className="mt-auto">
@@ -521,11 +533,13 @@ function PartnerDetailsModal({
   onClose,
   t,
   categoryLabel,
+  description,
 }: {
   partner: Partner;
   onClose: () => void;
   t: (typeof COPY)[Lang];
   categoryLabel: string;
+  description: string | null;
 }) {
   const assistHref = assistanceHref(t.assistanceMsg(partner.name, categoryLabel));
 
@@ -558,7 +572,7 @@ function PartnerDetailsModal({
           {partner.image_url ? (
             <img
               src={partner.image_url}
-              alt={`${partner.name} — ${categoryLabel}`}
+              alt={`${partner.name}, ${categoryLabel}`}
               className="w-full h-full object-cover object-center"
             />
           ) : (
@@ -594,13 +608,13 @@ function PartnerDetailsModal({
             )}
           </div>
 
-          {partner.description && (
+          {description && (
             <div>
               <div className="text-[11px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: BRAND.ink, opacity: 0.5 }}>
                 {t.about}
               </div>
               <p className="text-sm leading-relaxed" style={{ color: BRAND.ink, opacity: 0.85 }}>
-                {partner.description}
+                {description}
               </p>
             </div>
           )}

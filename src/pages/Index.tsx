@@ -79,7 +79,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "It started on a beach in Ceará.",
       body:
         "A dentist watching travelers from all over the world arrive in Ilha do Guajiru, a small kite spot in the Brazilian northeast. Some got hurt. Some got sick. None knew where to go, who to trust, or how to be understood. So we built the thing we wished existed. A small, human network that travels with the patient.",
-      signature: "Bianca Albuquerque, dental surgeon with an MBA in business management, in Ceará.",
+      signature: "Bianca Albuquerque, dental surgeon with an MBA in business management.",
     },
     what: {
       title: "What is SalbCare",
@@ -102,7 +102,7 @@ const COPY: Record<HubLang, Copy> = {
       },
       supply: {
         title: "SalbCare Pro",
-        body: "The clinic side. The infrastructure that lets local clinics receive patients from anywhere in the world.",
+        body: "The clinic side. A marketplace that puts approved local clinics in front of patients who need care nearby.",
       },
     },
     kite: {
@@ -120,17 +120,17 @@ const COPY: Record<HubLang, Copy> = {
     },
     pro: {
       eyebrow: "FOR CLINICS · SALBCARE PRO",
-      title: "Reach patients from around the world.",
-      intro: "A new market for your clinic. Not another management tool.",
+      title: "A curated showcase for your clinic.",
+      intro: "SalbCare Pro is a marketplace that connects patients with health professionals approved by our curation team. Your clinic gets seen by the right patient at the right moment.",
       bullets: [
-        "International patients",
-        "Multilingual communication",
-        "Telehealth",
-        "International payments",
-        "Grow beyond local demand",
+        "Curated showcase for approved clinics",
+        "Patients who already trust the SalbCare name",
+        "Multilingual patient conversations",
+        "Telehealth ready",
+        "No management software to learn",
       ],
-      label: "Opening next season. Join the waitlist.",
-      cta: "Join the clinic waitlist",
+      label: "Applications open. Join the curated list.",
+      cta: "Apply to join",
     },
     how: {
       title: "How it works",
@@ -175,7 +175,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "Começou numa praia no Ceará.",
       body:
         "Uma dentista vendo turistas do mundo todo chegarem na Ilha do Guajiru, um pequeno spot de kite no nordeste do Brasil. Uns se machucavam. Outros ficavam doentes. Ninguém sabia para onde ir, em quem confiar ou como se fazer entender. Então construímos o que faltava. Uma rede pequena, humana, que viaja com o paciente.",
-      signature: "Bianca Albuquerque, cirurgiã-dentista com MBA em gestão de negócios, no Ceará.",
+      signature: "Bianca Albuquerque, cirurgiã-dentista com MBA em gestão de negócios.",
     },
     what: {
       title: "O que é a SalbCare",
@@ -198,7 +198,7 @@ const COPY: Record<HubLang, Copy> = {
       },
       supply: {
         title: "SalbCare Pro",
-        body: "O lado da clínica. A infraestrutura que permite que clínicas locais recebam pacientes do mundo todo.",
+        body: "O lado da clínica. Uma vitrine que apresenta clínicas locais aprovadas para pacientes que precisam de cuidado por perto.",
       },
     },
     kite: {
@@ -216,17 +216,17 @@ const COPY: Record<HubLang, Copy> = {
     },
     pro: {
       eyebrow: "PARA CLÍNICAS · SALBCARE PRO",
-      title: "Receba pacientes do mundo todo.",
-      intro: "Um novo mercado para sua clínica. Não é mais um software de gestão.",
+      title: "Uma vitrine com curadoria para sua clínica.",
+      intro: "O SalbCare Pro é uma vitrine que conecta pacientes a profissionais de saúde aprovados pela curadoria SalbCare. Sua clínica é apresentada para o paciente certo no momento certo.",
       bullets: [
-        "Pacientes internacionais",
-        "Comunicação multilíngue",
-        "Teleconsulta",
-        "Pagamentos internacionais",
-        "Crescer além da demanda local",
+        "Vitrine com curadoria para clínicas aprovadas",
+        "Pacientes que já confiam na marca SalbCare",
+        "Atendimento multilíngue com o paciente",
+        "Pronto para teleconsulta",
+        "Sem software de gestão para aprender",
       ],
-      label: "Abrindo na próxima temporada. Entre na lista de espera.",
-      cta: "Entrar na lista de espera",
+      label: "Inscrições abertas. Entre para a lista com curadoria.",
+      cta: "Quero me candidatar",
     },
     how: {
       title: "Como funciona",
@@ -271,7 +271,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "Empezó en una playa de Ceará.",
       body:
         "Una dentista viendo a viajeros de todo el mundo llegar a Ilha do Guajiru, un pequeño spot de kite en el noreste de Brasil. Algunos se lastimaban. Otros se enfermaban. Nadie sabía a dónde ir, en quién confiar ni cómo hacerse entender. Así que construimos lo que faltaba. Una red pequeña, humana, que viaja con el paciente.",
-      signature: "Bianca Albuquerque, cirujana dentista con MBA en gestión de negocios, en Ceará.",
+      signature: "Bianca Albuquerque, cirujana dentista con MBA en gestión de negocios.",
     },
     what: {
       title: "Qué es SalbCare",
@@ -294,7 +294,7 @@ const COPY: Record<HubLang, Copy> = {
       },
       supply: {
         title: "SalbCare Pro",
-        body: "El lado de la clínica. La infraestructura que permite a clínicas locales recibir pacientes de todo el mundo.",
+        body: "El lado de la clínica. Una vitrina que presenta clínicas locales aprobadas a pacientes que necesitan atención cerca.",
       },
     },
     kite: {
@@ -312,17 +312,17 @@ const COPY: Record<HubLang, Copy> = {
     },
     pro: {
       eyebrow: "PARA CLÍNICAS · SALBCARE PRO",
-      title: "Atiende a pacientes de todo el mundo.",
-      intro: "Un nuevo mercado para tu clínica. No otro software de gestión.",
+      title: "Una vitrina con curaduría para tu clínica.",
+      intro: "SalbCare Pro es una vitrina que conecta pacientes con profesionales de salud aprobados por la curaduría SalbCare. Tu clínica llega al paciente adecuado en el momento adecuado.",
       bullets: [
-        "Pacientes internacionales",
-        "Comunicación multilingüe",
-        "Teleconsulta",
-        "Pagos internacionales",
-        "Crece más allá de la demanda local",
+        "Vitrina curada para clínicas aprobadas",
+        "Pacientes que ya confían en la marca SalbCare",
+        "Atención multilingüe con el paciente",
+        "Listo para teleconsulta",
+        "Sin software de gestión que aprender",
       ],
-      label: "Abre la próxima temporada. Únete a la lista de espera.",
-      cta: "Unirme a la lista de espera",
+      label: "Inscripciones abiertas. Únete a la lista curada.",
+      cta: "Quiero postularme",
     },
     how: {
       title: "Cómo funciona",
@@ -506,13 +506,13 @@ const Index = () => {
               >
                 {t.hero.ctaCare}
               </Link>
-              <a
-                href="#clinics"
+              <Link
+                to="/partnership"
                 className="salb-btn salb-btn-ghost"
                 onClick={() => trackCtaClick("home_hero_pro", "homepage", { lang })}
               >
                 {t.hero.ctaClinic}
-              </a>
+              </Link>
             </div>
             <div
               data-fade
@@ -612,20 +612,30 @@ const Index = () => {
                 alignItems: "stretch",
               }}
             >
-              <div className="salb-card" style={{ borderColor: "rgba(201,164,92,0.28)" }}>
+              <Link
+                to="/kite"
+                className="salb-card salb-cycle-card"
+                style={{ borderColor: "rgba(201,164,92,0.28)", cursor: "pointer", textDecoration: "none", display: "block" }}
+                onClick={() => trackCtaClick("home_cycle_kite", "homepage", { lang })}
+              >
                 <p className="salb-eyebrow" style={{ color: GOLD }}>DEMAND</p>
                 <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
                   {t.cycle.demand.title}
                 </h3>
                 <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.demand.body}</p>
-              </div>
-              <div className="salb-card" style={{ borderColor: "rgba(63,208,189,0.28)" }}>
+              </Link>
+              <Link
+                to="/partnership"
+                className="salb-card salb-cycle-card"
+                style={{ borderColor: "rgba(63,208,189,0.28)", cursor: "pointer", textDecoration: "none", display: "block" }}
+                onClick={() => trackCtaClick("home_cycle_pro", "homepage", { lang })}
+              >
                 <p className="salb-eyebrow" style={{ color: TEAL }}>INFRASTRUCTURE</p>
                 <h3 className="salb-serif" style={{ fontSize: 22, color: "#fff", margin: "10px 0 8px" }}>
                   {t.cycle.supply.title}
                 </h3>
                 <p style={{ color: TEXT_MUTED, fontSize: 14.5, lineHeight: 1.6, margin: 0 }}>{t.cycle.supply.body}</p>
-              </div>
+              </Link>
             </div>
           </div>
         </section>
@@ -722,7 +732,7 @@ const Index = () => {
               </p>
               <div>
                 <Link
-                  to="/pro"
+                  to="/partnership"
                   className="salb-btn salb-btn-ghost"
                   onClick={() => trackCtaClick("home_pro_waitlist", "homepage", { lang })}
                 >
@@ -829,7 +839,7 @@ const Index = () => {
                 {t.finalCta.ctaCare}
               </Link>
               <Link
-                to="/pro"
+                to="/partnership"
                 className="salb-btn salb-btn-ghost"
                 onClick={() => trackCtaClick("home_final_pro", "homepage", { lang })}
               >
