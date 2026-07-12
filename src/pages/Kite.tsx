@@ -401,14 +401,16 @@ export default function Kite() {
       {/* Hero */}
       <section
         id="top"
-        className="relative"
+        className="relative overflow-hidden"
         style={{
-          background: `linear-gradient(135deg, ${BRAND.ink} 0%, #1a3a4a 50%, ${BRAND.tealDark} 100%)`,
+          backgroundImage: `linear-gradient(135deg, rgba(13,27,42,0.78) 0%, rgba(13,27,42,0.55) 55%, rgba(0,140,124,0.65) 100%), url(${heroGuajiru})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           color: "#fff",
         }}
       >
         <div
-          className="mx-auto text-center px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20 flex flex-col items-center"
+          className="relative mx-auto text-center px-6 md:px-12 pt-[104px] md:pt-[120px] pb-14 md:pb-20 flex flex-col items-center"
           style={{ maxWidth: 1200 }}
         >
           <span
