@@ -333,6 +333,8 @@ const App = () => (
               <Route path="/sync-guest-data" element={<ProfessionalRoute><SyncGuestData /></ProfessionalRoute>} />
               <Route path="/sync-guest-data/done" element={<ProfessionalRoute><SyncGuestDataDone /></ProfessionalRoute>} />
               <Route path="/profile" element={<ProfessionalRoute allowGuest><Profile /></ProfessionalRoute>} />
+              <Route path="/complete-profile" element={<Navigate to="/profile" replace />} />
+              
               
               <Route path="/profile/blocks" element={<ProfessionalRoute><ProfileBlocks /></ProfessionalRoute>} />
               <Route path="/perfil/salbscore" element={<ProfessionalRoute><SalbScore /></ProfessionalRoute>} />

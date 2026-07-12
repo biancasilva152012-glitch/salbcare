@@ -8,9 +8,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  MessageCircle,
   Instagram,
-  Globe,
   X,
   HeartPulse,
 } from "lucide-react";
@@ -201,20 +199,6 @@ const CATEGORY_LABEL: Record<Lang, Record<string, string>> = {
   },
 };
 
-function buildContactHref(p: Partner, waMsgBuilder: (name: string) => string) {
-  const waHref = p.whatsapp
-    ? `https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(waMsgBuilder(p.name))}`
-    : null;
-  const fallbackHref = !waHref
-    ? p.website
-      ? p.website
-      : p.instagram
-      ? `https://instagram.com/${p.instagram.replace(/^@/, "")}`
-      : null
-    : null;
-  return { waHref, contactHref: waHref || fallbackHref };
-}
-
 function assistanceHref(msg: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
@@ -364,11 +348,9 @@ export default function LocalPartnerNetwork({ lang }: { lang: Lang }) {
                   index={i}
                   total={partners.length}
                   verifiedLabel={t.verified}
-                  contactLabel={t.contact}
                   learnMoreLabel={t.learnMore}
                   openDetailsLabel={t.openDetails(p.name)}
                   categoryLabel={catLabels[p.category] || p.category}
-                  waMsgBuilder={t.waMsg}
                   onOpen={() => setActive(p)}
                 />
               ))}
@@ -442,26 +424,20 @@ function PartnerCard({
   index,
   total,
   verifiedLabel,
-  contactLabel,
   learnMoreLabel,
   openDetailsLabel,
   categoryLabel,
-  waMsgBuilder,
   onOpen,
 }: {
   p: Partner;
   index: number;
   total: number;
   verifiedLabel: string;
-  contactLabel: string;
   learnMoreLabel: string;
   openDetailsLabel: string;
   categoryLabel: string;
-  waMsgBuilder: (name: string) => string;
   onOpen: () => void;
 }) {
-  const { waHref, contactHref } = buildContactHref(p, waMsgBuilder);
-
   return (
     <article
       role="group"
@@ -482,7 +458,7 @@ function PartnerCard({
             src={p.image_url}
             alt={`${p.name} — ${categoryLabel}`}
             loading="lazy"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           />
         ) : (
           <div
@@ -519,11 +495,11 @@ function PartnerCard({
             {p.description}
           </p>
         )}
-        <div className="mt-auto flex flex-col gap-2">
+        <div className="mt-auto">
           <button
             type="button"
             onClick={onOpen}
-            className="lpn-btn-focus inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
+            className="lpn-btn-focus w-full inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
             style={{
               background: BRAND.ink,
               color: "#fff",
@@ -534,24 +510,6 @@ function PartnerCard({
             {learnMoreLabel}
             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </button>
-          {contactHref && (
-            <a
-              href={contactHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${contactLabel}: ${p.name}`}
-              className="lpn-btn-focus inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
-              style={{
-                background: waHref ? "#25D366" : `${BRAND.teal}15`,
-                color: waHref ? "#fff" : BRAND.tealDark,
-                minHeight: 44,
-                padding: "0 16px",
-              }}
-            >
-              {waHref && <MessageCircle className="h-3.5 w-3.5" aria-hidden />}
-              {contactLabel}
-            </a>
-          )}
         </div>
       </div>
     </article>
@@ -569,7 +527,6 @@ function PartnerDetailsModal({
   t: (typeof COPY)[Lang];
   categoryLabel: string;
 }) {
-  const { waHref, contactHref } = buildContactHref(partner, t.waMsg);
   const assistHref = assistanceHref(t.assistanceMsg(partner.name, categoryLabel));
 
   return (
@@ -602,7 +559,7 @@ function PartnerDetailsModal({
             <img
               src={partner.image_url}
               alt={`${partner.name} — ${categoryLabel}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
             />
           ) : (
             <div
@@ -660,46 +617,20 @@ function PartnerDetailsModal({
             </div>
           )}
 
-          {(partner.whatsapp || partner.instagram || partner.website) && (
+          {partner.instagram && (
             <div>
               <div className="text-[11px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: BRAND.ink, opacity: 0.5 }}>
-                {t.contactSection}
+                {t.socials}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {waHref && (
-                  <a
-                    href={waHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4"
-                    style={{ background: "#25D366", color: "#fff", minHeight: 40 }}
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" aria-hidden /> WhatsApp
-                  </a>
-                )}
-                {partner.instagram && (
-                  <a
-                    href={`https://instagram.com/${partner.instagram.replace(/^@/, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
-                    style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
-                  >
-                    <Instagram className="h-3.5 w-3.5" aria-hidden /> @{partner.instagram.replace(/^@/, "")}
-                  </a>
-                )}
-                {partner.website && (
-                  <a
-                    href={partner.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
-                    style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
-                  >
-                    <Globe className="h-3.5 w-3.5" aria-hidden /> Website
-                  </a>
-                )}
-              </div>
+              <a
+                href={`https://instagram.com/${partner.instagram.replace(/^@/, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="lpn-btn-focus inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-4 border"
+                style={{ borderColor: `${BRAND.ink}20`, color: BRAND.ink, minHeight: 40 }}
+              >
+                <Instagram className="h-3.5 w-3.5" aria-hidden /> @{partner.instagram.replace(/^@/, "")}
+              </a>
             </div>
           )}
 
@@ -730,18 +661,6 @@ function PartnerDetailsModal({
               </p>
             )}
           </div>
-
-          {contactHref && !waHref && (
-            <a
-              href={contactHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="lpn-btn-focus inline-flex w-full items-center justify-center gap-1.5 rounded-full text-xs font-semibold"
-              style={{ background: `${BRAND.teal}15`, color: BRAND.tealDark, minHeight: 44 }}
-            >
-              {t.contact}
-            </a>
-          )}
         </div>
       </div>
     </div>
