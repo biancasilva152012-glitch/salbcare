@@ -95,7 +95,7 @@ const Login = () => {
         // Honor the `next` redirect after login (e.g. back to /profile)
         navigate(safeNext);
       } else if (!(profile as any)?.council_number) {
-        navigate("/complete-profile");
+        navigate("/profile");
       } else {
         navigate("/dashboard");
       }
