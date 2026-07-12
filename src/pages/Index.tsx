@@ -102,7 +102,7 @@ const COPY: Record<HubLang, Copy> = {
       },
       supply: {
         title: "SalbCare Pro",
-        body: "The clinic side. The infrastructure that lets local clinics receive patients from anywhere in the world.",
+        body: "The clinic side. A marketplace that puts approved local clinics in front of patients who need care nearby.",
       },
     },
     kite: {
