@@ -839,7 +839,7 @@ const Index = () => {
                 {t.finalCta.ctaCare}
               </Link>
               <Link
-                to="/pro"
+                to="/partnership"
                 className="salb-btn salb-btn-ghost"
                 onClick={() => trackCtaClick("home_final_pro", "homepage", { lang })}
               >
