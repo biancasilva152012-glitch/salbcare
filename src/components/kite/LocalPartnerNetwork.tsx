@@ -468,7 +468,7 @@ function PartnerCard({
         {p.image_url ? (
           <img
             src={p.image_url}
-            alt={`${p.name} — ${categoryLabel}`}
+            alt={`${p.name}, ${categoryLabel}`}
             loading="lazy"
             className="w-full h-full object-cover object-center"
           />
@@ -572,7 +572,7 @@ function PartnerDetailsModal({
           {partner.image_url ? (
             <img
               src={partner.image_url}
-              alt={`${partner.name} — ${categoryLabel}`}
+              alt={`${partner.name}, ${categoryLabel}`}
               className="w-full h-full object-cover object-center"
             />
           ) : (
