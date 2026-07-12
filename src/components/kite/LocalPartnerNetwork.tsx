@@ -440,26 +440,20 @@ function PartnerCard({
   index,
   total,
   verifiedLabel,
-  contactLabel,
   learnMoreLabel,
   openDetailsLabel,
   categoryLabel,
-  waMsgBuilder,
   onOpen,
 }: {
   p: Partner;
   index: number;
   total: number;
   verifiedLabel: string;
-  contactLabel: string;
   learnMoreLabel: string;
   openDetailsLabel: string;
   categoryLabel: string;
-  waMsgBuilder: (name: string) => string;
   onOpen: () => void;
 }) {
-  const { waHref, contactHref } = buildContactHref(p, waMsgBuilder);
-
   return (
     <article
       role="group"
@@ -480,7 +474,7 @@ function PartnerCard({
             src={p.image_url}
             alt={`${p.name} — ${categoryLabel}`}
             loading="lazy"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           />
         ) : (
           <div
@@ -517,11 +511,11 @@ function PartnerCard({
             {p.description}
           </p>
         )}
-        <div className="mt-auto flex flex-col gap-2">
+        <div className="mt-auto">
           <button
             type="button"
             onClick={onOpen}
-            className="lpn-btn-focus inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
+            className="lpn-btn-focus w-full inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
             style={{
               background: BRAND.ink,
               color: "#fff",
@@ -532,24 +526,6 @@ function PartnerCard({
             {learnMoreLabel}
             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </button>
-          {contactHref && (
-            <a
-              href={contactHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${contactLabel}: ${p.name}`}
-              className="lpn-btn-focus inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors hover:brightness-95"
-              style={{
-                background: waHref ? "#25D366" : `${BRAND.teal}15`,
-                color: waHref ? "#fff" : BRAND.tealDark,
-                minHeight: 44,
-                padding: "0 16px",
-              }}
-            >
-              {waHref && <MessageCircle className="h-3.5 w-3.5" aria-hidden />}
-              {contactLabel}
-            </a>
-          )}
         </div>
       </div>
     </article>
