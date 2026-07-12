@@ -533,11 +533,13 @@ function PartnerDetailsModal({
   onClose,
   t,
   categoryLabel,
+  description,
 }: {
   partner: Partner;
   onClose: () => void;
   t: (typeof COPY)[Lang];
   categoryLabel: string;
+  description: string | null;
 }) {
   const assistHref = assistanceHref(t.assistanceMsg(partner.name, categoryLabel));
 
