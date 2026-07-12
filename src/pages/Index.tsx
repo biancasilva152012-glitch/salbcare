@@ -57,7 +57,7 @@ type Copy = {
   };
   how: { title: string; subtitle: string; steps: [string, string, string, string] };
   where: { title: string; line: string; next: string };
-  trust: { title: string; line: string; badges: [string, string, string] };
+  trust: { title: string; line: string; badges: [string, string, string, string] };
   finalCta: { headline: string; ctaCare: string; ctaClinic: string };
   footerTag: string;
 };
