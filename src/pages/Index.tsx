@@ -79,7 +79,7 @@ const COPY: Record<HubLang, Copy> = {
       title: "It started on a beach in Ceará.",
       body:
         "A dentist watching travelers from all over the world arrive in Ilha do Guajiru, a small kite spot in the Brazilian northeast. Some got hurt. Some got sick. None knew where to go, who to trust, or how to be understood. So we built the thing we wished existed. A small, human network that travels with the patient.",
-      signature: "Bianca Albuquerque, dental surgeon with an MBA in business management, in Ceará.",
+      signature: "Bianca Albuquerque, dental surgeon with an MBA in business management.",
     },
     what: {
       title: "What is SalbCare",
