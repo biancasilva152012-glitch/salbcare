@@ -437,6 +437,7 @@ function PartnerCard({
   learnMoreLabel,
   openDetailsLabel,
   categoryLabel,
+  description,
   onOpen,
 }: {
   p: Partner;
@@ -446,6 +447,7 @@ function PartnerCard({
   learnMoreLabel: string;
   openDetailsLabel: string;
   categoryLabel: string;
+  description: string | null;
   onOpen: () => void;
 }) {
   return (
