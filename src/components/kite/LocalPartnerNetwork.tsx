@@ -677,18 +677,6 @@ function PartnerDetailsModal({
               </p>
             )}
           </div>
-
-          {contactHref && !waHref && (
-            <a
-              href={contactHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="lpn-btn-focus inline-flex w-full items-center justify-center gap-1.5 rounded-full text-xs font-semibold"
-              style={{ background: `${BRAND.teal}15`, color: BRAND.tealDark, minHeight: 44 }}
-            >
-              {t.contact}
-            </a>
-          )}
         </div>
       </div>
     </div>
