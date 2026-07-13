@@ -314,8 +314,11 @@ const PartnerFormDialog = ({
   const handleUpload = async (file: File) => {
     setUploading(true);
     try {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !userData?.user?.id) throw new Error("Sessão expirada");
+      const uid = userData.user.id;
       const ext = file.name.split(".").pop();
-      const path = `local-partners/${crypto.randomUUID()}.${ext}`;
+      const path = `${uid}/local-partners/${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from("professional-assets").upload(path, file, {
         cacheControl: "3600",
         upsert: false,
