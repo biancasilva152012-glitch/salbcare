@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { ArrowLeft, MessageCircle, Mail, ShieldCheck } from "lucide-react";
 import logoSalb from "/pwa-icon-512.png";
-import LanguageSwitcher, { HubLang, detectInitialLang } from "@/components/shared/LanguageSwitcher";
+import { HubLang, detectInitialLang } from "@/components/shared/LanguageSwitcher";
 
 const BRAND = { teal: "#00B4A0", tealDark: "#008C7C", ink: "#0D1B2A", cream: "#F8F9FA" };
 
