@@ -114,7 +114,7 @@ const COPY: Record<Lang, {
       "Los precios de la consulta los define cada profesional. SalbCare solo hace la curaduría de la red. No fijamos tarifas.",
     ctaLead: "¿Eres un negocio local o profesional de la salud?",
     ctaSub: "Únete a la red de socios SalbCare",
-    become: "Become a Partner",
+    become: "Conviértete en socio",
     empty: "Nuevos socios están siendo añadidos a la red.",
     contact: "Contactar socio",
     learnMore: "Ver más",
