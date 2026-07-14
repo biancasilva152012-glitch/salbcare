@@ -146,7 +146,7 @@ const COPY: Record<Lang, {
       "Os valores das consultas são definidos por cada profissional. A SalbCare apenas faz a curadoria da rede. Nós não definimos os preços.",
     ctaLead: "Você é um negócio local ou profissional de saúde?",
     ctaSub: "Junte-se à rede de parceiros da SalbCare",
-    become: "Become a Partner",
+    become: "Torne-se parceiro",
     empty: "Novos parceiros estão sendo adicionados à rede.",
     contact: "Falar com parceiro",
     learnMore: "Saiba mais",
