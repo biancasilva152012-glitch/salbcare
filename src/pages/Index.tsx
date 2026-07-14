@@ -68,7 +68,7 @@ const COPY: Record<HubLang, Copy> = {
     hero: {
       eyebrow: "HEALTHCARE MARKETPLACE",
       headline: "Care that connects.",
-      headlineAccent: "Caring for those who care and those who need care.",
+      headlineAccent: "Caring for those who care, for those in need.",
       subhead:
         "SalbCare is a digital ecosystem that connects patients to trusted healthcare professionals. Simple to find care. Powerful to grow a practice.",
       ctaCare: "Find a professional",
