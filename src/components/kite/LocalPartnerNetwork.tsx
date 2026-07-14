@@ -568,14 +568,16 @@ function PartnerDetailsModal({
         </button>
 
         <div
-          className="relative h-56 sm:h-64"
+          className="relative h-64 sm:h-80 overflow-hidden"
           style={{ background: `linear-gradient(135deg, ${BRAND.teal}20 0%, ${BRAND.ink}10 100%)` }}
         >
           {partner.image_url ? (
             <img
               src={partner.image_url}
               alt={`${partner.name}, ${categoryLabel}`}
-              className="w-full h-full object-cover object-center"
+              decoding="async"
+              className="w-full h-full object-cover"
+              style={{ objectPosition: "center 25%" }}
             />
           ) : (
             <div
