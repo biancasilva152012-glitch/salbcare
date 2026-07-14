@@ -131,11 +131,34 @@ export default function Partnership() {
             {t.back}
           </Link>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher
-              value={lang}
-              onChange={setLang}
-              className="!border-black/10 !bg-black/[0.03]"
-            />
+            <div
+              role="group"
+              aria-label="Language"
+              className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-black/[0.03] p-1"
+            >
+              {(["pt", "en", "es"] as HubLang[]).map((l) => {
+                const active = l === lang;
+                return (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => {
+                      try {
+                        window.localStorage.setItem("salbcare_lang", l);
+                      } catch {}
+                      setLang(l);
+                    }}
+                    aria-pressed={active}
+                    className={`px-2.5 py-1 text-xs font-medium uppercase tracking-wider rounded-full transition-colors ${
+                      active ? "text-white" : "text-black/60 hover:text-black"
+                    }`}
+                    style={active ? { background: BRAND.ink } : undefined}
+                  >
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
             <div className="flex items-center gap-2">
               <img src={logoSalb} alt="SalbCare" width={28} height={28} style={{ width: 28, height: 28 }} />
               <span className="font-semibold">SalbCare</span>
