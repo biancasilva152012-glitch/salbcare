@@ -68,7 +68,7 @@ const COPY: Record<HubLang, Copy> = {
     hero: {
       eyebrow: "HEALTHCARE MARKETPLACE",
       headline: "Care that connects.",
-      headlineAccent: "Caring for those who care and those who need care.",
+      headlineAccent: "Caring for those who care, for those in need.",
       subhead:
         "SalbCare is a digital ecosystem that connects patients to trusted healthcare professionals. Simple to find care. Powerful to grow a practice.",
       ctaCare: "Find a professional",
@@ -164,7 +164,7 @@ const COPY: Record<HubLang, Copy> = {
     hero: {
       eyebrow: "MARKETPLACE DE SAÚDE",
       headline: "Cuidado que conecta.",
-      headlineAccent: "Cuidando de quem cuida e de quem precisa.",
+      headlineAccent: "Cuidando de quem cuida a quem precisa.",
       subhead:
         "A SalbCare é um ecossistema digital que conecta pacientes a profissionais de saúde de confiança. Simples para encontrar cuidado. Potente para crescer uma carreira.",
       ctaCare: "Encontrar profissional",
@@ -260,7 +260,7 @@ const COPY: Record<HubLang, Copy> = {
     hero: {
       eyebrow: "MARKETPLACE DE SALUD",
       headline: "Cuidado que conecta.",
-      headlineAccent: "Cuidando a quien cuida y a quien necesita cuidado.",
+      headlineAccent: "Cuidando a quien cuida, a quien necesita.",
       subhead:
         "SalbCare es un ecosistema digital que conecta pacientes con profesionales de salud de confianza. Simple para encontrar atención. Potente para hacer crecer una carrera.",
       ctaCare: "Encontrar profesional",
