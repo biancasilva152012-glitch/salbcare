@@ -88,19 +88,38 @@ serve(async (req) => {
     });
 
     const origin = pickOrigin(req);
+    const isBookingFee = procedure.type === "presencial";
+    const feeDescription = isBookingFee
+      ? `Taxa de agendamento SalbCare — ${procedure.label}. Não inclui o valor da consulta, cobrado diretamente pelo profissional.`
+      : `${procedure.label} — SalbCare`;
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: email,
       line_items: [{ price: procedure.priceId, quantity: 1 }],
-      payment_method_types: ["card"],
+      // Omit payment_method_types so Stripe automatically shows enabled wallets
+      // (Apple Pay + Google Pay) alongside card. Enabling wallets in the Stripe
+      // Dashboard makes them appear one-tap on supported devices.
+      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+      submit_type: "pay",
+      payment_intent_data: {
+        description: feeDescription,
+        statement_descriptor_suffix: isBookingFee ? "SALBCARE FEE" : "SALBCARE",
+        metadata: {
+          kite_booking: "true",
+          procedure: procedure.id,
+          is_booking_fee: String(isBookingFee),
+        },
+      },
       success_url: `${origin}/kite/confirmed?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/kite`,
-      locale: "en",
+      locale: "pt-BR",
       metadata: {
         kite_booking: "true",
         procedure: procedure.id,
         procedure_label: procedure.label,
         type: procedure.type,
+        is_booking_fee: String(isBookingFee),
         patient_name,
         email,
         preferred_date,
