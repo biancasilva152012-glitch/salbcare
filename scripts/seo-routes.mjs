@@ -114,6 +114,18 @@ export const ROUTES = [
     htmlLang: "en",
   },
   {
+    path: "/bio",
+    title: "SalbCare | International Health Hub",
+    description:
+      "Connect with trusted healthcare professionals, travel assistance and exclusive partners across Brazil's top kitesurf destinations.",
+    canonical: `${SITE}/bio`,
+    ogUrl: `${SITE}/bio`,
+    locale: "en_US",
+    htmlLang: "en",
+    changefreq: "monthly",
+    priority: "0.6",
+  },
+  {
     path: "/journal",
     title: "Blog SalbCare | Conteúdo para Profissionais de Saúde",
     description:
