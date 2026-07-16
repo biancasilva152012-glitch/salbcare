@@ -73,6 +73,7 @@ const SyncGuestDataDone = lazyWithRetry(() => import("./pages/SyncGuestDataDone"
 const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
 const GuestEntry = lazyWithRetry(() => import("./pages/GuestEntry"), "GuestEntry");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
+const Bio = lazyWithRetry(() => import("./pages/Bio"), "Bio");
 const OAuthConsent = lazyWithRetry(() => import("./pages/OAuthConsent"), "OAuthConsent");
 const CeoDashboard = lazyWithRetry(() => import("./pages/CeoDashboard"), "CeoDashboard");
 const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"), "AdminOverviewPage");
@@ -205,6 +206,7 @@ const App = () => (
               <Route path="/kite/confirmed" element={<KiteConfirmed />} />
               <Route path="/international/confirmed" element={<KiteConfirmed />} />
               <Route path="/kitecare/confirmed" element={<KiteConfirmed />} />
+              <Route path="/bio" element={<Bio />} />
 
               {/* ============================================================ */}
               {/* JOURNAL (formerly /blog) — canonical routes                  */}
