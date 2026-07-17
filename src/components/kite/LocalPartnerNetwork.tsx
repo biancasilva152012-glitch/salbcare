@@ -466,14 +466,23 @@ function PartnerCard({
         style={{ background: `linear-gradient(135deg, ${BRAND.teal}20 0%, ${BRAND.ink}10 100%)` }}
       >
         {p.image_url ? (
-          <img
-            src={p.image_url}
-            alt={`${p.name}, ${categoryLabel}`}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-cover"
-            style={{ objectPosition: "center 25%", imageRendering: "auto" }}
-          />
+          (() => {
+            const isBianca = /bianca/i.test(p.name);
+            return (
+              <img
+                src={p.image_url}
+                alt={`${p.name}, ${categoryLabel}`}
+                loading="lazy"
+                decoding="async"
+                className={`w-full h-full ${isBianca ? "object-contain" : "object-cover"}`}
+                style={{
+                  objectPosition: "center",
+                  imageRendering: "auto",
+                  background: isBianca ? BRAND.ink : undefined,
+                }}
+              />
+            );
+          })()
         ) : (
           <div
             className="w-full h-full flex items-center justify-center text-4xl font-bold"
