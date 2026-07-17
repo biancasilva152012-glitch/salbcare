@@ -401,10 +401,17 @@ const MARKUP = `
 const LINKS = {
   patient: "https://salbcare.com/kite",
   community: "https://chat.whatsapp.com/KVHchlB6w6d1CWpI8I3EBZ?s=cl&p=i&ilr=4&amv=0",
-  stripePartner: "COLE_AQUI_SEU_PAYMENT_LINK_DO_STRIPE",
+  // Central SalbCare WhatsApp with a pre-filled founder-partner message.
+  // Replace with a Stripe Payment Link once created; the button label stays "Garantir minha vaga agora".
+  stripePartner:
+    "https://wa.me/5588996924700?text=" +
+    encodeURIComponent(
+      "Olá SalbCare! Quero garantir minha vaga de parceiro fundador (R$259 + R$69/mês). Podem me enviar o link de pagamento?",
+    ),
   formEmail: "biancadealbuquerquep@gmail.com",
   whatsappBianca: "",
 };
+
 
 const I18N: Record<string, Record<string, string>> = {
   pt: {

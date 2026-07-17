@@ -8,7 +8,7 @@
 // SW keeps the same behavior guarantees for dev/preview and for any environment where the
 // Workbox build is not applied.
 
-const CACHE_VERSION = "salbcare-v2026-07-12-2";
+const CACHE_VERSION = "salbcare-v2026-07-17-1";
 const HTML_CACHE = `${CACHE_VERSION}-html`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
