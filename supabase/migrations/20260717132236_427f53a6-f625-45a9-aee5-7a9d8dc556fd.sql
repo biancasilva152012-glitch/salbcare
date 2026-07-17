@@ -1,0 +1,1 @@
+UPDATE public.local_partners SET image_url = '/__l5e/assets-v1/c3dcb230-1da9-498d-91c4-f1972ce070e1/bianca-albuquerque-v2.jpeg' WHERE id = '8659ffdb-16d6-423d-9744-9f54be2f07ee';
