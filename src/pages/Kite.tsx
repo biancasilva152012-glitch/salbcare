@@ -7,7 +7,7 @@ import KiteWhatsappBookingModal from "@/components/kite/KiteWhatsappBookingModal
 import LocalPartnerNetwork from "@/components/kite/LocalPartnerNetwork";
 import logoSalb from "/pwa-icon-512.png";
 import heroGuajiru from "@/assets/hero-guajiru-kite.jpg";
-import { Globe, Lock } from "lucide-react";
+import { Globe } from "lucide-react";
 
 const BOOKING_FEE = 50;
 
@@ -40,30 +40,30 @@ const T = {
       trust: ["European patients", "English & Spanish", "International cards"],
     },
     tabs: { dental: "Dental", physio: "Physio & Recovery" },
-    dentalIntro: "In-person care at our clinic in Ilha do Guajiru. Pay R$50 online to reserve your spot. You settle the balance at the clinic.",
+    dentalIntro: "In-person care at our clinic in Ilha do Guajiru. Reserve online with the SalbCare booking fee.",
     physioIntro: "Sore from kiting? Our physiotherapist specializes in kite recovery and sports massage.",
-    inPersonBanner: "Your R$50 holds the appointment. Pay the remaining balance at the clinic on the day of your visit.",
+    inPersonBanner: "Prices may vary depending on the professional. The remaining balance is paid directly at the consultation.",
     how: {
       h2: "How it works",
       inLabel: "HOW TO BOOK",
-      inSteps: ["Choose your procedure", "Pay the R$50 booking fee", "Meet at the clinic or at your hotel", "Pay the remaining balance"],
+      inSteps: ["Choose your procedure", "Pay the SalbCare booking fee", "Attend your consultation", "Settle the remaining balance with the professional"],
     },
     testimonialsH2: "What kitesurfers say",
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Quick cleaning between sessions. English-speaking dentist, super clean clinic." },
-      { name: "Sophie T.", flag: "🇫🇷", text: "Physio came straight to my pousada. Two sessions and my lower back was finally free." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Two physio sessions and my lower back was finally free." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Crashed hard, shoulder was wrecked. Three physio sessions later, I was back IN the water." },
     ],
     finalH2: "Book your appointment today.",
     card: {
       total: "total",
       euCompare: (eu: number) => `€${eu} in Europe`,
-      tagPartial: "R$50 now, balance at the clinic",
+      tagPartial: "Final price set by the professional",
       ctaIn: (n: number) => `Reserve for R$${n}`,
     },
     locationLabels: {
-      at_hotel: "The professional comes to your hotel.",
-      at_clinic: "Attended at the clinic.",
+      at_hotel: "",
+      at_clinic: "",
     } as Record<LocationType, string>,
     procedures: {
       "dental-cleaning":  "Cleaning & Check-up",
@@ -96,30 +96,30 @@ const T = {
       trust: ["Pacientes europeos", "Inglés y español", "Tarjetas internacionales"],
     },
     tabs: { dental: "Dental", physio: "Fisio y recuperación" },
-    dentalIntro: "Atención presencial en nuestra clínica de Ilha do Guajiru. Paga R$50 en línea para reservar tu cupo. El resto se abona en la clínica.",
+    dentalIntro: "Atención presencial en nuestra clínica de Ilha do Guajiru. Reserva en línea con la tarifa de reserva SalbCare.",
     physioIntro: "¿Adolorido del kite? Nuestro fisioterapeuta se especializa en recuperación post-kite y masaje deportivo.",
-    inPersonBanner: "Tus R$50 reservan la cita. Paga el saldo restante en la clínica el día de tu visita.",
+    inPersonBanner: "Los precios pueden variar según el profesional. El saldo restante se paga directamente en la consulta.",
     how: {
       h2: "Cómo funciona",
       inLabel: "CÓMO RESERVAR",
-      inSteps: ["Elige tu procedimiento", "Paga la tarifa de reserva de R$50", "Atención en la clínica o en tu hotel", "Paga el saldo restante"],
+      inSteps: ["Elige tu procedimiento", "Paga la tarifa de reserva SalbCare", "Asiste a tu consulta", "Paga el saldo restante al profesional"],
     },
     testimonialsH2: "Lo que dicen los kitesurfistas",
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Limpieza rápida entre sesiones. Dentista en inglés, clínica impecable." },
-      { name: "Sophie T.", flag: "🇫🇷", text: "El fisio vino directo a mi pousada. Dos sesiones y mi lumbar quedó libre." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Dos sesiones de fisio y mi lumbar quedó libre." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Me caí fuerte, hombro destrozado. Tres sesiones de fisio después, estaba DE VUELTA en el agua." },
     ],
     finalH2: "Reserva tu cita hoy.",
     card: {
       total: "total",
       euCompare: (eu: number) => `€${eu} en Europa`,
-      tagPartial: "R$50 ahora, saldo en la clínica",
+      tagPartial: "Precio final definido por el profesional",
       ctaIn: (n: number) => `Reservar por R$${n}`,
     },
     locationLabels: {
-      at_hotel: "El profesional va a tu hotel.",
-      at_clinic: "Atendido en la clínica.",
+      at_hotel: "",
+      at_clinic: "",
     } as Record<LocationType, string>,
     procedures: {
       "dental-cleaning":  "Limpieza y revisión",
@@ -152,30 +152,30 @@ const T = {
       trust: ["Pacientes internacionais", "Português, inglês & espanhol", "Cartões internacionais"],
     },
     tabs: { dental: "Odontologia", physio: "Fisio & Recuperação" },
-    dentalIntro: "Atendimento presencial na nossa clínica em Ilha do Guajiru. Pague R$50 online para reservar. O restante é acertado na clínica.",
+    dentalIntro: "Atendimento presencial na nossa clínica em Ilha do Guajiru. Reserve online com a taxa de agendamento SalbCare.",
     physioIntro: "Dores após o kite? Nosso fisioterapeuta é especializado em recuperação pós-kite e massagem esportiva.",
-    inPersonBanner: "Os R$50 seguram o horário. Você paga o valor restante na clínica no dia do atendimento.",
+    inPersonBanner: "Os valores podem variar conforme o profissional. O restante é pago diretamente na consulta.",
     how: {
       h2: "Como funciona",
       inLabel: "COMO AGENDAR",
-      inSteps: ["Escolha seu procedimento", "Pague a taxa de R$50", "Atendimento na clínica ou no seu hotel", "Pague o valor restante"],
+      inSteps: ["Escolha seu procedimento", "Pague a taxa de agendamento SalbCare", "Compareça à consulta", "Acerte o valor restante com o profissional"],
     },
     testimonialsH2: "O que dizem os kitesurfistas",
     testimonials: [
       { name: "Lars M.", flag: "🇩🇪", text: "Limpeza rápida entre sessões. Dentista que fala inglês, clínica impecável." },
-      { name: "Sophie T.", flag: "🇫🇷", text: "O fisio veio direto à minha pousada. Duas sessões e minha lombar liberada." },
+      { name: "Sophie T.", flag: "🇫🇷", text: "Duas sessões de fisio e minha lombar liberada." },
       { name: "Pieter V.", flag: "🇳🇱", text: "Cai forte, ombro destruído. Três sessões depois, estava de volta na água." },
     ],
     finalH2: "Agende sua consulta hoje.",
     card: {
       total: "total",
       euCompare: (eu: number) => `€${eu} na Europa`,
-      tagPartial: "R$50 agora, restante na clínica",
+      tagPartial: "Valor final definido pelo profissional",
       ctaIn: (n: number) => `Reservar por R$${n}`,
     },
     locationLabels: {
-      at_hotel: "O profissional vai até o seu hotel.",
-      at_clinic: "Atendimento na clínica.",
+      at_hotel: "",
+      at_clinic: "",
     } as Record<LocationType, string>,
     procedures: {
       "dental-cleaning":  "Limpeza e avaliação",
@@ -735,14 +735,13 @@ function ProcedureCard({
 
       <div className="mb-6">
         <span
-          className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
+          className="inline-flex items-center gap-1"
           style={{
-            background: "#FEF3C7",
-            color: "#92400E",
-            padding: "8px 14px",
+            color: BRAND.muted,
+            fontSize: 10.5,
+            lineHeight: 1.3,
           }}
         >
-          <Lock className="w-3 h-3" aria-hidden />
           {t.card.tagPartial}
         </span>
       </div>
@@ -764,11 +763,11 @@ function ProcedureCard({
 
 function InfoBanner({ text }: { text: string }) {
   return (
-    <div
-      className="mt-8 rounded-xl px-5 py-4 text-sm text-center"
-      style={{ background: "#FEF3C7", border: "1px solid #FDE68A", color: "#92400E" }}
+    <p
+      className="mt-6 text-center"
+      style={{ color: BRAND.muted, fontSize: 11, lineHeight: 1.5 }}
     >
       {text}
-    </div>
+    </p>
   );
 }
