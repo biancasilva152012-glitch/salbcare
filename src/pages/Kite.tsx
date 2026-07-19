@@ -735,14 +735,13 @@ function ProcedureCard({
 
       <div className="mb-6">
         <span
-          className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold"
+          className="inline-flex items-center gap-1"
           style={{
-            background: "#FEF3C7",
-            color: "#92400E",
-            padding: "8px 14px",
+            color: BRAND.muted,
+            fontSize: 10.5,
+            lineHeight: 1.3,
           }}
         >
-          <Lock className="w-3 h-3" aria-hidden />
           {t.card.tagPartial}
         </span>
       </div>
