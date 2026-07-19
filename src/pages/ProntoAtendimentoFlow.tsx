@@ -89,9 +89,25 @@ const ProntoAtendimentoFlow = () => {
     enabled: !!professionalId,
   });
 
+  // Payment identifiers (PIX key / card link) are fetched separately and only
+  // for the specific professional the patient is booking with. They are NOT
+  // returned by the bulk directory RPC to avoid leaking payment info for the
+  // entire directory to anonymous visitors.
+  const { data: paymentInfo } = useQuery({
+    queryKey: ["pronto-doctor-payment", professionalId],
+    queryFn: async () => {
+      if (!professionalId) return null;
+      const { data } = await supabase.rpc("get_professional_payment_info", {
+        target_user_id: professionalId,
+      });
+      return (data || [])[0] || null;
+    },
+    enabled: !!professionalId,
+  });
+
   const price = doctor?.consultation_price ? Number(doctor.consultation_price) : 0;
-  const pixKey = (doctor as any)?.pix_key || "";
-  const cardLink = (doctor as any)?.card_link || "";
+  const pixKey = (paymentInfo as any)?.pix_key || "";
+  const cardLink = (paymentInfo as any)?.card_link || "";
   const config = PROFESSION_CONFIG[(doctor?.professional_type || "medico") as keyof typeof PROFESSION_CONFIG];
 
   const getSteps = () => {
