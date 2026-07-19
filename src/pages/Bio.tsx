@@ -489,6 +489,69 @@ export default function Bio() {
       wa.style.display = "block";
     }
 
+    // WhatsApp fallback: some in-app browsers (Instagram/TikTok/Facebook) and
+    // stricter mobile Chrome configurations block window.open of wa.me. If the
+    // link fails to open a new tab within ~700ms, fall back to the whatsapp://
+    // native scheme and finally to a direct location.assign. Also normalize the
+    // URL so any accidental whitespace or bad encoding is stripped.
+    const openWhatsAppSafely = (rawUrl: string) => {
+      let url = (rawUrl || "").trim();
+      if (!url) return;
+      // Validate: must be wa.me or whatsapp.com; otherwise open as-is (community group).
+      const isWa = /^https:\/\/(wa\.me|(chat|api)\.whatsapp\.com)\//i.test(url);
+      const nativeUrl = (() => {
+        try {
+          if (!/^https:\/\/wa\.me\//i.test(url)) return null;
+          const u = new URL(url);
+          const phone = u.pathname.replace(/[^0-9]/g, "");
+          const text = u.searchParams.get("text") || "";
+          if (!phone) return null;
+          return `whatsapp://send?phone=${phone}${text ? `&text=${encodeURIComponent(text)}` : ""}`;
+        } catch {
+          return null;
+        }
+      })();
+
+      let opened: Window | null = null;
+      try {
+        opened = window.open(url, "_blank", "noopener,noreferrer");
+      } catch {
+        opened = null;
+      }
+      if (opened && !opened.closed) return;
+
+      // Fallback chain
+      if (nativeUrl) {
+        try {
+          window.location.href = nativeUrl;
+          // Give the OS a moment; if still here, force wa.me in same tab.
+          window.setTimeout(() => {
+            if (document.visibilityState === "visible") window.location.href = url;
+          }, 900);
+          return;
+        } catch { /* noop */ }
+      }
+      if (isWa) window.location.href = url;
+    };
+
+    const attachWhatsAppFallback = (id: string) => {
+      const el = document.getElementById(id) as HTMLAnchorElement | null;
+      if (!el) return;
+      el.addEventListener("click", (e) => {
+        const href = el.getAttribute("href") || "";
+        if (!href || href === "#") return;
+        // Let the browser handle desktop; intercept on mobile / in-app webviews.
+        const ua = navigator.userAgent || "";
+        const mobileOrWebview = /Android|iPhone|iPad|iPod|Instagram|FBAN|FBAV|Line|WhatsApp|Twitter/i.test(ua);
+        if (!mobileOrWebview) return;
+        e.preventDefault();
+        openWhatsAppSafely(href);
+      });
+    };
+    attachWhatsAppFallback("card-community");
+    attachWhatsAppFallback("pay-btn");
+    attachWhatsAppFallback("ins-wa-btn");
+
     const sheet = document.getElementById("bio-sheet")!;
     const sheetIns = document.getElementById("bio-sheet-ins")!;
     const overlay = document.getElementById("bio-overlay")!;
