@@ -344,17 +344,18 @@ const MARKUP = `
 
   <div id="ins-form-view">
     <h3 id="ins-title">Parcerias estratégicas</h3>
-    <p class="lead"><strong>A SalbCare não é uma seguradora.</strong> Somos a ponte inteligente entre seus segurados em viagem e profissionais de saúde verificados no litoral do Brasil.</p>
+    <p class="lead"><strong>SalbCare é o app que conecta turistas e moradores a profissionais de saúde de confiança no litoral do Brasil.</strong> Como o iFood ou o Uber, em poucos toques o seu cliente encontra o atendimento certo, no idioma dele, direto pelo WhatsApp.</p>
 
     <div class="offer" style="margin-top:0;margin-bottom:6px">
-      <span class="pill">Como funciona</span>
+      <span class="pill">Em 1 minuto</span>
       <ul>
-        <li>Seu cliente aciona, nós localizamos o profissional certo em minutos</li>
-        <li>Triagem em português, inglês e espanhol, direto no WhatsApp</li>
-        <li>Rede curada e verificada, menos tempo de resposta, cliente mais satisfeito</li>
+        <li>Cliente pede ajuda pelo WhatsApp, em português, inglês ou espanhol</li>
+        <li>Nós localizamos o profissional certo, verificado e curado pela SalbCare</li>
+        <li>Ele agenda, atende e paga o profissional diretamente</li>
         <li>Modelo simples por apólice ativa, sem custo fixo para começar</li>
       </ul>
     </div>
+
 
     <form id="ins-form">
       <label for="i-empresa">Empresa</label>
