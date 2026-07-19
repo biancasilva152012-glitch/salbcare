@@ -170,8 +170,8 @@ export default function KiteBookingModal({ open, onOpenChange, procedure, lang =
                 {c.onlineBadge}
               </span>
             ) : (
-              <span className="inline-block mt-2 px-2 py-1 rounded bg-amber-100 text-amber-800 text-xs font-semibold">
-                {c.partial(procedure.amountCharged, procedure.totalPrice - procedure.amountCharged)}
+              <span className="block mt-2 text-xs text-[#5a564f]">
+                {c.priceNote}
               </span>
             )}
           </DialogDescription>
