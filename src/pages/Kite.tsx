@@ -763,11 +763,11 @@ function ProcedureCard({
 
 function InfoBanner({ text }: { text: string }) {
   return (
-    <div
-      className="mt-8 rounded-xl px-5 py-4 text-sm text-center"
-      style={{ background: "#FEF3C7", border: "1px solid #FDE68A", color: "#92400E" }}
+    <p
+      className="mt-6 text-center"
+      style={{ color: BRAND.muted, fontSize: 11, lineHeight: 1.5 }}
     >
       {text}
-    </div>
+    </p>
   );
 }
