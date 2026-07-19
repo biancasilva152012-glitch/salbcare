@@ -30,7 +30,7 @@ const COPY = {
     step1Title: "Pick a date & time",
     step2Title: "Your contact & deposit",
     onlineBadge: "Full payment now. Meet link sent after confirmation.",
-    partial: (paid: number, rest: number) => `R$ ${paid} now + R$ ${rest} at the clinic`,
+    priceNote: "Final price is set by the professional. Any remaining balance is paid directly at the consultation.",
     date: "Preferred date",
     timeLabel: "Preferred time",
     times: { morning: "Morning", afternoon: "Afternoon", any: "Any" } as Record<string, string>,
