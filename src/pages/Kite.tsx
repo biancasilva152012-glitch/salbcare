@@ -7,7 +7,7 @@ import KiteWhatsappBookingModal from "@/components/kite/KiteWhatsappBookingModal
 import LocalPartnerNetwork from "@/components/kite/LocalPartnerNetwork";
 import logoSalb from "/pwa-icon-512.png";
 import heroGuajiru from "@/assets/hero-guajiru-kite.jpg";
-import { Globe, Lock } from "lucide-react";
+import { Globe } from "lucide-react";
 
 const BOOKING_FEE = 50;
 
