@@ -52,7 +52,7 @@ const COPY = {
     step1Title: "Elige fecha y horario",
     step2Title: "Tus datos y depósito",
     onlineBadge: "Pago completo ahora. Enlace de Meet enviado tras confirmación.",
-    partial: (paid: number, rest: number) => `R$ ${paid} ahora + R$ ${rest} en la clínica`,
+    priceNote: "El precio final lo define el profesional. El saldo restante se paga directamente en la consulta.",
     date: "Fecha preferida",
     timeLabel: "Horario preferido",
     times: { morning: "Mañana", afternoon: "Tarde", any: "Cualquiera" } as Record<string, string>,
