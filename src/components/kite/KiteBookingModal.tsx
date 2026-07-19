@@ -30,7 +30,7 @@ const COPY = {
     step1Title: "Pick a date & time",
     step2Title: "Your contact & deposit",
     onlineBadge: "Full payment now. Meet link sent after confirmation.",
-    partial: (paid: number, rest: number) => `R$ ${paid} now + R$ ${rest} at the clinic`,
+    priceNote: "Final price is set by the professional. Any remaining balance is paid directly at the consultation.",
     date: "Preferred date",
     timeLabel: "Preferred time",
     times: { morning: "Morning", afternoon: "Afternoon", any: "Any" } as Record<string, string>,
@@ -52,7 +52,7 @@ const COPY = {
     step1Title: "Elige fecha y horario",
     step2Title: "Tus datos y depósito",
     onlineBadge: "Pago completo ahora. Enlace de Meet enviado tras confirmación.",
-    partial: (paid: number, rest: number) => `R$ ${paid} ahora + R$ ${rest} en la clínica`,
+    priceNote: "El precio final lo define el profesional. El saldo restante se paga directamente en la consulta.",
     date: "Fecha preferida",
     timeLabel: "Horario preferido",
     times: { morning: "Mañana", afternoon: "Tarde", any: "Cualquiera" } as Record<string, string>,
@@ -74,7 +74,7 @@ const COPY = {
     step1Title: "Escolha data e horário",
     step2Title: "Seus dados e depósito",
     onlineBadge: "Pagamento integral agora. Link do Meet enviado após confirmação.",
-    partial: (paid: number, rest: number) => `R$ ${paid} agora + R$ ${rest} na clínica`,
+    priceNote: "O valor final é definido por cada profissional. Qualquer diferença é paga diretamente na consulta.",
     date: "Data preferida",
     timeLabel: "Horário preferido",
     times: { morning: "Manhã", afternoon: "Tarde", any: "Qualquer" } as Record<string, string>,
@@ -170,8 +170,8 @@ export default function KiteBookingModal({ open, onOpenChange, procedure, lang =
                 {c.onlineBadge}
               </span>
             ) : (
-              <span className="inline-block mt-2 px-2 py-1 rounded bg-amber-100 text-amber-800 text-xs font-semibold">
-                {c.partial(procedure.amountCharged, procedure.totalPrice - procedure.amountCharged)}
+              <span className="block mt-2 text-xs text-[#5a564f]">
+                {c.priceNote}
               </span>
             )}
           </DialogDescription>
