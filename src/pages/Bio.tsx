@@ -649,6 +649,9 @@ export default function Bio() {
         <link rel="canonical" href="https://salbcare.com/bio" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://wa.me" />
+        <link rel="dns-prefetch" href="https://chat.whatsapp.com" />
+        <link rel="preload" as="image" href="/salbcare-logo.png" fetchpriority="high" />
         <link
           href="https://fonts.googleapis.com/css2?family=Gloock&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
           rel="stylesheet"
