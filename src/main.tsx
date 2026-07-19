@@ -38,10 +38,13 @@ createRoot(document.getElementById("root")!).render(<App />);
 // Prefetch high-traffic public routes when the browser is idle so the first
 // navigation feels instant. Skip on the /bio route itself (already loaded) and
 // avoid competing with the initial render.
-const idle = (cb: () => void) =>
-  ("requestIdleCallback" in window
-    ? (window as any).requestIdleCallback(cb, { timeout: 2500 })
-    : window.setTimeout(cb, 1500));
+const idle = (cb: () => void) => {
+  const w = window as unknown as {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => void;
+  };
+  if (w.requestIdleCallback) w.requestIdleCallback(cb, { timeout: 2500 });
+  else window.setTimeout(cb, 1500);
+};
 
 idle(() => {
   const path = window.location.pathname;
