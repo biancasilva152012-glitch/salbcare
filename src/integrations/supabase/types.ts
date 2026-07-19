@@ -2570,13 +2570,20 @@ export type Database = {
               row_hash: string
             }[]
           }
+      get_professional_payment_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          card_link: string
+          pix_key: string
+          user_id: string
+        }[]
+      }
       get_public_professionals: {
         Args: { specialty_filter?: string }
         Returns: {
           available_hours: Json
           avatar_url: string
           bio: string
-          card_link: string
           consultation_price: number
           council_number: string
           council_state: string
@@ -2586,7 +2593,6 @@ export type Database = {
           min_advance_hours: number
           name: string
           phone: string
-          pix_key: string
           professional_type: string
           slot_duration: number
           user_id: string
