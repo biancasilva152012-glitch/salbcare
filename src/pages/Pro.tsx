@@ -1,134 +1,189 @@
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProSubscription } from "@/hooks/useProSubscription";
+import {
+  CREAM,
+  GOLD,
+  MONO,
+  NAVY,
+  PRO_FONTS_HREF,
+  PRO_PRICES,
+  ProLabel,
+  ProPlanKey,
+  TEAL,
+  proStyles,
+} from "@/components/pro/brand";
 
-/**
- * Cole aqui os Payment Links ativos da conta Stripe live "Salb Care".
- * Dashboard Stripe > Payment Links > copiar URL de cada produto.
- */
-const APOSTILA_01_PAYMENT_LINK = "#"; // TODO: colar o Payment Link da "Apostila 01"
-const PRO_FUNDADOR_PAYMENT_LINK = "#"; // TODO: colar o Payment Link do "SalbCare Pro Fundador"
-
-const NAVY = "#0F1F3A";
-const CREAM = "#F4EEE2";
-const TEAL = "#34BFB4";
-const GOLD = "#CFA856";
-
-const MONO = "'IBM Plex Mono', ui-monospace, monospace";
-const DISPLAY = "'Gloock', Georgia, serif";
-
-const FAQ = [
-  {
-    q: "Como recebo o material?",
-    a: "Por e-mail, no endereco usado na compra, em ate 24 horas apos a confirmacao do pagamento.",
-  },
-  {
-    q: "Quais as formas de pagamento?",
-    a: "Cartao de credito, Apple Pay e Google Pay, processados com seguranca pelo Stripe.",
-  },
-  {
-    q: "Existe garantia?",
-    a: "Sim. Garantia de 7 dias. Se nao fizer sentido para voce, devolvemos o valor integral.",
-  },
+const STEPS = [
+  { n: "01", t: "Assine", d: "Escolha mensal ou anual e pague em segundos." },
+  { n: "02", t: "Complete seu perfil", d: "Profissão, registro, cidade e idiomas atendidos." },
+  { n: "03", t: "Comece a atender", d: "Seu perfil entra na vitrine e recebe solicitações." },
 ];
 
-const Label = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: TEAL }}>
-    {children}
-  </div>
-);
+const INCLUDED = [
+  "Perfil na vitrine SalbCare",
+  "Solicitações de pacientes internacionais",
+  "Agenda simples de atendimentos",
+  "Materiais de atendimento em inglês e espanhol",
+  "Você define seus próprios valores",
+];
+
+const FAQ = [
+  { q: "Preciso pagar comissão por consulta?", a: "Nao. A SalbCare cobra apenas a assinatura. O valor da consulta e definido por voce." },
+  { q: "Quando meu perfil aparece na vitrine?", a: "Assim que voce completa o perfil e publica, apos a curadoria da equipe." },
+  { q: "Posso cancelar quando quiser?", a: "Sim. O cancelamento e feito pelo painel, em Assinatura." },
+];
 
 const Pro = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isActive } = useProSubscription();
+  const [plan, setPlan] = useState<ProPlanKey>("annual");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscribe = async () => {
+    if (isActive) {
+      navigate("/pro/painel");
+      return;
+    }
+    if (!user) {
+      navigate("/login", { state: { from: { pathname: "/pro" } } });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("pro-checkout", {
+        body: { priceId: PRO_PRICES[plan].id },
+      });
+      if (error || !data?.url) throw error ?? new Error("sem url");
+      window.location.href = data.url;
+    } catch {
+      toast.error("Nao foi possivel abrir o pagamento. Tente novamente.");
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
       <Helmet>
-        <title>SalbCare Pro. Atendimento em ingles para profissionais de saude</title>
+        <title>SalbCare Pro. Assinatura para profissionais de saude</title>
         <meta
           name="description"
-          content="Materiais e plano anual para profissionais de saude que querem atender pacientes internacionais no litoral do Ceara."
+          content="Assine o SalbCare Pro, publique seu perfil na vitrine e atenda pacientes internacionais no litoral do Ceara. Sem comissao por consulta."
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-        />
+        <link rel="stylesheet" href={PRO_FONTS_HREF} />
       </Helmet>
+      <style>{proStyles}</style>
 
-      <style>{`
-        .pro-wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
-        .pro-h1 { font-family: ${DISPLAY}; font-size: 44px; line-height: 1.1; margin: 12px 0 0; font-weight: 400; }
-        .pro-card { border-radius: 14px; padding: 28px; background: rgba(244,238,226,0.04); border: 1px solid rgba(244,238,226,0.14); }
-        .pro-card--gold { border-color: ${GOLD}; background: rgba(207,168,86,0.08); }
-        .pro-cta { display: block; text-align: center; border-radius: 999px; padding: 16px 24px; font-weight: 600; font-size: 14px; text-decoration: none; margin-top: 24px; letter-spacing: 0.02em; }
-        .pro-cta:hover { filter: brightness(1.08); }
-        @media (max-width: 640px) { .pro-h1 { font-size: 32px; } .pro-card { padding: 22px; } }
-      `}</style>
-
-      <header className="pro-wrap" style={{ paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link to="/" style={{ color: "rgba(244,238,226,0.7)", fontSize: 12, textDecoration: "none" }}>Voltar ao site</Link>
-        <Link to="/login" style={{ color: "rgba(244,238,226,0.7)", fontSize: 12, textDecoration: "none" }}>Entrar</Link>
+      <header
+        className="pro-wrap"
+        style={{ paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}
+      >
+        <Link to="/" style={{ color: "rgba(244,238,226,0.7)", fontSize: 12, textDecoration: "none" }}>
+          Voltar ao site
+        </Link>
+        <Link
+          to={isActive ? "/pro/painel" : "/login"}
+          style={{ color: "rgba(244,238,226,0.7)", fontSize: 12, textDecoration: "none" }}
+        >
+          {isActive ? "Meu painel" : "Entrar"}
+        </Link>
       </header>
 
-      <section className="pro-wrap" style={{ paddingTop: 64, paddingBottom: 48 }}>
-        <Label>SalbCare Pro</Label>
+      <section className="pro-wrap" style={{ paddingTop: 60, paddingBottom: 40 }}>
+        <ProLabel>Assinatura para profissionais</ProLabel>
         <h1 className="pro-h1">SalbCare Pro</h1>
-        <p style={{ marginTop: 16, fontSize: 15, lineHeight: 1.6, color: "rgba(244,238,226,0.78)" }}>
-          Prepare-se para atender pacientes internacionais no litoral do Ceara.
+        <p style={{ marginTop: 16, fontSize: 15, lineHeight: 1.6, color: "rgba(244,238,226,0.78)", maxWidth: 460 }}>
+          Seu perfil na vitrine da SalbCare, pronto para receber pacientes internacionais no litoral do Ceara.
         </p>
       </section>
 
-      <section className="pro-wrap" style={{ display: "grid", gap: 20, paddingBottom: 64 }}>
-        <article className="pro-card">
-          <Label>Oferta 01</Label>
-          <h2 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: 24, lineHeight: 1.25, margin: "10px 0 0" }}>
-            Apostila 01: Atendimento em Ingles para Profissionais de Saude
-          </h2>
-          <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.75)" }}>
-            Guia pratico da recepcao a cobranca, com guia clinico rapido em espanhol.
-          </p>
-          <div style={{ marginTop: 18, fontFamily: DISPLAY, fontSize: 32 }}>R$ 47</div>
-          <a className="pro-cta" href={APOSTILA_01_PAYMENT_LINK} style={{ background: TEAL, color: NAVY }}>
-            Comprar agora
-          </a>
-        </article>
-
-        <article className="pro-card pro-card--gold">
-          <Label>Oferta 02</Label>
-          <h2 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: 24, lineHeight: 1.25, margin: "10px 0 0" }}>
-            SalbCare Pro Fundador
-          </h2>
-          <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.75)" }}>
-            Plano anual para quem quer estar pronto e visivel para o paciente internacional.
-          </p>
-          <div style={{ marginTop: 18, fontFamily: DISPLAY, fontSize: 32 }}>
-            R$ 297 <span style={{ fontFamily: MONO, fontSize: 13, color: "rgba(244,238,226,0.6)" }}>/ano</span>
+      <section className="pro-wrap" style={{ paddingBottom: 48, display: "grid", gap: 14 }}>
+        {STEPS.map((s) => (
+          <div key={s.n} style={{ display: "flex", gap: 16, alignItems: "baseline" }}>
+            <span style={{ color: TEAL, fontSize: 12 }}>{s.n}</span>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 600 }}>{s.t}</div>
+              <div style={{ fontSize: 13, color: "rgba(244,238,226,0.7)", marginTop: 2 }}>{s.d}</div>
+            </div>
           </div>
-          <ul style={{ listStyle: "none", padding: 0, margin: "20px 0 0", display: "grid", gap: 10 }}>
-            {[
-              "Todas as apostilas de atendimento incluidas",
-              "Perfil listado na vitrine SalbCare apos curadoria",
-              "Material de preparo para pacientes internacionais",
-              "Preco de fundador garantido",
-            ].map((b) => (
-              <li key={b} style={{ display: "flex", gap: 10, fontSize: 14, lineHeight: 1.5 }}>
-                <span style={{ color: GOLD }}>+</span>
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
-          <a className="pro-cta" href={PRO_FUNDADOR_PAYMENT_LINK} style={{ background: GOLD, color: NAVY }}>
-            Assinar agora
-          </a>
-        </article>
+        ))}
+      </section>
+
+      <section className="pro-wrap" style={{ paddingBottom: 48 }}>
+        <ProLabel>Incluso na assinatura</ProLabel>
+        <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0", display: "grid", gap: 10 }}>
+          {INCLUDED.map((b) => (
+            <li key={b} style={{ display: "flex", gap: 10, fontSize: 14, lineHeight: 1.5 }}>
+              <span style={{ color: GOLD }}>+</span>
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="pro-wrap" style={{ paddingBottom: 56 }}>
+        <ProLabel>Precos</ProLabel>
+        <div className="pro-grid2" style={{ marginTop: 16 }}>
+          {(Object.keys(PRO_PRICES) as ProPlanKey[]).map((key) => {
+            const p = PRO_PRICES[key];
+            const selected = plan === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setPlan(key)}
+                aria-pressed={selected}
+                className={`pro-card ${key === "annual" ? "pro-card--gold" : ""}`}
+                style={{
+                  textAlign: "left",
+                  cursor: "pointer",
+                  color: CREAM,
+                  outline: selected ? `2px solid ${key === "annual" ? GOLD : TEAL}` : "none",
+                  outlineOffset: 2,
+                }}
+              >
+                <ProLabel>{p.label}</ProLabel>
+                <div style={{ marginTop: 12, fontFamily: "'Gloock', Georgia, serif", fontSize: 32 }}>
+                  {p.amount}
+                  <span style={{ fontFamily: MONO, fontSize: 13, color: "rgba(244,238,226,0.6)" }}>{p.period}</span>
+                </div>
+                {key === "annual" && (
+                  <div style={{ marginTop: 8, fontSize: 12, color: GOLD }}>Preco de fundador garantido</div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          className="pro-cta"
+          onClick={handleSubscribe}
+          disabled={loading}
+          style={{ background: GOLD, color: NAVY, marginTop: 22 }}
+        >
+          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Assinar agora"}
+        </button>
+        <p style={{ marginTop: 10, fontSize: 11, textAlign: "center", color: "rgba(244,238,226,0.55)" }}>
+          Pagamento seguro pelo Stripe. Cancelamento a qualquer momento.
+        </p>
       </section>
 
       <section className="pro-wrap" style={{ paddingBottom: 72 }}>
-        <Label>Perguntas frequentes</Label>
+        <ProLabel>Perguntas frequentes</ProLabel>
         <div style={{ marginTop: 18, display: "grid", gap: 12 }}>
           {FAQ.map((item) => (
             <div key={item.q} style={{ borderTop: "1px solid rgba(244,238,226,0.14)", paddingTop: 14 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>{item.q}</h3>
-              <p style={{ margin: "8px 0 0", fontSize: 13, lineHeight: 1.6, color: "rgba(244,238,226,0.7)" }}>{item.a}</p>
+              <h2 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>{item.q}</h2>
+              <p style={{ margin: "8px 0 0", fontSize: 13, lineHeight: 1.6, color: "rgba(244,238,226,0.7)" }}>
+                {item.a}
+              </p>
             </div>
           ))}
         </div>

@@ -32,6 +32,42 @@ const PLAN_MAP: Record<string, { plan: string; billing: string }> = {
   "price_1TFfcWBUEEEAHx2hTMq5L9dc": { plan: "clinica", billing: "annual" },
 };
 
+// SalbCare Pro (assinatura self-service da rota /pro)
+const PRO_PRICES: Record<string, string> = {
+  "price_1TyCJdBUEEEAHx2hYIvZ6EOH": "monthly",
+  "price_1TyCJeBUEEEAHx2hvxyCs0Dz": "annual",
+};
+
+async function upsertProSubscription(
+  supabase: any,
+  args: {
+    userId: string;
+    customerId: string | null;
+    subscriptionId: string | null;
+    priceId: string;
+    status: string;
+    currentPeriodEnd: string | null;
+  },
+) {
+  const { error } = await supabase.from("pro_subscriptions").upsert(
+    {
+      user_id: args.userId,
+      stripe_customer_id: args.customerId,
+      stripe_subscription_id: args.subscriptionId,
+      plan: PRO_PRICES[args.priceId] ?? "monthly",
+      status: args.status,
+      current_period_end: args.currentPeriodEnd,
+    },
+    { onConflict: "user_id" },
+  );
+  if (error) {
+    logStep("Erro ao gravar pro_subscriptions", { error: error.message });
+    throw error;
+  }
+  logStep("Pro subscription ativa", { userId: args.userId, status: args.status });
+}
+
+
 serve(async (req) => {
   let stripe: Stripe;
   let supabase: ReturnType<typeof createClient>;
@@ -280,9 +316,23 @@ async function handleCheckoutCompleted(
     subStatus = "active";
   }
 
+  // SalbCare Pro (assinatura SaaS self-service) tem tabela própria.
+  if (priceId && PRO_PRICES[priceId]) {
+    await upsertProSubscription(supabase, {
+      userId,
+      customerId,
+      subscriptionId,
+      priceId,
+      status: subStatus,
+      currentPeriodEnd: null,
+    });
+    return;
+  }
+
   const resolved = priceId ? PLAN_MAP[priceId] : null;
   const plan = resolved?.plan ?? "essencial";
   const billing = resolved?.billing ?? "monthly";
+
 
   const updateObj: Record<string, any> = {
     plan,
@@ -322,7 +372,23 @@ async function handleSubscriptionUpdated(supabase: any, subscription: Stripe.Sub
   const status = subscription.status;
   const customerId = typeof subscription.customer === "string" ? subscription.customer : null;
 
+  if (priceId && PRO_PRICES[priceId]) {
+    await supabase
+      .from("pro_subscriptions")
+      .update({
+        status,
+        plan: PRO_PRICES[priceId],
+        current_period_end: (subscription as any).current_period_end
+          ? new Date((subscription as any).current_period_end * 1000).toISOString()
+          : null,
+      })
+      .eq("stripe_subscription_id", subscription.id);
+    logStep("Pro subscription atualizada", { id: subscription.id, status });
+    return;
+  }
+
   const resolved = priceId ? PLAN_MAP[priceId] : null;
+
 
   let professional: any = null;
 
@@ -383,7 +449,27 @@ async function handleSubscriptionUpdated(supabase: any, subscription: Stripe.Sub
 
 // ── customer.subscription.deleted ─────────────────────────────────────
 async function handleSubscriptionDeleted(supabase: any, subscription: Stripe.Subscription) {
+  const { data: proRow } = await supabase
+    .from("pro_subscriptions")
+    .select("user_id")
+    .eq("stripe_subscription_id", subscription.id)
+    .maybeSingle();
+
+  if (proRow) {
+    await supabase
+      .from("pro_subscriptions")
+      .update({ status: "canceled" })
+      .eq("stripe_subscription_id", subscription.id);
+    await supabase
+      .from("local_partners")
+      .update({ is_published: false })
+      .eq("owner_user_id", proRow.user_id);
+    logStep("Pro subscription cancelada", { id: subscription.id });
+    return;
+  }
+
   const { data: professional } = await supabase
+
     .from("professionals")
     .select("user_id")
     .eq("subscription_id", subscription.id)
