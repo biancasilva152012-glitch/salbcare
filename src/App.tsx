@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProfessionalRoute from "@/components/ProfessionalRoute";
+import ProRoute from "@/components/pro/ProRoute";
+
 import PremiumRoute from "@/components/PremiumRoute";
 import BottomNav from "@/components/BottomNav";
 import CookieConsent from "./components/CookieConsent";
@@ -99,6 +101,9 @@ const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
 const Hub = lazyWithRetry(() => import("./pages/Hub"), "Hub");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
+const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
+const ProDashboard = lazyWithRetry(() => import("./pages/ProDashboard"), "ProDashboard");
+
 const About = lazyWithRetry(() => import("./pages/About"), "About");
 const Contact = lazyWithRetry(() => import("./pages/Contact"), "Contact");
 const KiteConfirmed = lazyWithRetry(() => import("./pages/KiteConfirmed"), "KiteConfirmed");
@@ -178,6 +183,9 @@ const App = () => (
               <Route path="/hub" element={<Hub />} />
               <Route path="/pro" element={<Pro />} />
               <Route path="/pro/obrigado" element={<ProObrigado />} />
+              <Route path="/pro/onboarding" element={<ProRoute><ProOnboarding /></ProRoute>} />
+              <Route path="/pro/painel" element={<ProRoute><ProDashboard /></ProRoute>} />
+
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
