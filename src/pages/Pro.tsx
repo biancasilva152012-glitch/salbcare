@@ -1,195 +1,142 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Users, Calendar, LineChart, ShieldCheck } from "lucide-react";
 
-const DEEP_TEAL = "#0F2A33";
-const DEEP_TEAL_DARK = "#081A20";
-const CARD_BG = "#1A3F50";
-const TEAL = "#2ABFBF";
-const TEXT_MUTED = "#B0C5CC";
-const BORDER = "rgba(42, 191, 191, 0.15)";
+/**
+ * Cole aqui os Payment Links ativos da conta Stripe live "Salb Care".
+ * Dashboard Stripe > Payment Links > copiar URL de cada produto.
+ */
+const APOSTILA_01_PAYMENT_LINK = "#"; // TODO: colar o Payment Link da "Apostila 01"
+const PRO_FUNDADOR_PAYMENT_LINK = "#"; // TODO: colar o Payment Link do "SalbCare Pro Fundador"
 
-const Eyebrow = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ color: TEAL, fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>
+const NAVY = "#0F1F3A";
+const CREAM = "#F4EEE2";
+const TEAL = "#34BFB4";
+const GOLD = "#CFA856";
+
+const MONO = "'IBM Plex Mono', ui-monospace, monospace";
+const DISPLAY = "'Gloock', Georgia, serif";
+
+const FAQ = [
+  {
+    q: "Como recebo o material?",
+    a: "Por e-mail, no endereco usado na compra, em ate 24 horas apos a confirmacao do pagamento.",
+  },
+  {
+    q: "Quais as formas de pagamento?",
+    a: "Cartao de credito, Apple Pay e Google Pay, processados com seguranca pelo Stripe.",
+  },
+  {
+    q: "Existe garantia?",
+    a: "Sim. Garantia de 7 dias. Se nao fizer sentido para voce, devolvemos o valor integral.",
+  },
+];
+
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: TEAL }}>
     {children}
-  </div>
-);
-
-const Pillar = ({ Icon, title, body }: { Icon: typeof Users; title: string; body: string }) => (
-  <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 12, padding: 32, display: "flex", flexDirection: "column", gap: 12 }}>
-    <Icon size={28} color={TEAL} strokeWidth={1.6} />
-    <h3 style={{ color: "#fff", fontSize: 20, fontWeight: 700, margin: 0, lineHeight: 1.3 }}>{title}</h3>
-    <p style={{ color: TEXT_MUTED, fontSize: 15, lineHeight: 1.55, margin: 0 }}>{body}</p>
   </div>
 );
 
 const Pro = () => {
   return (
-    <div style={{ background: DEEP_TEAL, minHeight: "100vh", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#fff" }}>
+    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
       <Helmet>
-        <title>SalbCare Pro. Vitrine para profissionais de saúde aprovados pela nossa curadoria</title>
-        <meta name="description" content="SalbCare Pro é uma vitrine que conecta pacientes a profissionais de saúde aprovados pela curadoria SalbCare. 0% de comissão." />
-        <meta name="robots" content="noindex, follow" />
+        <title>SalbCare Pro. Atendimento em ingles para profissionais de saude</title>
+        <meta
+          name="description"
+          content="Materiais e plano anual para profissionais de saude que querem atender pacientes internacionais no litoral do Ceara."
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        />
       </Helmet>
 
       <style>{`
-        .pro-h1 { font-size: 48px; line-height: 1.15; }
-        .pro-h2 { font-size: 36px; line-height: 1.2; }
-        .pro-grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .pro-wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+        .pro-h1 { font-family: ${DISPLAY}; font-size: 44px; line-height: 1.1; margin: 12px 0 0; font-weight: 400; }
+        .pro-card { border-radius: 14px; padding: 28px; background: rgba(244,238,226,0.04); border: 1px solid rgba(244,238,226,0.14); }
+        .pro-card--gold { border-color: ${GOLD}; background: rgba(207,168,86,0.08); }
+        .pro-cta { display: block; text-align: center; border-radius: 999px; padding: 16px 24px; font-weight: 600; font-size: 14px; text-decoration: none; margin-top: 24px; letter-spacing: 0.02em; }
         .pro-cta:hover { filter: brightness(1.08); }
-        @media (max-width: 768px) {
-          .pro-h1 { font-size: 36px !important; }
-          .pro-h2 { font-size: 28px !important; }
-          .pro-grid-4 { grid-template-columns: 1fr !important; }
-          .pro-section { padding: 64px 20px !important; }
-          .pro-hero { padding: 72px 20px 56px !important; }
-          .pro-cta { width: 100%; text-align: center; }
-        }
+        @media (max-width: 640px) { .pro-h1 { font-size: 32px; } .pro-card { padding: 22px; } }
       `}</style>
 
-      {/* Header */}
-      <header style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <Link to="/" style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "none" }}>← Voltar</Link>
-          <Link to="/" aria-label="SalbCare" style={{ display: "inline-flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <img src="/pwa-icon-192.png" alt="" width={32} height={32} style={{ borderRadius: 8 }} />
-            <span style={{ color: "#fff", fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em" }}>SalbCare</span>
-          </Link>
-        </div>
-        <Link to="/login" style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "none" }}>Entrar</Link>
+      <header className="pro-wrap" style={{ paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Link to="/" style={{ color: "rgba(244,238,226,0.7)", fontSize: 12, textDecoration: "none" }}>Voltar ao site</Link>
+        <Link to="/login" style={{ color: "rgba(244,238,226,0.7)", fontSize: 12, textDecoration: "none" }}>Entrar</Link>
       </header>
 
-      {/* Hero */}
-      <section className="pro-hero" style={{ padding: "96px 24px 80px", textAlign: "center" }}>
-        <div style={{ maxWidth: 760, margin: "0 auto" }}>
-          <Eyebrow>SalbCare Pro</Eyebrow>
-          <h1 className="pro-h1" style={{ color: "#fff", fontWeight: 700, letterSpacing: "-0.01em", margin: 0 }}>
-            Uma vitrine com curadoria<br />para sua clínica.
-          </h1>
-          <p style={{ marginTop: 20, color: TEXT_MUTED, fontSize: 17, lineHeight: 1.5, maxWidth: 600, marginInline: "auto" }}>
-            SalbCare Pro é uma vitrine que conecta pacientes a profissionais de saúde aprovados pela curadoria SalbCare. Você aparece para o paciente certo no momento certo. Sem comissão sobre suas consultas.
-          </p>
-          <div style={{ marginTop: 32 }}>
-            <Link to="/register" className="pro-cta" style={{ background: TEAL, color: DEEP_TEAL, borderRadius: 999, padding: "16px 28px", fontWeight: 700, fontSize: 15, display: "inline-block", textDecoration: "none" }}>
-              Testar 7 dias grátis →
-            </Link>
-            <div style={{ marginTop: 14, color: TEXT_MUTED, fontSize: 13 }}>Sem cartão · Cancele quando quiser</div>
-          </div>
-        </div>
+      <section className="pro-wrap" style={{ paddingTop: 64, paddingBottom: 48 }}>
+        <Label>SalbCare Pro</Label>
+        <h1 className="pro-h1">SalbCare Pro</h1>
+        <p style={{ marginTop: 16, fontSize: 15, lineHeight: 1.6, color: "rgba(244,238,226,0.78)" }}>
+          Prepare-se para atender pacientes internacionais no litoral do Ceara.
+        </p>
       </section>
 
-      {/* Pillars */}
-      <section className="pro-section" style={{ padding: "80px 24px", background: DEEP_TEAL_DARK }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <Eyebrow>O que você ganha</Eyebrow>
-            <h2 className="pro-h2" style={{ color: "#fff", fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>
-              Tudo que o profissional de saúde precisa, em um só lugar.
-            </h2>
-          </div>
-          <div className="pro-grid-4">
-            <Pillar Icon={Users} title="Receba seus pacientes" body="Link de agendamento privado que você compartilha por WhatsApp. Agendamento online 24h. Sem comissão." />
-            <Pillar Icon={Calendar} title="Organize sua agenda" body="Agenda inteligente, lembretes automáticos via WhatsApp, e teleconsulta integrada com Google Meet em um clique." />
-            <Pillar Icon={LineChart} title="Controle seu financeiro" body="Saiba exatamente quanto entra, quanto sai, e quanto você lucra de verdade. Sem planilhas, sem chutes." />
-            <Pillar Icon={ShieldCheck} title="Esqueça o Carnê-Leão" body="Contabilidade especializada em saúde, prontuário digital seguro, e conformidade com CFM, ANVISA e LGPD garantidas." />
-          </div>
-        </div>
-      </section>
-
-      {/* Differentiator */}
-      <section className="pro-section" style={{ padding: "80px 24px", background: `linear-gradient(180deg, ${DEEP_TEAL} 0%, ${DEEP_TEAL_DARK} 100%)`, textAlign: "center" }}>
-        <div style={{ maxWidth: 760, margin: "0 auto" }}>
-          <Eyebrow>Diferencial SalbCare</Eyebrow>
-          <h2 className="pro-h2" style={{ color: "#fff", fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>
-            Você fica com 100% das suas consultas. Sempre.
+      <section className="pro-wrap" style={{ display: "grid", gap: 20, paddingBottom: 64 }}>
+        <article className="pro-card">
+          <Label>Oferta 01</Label>
+          <h2 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: 24, lineHeight: 1.25, margin: "10px 0 0" }}>
+            Apostila 01: Atendimento em Ingles para Profissionais de Saude
           </h2>
-          <p style={{ marginTop: 20, color: TEXT_MUTED, fontSize: 17, lineHeight: 1.55, maxWidth: 600, marginInline: "auto" }}>
-            Sem comissões. Sem taxas escondidas. Sem pegadinhas. Você define seu preço, você recebe, você lucra.
+          <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.75)" }}>
+            Guia pratico da recepcao a cobranca, com guia clinico rapido em espanhol.
           </p>
-        </div>
-      </section>
+          <div style={{ marginTop: 18, fontFamily: DISPLAY, fontSize: 32 }}>R$ 47</div>
+          <a className="pro-cta" href={APOSTILA_01_PAYMENT_LINK} style={{ background: TEAL, color: NAVY }}>
+            Comprar agora
+          </a>
+        </article>
 
-      {/* Uncomfortable question */}
-      <section className="pro-section" style={{ padding: "80px 24px", background: DEEP_TEAL }}>
-        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
-          <Eyebrow>Pergunta desconfortável</Eyebrow>
-          <h2 className="pro-h2" style={{ color: "#fff", fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>
-            Você sabe exatamente quanto você lucra por mês?
+        <article className="pro-card pro-card--gold">
+          <Label>Oferta 02</Label>
+          <h2 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: 24, lineHeight: 1.25, margin: "10px 0 0" }}>
+            SalbCare Pro Fundador
           </h2>
-          <p style={{ marginTop: 20, color: TEXT_MUTED, fontSize: 17, lineHeight: 1.55 }}>
-            Não o faturamento. O lucro real. Depois de descontar aluguel, materiais, taxas, impostos e o seu próprio tempo.
+          <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.75)" }}>
+            Plano anual para quem quer estar pronto e visivel para o paciente internacional.
           </p>
-          <div style={{ marginTop: 32, background: CARD_BG, borderLeft: `4px solid ${TEAL}`, borderRadius: 8, padding: 28, textAlign: "left" }}>
-            <p style={{ color: "#fff", fontSize: 16, lineHeight: 1.55, margin: 0 }}>
-              7 em cada 10 profissionais de saúde autônomos no Brasil não conseguem responder essa pergunta com precisão. Eles acham que estão lucrando. Até olharem os números de verdade.
-            </p>
+          <div style={{ marginTop: 18, fontFamily: DISPLAY, fontSize: 32 }}>
+            R$ 297 <span style={{ fontFamily: MONO, fontSize: 13, color: "rgba(244,238,226,0.6)" }}>/ano</span>
           </div>
-          <p style={{ marginTop: 14, color: TEXT_MUTED, fontSize: 12, fontStyle: "italic" }}>
-            Pesquisa setorial 2025. Fontes disponíveis sob solicitação
-          </p>
-        </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: "20px 0 0", display: "grid", gap: 10 }}>
+            {[
+              "Todas as apostilas de atendimento incluidas",
+              "Perfil listado na vitrine SalbCare apos curadoria",
+              "Material de preparo para pacientes internacionais",
+              "Preco de fundador garantido",
+            ].map((b) => (
+              <li key={b} style={{ display: "flex", gap: 10, fontSize: 14, lineHeight: 1.5 }}>
+                <span style={{ color: GOLD }}>+</span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+          <a className="pro-cta" href={PRO_FUNDADOR_PAYMENT_LINK} style={{ background: GOLD, color: NAVY }}>
+            Assinar agora
+          </a>
+        </article>
       </section>
 
-      {/* AI Mentora */}
-      <section className="pro-section" style={{ padding: "80px 24px", background: DEEP_TEAL_DARK }}>
-        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
-          <Eyebrow>IA Mentora</Eyebrow>
-          <h2 className="pro-h2" style={{ color: "#fff", fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>
-            Uma mentora financeira que trabalha por você.
-          </h2>
-          <p style={{ marginTop: 20, color: TEXT_MUTED, fontSize: 17, lineHeight: 1.55 }}>
-            A IA Mentora analisa seus números em tempo real e te diz exatamente quanto cobrar, quando aumentar preço, e onde está vazando dinheiro. Como ter um consultor financeiro dedicado, 24h por dia.
-          </p>
-          <div style={{ marginTop: 36, display: "inline-flex", alignItems: "center", gap: 12, background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 999, padding: "14px 22px 14px 14px" }}>
-            <div style={{ width: 28, height: 28, borderRadius: "50%", background: TEAL, flexShrink: 0 }} />
-            <span style={{ color: "#fff", fontSize: 14 }}>Posso preparar seu lembrete de imposto desta semana?</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="pro-section" style={{ padding: "80px 24px", background: DEEP_TEAL }}>
-        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
-          <Eyebrow>Investimento</Eyebrow>
-          <h2 className="pro-h2" style={{ color: "#fff", fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>
-            Um plano. Tudo incluído.
-          </h2>
-          <div style={{ maxWidth: 480, margin: "40px auto 0", background: CARD_BG, border: `2px solid ${TEAL}`, borderRadius: 16, padding: 48, textAlign: "left" }}>
-            <div style={{ color: TEAL, fontSize: 12, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>Essencial</div>
-            <div style={{ marginTop: 16, display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ color: "#fff", fontSize: 48, fontWeight: 800, letterSpacing: "-0.02em" }}>R$ 89</span>
-              <span style={{ color: TEXT_MUTED, fontSize: 15 }}>/mês</span>
+      <section className="pro-wrap" style={{ paddingBottom: 72 }}>
+        <Label>Perguntas frequentes</Label>
+        <div style={{ marginTop: 18, display: "grid", gap: 12 }}>
+          {FAQ.map((item) => (
+            <div key={item.q} style={{ borderTop: "1px solid rgba(244,238,226,0.14)", paddingTop: 14 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>{item.q}</h3>
+              <p style={{ margin: "8px 0 0", fontSize: 13, lineHeight: 1.6, color: "rgba(244,238,226,0.7)" }}>{item.a}</p>
             </div>
-            <p style={{ marginTop: 8, color: TEXT_MUTED, fontSize: 14 }}>7 dias grátis · Cancele quando quiser</p>
-            <ul style={{ listStyle: "none", padding: 0, margin: "28px 0 0", display: "flex", flexDirection: "column", gap: 12 }}>
-              {[
-                "Perfil público + agendamento online",
-                "Agenda + lembretes WhatsApp",
-                "Teleconsulta Google Meet",
-                "Prontuário digital seguro",
-                "Financeiro + IA Mentora",
-                "0% de comissão sobre consultas",
-              ].map((item) => (
-                <li key={item} style={{ display: "flex", gap: 10, color: "#fff", fontSize: 14, lineHeight: 1.4 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: 1 }}>
-                    <path d="M5 12l4 4L19 7" stroke={TEAL} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <Link to="/register" className="pro-cta" style={{ marginTop: 32, background: TEAL, color: DEEP_TEAL, borderRadius: 999, padding: "16px 28px", fontWeight: 700, fontSize: 15, display: "block", textAlign: "center", textDecoration: "none" }}>
-              Começar 7 dias grátis →
-            </Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ padding: "40px 24px", background: DEEP_TEAL_DARK, borderTop: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
-        <div style={{ color: TEXT_MUTED, fontSize: 13 }}>
-          © {new Date().getFullYear()} SalbCare · <Link to="/terms" style={{ color: TEXT_MUTED }}>Termos</Link> · <Link to="/privacy" style={{ color: TEXT_MUTED }}>Privacidade</Link>
-        </div>
+      <footer className="pro-wrap" style={{ paddingBottom: 48, fontSize: 12, color: "rgba(244,238,226,0.55)" }}>
+        © {new Date().getFullYear()} SalbCare · <Link to="/terms" style={{ color: "inherit" }}>Termos</Link> ·{" "}
+        <Link to="/privacy" style={{ color: "inherit" }}>Privacidade</Link>
       </footer>
     </div>
   );

@@ -98,6 +98,7 @@ const Partnership = lazyWithRetry(() => import("./pages/Partnership"), "Partners
 const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
 const Hub = lazyWithRetry(() => import("./pages/Hub"), "Hub");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
+const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const About = lazyWithRetry(() => import("./pages/About"), "About");
 const Contact = lazyWithRetry(() => import("./pages/Contact"), "Contact");
 const KiteConfirmed = lazyWithRetry(() => import("./pages/KiteConfirmed"), "KiteConfirmed");
@@ -176,6 +177,7 @@ const App = () => (
               {/* Brand hub + alias for current SaaS landing (Index) */}
               <Route path="/hub" element={<Hub />} />
               <Route path="/pro" element={<Pro />} />
+              <Route path="/pro/obrigado" element={<ProObrigado />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
