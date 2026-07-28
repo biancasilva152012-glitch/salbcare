@@ -1331,6 +1331,7 @@ export type Database = {
         Row: {
           active: boolean
           category: string
+          city: string | null
           created_at: string
           description: string | null
           description_en: string | null
@@ -1339,8 +1340,13 @@ export type Database = {
           id: string
           image_url: string | null
           instagram: string | null
+          is_published: boolean
+          languages: string[]
           location: string | null
           name: string
+          owner_user_id: string | null
+          profession: string | null
+          registration_number: string | null
           sort_order: number
           subcategory: string | null
           updated_at: string
@@ -1350,6 +1356,7 @@ export type Database = {
         Insert: {
           active?: boolean
           category: string
+          city?: string | null
           created_at?: string
           description?: string | null
           description_en?: string | null
@@ -1358,8 +1365,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           instagram?: string | null
+          is_published?: boolean
+          languages?: string[]
           location?: string | null
           name: string
+          owner_user_id?: string | null
+          profession?: string | null
+          registration_number?: string | null
           sort_order?: number
           subcategory?: string | null
           updated_at?: string
@@ -1369,6 +1381,7 @@ export type Database = {
         Update: {
           active?: boolean
           category?: string
+          city?: string | null
           created_at?: string
           description?: string | null
           description_en?: string | null
@@ -1377,8 +1390,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           instagram?: string | null
+          is_published?: boolean
+          languages?: string[]
           location?: string | null
           name?: string
+          owner_user_id?: string | null
+          profession?: string | null
+          registration_number?: string | null
           sort_order?: number
           subcategory?: string | null
           updated_at?: string
@@ -1858,6 +1876,78 @@ export type Database = {
           metadata?: Json
           module?: string
           reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pro_appointments: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          patient_name: string
+          scheduled_at: string
+          service: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_name: string
+          scheduled_at: string
+          service?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_name?: string
+          scheduled_at?: string
+          service?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pro_subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -2639,6 +2729,7 @@ export type Database = {
         }[]
       }
       has_active_paid_plan: { Args: { _user_id: string }; Returns: boolean }
+      has_active_pro: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
