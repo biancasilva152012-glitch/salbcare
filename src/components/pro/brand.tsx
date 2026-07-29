@@ -14,8 +14,20 @@ export const PRO_FONTS_HREF =
   "https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500;600&display=swap";
 
 export const PRO_PRICES = {
-  monthly: { id: "price_1TyCJdBUEEEAHx2hYIvZ6EOH", label: "Mensal", amount: "R$ 99", period: "/mês" },
-  annual: { id: "price_1TyCJeBUEEEAHx2hvxyCs0Dz", label: "Anual Fundador", amount: "R$ 297", period: "/ano" },
+  monthly: {
+    id: "price_1TyX6lBUEEEAHx2hGeIMZ9W1",
+    label: "Mensal",
+    amount: "R$ 59",
+    period: "/mês",
+    note: "Cancele quando quiser.",
+  },
+  annual: {
+    id: "price_1TyCJeBUEEEAHx2hvxyCs0Dz",
+    label: "Anual Fundador",
+    amount: "R$ 297",
+    period: "/ano",
+    note: "Equivale a R$ 24,75 por mês.",
+  },
 } as const;
 
 export type ProPlanKey = keyof typeof PRO_PRICES;
