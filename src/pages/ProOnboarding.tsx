@@ -171,6 +171,7 @@ const ProOnboarding = () => {
   const [form, setForm] = useState<ProProfileForm>(emptyProfile);
   const [saving, setSaving] = useState(false);
   const [step, setStep] = useState(1);
+  const TOTAL_STEPS = 3;
 
   useEffect(() => {
     if (!user) return;
@@ -201,6 +202,7 @@ const ProOnboarding = () => {
     if (!user) return;
     if (!form.name || !form.profession || !form.city) {
       toast.error("Preencha nome, profissao e cidade.");
+      setStep(1);
       return;
     }
     setSaving(true);
@@ -229,9 +231,11 @@ const ProOnboarding = () => {
       toast.error("Nao foi possivel publicar o perfil.");
       return;
     }
-    toast.success("Perfil publicado na vitrine.");
-    navigate("/pro/painel");
+    setStep(3);
   };
+
+  const titles = ["Complete seu perfil", "Revise e publique", "Seu perfil esta no ar"];
+  const progress = Math.round((step / TOTAL_STEPS) * 100);
 
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
@@ -243,17 +247,31 @@ const ProOnboarding = () => {
       <style>{proStyles}</style>
 
       <section className="pro-wrap" style={{ paddingTop: 48, paddingBottom: 32 }}>
-        <ProLabel>Passo {step} de 2</ProLabel>
-        <h1 className="pro-h1" style={{ fontSize: 32 }}>
-          {step === 1 ? "Complete seu perfil" : "Revise e publique"}
-        </h1>
+        <ProLabel>Passo {step} de {TOTAL_STEPS}</ProLabel>
+        <div
+          role="progressbar"
+          aria-valuenow={progress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Progresso do onboarding"
+          style={{
+            marginTop: 12,
+            height: 4,
+            borderRadius: 999,
+            background: "rgba(244,238,226,0.14)",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ width: `${progress}%`, height: "100%", background: TEAL, transition: "width 240ms ease" }} />
+        </div>
+        <h1 className="pro-h1" style={{ fontSize: 32 }}>{titles[step - 1]}</h1>
       </section>
 
       <section className="pro-wrap" style={{ paddingBottom: 64 }}>
         <div className="pro-card">
-          {step === 1 ? (
-            <ProProfileFields form={form} setForm={setForm} userId={user?.id ?? ""} />
-          ) : (
+          {step === 1 && <ProProfileFields form={form} setForm={setForm} userId={user?.id ?? ""} />}
+
+          {step === 2 && (
             <div style={{ display: "grid", gap: 10, fontSize: 14 }}>
               <div style={{ fontFamily: "'Gloock', Georgia, serif", fontSize: 22 }}>{form.name}</div>
               <div style={{ color: "rgba(244,238,226,0.7)" }}>
@@ -262,14 +280,30 @@ const ProOnboarding = () => {
               <div style={{ color: "rgba(244,238,226,0.7)" }}>{form.city}</div>
               <div style={{ color: "rgba(244,238,226,0.7)" }}>{form.languages.join(", ")}</div>
               <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>{form.description}</p>
+              {!form.image_url && (
+                <p style={{ margin: 0, fontSize: 12, color: "rgba(244,238,226,0.6)" }}>
+                  Sem foto por enquanto. Voce pode adicionar depois no painel.
+                </p>
+              )}
             </div>
           )}
 
-          {step === 1 ? (
+          {step === 3 && (
+            <div style={{ display: "grid", gap: 12, fontSize: 14 }}>
+              <div style={{ color: TEAL, fontSize: 13 }}>Publicado na vitrine SalbCare.</div>
+              <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
+                Seu perfil ja pode ser encontrado por pacientes e viajantes.
+              </p>
+            </div>
+          )}
+
+          {step === 1 && (
             <button className="pro-cta" style={{ background: TEAL, color: NAVY, marginTop: 22 }} onClick={() => setStep(2)}>
               Continuar
             </button>
-          ) : (
+          )}
+
+          {step === 2 && (
             <div style={{ display: "grid", gap: 10, marginTop: 22 }}>
               <button className="pro-cta" style={{ background: GOLD, color: NAVY }} disabled={saving} onClick={publish}>
                 {saving ? "Publicando" : "Publicar na vitrine"}
@@ -281,6 +315,25 @@ const ProOnboarding = () => {
               >
                 Voltar e editar
               </button>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div style={{ display: "grid", gap: 10, marginTop: 22 }}>
+              <button
+                className="pro-cta"
+                style={{ background: GOLD, color: NAVY }}
+                onClick={() => navigate("/pro/painel")}
+              >
+                Ir para o painel
+              </button>
+              <Link
+                to="/kite"
+                className="pro-cta"
+                style={{ background: "transparent", color: CREAM, border: "1px solid rgba(244,238,226,0.25)" }}
+              >
+                Ver meu perfil publico
+              </Link>
             </div>
           )}
         </div>
