@@ -139,7 +139,9 @@ export const ProProfileFields = ({
       </label>
 
       <div style={{ display: "grid", gap: 8 }}>
-        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Foto de perfil</span>
+        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>
+          Foto de perfil (opcional, voce pode adicionar depois)
+        </span>
         {form.image_url && (
           <img
             src={form.image_url}
