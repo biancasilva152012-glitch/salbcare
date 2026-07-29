@@ -34,6 +34,7 @@ export type ProPlanKey = keyof typeof PRO_PRICES;
 
 export const proStyles = `
   .pro-wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  .pro-wrap--wide { max-width: 1080px; }
   .pro-h1 { font-family: ${DISPLAY}; font-size: 44px; line-height: 1.08; margin: 12px 0 0; font-weight: 400; }
   .pro-h2 { font-family: ${DISPLAY}; font-size: 26px; line-height: 1.2; margin: 0; font-weight: 400; }
   .pro-card { border-radius: 14px; padding: 26px; background: rgba(244,238,226,0.04); border: 1px solid rgba(244,238,226,0.14); }
