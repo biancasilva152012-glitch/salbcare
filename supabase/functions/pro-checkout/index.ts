@@ -14,10 +14,11 @@ const logStep = (step: string, details?: unknown) => {
 
 /** Preços SalbCare Pro (conta live "Salb Care"). Whitelist server-side. */
 const PRO_PRICES: Record<string, string> = {
+  "price_1TyX6lBUEEEAHx2hGeIMZ9W1": "monthly",
   "price_1TyCJdBUEEEAHx2hYIvZ6EOH": "monthly",
   "price_1TyCJeBUEEEAHx2hvxyCs0Dz": "annual",
 };
-const DEFAULT_PRICE = "price_1TyCJdBUEEEAHx2hYIvZ6EOH";
+const DEFAULT_PRICE = "price_1TyX6lBUEEEAHx2hGeIMZ9W1";
 
 const ALLOWED_ORIGINS = [
   "https://salbcare.com",
@@ -77,7 +78,7 @@ serve(async (req) => {
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
       metadata: { user_id: user.id, product: "salbcare_pro" },
       subscription_data: { metadata: { user_id: user.id, product: "salbcare_pro" } },
-      success_url: `${origin}/pro/onboarding?status=success`,
+      success_url: `${origin}/pro/bem-vindo?status=success`,
       cancel_url: `${origin}/pro?status=cancelled`,
     });
 

@@ -14,14 +14,27 @@ export const PRO_FONTS_HREF =
   "https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500;600&display=swap";
 
 export const PRO_PRICES = {
-  monthly: { id: "price_1TyCJdBUEEEAHx2hYIvZ6EOH", label: "Mensal", amount: "R$ 99", period: "/mês" },
-  annual: { id: "price_1TyCJeBUEEEAHx2hvxyCs0Dz", label: "Anual Fundador", amount: "R$ 297", period: "/ano" },
+  monthly: {
+    id: "price_1TyX6lBUEEEAHx2hGeIMZ9W1",
+    label: "Mensal",
+    amount: "R$ 59",
+    period: "/mês",
+    note: "Cancele quando quiser.",
+  },
+  annual: {
+    id: "price_1TyCJeBUEEEAHx2hvxyCs0Dz",
+    label: "Anual Fundador",
+    amount: "R$ 297",
+    period: "/ano",
+    note: "Equivale a R$ 24,75 por mês.",
+  },
 } as const;
 
 export type ProPlanKey = keyof typeof PRO_PRICES;
 
 export const proStyles = `
   .pro-wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  .pro-wrap--wide { max-width: 1080px; }
   .pro-h1 { font-family: ${DISPLAY}; font-size: 44px; line-height: 1.08; margin: 12px 0 0; font-weight: 400; }
   .pro-h2 { font-family: ${DISPLAY}; font-size: 26px; line-height: 1.2; margin: 0; font-weight: 400; }
   .pro-card { border-radius: 14px; padding: 26px; background: rgba(244,238,226,0.04); border: 1px solid rgba(244,238,226,0.14); }

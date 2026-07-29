@@ -460,7 +460,14 @@ const Index = () => {
               <img src="/pwa-icon-192.png" alt="" width={32} height={32} style={{ borderRadius: 8 }} />
               <span style={{ fontWeight: 700, fontSize: 17, color: "#fff", letterSpacing: "-0.01em" }}>SalbCare</span>
             </Link>
-            <LanguageSwitcher value={lang} onChange={setLang} />
+            <nav
+              aria-label="Navegação principal"
+              style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", justifyContent: "flex-end" }}
+            >
+              <Link to="/kite" className="salb-link">{t.nav.care}</Link>
+              <Link to="/pro" className="salb-link">{t.nav.clinics}</Link>
+              <LanguageSwitcher value={lang} onChange={setLang} />
+            </nav>
           </div>
         </header>
 

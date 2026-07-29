@@ -184,6 +184,7 @@ const App = () => (
               <Route path="/pro" element={<Pro />} />
               <Route path="/pro/obrigado" element={<ProObrigado />} />
               <Route path="/pro/onboarding" element={<ProRoute><ProOnboarding /></ProRoute>} />
+              <Route path="/pro/bem-vindo" element={<ProRoute><ProOnboarding /></ProRoute>} />
               <Route path="/pro/painel" element={<ProRoute><ProDashboard /></ProRoute>} />
 
               <Route path="/about" element={<About />} />
