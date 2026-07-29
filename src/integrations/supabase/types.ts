@@ -938,6 +938,7 @@ export type Database = {
           date: string
           description: string
           id: string
+          pro_appointment_id: string | null
           type: string
           user_id: string
         }
@@ -948,6 +949,7 @@ export type Database = {
           date?: string
           description: string
           id?: string
+          pro_appointment_id?: string | null
           type: string
           user_id: string
         }
@@ -958,10 +960,19 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          pro_appointment_id?: string | null
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "financial_transactions_pro_appointment_id_fkey"
+            columns: ["pro_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "pro_appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoices: {
         Row: {
@@ -1700,6 +1711,7 @@ export type Database = {
       patients: {
         Row: {
           birth_date: string | null
+          city: string | null
           cpf: string | null
           created_at: string
           email: string | null
@@ -1709,12 +1721,14 @@ export type Database = {
           name: string
           notes: string | null
           phone: string | null
+          preferred_language: string | null
           procedure_performed: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           birth_date?: string | null
+          city?: string | null
           cpf?: string | null
           created_at?: string
           email?: string | null
@@ -1724,12 +1738,14 @@ export type Database = {
           name: string
           notes?: string | null
           phone?: string | null
+          preferred_language?: string | null
           procedure_performed?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           birth_date?: string | null
+          city?: string | null
           cpf?: string | null
           created_at?: string
           email?: string | null
@@ -1739,6 +1755,7 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          preferred_language?: string | null
           procedure_performed?: string | null
           updated_at?: string
           user_id?: string
@@ -1885,6 +1902,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          patient_id: string | null
           patient_name: string
           scheduled_at: string
           service: string | null
@@ -1896,6 +1914,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          patient_id?: string | null
           patient_name: string
           scheduled_at: string
           service?: string | null
@@ -1907,6 +1926,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          patient_id?: string | null
           patient_name?: string
           scheduled_at?: string
           service?: string | null
@@ -1914,7 +1934,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pro_appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pro_subscriptions: {
         Row: {
