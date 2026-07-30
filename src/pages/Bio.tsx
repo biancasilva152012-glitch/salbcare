@@ -532,7 +532,9 @@ export default function Bio() {
           return;
         } catch { /* noop */ }
       }
-      if (isWa) window.location.href = url;
+      // Last resort for any URL (Stripe checkout, community group, wa.me):
+      // navigate in the same tab so the click is never a no-op.
+      window.location.href = url;
     };
 
     const attachWhatsAppFallback = (id: string) => {
