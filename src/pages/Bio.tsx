@@ -498,8 +498,8 @@ export default function Bio() {
     const openWhatsAppSafely = (rawUrl: string) => {
       let url = (rawUrl || "").trim();
       if (!url) return;
-      // Validate: must be wa.me or whatsapp.com; otherwise open as-is (community group).
-      const isWa = /^https:\/\/(wa\.me|(chat|api)\.whatsapp\.com)\//i.test(url);
+      // wa.me links get a native-scheme fallback; other links fall back to
+      // same-tab navigation.
       const nativeUrl = (() => {
         try {
           if (!/^https:\/\/wa\.me\//i.test(url)) return null;
