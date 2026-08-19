@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { CREAM, GOLD, MONO, NAVY, PRO_FONTS_HREF, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
 
-const LANGUAGES = ["Portugues", "Ingles", "Espanhol"];
+const LANGUAGES = ["Português", "Inglês", "Espanhol"];
 
 export type ProProfileForm = {
   name: string;
@@ -26,7 +26,7 @@ export const emptyProfile: ProProfileForm = {
   profession: "",
   registration_number: "",
   city: "",
-  languages: ["Portugues"],
+  languages: ["Português"],
   description: "",
   description_en: "",
   whatsapp: "",
@@ -52,7 +52,7 @@ export const ProProfileFields = ({
     const path = `${userId}/pro-profile/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from("professional-assets").upload(path, file, { upsert: true });
     if (error) {
-      toast.error("Nao foi possivel enviar a foto.");
+      toast.error("Não foi possível enviar a foto.");
     } else {
       const { data } = supabase.storage.from("professional-assets").getPublicUrl(path);
       setForm({ ...form, image_url: data.publicUrl });
@@ -74,13 +74,13 @@ export const ProProfileFields = ({
 
   return (
     <div style={{ display: "grid", gap: 14 }}>
-      {field("Nome como aparece na sua pagina de agendamento", "name", "Dra. Maria Silva")}
+      {field("Nome como aparece na sua página de agendamento", "name", "Dra. Maria Silva")}
       <div className="pro-grid2">
-        {field("Profissao", "profession", "Fisioterapeuta")}
+        {field("Profissão", "profession", "Fisioterapeuta")}
         {field("Registro profissional", "registration_number", "CREFITO 00000")}
       </div>
       <div className="pro-grid2">
-        {field("Cidade de atuacao", "city", "Ilha do Guajiru")}
+        {field("Cidade de atuação", "city", "Ilha do Guajiru")}
         {field("WhatsApp de contato", "whatsapp", "5588999999999")}
       </div>
       {field("Instagram", "instagram", "@seuperfil")}
@@ -120,7 +120,7 @@ export const ProProfileFields = ({
       </div>
 
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Apresentacao em portugues</span>
+        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Apresentação em português</span>
         <textarea
           className="pro-input"
           rows={4}
@@ -129,7 +129,7 @@ export const ProProfileFields = ({
         />
       </label>
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Apresentacao em ingles</span>
+        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Apresentação em inglês</span>
         <textarea
           className="pro-input"
           rows={4}
@@ -140,12 +140,12 @@ export const ProProfileFields = ({
 
       <div style={{ display: "grid", gap: 8 }}>
         <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>
-          Foto de perfil (opcional, voce pode adicionar depois)
+          Foto de perfil (opcional, você pode adicionar depois)
         </span>
         {form.image_url && (
           <img
             src={form.image_url}
-            alt="Previa da foto de perfil"
+            alt="Prévia da foto de perfil"
             loading="lazy"
             style={{ width: 96, height: 96, borderRadius: 12, objectFit: "cover", objectPosition: "center 25%" }}
           />
@@ -187,7 +187,7 @@ const ProOnboarding = () => {
             profession: data.profession ?? "",
             registration_number: data.registration_number ?? "",
             city: data.city ?? "",
-            languages: data.languages?.length ? data.languages : ["Portugues"],
+            languages: data.languages?.length ? data.languages : ["Português"],
             description: data.description ?? "",
             description_en: data.description_en ?? "",
             whatsapp: data.whatsapp ?? "",
@@ -201,7 +201,7 @@ const ProOnboarding = () => {
   const publish = async () => {
     if (!user) return;
     if (!form.name || !form.profession || !form.city) {
-      toast.error("Preencha nome, profissao e cidade.");
+      toast.error("Preencha nome, profissão e cidade.");
       setStep(1);
       return;
     }
@@ -228,13 +228,13 @@ const ProOnboarding = () => {
     );
     setSaving(false);
     if (error) {
-      toast.error("Nao foi possivel publicar o perfil.");
+      toast.error("Não foi possível publicar o perfil.");
       return;
     }
     setStep(3);
   };
 
-  const titles = ["Complete seu perfil", "Revise e publique", "Seu perfil esta no ar"];
+  const titles = ["Complete seu perfil", "Revise e publique", "Seu perfil está no ar"];
   const progress = Math.round((step / TOTAL_STEPS) * 100);
 
   return (
@@ -282,7 +282,7 @@ const ProOnboarding = () => {
               <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>{form.description}</p>
               {!form.image_url && (
                 <p style={{ margin: 0, fontSize: 12, color: "rgba(244,238,226,0.6)" }}>
-                  Sem foto por enquanto. Voce pode adicionar depois no painel.
+                  Sem foto por enquanto. Você pode adicionar depois no painel.
                 </p>
               )}
             </div>
@@ -290,9 +290,9 @@ const ProOnboarding = () => {
 
           {step === 3 && (
             <div style={{ display: "grid", gap: 12, fontSize: 14 }}>
-              <div style={{ color: TEAL, fontSize: 13 }}>Sua pagina de agendamento esta no ar.</div>
+              <div style={{ color: TEAL, fontSize: 13 }}>Sua página de agendamento está no ar.</div>
               <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
-                Seu perfil ja pode ser encontrado por pacientes e viajantes.
+                Seu perfil já pode ser encontrado por pacientes e viajantes.
               </p>
             </div>
           )}
@@ -306,7 +306,7 @@ const ProOnboarding = () => {
           {step === 2 && (
             <div style={{ display: "grid", gap: 10, marginTop: 22 }}>
               <button className="pro-cta" style={{ background: GOLD, color: NAVY }} disabled={saving} onClick={publish}>
-                {saving ? "Publicando" : "Publicar minha pagina"}
+                {saving ? "Publicando" : "Publicar minha página"}
               </button>
               <button
                 className="pro-cta"
@@ -332,7 +332,7 @@ const ProOnboarding = () => {
                 className="pro-cta"
                 style={{ background: "transparent", color: CREAM, border: "1px solid rgba(244,238,226,0.25)" }}
               >
-                Ver meu perfil publico
+                Ver meu perfil público
               </Link>
             </div>
           )}
