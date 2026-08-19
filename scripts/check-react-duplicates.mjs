@@ -20,7 +20,7 @@ function readVersion(pkgDir) {
   }
 }
 
-function scan(nodeModulesDir, depth = 0) {
+function scan(nodeModulesDir, depth = 0, inScope = false) {
   if (depth > 6 || !existsSync(nodeModulesDir)) return;
 
   let entries;
@@ -37,11 +37,13 @@ function scan(nodeModulesDir, depth = 0) {
     const fullPath = path.join(nodeModulesDir, entry.name);
 
     if (entry.name.startsWith("@")) {
-      scan(fullPath, depth); // scope folder, não conta como nível
+      scan(fullPath, depth, true); // pasta de escopo (@org): não conta como nível
       continue;
     }
 
-    if (TARGETS.includes(entry.name)) {
+    // Só interessa "react"/"react-dom" no topo do node_modules, nunca
+    // "@sentry/react" ou "@testing-library/react".
+    if (!inScope && TARGETS.includes(entry.name)) {
       const version = readVersion(fullPath);
       if (version) {
         found.get(entry.name).push({ version, location: path.relative(ROOT, fullPath) });
