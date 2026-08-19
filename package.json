@@ -6,7 +6,8 @@
   "scripts": {
     "predev": "node scripts/generate-sitemap.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/generate-sitemap.mjs && node scripts/check-seo-assets.mjs",
+    "prebuild": "node scripts/check-react-duplicates.mjs && node scripts/generate-sitemap.mjs && node scripts/check-seo-assets.mjs",
+    "check:react": "node scripts/check-react-duplicates.mjs",
     "build": "vite build",
     "postbuild": "node scripts/prerender-routes.mjs && node scripts/check-rendered-seo.mjs",
     "build:dev": "vite build --mode development",
