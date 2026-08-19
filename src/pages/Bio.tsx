@@ -277,7 +277,7 @@ const MARKUP = `
 
   <div id="form-view">
     <h3 id="sheet-title">Seja parceiro SalbCare</h3>
-    <p class="lead">Rede curada de profissionais que atendem turistas internacionais no litoral do Ceará. Preencha e receba os próximos passos no seu WhatsApp.</p>
+    <p class="lead">Software de gestão de consultório para dentistas e fisioterapeutas. Preencha e receba os próximos passos no seu WhatsApp.</p>
 
     <form id="partner-form">
       <label for="f-nome">Nome completo</label>
@@ -328,9 +328,9 @@ const MARKUP = `
       <div class="price">R$ 259 <span style="font-size:14px">+ R$ 69/mês</span></div>
       <p class="per">Onboarding único + mensalidade fundador, preço travado</p>
       <ul>
-        <li>Perfil verificado na vitrine internacional</li>
+        <li>Sua própria página de agendamento com link exclusivo</li>
         <li>Pacientes direto no seu WhatsApp, sem comissão</li>
-        <li>Triagem em português, inglês e espanhol</li>
+        <li>Módulo internacional em português, inglês e espanhol</li>
       </ul>
       <a class="bio-btn gold" id="pay-btn" href="#" target="_blank" rel="noopener">Garantir minha vaga agora</a>
       <div class="paybadges"><span>Apple Pay</span><span>·</span><span>Google Pay</span><span>·</span><span>Cartão</span></div>
@@ -386,14 +386,14 @@ const MARKUP = `
       <input id="i-msg" name="Mensagem" type="text" placeholder="Conte um pouco do seu interesse">
 
       <button class="bio-btn navy" id="ins-submit" type="submit">Solicitar parceria</button>
-      <p class="fine">Retornamos em até 24h com uma proposta comercial.</p>
+      <p class="fine">Retornamos em um dia util com uma proposta comercial.</p>
     </form>
   </div>
 
   <div class="success" id="ins-success-view">
     <div class="check"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
     <h3>Solicitação recebida!</h3>
-    <p class="lead">Nossa equipe comercial vai entrar em contato em até 24h com o modelo de parceria e os próximos passos.</p>
+    <p class="lead">Nossa equipe comercial vai entrar em contato em um dia util com o modelo de parceria e os próximos passos.</p>
     <a class="bio-btn gold" id="ins-wa-btn" href="#" target="_blank" rel="noopener" style="display:none">Falar agora no WhatsApp</a>
   </div>
 </div>

@@ -8,16 +8,16 @@ const PLAN_LEVEL: Record<PlanKey, number> = {
 
 export type Feature =
   | "pdf_export"
-  | "accounting_marketplace"
-  | "legal_marketplace"
+  | "accounting_partners"
+  | "legal_partners"
   | "advanced_financial_dashboard"
   | "multi_professionals";
 
 // All features available on the single plan
 const FEATURE_MIN_PLAN: Record<Feature, PlanKey> = {
   pdf_export: "basic",
-  accounting_marketplace: "basic",
-  legal_marketplace: "basic",
+  accounting_partners: "basic",
+  legal_partners: "basic",
   advanced_financial_dashboard: "basic",
   multi_professionals: "basic",
 };

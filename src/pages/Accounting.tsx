@@ -5,7 +5,7 @@ import CnpjRequestTab from "@/components/accounting/CnpjRequestTab";
 import InvoicesTab from "@/components/accounting/InvoicesTab";
 import TaxCalculationTab from "@/components/accounting/TaxCalculationTab";
 import AccountingDashboardTab from "@/components/accounting/AccountingDashboardTab";
-import MarketplaceTab from "@/components/accounting/MarketplaceTab";
+import PartnersTab from "@/components/accounting/PartnersTab";
 import AccountantChatTab from "@/components/accounting/AccountantChatTab";
 import AccountantPartnerCard from "@/components/accounting/AccountantPartnerCard";
 import FeatureGate from "@/components/FeatureGate";
@@ -30,7 +30,7 @@ const AccountingInner = () => {
             <TabsTrigger value="invoices" className="text-[10px] px-1 py-2">Notas</TabsTrigger>
             <TabsTrigger value="taxes" className="text-[10px] px-1 py-2">Impostos</TabsTrigger>
             <TabsTrigger value="chat" className="text-[10px] px-1 py-2">Chat</TabsTrigger>
-            <TabsTrigger value="marketplace" className="text-[10px] px-1 py-2">Parceiros</TabsTrigger>
+            <TabsTrigger value="partners" className="text-[10px] px-1 py-2">Parceiros</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard"><AccountingDashboardTab /></TabsContent>
@@ -39,7 +39,7 @@ const AccountingInner = () => {
           <TabsContent value="invoices"><InvoicesTab /></TabsContent>
           <TabsContent value="taxes"><TaxCalculationTab /></TabsContent>
           <TabsContent value="chat"><AccountantChatTab /></TabsContent>
-          <TabsContent value="marketplace"><FeatureGate feature="accounting_marketplace"><MarketplaceTab /></FeatureGate></TabsContent>
+          <TabsContent value="partners"><FeatureGate feature="accounting_partners"><PartnersTab /></FeatureGate></TabsContent>
         </Tabs>
       </div>
     </PageContainer>
