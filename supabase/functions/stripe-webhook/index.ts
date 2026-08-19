@@ -34,6 +34,10 @@ const PLAN_MAP: Record<string, { plan: string; billing: string }> = {
 
 // SalbCare Pro (assinatura self-service da rota /pro)
 const PRO_PRICES: Record<string, string> = {
+  // Atuais: R$ 99/mês e R$ 897/ano
+  "price_1U6GvUBUEEEAHx2hAkDxAQbF": "monthly",
+  "price_1U6GvoBUEEEAHx2hmyZMqKCo": "annual",
+  // Legado
   "price_1TyX6lBUEEEAHx2hGeIMZ9W1": "monthly",
   "price_1TyCJdBUEEEAHx2hYIvZ6EOH": "monthly",
   "price_1TyCJeBUEEEAHx2hvxyCs0Dz": "annual",
