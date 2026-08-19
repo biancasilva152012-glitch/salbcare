@@ -81,7 +81,10 @@ serve(async (req) => {
       allow_promotion_codes: true,
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
       metadata: { user_id: user.id, product: "salbcare_pro" },
-      subscription_data: { metadata: { user_id: user.id, product: "salbcare_pro" } },
+      subscription_data: {
+        trial_period_days: 14,
+        metadata: { user_id: user.id, product: "salbcare_pro" },
+      },
       success_url: `${origin}/pro/bem-vindo?status=success`,
       cancel_url: `${origin}/pro?status=cancelled`,
     });
