@@ -97,7 +97,6 @@ const AdminKiteBookingsPage = lazyWithRetry(() => import("./pages/admin/AdminKit
 const AdminKiteBookingDetailPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingDetailPage"), "AdminKiteBookingDetailPage");
 const AdminLocalPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminLocalPartnersPage"), "AdminLocalPartnersPage");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
-const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
 const ProDashboard = lazyWithRetry(() => import("./pages/ProDashboard"), "ProDashboard");
