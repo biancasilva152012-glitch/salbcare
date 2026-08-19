@@ -14,11 +14,14 @@ const ProRoute = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const { isActive, loading, refresh } = useProSubscription();
   const [attempts, setAttempts] = useState(0);
+  // Só esperamos o webhook quando o usuário acabou de voltar do Stripe.
+  const returningFromStripe = new URLSearchParams(location.search).get("status") === "success";
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Voltando do Stripe, a assinatura só é gravada quando o webhook chega.
   // Revalidamos algumas vezes antes de mandar o usuário de volta para /pro.
   useEffect(() => {
+    if (!returningFromStripe) return;
     if (loading || authLoading || !user || isActive) return;
     if (attempts >= MAX_RETRIES) return;
     timer.current = setTimeout(() => {
@@ -28,9 +31,9 @@ const ProRoute = ({ children }: { children: React.ReactNode }) => {
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [loading, authLoading, user, isActive, attempts, refresh]);
+  }, [returningFromStripe, loading, authLoading, user, isActive, attempts, refresh]);
 
-  const waitingForWebhook = !!user && !isActive && attempts < MAX_RETRIES;
+  const waitingForWebhook = returningFromStripe && !!user && !isActive && attempts < MAX_RETRIES;
 
   if (authLoading || loading || waitingForWebhook) {
     return (

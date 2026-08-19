@@ -17,14 +17,14 @@ export const PRO_FONTS_HREF =
 
 export const PRO_PRICES = {
   monthly: {
-    id: "price_1TyX6lBUEEEAHx2hGeIMZ9W1",
+    id: "price_1U6GvUBUEEEAHx2hAkDxAQbF",
     label: "Mensal",
     amount: "R$ 99",
     period: "/mês",
     note: "Cancele quando quiser.",
   },
   annual: {
-    id: "price_1TyCJeBUEEEAHx2hvxyCs0Dz",
+    id: "price_1U6GvoBUEEEAHx2hmyZMqKCo",
     label: "Anual Fundador",
     amount: "R$ 897",
     period: "/ano",
