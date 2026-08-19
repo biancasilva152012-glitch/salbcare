@@ -113,7 +113,7 @@ export const PROFESSION_CONFIG: Record<ProfessionalType, ProfessionConfig> = {
     chiefComplaintLabel: "Motivo da Consulta",
     chiefComplaintPlaceholder: "Objetivo nutricional, queixas alimentares...",
     historyLabel: "Histórico Alimentar",
-    historyPlaceholder: "Hábitos alimentares, recordatório 24h, preferências...",
+    historyPlaceholder: "Hábitos alimentares, recordatorio alimentar, preferências...",
     examLabel: "Avaliação Antropométrica",
     examPlaceholder: "IMC, circunferências, dobras cutâneas, composição corporal...",
     diagnosisLabel: "Diagnóstico Nutricional",

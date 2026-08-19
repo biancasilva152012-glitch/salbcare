@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Star, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-const MarketplaceTab = () => {
+const PartnersTab = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -87,4 +87,4 @@ const MarketplaceTab = () => {
   );
 };
 
-export default MarketplaceTab;
+export default PartnersTab;

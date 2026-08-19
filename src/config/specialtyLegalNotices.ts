@@ -6,7 +6,7 @@ export const SPECIALTY_LEGAL_NOTICES: Record<string, string> = {
   nutricionista:
     "Consulta nutricional online autorizada pelo CFN. O plano alimentar é elaborado exclusivamente pelo nutricionista responsável.",
   dentista:
-    "Consultas odontológicas online são restritas a orientação, triagem e acompanhamento — conforme Resolução CFO 226/2021. Procedimentos clínicos exigem atendimento presencial.",
+    "Consultas odontológicas online são restritas a orientacao e acompanhamento — conforme Resolução CFO 226/2021. Procedimentos clínicos exigem atendimento presencial.",
   fisioterapeuta:
     "Teleconsulta fisioterapêutica autorizada pelo COFFITO conforme Resolução 516/2020.",
 };

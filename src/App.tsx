@@ -36,14 +36,14 @@ const SlugRedirect = ({ to }: { to: (slug: string) => string }) => {
 const FreemiumDebugPanelGate = () => {
   const { pathname } = useLocation();
   if (!import.meta.env.DEV) return null;
-  if (pathname === "/" || pathname.startsWith("/kite")) return null;
+  if (pathname === "/") return null;
   return <FreemiumDebugPanel />;
 };
 
 // Eager: login, register, landing (entry points)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Index from "./pages/Index";
+
 
 // Lazy with auto-retry
 const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"), "ForgotPassword");
@@ -96,9 +96,6 @@ const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintP
 const AdminKiteBookingsPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingsPage"), "AdminKiteBookingsPage");
 const AdminKiteBookingDetailPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingDetailPage"), "AdminKiteBookingDetailPage");
 const AdminLocalPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminLocalPartnersPage"), "AdminLocalPartnersPage");
-const Partnership = lazyWithRetry(() => import("./pages/Partnership"), "Partnership");
-const Kite = lazyWithRetry(() => import("./pages/Kite"), "Kite");
-const Hub = lazyWithRetry(() => import("./pages/Hub"), "Hub");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
@@ -106,13 +103,10 @@ const ProDashboard = lazyWithRetry(() => import("./pages/ProDashboard"), "ProDas
 
 const About = lazyWithRetry(() => import("./pages/About"), "About");
 const Contact = lazyWithRetry(() => import("./pages/Contact"), "Contact");
-const KiteConfirmed = lazyWithRetry(() => import("./pages/KiteConfirmed"), "KiteConfirmed");
 const Terms = lazyWithRetry(() => import("./pages/Terms"), "Terms");
 const Privacy = lazyWithRetry(() => import("./pages/Privacy"), "Privacy");
 // Index é eager (rota raiz)
 const BookingPublic = lazyWithRetry(() => import("./pages/BookingPublic"), "BookingPublic");
-const ConsultaOnlineIndex = lazyWithRetry(() => import("./pages/ConsultaOnlineIndex"), "ConsultaOnlineIndex");
-const SpecialtyListing = lazyWithRetry(() => import("./pages/SpecialtyListing"), "SpecialtyListing");
 const Diagnostico = lazyWithRetry(() => import("./pages/Diagnostico"), "Diagnostico");
 const Parcerias = lazyWithRetry(() => import("./pages/Parcerias"), "Parcerias");
 const Checkout = lazyWithRetry(() => import("./pages/Checkout"), "Checkout");
@@ -120,9 +114,6 @@ const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"), "Pa
 const Sucesso = lazyWithRetry(() => import("./pages/Sucesso"), "Sucesso");
 const SubscriptionSuccess = lazyWithRetry(() => import("./pages/SubscriptionSuccess"), "SubscriptionSuccess");
 const Cancelado = lazyWithRetry(() => import("./pages/Cancelado"), "Cancelado");
-const ProntoAtendimento = lazyWithRetry(() => import("./pages/ProntoAtendimento"), "ProntoAtendimento");
-const ProntoAtendimentoFlow = lazyWithRetry(() => import("./pages/ProntoAtendimentoFlow"), "ProntoAtendimentoFlow");
-const ProntoAtendimentoHistorico = lazyWithRetry(() => import("./pages/ProntoAtendimentoHistorico"), "ProntoAtendimentoHistorico");
 
 const Pricing = lazyWithRetry(() => import("./pages/Pricing"), "Pricing");
 const BlogIndex = lazyWithRetry(() => import("./pages/blog/BlogIndex"), "BlogIndex");
@@ -178,9 +169,9 @@ const App = () => (
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Pro />} />
               {/* Brand hub + alias for current SaaS landing (Index) */}
-              <Route path="/hub" element={<Hub />} />
+              <Route path="/hub" element={<Navigate to="/" replace />} />
               <Route path="/pro" element={<Pro />} />
               <Route path="/pro/obrigado" element={<ProObrigado />} />
               <Route path="/pro/onboarding" element={<ProRoute><ProOnboarding /></ProRoute>} />
@@ -211,12 +202,12 @@ const App = () => (
               <Route path="/experimente" element={<Experimente />} />
               <Route path="/guest" element={<GuestEntry />} />
               <Route path="/upgrade" element={<Upgrade />} />
-              <Route path="/kite" element={<Kite />} />
-              <Route path="/international" element={<Kite />} />
-              <Route path="/kitecare" element={<Kite />} />
-              <Route path="/kite/confirmed" element={<KiteConfirmed />} />
-              <Route path="/international/confirmed" element={<KiteConfirmed />} />
-              <Route path="/kitecare/confirmed" element={<KiteConfirmed />} />
+              <Route path="/kite" element={<Navigate to="/" replace />} />
+              <Route path="/international" element={<Navigate to="/" replace />} />
+              <Route path="/kitecare" element={<Navigate to="/" replace />} />
+              <Route path="/kite/confirmed" element={<Navigate to="/" replace />} />
+              <Route path="/international/confirmed" element={<Navigate to="/" replace />} />
+              <Route path="/kitecare/confirmed" element={<Navigate to="/" replace />} />
               <Route path="/bio" element={<Bio />} />
 
               {/* ============================================================ */}
@@ -318,11 +309,11 @@ const App = () => (
               
 
               {/* Public patient routes */}
-              <Route path="/consulta-online" element={<ConsultaOnlineIndex />} />
-              <Route path="/consulta-online/:specialty" element={<SpecialtyListing />} />
-              <Route path="/pronto-atendimento" element={<ProntoAtendimento />} />
-              <Route path="/pronto-atendimento/servico" element={<ProntoAtendimentoFlow />} />
-              <Route path="/pronto-atendimento/historico" element={<ProntoAtendimentoHistorico />} />
+              <Route path="/consulta-online" element={<Navigate to="/" replace />} />
+              <Route path="/consulta-online/:specialty" element={<Navigate to="/" replace />} />
+              <Route path="/pronto-atendimento" element={<Navigate to="/" replace />} />
+              <Route path="/pronto-atendimento/servico" element={<Navigate to="/" replace />} />
+              <Route path="/pronto-atendimento/historico" element={<Navigate to="/" replace />} />
 
               {/* Professional-only routes */}
               <Route path="/checkout" element={<ProfessionalRoute><Checkout /></ProfessionalRoute>} />
@@ -377,7 +368,7 @@ const App = () => (
               <Route path="/admin/blog" element={<AdminBlogListPage />} />
               <Route path="/admin/blog/:id" element={<AdminBlogEditorPage />} />
               <Route path="/admin/local-partners" element={<AdminLocalPartnersPage />} />
-              <Route path="/partnership" element={<Partnership />} />
+              <Route path="/partnership" element={<Navigate to="/" replace />} />
               <Route path="/admin-legacy" element={<CeoDashboard />} />
 
               <Route path="*" element={<NotFound />} />

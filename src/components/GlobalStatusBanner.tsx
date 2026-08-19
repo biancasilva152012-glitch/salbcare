@@ -42,8 +42,6 @@ const HIDDEN_PREFIXES = [
   "/journal",
   "/diagnostico",
   "/agendar/",
-  "/consulta-online",
-  "/pronto-atendimento",
   "/patient-dashboard",
   "/admin",
   "/guest",

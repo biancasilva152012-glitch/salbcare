@@ -66,9 +66,9 @@ function generateResult(regime: string, faturamento: string) {
     return {
       economia: 0,
       risco: "Ultrapassou o limite do MEI",
-      recomendacao: "Migração urgente para Simples Nacional",
+      recomendacao: "Migracao prioritaria para Simples Nacional",
       texto: `Você ultrapassou o limite do MEI (R$ 81.000/ano ≈ R$ 6.750/mês). Isso significa risco de desenquadramento e multa retroativa. Precisa migrar agora.`,
-      tipo: "urgente",
+      tipo: "prioritario",
     };
   }
 

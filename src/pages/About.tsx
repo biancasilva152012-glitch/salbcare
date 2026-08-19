@@ -43,12 +43,12 @@ export default function About() {
               friction of legacy enterprise software. That's <Link to="/pro" className="text-pro-accent hover:underline">SalbCare Pro</Link>.
             </p>
             <p>
-              Then international travelers started arriving at our doorstep on Ilha do Guajiru,
-              looking for world-class dental, physiotherapy and telehealth at a fraction of
-              European prices, in English and Spanish. That's <Link to="/kite" className="text-kite-gold hover:underline">SalbCare Kite</Link>.
+              Hoje a SalbCare e um software de gestao de consultorio para dentistas e
+              fisioterapeutas autonomos: agenda, pacientes, financeiro e a pagina de
+              agendamento do proprio profissional, com modulo internacional opcional.
             </p>
             <p>
-              Different doors. Same mission. Healthcare, made human.
+              Somos tecnologia. O atendimento e sempre do profissional.
             </p>
           </div>
         </main>

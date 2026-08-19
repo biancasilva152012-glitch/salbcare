@@ -371,7 +371,7 @@ const ProDashboard = () => {
                       style={{ background: "transparent", color: CREAM, border: "1px solid rgba(244,238,226,0.25)" }}
                       onClick={() => saveProfile(false)}
                     >
-                      Despublicar da vitrine
+                      Despublicar minha pagina
                     </button>
                   )}
                 </div>

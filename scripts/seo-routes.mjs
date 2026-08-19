@@ -20,27 +20,13 @@ export const DEFAULT_OG_IMAGE = `${SITE}/og-image.png`;
 export const ROUTES = [
   {
     path: "/",
-    title: "SalbCare | Healthcare Without Borders",
+    title: "SalbCare | Gestao de consultorio para dentistas e fisioterapeutas",
     description:
-      "SalbCare connects international travelers on Brazil's kite coast with trusted local health and wellness care. Book in minutes, care without borders.",
+      "Software de gestao para consultorio: agenda, pacientes, financeiro e sua propria pagina de agendamento. Modulo internacional opcional em PT, EN e ES.",
     canonical: `${SITE}/`,
     ogUrl: `${SITE}/`,
-    locale: "en_US",
-    htmlLang: "en",
     changefreq: "weekly",
     priority: "1.0",
-  },
-  {
-    path: "/kite",
-    title: "SalbCare Kite | Health and Wellness on Brazil's Kite Coast",
-    description:
-      "Visiting Ilha do Guajiru or the Ceara kite coast? Book trusted care with SalbCare Kite and reserve your session with a R$50 deposit.",
-    canonical: `${SITE}/kite`,
-    ogUrl: `${SITE}/kite`,
-    locale: "en_US",
-    htmlLang: "en",
-    changefreq: "weekly",
-    priority: "0.9",
   },
   {
     path: "/about",
@@ -74,9 +60,9 @@ export const ROUTES = [
   },
   {
     path: "/pro",
-    title: "SalbCare Pro | Plataforma para Profissionais de Saúde",
+    title: "SalbCare Pro | Gestao de consultorio para dentistas e fisioterapeutas",
     description:
-      "Agenda, prontuário, financeiro, teleconsulta e link de agendamento por WhatsApp em um só lugar. A plataforma completa para o profissional de saúde autônomo.",
+      "Agenda, pacientes, financeiro e sua propria pagina de agendamento em um so lugar. Software de gestao para consultorio autonomo, a partir de R$99 por mes.",
     canonical: `${SITE}/pro`,
     ogUrl: `${SITE}/pro`,
     changefreq: "weekly",
@@ -103,21 +89,10 @@ export const ROUTES = [
     priority: "0.7",
   },
   {
-    path: "/hub",
-    title: "SalbCare Hub | Wind, Care and Community on Brazil's Kite Coast",
-    description:
-      "Daily wind bulletin, trusted local healthcare and the kitesurf community hub for Ilha do Guajiru, Prea, Jericoacoara and Cumbuco. Join on WhatsApp.",
-    canonical: `${SITE}/hub`,
-    ogUrl: `${SITE}/hub`,
-    changefreq: "daily",
-    priority: "0.8",
-    htmlLang: "en",
-  },
-  {
     path: "/bio",
-    title: "SalbCare | International Health Hub",
+    title: "SalbCare | Gestao de consultorio",
     description:
-      "Connect with trusted healthcare professionals, travel assistance and exclusive partners across Brazil's top kitesurf destinations.",
+      "Software de gestao para dentistas e fisioterapeutas autonomos: agenda, pacientes, financeiro e pagina de agendamento propria.",
     canonical: `${SITE}/bio`,
     ogUrl: `${SITE}/bio`,
     locale: "en_US",

@@ -494,9 +494,9 @@ const DashboardMentoriaInner = () => {
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ferramentas rápidas</p>
         </motion.div>
 
-        {/* Card 1 — Reserva de emergência */}
+        {/* Card 1 — Reserva de seguranca */}
         <motion.div variants={item} className="glass-card p-5 space-y-3">
-          <h2 className="text-sm font-semibold">Reserva de emergência</h2>
+          <h2 className="text-sm font-semibold">Reserva de seguranca</h2>
           <p className="text-xs text-muted-foreground">Quanto você precisa guardar para se proteger?</p>
           <div className="space-y-1.5">
             <Label className="text-xs">Receita média mensal (R$)</Label>

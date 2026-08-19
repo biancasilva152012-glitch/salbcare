@@ -1,7 +1,7 @@
 import PageContainer from "@/components/PageContainer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LegalDashboardTab from "@/components/legal/LegalDashboardTab";
-import LawyerMarketplaceTab from "@/components/legal/LawyerMarketplaceTab";
+import LawyerPartnersTab from "@/components/legal/LawyerPartnersTab";
 import LegalTemplatesTab from "@/components/legal/LegalTemplatesTab";
 import FeatureGate from "@/components/FeatureGate";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,12 +18,12 @@ const LegalInner = () => {
           <TabsList className="w-full grid grid-cols-3 h-auto">
             <TabsTrigger value="dashboard" className="text-xs px-2 py-2">Painel</TabsTrigger>
             <TabsTrigger value="templates" className="text-xs px-2 py-2">Modelos</TabsTrigger>
-            <TabsTrigger value="marketplace" className="text-xs px-2 py-2">Advogados</TabsTrigger>
+            <TabsTrigger value="partners" className="text-xs px-2 py-2">Advogados</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard"><LegalDashboardTab /></TabsContent>
           <TabsContent value="templates"><LegalTemplatesTab /></TabsContent>
-          <TabsContent value="marketplace"><FeatureGate feature="legal_marketplace"><LawyerMarketplaceTab /></FeatureGate></TabsContent>
+          <TabsContent value="partners"><FeatureGate feature="legal_partners"><LawyerPartnersTab /></FeatureGate></TabsContent>
         </Tabs>
       </div>
     </PageContainer>
@@ -33,7 +33,7 @@ const LegalInner = () => {
 const Legal = () => (
   <PremiumOnlyGuard
     feature="O Suporte Jurídico"
-    description="Modelos jurídicos e marketplace de advogados são liberados no plano Essencial."
+    description="Modelos jurídicos e a rede de advogados parceiros são liberados no plano Essencial."
     reason="legal"
     redirectAfter="/dashboard/juridico"
   >

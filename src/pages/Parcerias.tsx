@@ -187,7 +187,7 @@ const Parcerias = () => {
                   {partnerType === "farmacia" ? "Conectar Farmácia" : "Conectar Laboratório"}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Preencha o formulário e a Bianca vai entrar em contato pessoalmente em até 24h.
+                  Preencha o formulário e a Bianca vai entrar em contato pessoalmente em um dia util.
                 </p>
               </div>
 
@@ -258,7 +258,7 @@ const Parcerias = () => {
             <CheckCircle className="h-12 w-12 text-primary mx-auto" />
             <h3 className="text-lg font-semibold">✅ Recebemos seu interesse!</h3>
             <p className="text-sm text-muted-foreground">
-              A Bianca vai entrar em contato pessoalmente em até 24h pelo WhatsApp informado.
+              A Bianca vai entrar em contato pessoalmente em um dia util pelo WhatsApp informado.
             </p>
           </motion.div>
         )}
