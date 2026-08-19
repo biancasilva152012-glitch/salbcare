@@ -21,18 +21,18 @@ import {
 
 const PAINS = [
   "Agenda espalhada entre papel, caderno e WhatsApp.",
-  "Invisibilidade para quem procura cuidado na sua cidade.",
-  "Despreparo para o paciente estrangeiro que ja esta chegando.",
+  "Faltas e remarcacoes que voce descobre tarde demais.",
+  "Financeiro do consultorio sem controle no fim do mes.",
 ];
 
 const STEPS = [
   { n: "01", t: "Assine", d: "Escolha mensal ou anual e pague em segundos." },
   { n: "02", t: "Complete seu perfil", d: "Profissao, registro, cidade e idiomas atendidos." },
-  { n: "03", t: "Comece a atender", d: "Seu perfil entra na vitrine e recebe solicitacoes." },
+  { n: "03", t: "Divulgue seu link", d: "Sua pagina de agendamento fica pronta para voce compartilhar." },
 ];
 
 const VALUE_STACK = [
-  "Perfil profissional multilingue na vitrine",
+  "Sua pagina de agendamento com link proprio",
   "Pagina profissional propria",
   "Agenda de atendimentos",
   "Cadastro de pacientes",
@@ -52,8 +52,8 @@ const FAQ = [
     a: "Nao. A SalbCare cobra apenas a assinatura. O valor da consulta e definido por voce.",
   },
   {
-    q: "Quando meu perfil aparece na vitrine?",
-    a: "Assim que voce completa o perfil e publica, apos a curadoria da equipe.",
+    q: "Como os pacientes chegam ate mim?",
+    a: "Voce divulga o link da sua pagina de agendamento onde quiser. A SalbCare nao capta nem encaminha pacientes.",
   },
   {
     q: "Posso cancelar quando quiser?",
@@ -96,10 +96,10 @@ const Pro = () => {
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
       <Helmet>
-        <title>SalbCare Pro. Sua carreira na saude, no mapa do mundo</title>
+        <title>SalbCare Pro. Gestao do seu consultorio, do agendamento ao financeiro</title>
         <meta
           name="description"
-          content="Perfil profissional, gestao do consultorio e pacientes internacionais em uma so plataforma. A partir de R$59 por mes, sem comissao por consulta."
+          content="Software de gestao de consultorio para dentistas e fisioterapeutas: agenda, pacientes, financeiro e sua pagina de agendamento. A partir de R$59 por mes."
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -111,8 +111,8 @@ const Pro = () => {
         className="pro-wrap"
         style={{ paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}
       >
-        <Link to="/kite" style={{ color: muted, fontSize: 12, textDecoration: "none" }}>
-          Para viajantes
+        <Link to="/about" style={{ color: muted, fontSize: 12, textDecoration: "none" }}>
+          Sobre a SalbCare
         </Link>
         <Link
           to={isActive ? "/pro/painel" : "/login"}
@@ -125,10 +125,10 @@ const Pro = () => {
       {/* HERO */}
       <section className="pro-wrap" style={{ paddingTop: 72, paddingBottom: 56 }}>
         <ProLabel>SalbCare Pro</ProLabel>
-        <h1 className="pro-h1">Sua carreira na saude, no mapa do mundo.</h1>
+        <h1 className="pro-h1">Seu consultorio organizado, do agendamento ao financeiro.</h1>
         <p style={{ marginTop: 18, fontSize: 15, lineHeight: 1.65, color: "rgba(244,238,226,0.78)", maxWidth: 520 }}>
-          Perfil profissional, gestao do consultorio e pacientes internacionais em uma so plataforma. A partir de R$59
-          por mes.
+          Agenda, pacientes, financeiro e sua propria pagina de agendamento. Feito para dentistas e fisioterapeutas
+          autonomos. A partir de R$59 por mes.
         </p>
         <button
           className="pro-cta"
@@ -136,13 +136,13 @@ const Pro = () => {
           disabled={loading}
           style={{ background: GOLD, color: NAVY, marginTop: 28, maxWidth: 320 }}
         >
-          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Criar meu perfil"}
+          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Comecar agora"}
         </button>
       </section>
 
       {/* PROBLEMA */}
       <section className="pro-wrap" style={{ paddingBottom: 64 }}>
-        <h2 className="pro-h2">Voce estudou para cuidar de pessoas. Nao para cacar pacientes.</h2>
+        <h2 className="pro-h2">Voce estudou para cuidar de pessoas. Nao para administrar planilhas.</h2>
         <div style={{ marginTop: 20, display: "grid", gap: 12 }}>
           {PAINS.map((p) => (
             <div key={p} className="pro-card" style={{ padding: 18, fontSize: 14, lineHeight: 1.5 }}>
@@ -152,25 +152,27 @@ const Pro = () => {
         </div>
       </section>
 
-      {/* ECOSSISTEMA */}
+      {/* MODULO INTERNACIONAL */}
       <section className="pro-wrap" style={{ paddingBottom: 64 }}>
-        <h2 className="pro-h2">Um ecossistema, dois lados.</h2>
+        <h2 className="pro-h2">Um sistema, dois modos de trabalhar.</h2>
         <div className="pro-grid2" style={{ marginTop: 20 }}>
           <div className="pro-card">
-            <ProLabel>SalbCare PRO</ProLabel>
+            <ProLabel>Modo padrao</ProLabel>
             <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
-              Para profissionais de saude. Perfil na vitrine, gestao do consultorio e pacientes chegando ate voce.
+              Tudo em portugues, com valores em real. Agenda, pacientes e financeiro do seu consultorio.
             </p>
           </div>
-          <Link to="/kite" className="pro-card" style={{ display: "block", textDecoration: "none", color: CREAM }}>
-            <ProLabel>SalbCare KITE</ProLabel>
+          <div className="pro-card">
+            <ProLabel>Modulo internacional</ProLabel>
             <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
-              Para viajantes. Encontrar cuidado confiavel no litoral do Ceara em poucos minutos.
+              Voce ativa quando quiser. Sua pagina de agendamento passa a funcionar em portugues, ingles e espanhol,
+              com precos em real, euro e dolar.
             </p>
-            <span style={{ display: "inline-block", marginTop: 12, fontSize: 12, color: TEAL }}>Ver o KITE</span>
-          </Link>
+            <span style={{ display: "inline-block", marginTop: 12, fontSize: 12, color: TEAL }}>
+              Opcional, ligado nas configuracoes
+            </span>
+          </div>
         </div>
-        <p style={{ marginTop: 18, fontSize: 14, color: TEAL }}>Os viajantes do KITE sao os pacientes do PRO.</p>
       </section>
 
       {/* COMO FUNCIONA */}
@@ -261,7 +263,7 @@ const Pro = () => {
           disabled={loading}
           style={{ background: GOLD, color: NAVY, marginTop: 24 }}
         >
-          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Criar meu perfil"}
+          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Comecar agora"}
         </button>
         <p style={{ marginTop: 10, fontSize: 11, textAlign: "center", color: "rgba(244,238,226,0.55)" }}>
           Pagamento seguro pelo Stripe. Cancelamento a qualquer momento.
