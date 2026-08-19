@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 
-const LawyerMarketplaceTab = () => {
+const LawyerPartnersTab = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [bookingLawyer, setBookingLawyer] = useState<any>(null);
@@ -122,4 +122,4 @@ const LawyerMarketplaceTab = () => {
   );
 };
 
-export default LawyerMarketplaceTab;
+export default LawyerPartnersTab;

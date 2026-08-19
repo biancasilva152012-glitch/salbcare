@@ -53,7 +53,7 @@ const Upgrade = () => {
     premium_required: {
       title:
         params.get("module") === "accounting"
-          ? "Marketplace de Contabilidade é exclusivo do Essencial"
+          ? "Rede de contabilidade parceira é exclusiva do Essencial"
           : params.get("module") === "legal"
             ? "Suporte Jurídico é exclusivo do Essencial"
             : "Esta área é exclusiva do plano Essencial",

@@ -1,9 +1,9 @@
 /**
- * Integração: clicar em "Contratar" no Accounting Marketplace dispara
+ * Integração: clicar em "Contratar" no rede de parceiros de contabilidade dispara
  * `supabase.from('partner_hires').insert({ user_id, partner_id })` e
  * a query subsequente passa a marcar o parceiro como contratado.
  *
- * Foco: contrato com o backend. Renderizamos somente o `MarketplaceTab`
+ * Foco: contrato com o backend. Renderizamos somente o `PartnersTab`
  * envolvido por um `QueryClientProvider`, mockando supabase + AuthContext.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -71,7 +71,7 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-import MarketplaceTab from "@/components/accounting/MarketplaceTab";
+import PartnersTab from "@/components/accounting/PartnersTab";
 
 const renderTab = () => {
   const qc = new QueryClient({
@@ -79,12 +79,12 @@ const renderTab = () => {
   });
   return render(
     <QueryClientProvider client={qc}>
-      <MarketplaceTab />
+      <PartnersTab />
     </QueryClientProvider>,
   );
 };
 
-describe("AccountingMarketplace — contratar parceiro", () => {
+describe("AccountingPartners — contratar parceiro", () => {
   beforeEach(() => {
     hires = [];
     insertSpy.mockClear();
