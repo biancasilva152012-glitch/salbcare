@@ -24,7 +24,7 @@ const ProObrigado = () => {
     >
       <Helmet>
         <title>Pagamento confirmado. SalbCare Pro</title>
-        <meta name="description" content="Pagamento confirmado. Voce recebera seu material no e-mail usado na compra em ate 24 horas." />
+        <meta name="description" content="Pagamento confirmado. Você receberá seu material no e-mail usado na compra em até 24 horas." />
         <meta name="robots" content="noindex, follow" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -40,7 +40,7 @@ const ProObrigado = () => {
           Pagamento confirmado.
         </h1>
         <p style={{ marginTop: 16, fontSize: 15, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
-          Voce recebera seu material no e-mail usado na compra em ate 24 horas.
+          Você receberá seu material no e-mail usado na compra em até 24 horas.
         </p>
         <p style={{ marginTop: 20, fontSize: 12, lineHeight: 1.6, color: "rgba(244,238,226,0.55)" }}>
           Payment confirmed. You will receive your material at the email used in the purchase within 24 hours.

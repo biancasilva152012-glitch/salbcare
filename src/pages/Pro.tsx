@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { CalendarDays, Users, Wallet, Link2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
@@ -15,50 +16,66 @@ import {
   PRO_PRICES,
   ProLabel,
   ProPlanKey,
+  SANS,
   TEAL,
   proStyles,
 } from "@/components/pro/brand";
 
 const PAINS = [
   "Agenda espalhada entre papel, caderno e WhatsApp.",
-  "Faltas e remarcacoes que voce descobre tarde demais.",
-  "Financeiro do consultorio sem controle no fim do mes.",
+  "Faltas e remarcações que você descobre tarde demais.",
+  "Financeiro do consultório sem controle no fim do mês.",
 ];
 
-const STEPS = [
-  { n: "01", t: "Assine", d: "Escolha mensal ou anual e pague em segundos." },
-  { n: "02", t: "Complete seu perfil", d: "Profissao, registro, cidade e idiomas atendidos." },
-  { n: "03", t: "Divulgue seu link", d: "Sua pagina de agendamento fica pronta para voce compartilhar." },
-];
-
-const VALUE_STACK = [
-  "Sua pagina de agendamento com link proprio",
-  "Pagina profissional propria",
-  "Agenda de atendimentos",
-  "Cadastro de pacientes",
-  "Financeiro simples",
-  "Apostila de Ingles para Profissionais da Saude inclusa",
-  "Materiais de atendimento",
-  "Acesso as oportunidades SalbCare",
+const FEATURES = [
+  {
+    icon: CalendarDays,
+    title: "Agenda",
+    line: "Todos os atendimentos do dia em uma única tela, sem papel.",
+  },
+  {
+    icon: Users,
+    title: "Pacientes",
+    line: "Histórico, contato e observações de cada paciente organizados.",
+  },
+  {
+    icon: Wallet,
+    title: "Financeiro",
+    line: "Entradas e saídas do consultório com o resultado do mês pronto.",
+  },
+  {
+    icon: Link2,
+    title: "Sua página de agendamento",
+    line: "Um link próprio para você divulgar e receber solicitações.",
+  },
 ];
 
 const FAQ = [
   {
-    q: "Preciso falar ingles?",
-    a: "Nao. A apostila inclusa te prepara com frases prontas de consultorio.",
+    q: "Como funciona o teste de 14 dias?",
+    a: "Você cria sua conta, usa o sistema completo por 14 dias e só decide depois. Não pedimos cartão de crédito para começar.",
   },
   {
-    q: "Preciso pagar comissao por consulta?",
-    a: "Nao. A SalbCare cobra apenas a assinatura. O valor da consulta e definido por voce.",
+    q: "Preciso pagar comissão por consulta?",
+    a: "Não. A SalbCare cobra apenas a assinatura. O valor da consulta é definido por você e recebido diretamente por você.",
   },
   {
-    q: "Como os pacientes chegam ate mim?",
-    a: "Voce divulga o link da sua pagina de agendamento onde quiser. A SalbCare nao capta nem encaminha pacientes.",
+    q: "Como os pacientes chegam até mim?",
+    a: "Você divulga o link da sua página de agendamento onde quiser. A SalbCare é o seu sistema de gestão, não capta nem encaminha pacientes.",
+  },
+  {
+    q: "Serve para dentista e fisioterapeuta autônomo?",
+    a: "Sim. O sistema foi desenhado para quem atende sozinho ou em consultório pequeno, sem equipe administrativa.",
   },
   {
     q: "Posso cancelar quando quiser?",
-    a: "Sim. O cancelamento e feito pelo painel, em Assinatura.",
+    a: "Sim. O cancelamento é feito pelo próprio painel, em Assinatura, sem ligação e sem burocracia.",
   },
+];
+
+const NAV = [
+  { label: "Funcionalidades", href: "#funcionalidades" },
+  { label: "Planos", href: "#planos" },
 ];
 
 const Pro = () => {
@@ -68,6 +85,17 @@ const Pro = () => {
   const [plan, setPlan] = useState<ProPlanKey>("annual");
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+
+  const muted = "rgba(244,238,226,0.7)";
+  const soft = "rgba(244,238,226,0.8)";
+
+  const startTrial = () => {
+    if (isActive) {
+      navigate("/pro/painel");
+      return;
+    }
+    navigate("/register");
+  };
 
   const handleSubscribe = async () => {
     if (isActive) {
@@ -86,20 +114,18 @@ const Pro = () => {
       if (error || !data?.url) throw error ?? new Error("sem url");
       window.location.href = data.url;
     } catch {
-      toast.error("Nao foi possivel abrir o pagamento. Tente novamente.");
+      toast.error("Não foi possível abrir o pagamento. Tente novamente.");
       setLoading(false);
     }
   };
 
-  const muted = "rgba(244,238,226,0.7)";
-
   return (
-    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
+    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
       <Helmet>
-        <title>SalbCare Pro. Gestao do seu consultorio, do agendamento ao financeiro</title>
+        <title>SalbCare Pro. Gestão do seu consultório, do agendamento ao financeiro</title>
         <meta
           name="description"
-          content="Software de gestao de consultorio para dentistas e fisioterapeutas: agenda, pacientes, financeiro e sua pagina de agendamento. A partir de R$59 por mes."
+          content="Software de gestão de consultório para dentistas e fisioterapeutas: agenda, pacientes, financeiro e sua própria página de agendamento. Teste 14 dias grátis."
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -107,107 +133,141 @@ const Pro = () => {
       </Helmet>
       <style>{proStyles}</style>
 
+      {/* NAVEGAÇÃO */}
       <header
         className="pro-wrap"
-        style={{ paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        style={{
+          paddingTop: 18,
+          paddingBottom: 6,
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
       >
-        <Link to="/about" style={{ color: muted, fontSize: 12, textDecoration: "none" }}>
-          Sobre a SalbCare
-        </Link>
-        <Link
-          to={isActive ? "/pro/painel" : "/login"}
-          style={{ color: muted, fontSize: 12, textDecoration: "none" }}
+        <span style={{ fontFamily: MONO, fontSize: 12, letterSpacing: "0.16em", textTransform: "uppercase", color: TEAL }}>
+          SalbCare Pro
+        </span>
+        <nav
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            fontFamily: MONO,
+            fontSize: 12,
+            flexWrap: "wrap",
+          }}
         >
-          {isActive ? "Meu painel" : "Entrar"}
-        </Link>
+          {NAV.map((item) => (
+            <a key={item.href} href={item.href} style={{ color: muted, textDecoration: "none" }}>
+              {item.label}
+            </a>
+          ))}
+          <Link to="/about" style={{ color: muted, textDecoration: "none" }}>
+            Sobre
+          </Link>
+          <Link to={isActive ? "/pro/painel" : "/login"} style={{ color: muted, textDecoration: "none" }}>
+            {isActive ? "Meu painel" : "Entrar"}
+          </Link>
+          <button
+            onClick={startTrial}
+            style={{
+              fontFamily: MONO,
+              fontSize: 12,
+              fontWeight: 600,
+              background: GOLD,
+              color: NAVY,
+              border: "none",
+              borderRadius: 999,
+              padding: "9px 16px",
+              cursor: "pointer",
+            }}
+          >
+            {isActive ? "Ir para o painel" : "Testar grátis"}
+          </button>
+        </nav>
       </header>
 
       {/* HERO */}
-      <section className="pro-wrap" style={{ paddingTop: 72, paddingBottom: 56 }}>
-        <ProLabel>SalbCare Pro</ProLabel>
-        <h1 className="pro-h1">Seu consultorio organizado, do agendamento ao financeiro.</h1>
-        <p style={{ marginTop: 18, fontSize: 15, lineHeight: 1.65, color: "rgba(244,238,226,0.78)", maxWidth: 520 }}>
-          Agenda, pacientes, financeiro e sua propria pagina de agendamento. Feito para dentistas e fisioterapeutas
-          autonomos. A partir de R$59 por mes.
+      <section className="pro-wrap" style={{ paddingTop: 56, paddingBottom: 48 }}>
+        <ProLabel>SALBCARE PRO</ProLabel>
+        <h1 className="pro-h1">Seu consultório organizado, do agendamento ao financeiro.</h1>
+        <p style={{ marginTop: 16, fontSize: 16, lineHeight: 1.65, color: soft, maxWidth: 540 }}>
+          Agenda, pacientes, financeiro e sua própria página de agendamento. Feito para dentistas e fisioterapeutas
+          autônomos.
         </p>
         <button
           className="pro-cta"
-          onClick={handleSubscribe}
-          disabled={loading}
-          style={{ background: GOLD, color: NAVY, marginTop: 28, maxWidth: 320 }}
+          onClick={startTrial}
+          style={{ background: GOLD, color: NAVY, marginTop: 26, maxWidth: 320 }}
         >
-          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Comecar agora"}
+          {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
         </button>
+        <p style={{ marginTop: 10, fontSize: 12, color: muted, fontFamily: MONO, maxWidth: 320, textAlign: "center" }}>
+          Sem cartão de crédito.
+        </p>
+        <p style={{ marginTop: 26, fontSize: 13, lineHeight: 1.6, color: muted, fontFamily: MONO }}>
+          Criado por uma profissional da saúde, para quem atende sozinho no consultório.
+        </p>
       </section>
 
       {/* PROBLEMA */}
       <section className="pro-wrap" style={{ paddingBottom: 64 }}>
-        <h2 className="pro-h2">Voce estudou para cuidar de pessoas. Nao para administrar planilhas.</h2>
+        <h2 className="pro-h2">Você estudou para cuidar de pessoas. Não para administrar planilhas.</h2>
         <div style={{ marginTop: 20, display: "grid", gap: 12 }}>
           {PAINS.map((p) => (
-            <div key={p} className="pro-card" style={{ padding: 18, fontSize: 14, lineHeight: 1.5 }}>
+            <div key={p} className="pro-card" style={{ padding: 18, fontSize: 15, lineHeight: 1.5 }}>
               {p}
             </div>
           ))}
         </div>
       </section>
 
-      {/* MODULO INTERNACIONAL */}
-      <section className="pro-wrap" style={{ paddingBottom: 64 }}>
-        <h2 className="pro-h2">Um sistema, dois modos de trabalhar.</h2>
+      {/* FUNCIONALIDADES */}
+      <section id="funcionalidades" className="pro-wrap" style={{ paddingBottom: 64, scrollMarginTop: 24 }}>
+        <ProLabel>Funcionalidades</ProLabel>
+        <h2 className="pro-h2" style={{ marginTop: 12 }}>
+          Quatro ferramentas, um único lugar.
+        </h2>
         <div className="pro-grid2" style={{ marginTop: 20 }}>
-          <div className="pro-card">
-            <ProLabel>Modo padrao</ProLabel>
-            <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
-              Tudo em portugues, com valores em real. Agenda, pacientes e financeiro do seu consultorio.
-            </p>
-          </div>
-          <div className="pro-card">
-            <ProLabel>Modulo internacional</ProLabel>
-            <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
-              Voce ativa quando quiser. Sua pagina de agendamento passa a funcionar em portugues, ingles e espanhol,
-              com precos em real, euro e dolar.
-            </p>
-            <span style={{ display: "inline-block", marginTop: 12, fontSize: 12, color: TEAL }}>
-              Opcional, ligado nas configuracoes
-            </span>
-          </div>
+          {FEATURES.map(({ icon: Icon, title, line }) => (
+            <div key={title} className="pro-card">
+              <Icon size={22} color={TEAL} aria-hidden="true" />
+              <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 14, fontWeight: 600 }}>{title}</div>
+              <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.6, color: soft }}>{line}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* COMO FUNCIONA */}
-      <section className="pro-wrap" style={{ paddingBottom: 64, display: "grid", gap: 14 }}>
-        <ProLabel>Como funciona</ProLabel>
-        {STEPS.map((s) => (
-          <div key={s.n} style={{ display: "flex", gap: 16, alignItems: "baseline" }}>
-            <span style={{ color: TEAL, fontSize: 12 }}>{s.n}</span>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 600 }}>{s.t}</div>
-              <div style={{ fontSize: 13, color: muted, marginTop: 2 }}>{s.d}</div>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* VALUE STACK */}
+      {/* MÓDULO INTERNACIONAL */}
       <section className="pro-wrap" style={{ paddingBottom: 64 }}>
-        <h2 className="pro-h2">Tudo isso por menos que um plano de celular.</h2>
-        <ul style={{ listStyle: "none", padding: 0, margin: "18px 0 0", display: "grid", gap: 10 }}>
-          {VALUE_STACK.map((b) => (
-            <li key={b} style={{ display: "flex", gap: 10, fontSize: 14, lineHeight: 1.5 }}>
-              <span style={{ color: GOLD }}>+</span>
-              <span>{b}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="pro-card pro-card--gold">
+          <ProLabel>Módulo internacional</ProLabel>
+          <h2 className="pro-h2" style={{ marginTop: 12 }}>
+            Atende paciente estrangeiro? Ative em um clique.
+          </h2>
+          <p style={{ margin: "14px 0 0", fontSize: 15, lineHeight: 1.65, color: soft }}>
+            Sua página de agendamento passa a funcionar em português, inglês e espanhol, com preços em real, euro e
+            dólar. Você também recebe mensagens prontas nos três idiomas para confirmar horários e orientar o paciente
+            antes da consulta.
+          </p>
+          <span style={{ display: "inline-block", marginTop: 14, fontFamily: MONO, fontSize: 12, color: TEAL }}>
+            Opcional, ligado nas configurações
+          </span>
+        </div>
       </section>
 
       <Testimonials />
 
-      {/* PRECOS */}
-      <section className="pro-wrap" style={{ paddingBottom: 64 }}>
-        <ProLabel>Precos</ProLabel>
-        <div className="pro-grid2" style={{ marginTop: 16 }}>
+      {/* PLANOS */}
+      <section id="planos" className="pro-wrap" style={{ paddingBottom: 64, scrollMarginTop: 24 }}>
+        <ProLabel>Planos</ProLabel>
+        <h2 className="pro-h2" style={{ marginTop: 12 }}>
+          Um plano só, com tudo incluído.
+        </h2>
+        <div className="pro-grid2" style={{ marginTop: 20 }}>
           {(Object.keys(PRO_PRICES) as ProPlanKey[]).map((key) => {
             const p = PRO_PRICES[key];
             const selected = plan === key;
@@ -222,6 +282,7 @@ const Pro = () => {
                   textAlign: "left",
                   cursor: "pointer",
                   color: CREAM,
+                  fontFamily: SANS,
                   outline: selected ? `2px solid ${key === "annual" ? GOLD : TEAL}` : "none",
                   outlineOffset: 2,
                 }}
@@ -236,21 +297,22 @@ const Pro = () => {
                       borderRadius: 999,
                       background: GOLD,
                       color: NAVY,
+                      fontFamily: MONO,
                       fontSize: 10,
                       letterSpacing: "0.08em",
                       textTransform: "uppercase",
                     }}
                   >
-                    Preco fundador, travado para sempre
+                    Mais escolhido
                   </div>
                 )}
                 <div style={{ marginTop: 12, fontFamily: "'Gloock', Georgia, serif", fontSize: 32 }}>
                   {p.amount}
                   <span style={{ fontFamily: MONO, fontSize: 13, color: "rgba(244,238,226,0.6)" }}>{p.period}</span>
                 </div>
-                <div style={{ marginTop: 8, fontSize: 12, color: key === "annual" ? GOLD : muted }}>{p.note}</div>
-                <div style={{ marginTop: 10, fontSize: 12, color: muted }}>
-                  So o sistema de gestao ja valeria a assinatura.
+                <div style={{ marginTop: 8, fontSize: 13, color: key === "annual" ? GOLD : muted }}>{p.note}</div>
+                <div style={{ marginTop: 10, fontSize: 13, lineHeight: 1.6, color: muted }}>
+                  Agenda, pacientes, financeiro, página de agendamento e módulo internacional.
                 </div>
               </button>
             );
@@ -263,15 +325,23 @@ const Pro = () => {
           disabled={loading}
           style={{ background: GOLD, color: NAVY, marginTop: 24 }}
         >
-          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Comecar agora"}
+          {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Assinar agora"}
         </button>
-        <p style={{ marginTop: 10, fontSize: 11, textAlign: "center", color: "rgba(244,238,226,0.55)" }}>
+        <p
+          style={{
+            marginTop: 10,
+            fontFamily: MONO,
+            fontSize: 11,
+            textAlign: "center",
+            color: "rgba(244,238,226,0.55)",
+          }}
+        >
           Pagamento seguro pelo Stripe. Cancelamento a qualquer momento.
         </p>
       </section>
 
       {/* FAQ */}
-      <section className="pro-wrap" style={{ paddingBottom: 72 }}>
+      <section className="pro-wrap" style={{ paddingBottom: 64 }}>
         <ProLabel>Perguntas frequentes</ProLabel>
         <div style={{ marginTop: 18, display: "grid", gap: 2 }}>
           {FAQ.map((item) => {
@@ -301,7 +371,7 @@ const Pro = () => {
                   <span style={{ color: TEAL }}>{open ? "-" : "+"}</span>
                 </button>
                 {open && (
-                  <p style={{ margin: "0 0 16px", fontSize: 13, lineHeight: 1.6, color: muted }}>{item.a}</p>
+                  <p style={{ margin: "0 0 16px", fontSize: 14, lineHeight: 1.65, color: soft }}>{item.a}</p>
                 )}
               </div>
             );
@@ -309,9 +379,36 @@ const Pro = () => {
         </div>
       </section>
 
-      <footer className="pro-wrap" style={{ paddingBottom: 48, fontSize: 12, color: "rgba(244,238,226,0.55)" }}>
-        © {new Date().getFullYear()} SalbCare · <Link to="/terms" style={{ color: "inherit" }}>Termos</Link> ·{" "}
-        <Link to="/privacy" style={{ color: "inherit" }}>Privacidade</Link>
+      {/* CTA FINAL */}
+      <section className="pro-wrap" style={{ paddingBottom: 64 }}>
+        <div className="pro-card" style={{ textAlign: "center" }}>
+          <h2 className="pro-h2">Comece hoje a organizar seu consultório.</h2>
+          <p style={{ margin: "14px auto 0", maxWidth: 460, fontSize: 15, lineHeight: 1.65, color: soft }}>
+            Teste o sistema completo por 14 dias e veja sua agenda, seus pacientes e seu financeiro em um só lugar.
+          </p>
+          <button
+            className="pro-cta"
+            onClick={startTrial}
+            style={{ background: GOLD, color: NAVY, marginTop: 22, maxWidth: 320, marginLeft: "auto", marginRight: "auto" }}
+          >
+            {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
+          </button>
+          <p style={{ marginTop: 10, fontFamily: MONO, fontSize: 12, color: muted }}>Sem cartão de crédito.</p>
+        </div>
+      </section>
+
+      <footer
+        className="pro-wrap"
+        style={{ paddingBottom: 48, fontFamily: MONO, fontSize: 12, color: "rgba(244,238,226,0.55)" }}
+      >
+        © {new Date().getFullYear()} SalbCare ·{" "}
+        <Link to="/terms" style={{ color: "inherit" }}>
+          Termos
+        </Link>{" "}
+        ·{" "}
+        <Link to="/privacy" style={{ color: "inherit" }}>
+          Privacidade
+        </Link>
       </footer>
     </div>
   );
