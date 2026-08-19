@@ -52,24 +52,24 @@ const FEATURES = [
 
 const FAQ = [
   {
-    q: "Como funciona o teste de 14 dias?",
-    a: "Você cria sua conta, usa o sistema completo por 14 dias e só decide depois. Não pedimos cartão de crédito para começar.",
+    q: "Como funciona o teste de 14 dias e o que acontece depois?",
+    a: "Você cria sua conta e usa o sistema completo por 14 dias, sem cartão de crédito. Ao final, escolhe o plano de R$ 99 por mês ou R$ 897 por ano. Se não escolher nenhum, a conta apenas fica bloqueada e seus dados continuam salvos.",
   },
   {
-    q: "Preciso pagar comissão por consulta?",
-    a: "Não. A SalbCare cobra apenas a assinatura. O valor da consulta é definido por você e recebido diretamente por você.",
+    q: "Quanto custa e existe alguma taxa por consulta?",
+    a: "São R$ 99 por mês ou R$ 897 por ano, sem taxa de adesão. A SalbCare não cobra comissão por consulta: o valor do atendimento é definido por você e recebido diretamente por você.",
   },
   {
-    q: "Como os pacientes chegam até mim?",
-    a: "Você divulga o link da sua página de agendamento onde quiser. A SalbCare é o seu sistema de gestão, não capta nem encaminha pacientes.",
+    q: "Quanto tempo leva para começar a usar de verdade?",
+    a: "Cerca de dez minutos. Você preenche seus dados, define seus horários e já recebe o link da sua página de agendamento. Pacientes e lançamentos financeiros podem ser cadastrados aos poucos, no seu ritmo.",
   },
   {
-    q: "Serve para dentista e fisioterapeuta autônomo?",
-    a: "Sim. O sistema foi desenhado para quem atende sozinho ou em consultório pequeno, sem equipe administrativa.",
+    q: "Meus dados e os dados dos meus pacientes ficam seguros?",
+    a: "Sim. Cada profissional acessa somente os próprios registros, o acesso é protegido por login e a estrutura segue as exigências da LGPD. Você pode exportar ou apagar seus dados quando quiser.",
   },
   {
     q: "Posso cancelar quando quiser?",
-    a: "Sim. O cancelamento é feito pelo próprio painel, em Assinatura, sem ligação e sem burocracia.",
+    a: "Sim. O cancelamento é feito pelo próprio painel, em Assinatura, sem ligação e sem burocracia. Você continua com acesso até o fim do período já pago.",
   },
 ];
 
