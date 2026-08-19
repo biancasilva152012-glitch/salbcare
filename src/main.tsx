@@ -49,5 +49,5 @@ const idle = (cb: () => void) => {
 idle(() => {
   const path = window.location.pathname;
   if (path !== "/bio") import("./pages/Bio").catch(() => {});
-  if (path !== "/kite") import("./pages/Kite").catch(() => {});
+  if (path !== "/pro") import("./pages/Pro").catch(() => {});
 });
