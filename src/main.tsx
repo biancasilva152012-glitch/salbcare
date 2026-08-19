@@ -3,6 +3,10 @@ import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
 import { attachSwDiagnostics } from "./lib/swDiagnostics";
+import { attachGlobalErrorHandlers, initErrorReporting } from "./lib/errorReporting";
+
+initErrorReporting();
+attachGlobalErrorHandlers();
 
 const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
 const hostname = window.location.hostname;

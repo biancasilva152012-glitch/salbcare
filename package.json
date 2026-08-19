@@ -6,7 +6,8 @@
   "scripts": {
     "predev": "node scripts/generate-sitemap.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/generate-sitemap.mjs && node scripts/check-seo-assets.mjs",
+    "prebuild": "node scripts/check-react-duplicates.mjs && node scripts/generate-sitemap.mjs && node scripts/check-seo-assets.mjs",
+    "check:react": "node scripts/check-react-duplicates.mjs",
     "build": "vite build",
     "postbuild": "node scripts/prerender-routes.mjs && node scripts/check-rendered-seo.mjs",
     "build:dev": "vite build --mode development",
@@ -51,6 +52,7 @@
     "@radix-ui/react-toggle": "^1.1.9",
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@sentry/react": "^10.70.0",
     "@supabase/supabase-js": "^2.108.2",
     "@tanstack/react-query": "^5.83.0",
     "@types/dompurify": "^3.2.0",
