@@ -328,7 +328,7 @@ const ProOnboarding = () => {
                 Ir para o painel
               </button>
               <Link
-                to="/kite"
+                to="/pro/painel"
                 className="pro-cta"
                 style={{ background: "transparent", color: CREAM, border: "1px solid rgba(244,238,226,0.25)" }}
               >

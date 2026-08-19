@@ -43,7 +43,7 @@ const FreemiumDebugPanelGate = () => {
 // Eager: login, register, landing (entry points)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Index from "./pages/Index";
+
 
 // Lazy with auto-retry
 const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"), "ForgotPassword");
@@ -96,6 +96,7 @@ const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintP
 const AdminKiteBookingsPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingsPage"), "AdminKiteBookingsPage");
 const AdminKiteBookingDetailPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingDetailPage"), "AdminKiteBookingDetailPage");
 const AdminLocalPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminLocalPartnersPage"), "AdminLocalPartnersPage");
+const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
@@ -169,7 +170,7 @@ const App = () => (
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Pro />} />
               {/* Brand hub + alias for current SaaS landing (Index) */}
               <Route path="/hub" element={<Navigate to="/" replace />} />
               <Route path="/pro" element={<Pro />} />
