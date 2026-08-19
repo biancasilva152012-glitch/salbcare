@@ -94,7 +94,7 @@ const Pro = () => {
       navigate("/pro/painel");
       return;
     }
-    navigate(user ? "/pro/bem-vindo" : "/register");
+    navigate("/register");
   };
 
   const handleSubscribe = async () => {
