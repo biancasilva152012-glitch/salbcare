@@ -19,9 +19,8 @@ export function useTracking() {
   return { trackLead, trackTrial, trackPageView };
 }
 
-function getVertical(path: string): "pro" | "kite" | "hub" {
-  if (path.startsWith("/kite") || path.startsWith("/international") || path.startsWith("/kitecare")) return "kite";
-  if (path === "/hub" || path === "/about" || path === "/contact") return "hub";
+function getVertical(path: string): "pro" | "institutional" {
+  if (path === "/about" || path === "/contact") return "institutional";
   return "pro";
 }
 

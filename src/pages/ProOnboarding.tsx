@@ -74,7 +74,7 @@ export const ProProfileFields = ({
 
   return (
     <div style={{ display: "grid", gap: 14 }}>
-      {field("Nome como aparece na vitrine", "name", "Dra. Maria Silva")}
+      {field("Nome como aparece na sua pagina de agendamento", "name", "Dra. Maria Silva")}
       <div className="pro-grid2">
         {field("Profissao", "profession", "Fisioterapeuta")}
         {field("Registro profissional", "registration_number", "CREFITO 00000")}
@@ -290,7 +290,7 @@ const ProOnboarding = () => {
 
           {step === 3 && (
             <div style={{ display: "grid", gap: 12, fontSize: 14 }}>
-              <div style={{ color: TEAL, fontSize: 13 }}>Publicado na vitrine SalbCare.</div>
+              <div style={{ color: TEAL, fontSize: 13 }}>Sua pagina de agendamento esta no ar.</div>
               <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
                 Seu perfil ja pode ser encontrado por pacientes e viajantes.
               </p>
@@ -306,7 +306,7 @@ const ProOnboarding = () => {
           {step === 2 && (
             <div style={{ display: "grid", gap: 10, marginTop: 22 }}>
               <button className="pro-cta" style={{ background: GOLD, color: NAVY }} disabled={saving} onClick={publish}>
-                {saving ? "Publicando" : "Publicar na vitrine"}
+                {saving ? "Publicando" : "Publicar minha pagina"}
               </button>
               <button
                 className="pro-cta"

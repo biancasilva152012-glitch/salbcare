@@ -10,11 +10,11 @@ export default function SharedFooter() {
           <div className="space-y-3">
             <BrandLogo variant="white" />
             <p className="text-sm text-white/50 max-w-xs">
-              Care, without borders.
+              Gestao de consultorio para dentistas e fisioterapeutas.
             </p>
           </div>
-          <FooterCol title="Care">
-            <FooterLink to="/kite">Book care (Kite season)</FooterLink>
+          <FooterCol title="Plataforma">
+            <FooterLink to="/pro">SalbCare Pro</FooterLink>
           </FooterCol>
           <FooterCol title="Legal">
             <FooterLink to="/privacy">Privacy</FooterLink>

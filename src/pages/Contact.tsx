@@ -60,9 +60,9 @@ export default function Contact() {
               <p className="text-xs uppercase tracking-wider text-pro-accent mb-1">Are you a professional?</p>
               <p className="font-heading">Go to SalbCare Pro →</p>
             </Link>
-            <Link to="/kite" className="rounded-xl border border-kite-gold/30 p-5 hover:border-kite-gold/60 transition-colors">
-              <p className="text-xs uppercase tracking-wider text-kite-gold mb-1">Are you a traveler?</p>
-              <p className="font-heading">Go to SalbCare Kite →</p>
+            <Link to="/terms" className="rounded-xl border border-kite-gold/30 p-5 hover:border-kite-gold/60 transition-colors">
+              <p className="text-xs uppercase tracking-wider text-kite-gold mb-1">Termos e privacidade</p>
+              <p className="font-heading">Ver termos de uso →</p>
             </Link>
           </div>
         </main>
