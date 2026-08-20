@@ -190,27 +190,38 @@ const Pro = () => {
       </header>
 
       {/* HERO */}
-      <section className="pro-wrap" style={{ paddingTop: 56, paddingBottom: 48 }}>
+      <section className="pro-wrap" style={{ paddingTop: 44, paddingBottom: 44 }}>
         <ProLabel>SALBCARE PRO</ProLabel>
         <h1 className="pro-h1">Seu consultório organizado, do agendamento ao financeiro.</h1>
-        <p style={{ marginTop: 16, fontSize: 16, lineHeight: 1.65, color: soft, maxWidth: 540 }}>
+        <p className="pro-lead" style={{ marginTop: 16, color: soft, maxWidth: 540 }}>
           Agenda, pacientes, financeiro e sua própria página de agendamento. Feito para dentistas e fisioterapeutas
           autônomos.
         </p>
+
+        <ul className="pro-proof">
+          {PROOF.map((item) => (
+            <li key={item}>
+              <span aria-hidden="true">✓</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
         <button
           className="pro-cta"
           onClick={startTrial}
-          style={{ background: GOLD, color: NAVY, marginTop: 26, maxWidth: 320 }}
+          style={{ background: GOLD, color: NAVY, marginTop: 24, maxWidth: 340 }}
         >
           {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
         </button>
-        <p style={{ marginTop: 10, fontSize: 12, color: muted, fontFamily: MONO, maxWidth: 320, textAlign: "center" }}>
+        <p style={{ marginTop: 10, fontSize: 12, color: muted, fontFamily: MONO, maxWidth: 340, textAlign: "center" }}>
           Sem cartão de crédito.
         </p>
-        <p style={{ marginTop: 26, fontSize: 13, lineHeight: 1.6, color: muted, fontFamily: MONO }}>
+        <p style={{ marginTop: 22, fontSize: 13, lineHeight: 1.6, color: muted, fontFamily: MONO }}>
           Criado por uma profissional da saúde, para quem atende sozinho no consultório.
         </p>
       </section>
+
 
       {/* PROBLEMA */}
       <section className="pro-wrap" style={{ paddingBottom: 64 }}>
