@@ -27,6 +27,13 @@ const PAINS = [
   "Financeiro do consultório sem controle no fim do mês.",
 ];
 
+const PROOF = [
+  "Agenda e financeiro do mês em uma tela só",
+  "Configuração completa em cerca de 10 minutos",
+  "Sem comissão por consulta e cancelamento livre",
+];
+
+
 const FEATURES = [
   {
     icon: CalendarDays,
