@@ -27,6 +27,13 @@ const PAINS = [
   "Financeiro do consultório sem controle no fim do mês.",
 ];
 
+const PROOF = [
+  "Agenda e financeiro do mês em uma tela só",
+  "Configuração completa em cerca de 10 minutos",
+  "Sem comissão por consulta e cancelamento livre",
+];
+
+
 const FEATURES = [
   {
     icon: CalendarDays,
@@ -129,6 +136,7 @@ const Pro = () => {
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="preload" as="style" href={PRO_FONTS_HREF} />
         <link rel="stylesheet" href={PRO_FONTS_HREF} />
       </Helmet>
       <style>{proStyles}</style>
@@ -190,34 +198,45 @@ const Pro = () => {
       </header>
 
       {/* HERO */}
-      <section className="pro-wrap" style={{ paddingTop: 56, paddingBottom: 48 }}>
+      <section className="pro-wrap" style={{ paddingTop: 44, paddingBottom: 44 }}>
         <ProLabel>SALBCARE PRO</ProLabel>
         <h1 className="pro-h1">Seu consultório organizado, do agendamento ao financeiro.</h1>
-        <p style={{ marginTop: 16, fontSize: 16, lineHeight: 1.65, color: soft, maxWidth: 540 }}>
+        <p className="pro-lead" style={{ marginTop: 16, color: soft, maxWidth: 540 }}>
           Agenda, pacientes, financeiro e sua própria página de agendamento. Feito para dentistas e fisioterapeutas
           autônomos.
         </p>
+
+        <ul className="pro-proof">
+          {PROOF.map((item) => (
+            <li key={item}>
+              <span aria-hidden="true">✓</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
         <button
           className="pro-cta"
           onClick={startTrial}
-          style={{ background: GOLD, color: NAVY, marginTop: 26, maxWidth: 320 }}
+          style={{ background: GOLD, color: NAVY, marginTop: 24, maxWidth: 340 }}
         >
           {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
         </button>
-        <p style={{ marginTop: 10, fontSize: 12, color: muted, fontFamily: MONO, maxWidth: 320, textAlign: "center" }}>
+        <p style={{ marginTop: 10, fontSize: 12, color: muted, fontFamily: MONO, maxWidth: 340, textAlign: "center" }}>
           Sem cartão de crédito.
         </p>
-        <p style={{ marginTop: 26, fontSize: 13, lineHeight: 1.6, color: muted, fontFamily: MONO }}>
+        <p style={{ marginTop: 22, fontSize: 13, lineHeight: 1.6, color: muted, fontFamily: MONO }}>
           Criado por uma profissional da saúde, para quem atende sozinho no consultório.
         </p>
       </section>
+
 
       {/* PROBLEMA */}
       <section className="pro-wrap" style={{ paddingBottom: 64 }}>
         <h2 className="pro-h2">Você estudou para cuidar de pessoas. Não para administrar planilhas.</h2>
         <div style={{ marginTop: 20, display: "grid", gap: 12 }}>
           {PAINS.map((p) => (
-            <div key={p} className="pro-card" style={{ padding: 18, fontSize: 15, lineHeight: 1.5 }}>
+            <div key={p} className="pro-card pro-card--interactive" style={{ padding: 18, fontSize: 15, lineHeight: 1.5 }}>
               {p}
             </div>
           ))}
@@ -232,8 +251,8 @@ const Pro = () => {
         </h2>
         <div className="pro-grid2" style={{ marginTop: 20 }}>
           {FEATURES.map(({ icon: Icon, title, line }) => (
-            <div key={title} className="pro-card">
-              <Icon size={22} color={TEAL} aria-hidden="true" />
+            <div key={title} className="pro-card pro-card--interactive">
+              <Icon className="pro-card__icon" size={22} color={TEAL} aria-hidden="true" />
               <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 14, fontWeight: 600 }}>{title}</div>
               <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.6, color: soft }}>{line}</p>
             </div>
@@ -277,7 +296,7 @@ const Pro = () => {
                 type="button"
                 onClick={() => setPlan(key)}
                 aria-pressed={selected}
-                className={`pro-card ${key === "annual" ? "pro-card--gold" : ""}`}
+                className={`pro-card pro-card--interactive ${key === "annual" ? "pro-card--gold" : ""}`}
                 style={{
                   textAlign: "left",
                   cursor: "pointer",
