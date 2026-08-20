@@ -136,6 +136,7 @@ const Pro = () => {
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="preload" as="style" href={PRO_FONTS_HREF} />
         <link rel="stylesheet" href={PRO_FONTS_HREF} />
       </Helmet>
       <style>{proStyles}</style>
@@ -235,7 +236,7 @@ const Pro = () => {
         <h2 className="pro-h2">Você estudou para cuidar de pessoas. Não para administrar planilhas.</h2>
         <div style={{ marginTop: 20, display: "grid", gap: 12 }}>
           {PAINS.map((p) => (
-            <div key={p} className="pro-card" style={{ padding: 18, fontSize: 15, lineHeight: 1.5 }}>
+            <div key={p} className="pro-card pro-card--interactive" style={{ padding: 18, fontSize: 15, lineHeight: 1.5 }}>
               {p}
             </div>
           ))}
@@ -250,8 +251,8 @@ const Pro = () => {
         </h2>
         <div className="pro-grid2" style={{ marginTop: 20 }}>
           {FEATURES.map(({ icon: Icon, title, line }) => (
-            <div key={title} className="pro-card">
-              <Icon size={22} color={TEAL} aria-hidden="true" />
+            <div key={title} className="pro-card pro-card--interactive">
+              <Icon className="pro-card__icon" size={22} color={TEAL} aria-hidden="true" />
               <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 14, fontWeight: 600 }}>{title}</div>
               <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.6, color: soft }}>{line}</p>
             </div>
@@ -295,7 +296,7 @@ const Pro = () => {
                 type="button"
                 onClick={() => setPlan(key)}
                 aria-pressed={selected}
-                className={`pro-card ${key === "annual" ? "pro-card--gold" : ""}`}
+                className={`pro-card pro-card--interactive ${key === "annual" ? "pro-card--gold" : ""}`}
                 style={{
                   textAlign: "left",
                   cursor: "pointer",
