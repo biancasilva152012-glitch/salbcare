@@ -201,7 +201,7 @@ const ProOnboarding = () => {
             profession: data.profession ?? "",
             registration_number: data.registration_number ?? "",
             city: data.city ?? "",
-            languages: data.languages?.length ? data.languages : ["Português"],
+            languages: normalizeLanguages(data.languages),
             description: data.description ?? "",
             description_en: data.description_en ?? "",
             whatsapp: data.whatsapp ?? "",
