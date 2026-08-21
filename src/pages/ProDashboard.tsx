@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
 import { CREAM, GOLD, MONO, NAVY, PRO_FONTS_HREF, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
-import { ProProfileFields, ProProfileForm, emptyProfile } from "./ProOnboarding";
+import { ProProfileFields, ProProfileForm, emptyProfile, normalizeLanguages } from "./ProOnboarding";
 
 type TabKey = "perfil" | "agenda" | "pacientes" | "financeiro" | "materiais" | "assinatura";
 
