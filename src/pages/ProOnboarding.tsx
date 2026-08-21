@@ -8,6 +8,20 @@ import { CREAM, GOLD, MONO, NAVY, PRO_FONTS_HREF, ProLabel, TEAL, proStyles } fr
 
 const LANGUAGES = ["Português", "Inglês", "Espanhol"];
 
+/** Normaliza idiomas salvos sem acento por versões anteriores do formulário. */
+export const normalizeLanguages = (list?: string[] | null): string[] => {
+  if (!list?.length) return ["Português"];
+  const strip = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const out: string[] = [];
+  for (const raw of list) {
+    const match = LANGUAGES.find((l) => strip(l) === strip(raw));
+    const value = match ?? raw;
+    if (!out.includes(value)) out.push(value);
+  }
+  return out;
+};
+
+
 export type ProProfileForm = {
   name: string;
   profession: string;
@@ -187,7 +201,7 @@ const ProOnboarding = () => {
             profession: data.profession ?? "",
             registration_number: data.registration_number ?? "",
             city: data.city ?? "",
-            languages: data.languages?.length ? data.languages : ["Português"],
+            languages: normalizeLanguages(data.languages),
             description: data.description ?? "",
             description_en: data.description_en ?? "",
             whatsapp: data.whatsapp ?? "",
