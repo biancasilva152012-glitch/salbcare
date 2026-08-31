@@ -571,7 +571,7 @@ const ProDashboard = () => {
                 </div>
 
                 <div className="pro-card" style={{ display: "grid", gap: 12 }}>
-                  <ProLabel>Lancamentos</ProLabel>
+                  <ProLabel>Lançamentos</ProLabel>
                   {transactions.length === 0 && (
                     <p style={{ margin: 0, fontSize: 13, color: muted }}>Nenhum lancamento registrado.</p>
                   )}
