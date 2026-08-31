@@ -514,7 +514,7 @@ const ProDashboard = () => {
             {tab === "financeiro" && (
               <>
                 <div className="pro-card" style={{ display: "grid", gap: 8 }}>
-                  <ProLabel>Este mes</ProLabel>
+                  <ProLabel>Este mês</ProLabel>
                   <div style={{ fontSize: 13, color: muted }}>Receitas {brl(monthTotals.income)}</div>
                   <div style={{ fontSize: 13, color: muted }}>Despesas {brl(monthTotals.expense)}</div>
                   <div style={{ fontFamily: "'Gloock', Georgia, serif", fontSize: 28, color: TEAL }}>
@@ -523,7 +523,7 @@ const ProDashboard = () => {
                 </div>
 
                 <div className="pro-card" style={{ display: "grid", gap: 12 }}>
-                  <ProLabel>Novo lancamento</ProLabel>
+                  <ProLabel>Novo lançamento</ProLabel>
                   <input
                     className="pro-input"
                     placeholder="Descrição"
