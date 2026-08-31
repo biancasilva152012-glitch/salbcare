@@ -197,7 +197,7 @@ const ProDashboard = () => {
     );
     setSavingProfile(false);
     if (error) {
-      toast.error("Nao foi possivel salvar.");
+      toast.error("Não foi possível salvar.");
       return;
     }
     setPublished(publish);
@@ -220,7 +220,7 @@ const ProDashboard = () => {
       service: newAppt.service || null,
     });
     if (error) {
-      toast.error("Nao foi possivel salvar o atendimento.");
+      toast.error("Não foi possível salvar o atendimento.");
       return;
     }
     setNewAppt({ patient_name: "", patient_id: "", scheduled_at: "", service: "" });
@@ -248,7 +248,7 @@ const ProDashboard = () => {
       notes: newPatient.notes || null,
     });
     if (error) {
-      toast.error("Nao foi possivel salvar o paciente.");
+      toast.error("Não foi possível salvar o paciente.");
       return;
     }
     setNewPatient(emptyPatient);
@@ -264,7 +264,7 @@ const ProDashboard = () => {
     if (!user) return;
     const value = Number(String(newTx.amount).replace(",", "."));
     if (!newTx.description || !value || !newTx.date) {
-      toast.error("Informe descricao, valor e data.");
+      toast.error("Informe descrição, valor e data.");
       return;
     }
     const { error } = await supabase.from("financial_transactions").insert({
@@ -277,7 +277,7 @@ const ProDashboard = () => {
       pro_appointment_id: newTx.pro_appointment_id || null,
     });
     if (error) {
-      toast.error("Nao foi possivel salvar o lancamento.");
+      toast.error("Não foi possível salvar o lançamento.");
       return;
     }
     setNewTx(emptyTx);
@@ -292,7 +292,7 @@ const ProDashboard = () => {
   const downloadMaterial = async (name: string) => {
     const { data, error } = await supabase.storage.from("pro-materials").createSignedUrl(name, 120);
     if (error || !data?.signedUrl) {
-      toast.error("Material indisponivel.");
+      toast.error("Material indisponível.");
       return;
     }
     window.open(data.signedUrl, "_blank", "noopener");
@@ -301,7 +301,7 @@ const ProDashboard = () => {
   const openPortal = async () => {
     const { data, error } = await supabase.functions.invoke("pro-portal");
     if (error || !data?.url) {
-      toast.error("Nao foi possivel abrir a gestao da assinatura.");
+      toast.error("Não foi possível abrir a gestão da assinatura.");
       return;
     }
     window.location.href = data.url;
@@ -337,7 +337,7 @@ const ProDashboard = () => {
           Voltar ao site
         </Link>
         <span style={{ fontSize: 12, color: published ? TEAL : muted }}>
-          {published ? "Perfil publicado" : "Perfil nao publicado"}
+          {published ? "Perfil publicado" : "Perfil não publicado"}
         </span>
       </header>
 
@@ -408,7 +408,7 @@ const ProDashboard = () => {
                   />
                   <input
                     className="pro-input"
-                    placeholder="Servico (opcional)"
+                    placeholder="Serviço (opcional)"
                     value={newAppt.service}
                     onChange={(e) => setNewAppt({ ...newAppt, service: e.target.value })}
                   />
@@ -418,7 +418,7 @@ const ProDashboard = () => {
                 </div>
 
                 <div className="pro-card" style={{ display: "grid", gap: 12 }}>
-                  <ProLabel>Proximos atendimentos</ProLabel>
+                  <ProLabel>Próximos atendimentos</ProLabel>
                   {appointments.length === 0 && (
                     <p style={{ margin: 0, fontSize: 13, color: muted }}>Nenhum atendimento agendado.</p>
                   )}
@@ -514,7 +514,7 @@ const ProDashboard = () => {
             {tab === "financeiro" && (
               <>
                 <div className="pro-card" style={{ display: "grid", gap: 8 }}>
-                  <ProLabel>Este mes</ProLabel>
+                  <ProLabel>Este mês</ProLabel>
                   <div style={{ fontSize: 13, color: muted }}>Receitas {brl(monthTotals.income)}</div>
                   <div style={{ fontSize: 13, color: muted }}>Despesas {brl(monthTotals.expense)}</div>
                   <div style={{ fontFamily: "'Gloock', Georgia, serif", fontSize: 28, color: TEAL }}>
@@ -523,10 +523,10 @@ const ProDashboard = () => {
                 </div>
 
                 <div className="pro-card" style={{ display: "grid", gap: 12 }}>
-                  <ProLabel>Novo lancamento</ProLabel>
+                  <ProLabel>Novo lançamento</ProLabel>
                   <input
                     className="pro-input"
-                    placeholder="Descricao"
+                    placeholder="Descrição"
                     value={newTx.description}
                     onChange={(e) => setNewTx({ ...newTx, description: e.target.value })}
                   />
@@ -571,7 +571,7 @@ const ProDashboard = () => {
                 </div>
 
                 <div className="pro-card" style={{ display: "grid", gap: 12 }}>
-                  <ProLabel>Lancamentos</ProLabel>
+                  <ProLabel>Lançamentos</ProLabel>
                   {transactions.length === 0 && (
                     <p style={{ margin: 0, fontSize: 13, color: muted }}>Nenhum lancamento registrado.</p>
                   )}
