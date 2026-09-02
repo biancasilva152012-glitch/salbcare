@@ -26,12 +26,7 @@ const ProObrigado = () => {
         <title>Pagamento confirmado. SalbCare Pro</title>
         <meta name="description" content="Pagamento confirmado. Você receberá seu material no e-mail usado na compra em até 24 horas." />
         <meta name="robots" content="noindex, follow" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-        />
       </Helmet>
 
       <main style={{ maxWidth: 520, textAlign: "center" }}>
