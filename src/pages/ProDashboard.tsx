@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
-import { CREAM, GOLD, MONO, NAVY, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
+import { CREAM, GOLD, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 import { ProProfileFields, ProProfileForm, emptyProfile, normalizeLanguages } from "./ProOnboarding";
 
 type TabKey = "perfil" | "agenda" | "pacientes" | "financeiro" | "materiais" | "assinatura";
@@ -321,7 +321,7 @@ const ProDashboard = () => {
   const muted = "rgba(31,31,31,0.56)";
 
   return (
-    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
+    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
       <Helmet>
         <title>Painel. SalbCare Pro</title>
         <meta name="robots" content="noindex" />

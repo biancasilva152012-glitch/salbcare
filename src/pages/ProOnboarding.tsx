@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { CREAM, GOLD, MONO, NAVY, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
+import { CREAM, GOLD, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 
 const LANGUAGES = ["Português", "Inglês", "Espanhol"];
 
@@ -252,7 +252,7 @@ const ProOnboarding = () => {
   const progress = Math.round((step / TOTAL_STEPS) * 100);
 
   return (
-    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
+    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
       <Helmet>
         <title>Complete seu perfil. SalbCare Pro</title>
         <meta name="robots" content="noindex" />
