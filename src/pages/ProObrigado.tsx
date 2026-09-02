@@ -6,7 +6,7 @@ const CREAM = "#F4EEE2";
 const TEAL = "#34BFB4";
 
 const MONO = "'IBM Plex Mono', ui-monospace, monospace";
-const DISPLAY = "'Gloock', Georgia, serif";
+const DISPLAY = "'Cormorant Garamond', Georgia, serif";
 
 const ProObrigado = () => {
   return (
@@ -26,12 +26,6 @@ const ProObrigado = () => {
         <title>Pagamento confirmado. SalbCare Pro</title>
         <meta name="description" content="Pagamento confirmado. Você receberá seu material no e-mail usado na compra em até 24 horas." />
         <meta name="robots" content="noindex, follow" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-        />
       </Helmet>
 
       <main style={{ maxWidth: 520, textAlign: "center" }}>
@@ -39,10 +33,10 @@ const ProObrigado = () => {
         <h1 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: 34, lineHeight: 1.15, margin: "14px 0 0" }}>
           Pagamento confirmado.
         </h1>
-        <p style={{ marginTop: 16, fontSize: 15, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
+        <p style={{ marginTop: 16, fontSize: 15, lineHeight: 1.6, color: "rgba(31,31,31,0.8)" }}>
           Você receberá seu material no e-mail usado na compra em até 24 horas.
         </p>
-        <p style={{ marginTop: 20, fontSize: 12, lineHeight: 1.6, color: "rgba(244,238,226,0.55)" }}>
+        <p style={{ marginTop: 20, fontSize: 12, lineHeight: 1.6, color: "rgba(31,31,31,0.56)" }}>
           Payment confirmed. You will receive your material at the email used in the purchase within 24 hours.
         </p>
         <Link

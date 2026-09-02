@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
-import { CREAM, GOLD, MONO, NAVY, PRO_FONTS_HREF, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
+import { CREAM, GOLD, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 import { ProProfileFields, ProProfileForm, emptyProfile, normalizeLanguages } from "./ProOnboarding";
 
 type TabKey = "perfil" | "agenda" | "pacientes" | "financeiro" | "materiais" | "assinatura";
@@ -57,16 +57,16 @@ const dashStyles = `
   .pro-sidenav { display: grid; gap: 4px; position: sticky; top: 24px; }
   .pro-bottomnav { display: none; }
   .pro-navbtn { text-align: left; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: ${MONO}; cursor: pointer; background: transparent; color: ${CREAM}; border: 1px solid transparent; }
-  .pro-navbtn[aria-current="page"] { background: rgba(244,238,226,0.08); border-color: rgba(244,238,226,0.2); }
-  .pro-row { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(244,238,226,0.12); padding-top: 10px; font-size: 13px; }
-  .pro-ghostbtn { background: none; border: none; color: rgba(244,238,226,0.6); cursor: pointer; font-size: 12px; font-family: ${MONO}; }
+  .pro-navbtn[aria-current="page"] { background: rgba(31,31,31,0.04); border-color: rgba(31,31,31,0.2); }
+  .pro-row { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(31,31,31,0.12); padding-top: 10px; font-size: 13px; }
+  .pro-ghostbtn { background: none; border: none; color: rgba(31,31,31,0.56); cursor: pointer; font-size: 12px; font-family: ${MONO}; }
   @media (max-width: 860px) {
     .pro-dash { grid-template-columns: 1fr; }
     .pro-sidenav { display: none; }
     .pro-bottomnav {
       display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
       overflow-x: auto; gap: 4px; padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
-      background: ${NAVY}; border-top: 1px solid rgba(244,238,226,0.14);
+      background: ${NAVY}; border-top: 1px solid rgba(31,31,31,0.12);
     }
     .pro-bottomnav .pro-navbtn { white-space: nowrap; }
     .pro-dashpad { padding-bottom: 84px; }
@@ -318,14 +318,13 @@ const ProDashboard = () => {
     </button>
   ));
 
-  const muted = "rgba(244,238,226,0.65)";
+  const muted = "rgba(31,31,31,0.56)";
 
   return (
-    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
+    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
       <Helmet>
         <title>Painel. SalbCare Pro</title>
         <meta name="robots" content="noindex" />
-        <link rel="stylesheet" href={PRO_FONTS_HREF} />
       </Helmet>
       <style>{proStyles + dashStyles}</style>
 
@@ -368,7 +367,7 @@ const ProDashboard = () => {
                   {published && (
                     <button
                       className="pro-cta"
-                      style={{ background: "transparent", color: CREAM, border: "1px solid rgba(244,238,226,0.25)" }}
+                      style={{ background: "transparent", color: CREAM, border: "1px solid rgba(31,31,31,0.2)" }}
                       onClick={() => saveProfile(false)}
                     >
                       Despublicar minha pagina
@@ -517,7 +516,7 @@ const ProDashboard = () => {
                   <ProLabel>Este mês</ProLabel>
                   <div style={{ fontSize: 13, color: muted }}>Receitas {brl(monthTotals.income)}</div>
                   <div style={{ fontSize: 13, color: muted }}>Despesas {brl(monthTotals.expense)}</div>
-                  <div style={{ fontFamily: "'Gloock', Georgia, serif", fontSize: 28, color: TEAL }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 28, color: TEAL }}>
                     {brl(monthTotals.balance)}
                   </div>
                 </div>
@@ -612,7 +611,7 @@ const ProDashboard = () => {
                       textAlign: "left",
                       background: "none",
                       border: "none",
-                      borderTop: "1px solid rgba(244,238,226,0.12)",
+                      borderTop: "1px solid rgba(31,31,31,0.12)",
                       paddingTop: 10,
                       color: CREAM,
                       fontFamily: MONO,

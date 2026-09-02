@@ -12,7 +12,6 @@ import {
   GOLD,
   MONO,
   NAVY,
-  PRO_FONTS_HREF,
   PRO_PRICES,
   ProLabel,
   ProPlanKey,
@@ -85,8 +84,8 @@ const Pro = () => {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const muted = "rgba(244,238,226,0.62)";
-  const soft = "rgba(244,238,226,0.78)";
+  const muted = "rgba(31,31,31,0.56)";
+  const soft = "rgba(31,31,31,0.74)";
 
   const startTrial = () => {
     navigate(isActive ? "/pro/painel" : "/register");
@@ -126,16 +125,12 @@ const Pro = () => {
         <meta
           name="description"
           content="Agenda, pacientes, financeiro e sua própria página de agendamento em um só lugar. Teste o SalbCare Pro por 14 dias, sem cartão de crédito."
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="preload" as="style" href={PRO_FONTS_HREF} />
-        <link rel="stylesheet" href={PRO_FONTS_HREF} />
+        />        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </Helmet>
       <style>{proStyles}</style>
 
       {/* NAVEGAÇÃO */}
-      <header style={{ borderBottom: "1px solid rgba(244,238,226,0.14)" }}>
+      <header style={{ borderBottom: "1px solid rgba(31,31,31,0.12)" }}>
         <div
           className="pro-wrap"
           style={{
@@ -336,7 +331,7 @@ const Pro = () => {
                   {selected ? "Selecionado" : "Selecionar"}
                 </span>
                 <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 13 }}>{p.label}</div>
-                <div style={{ marginTop: 10, fontFamily: "'Gloock', Georgia, serif", fontSize: 34 }}>
+                <div style={{ marginTop: 10, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 34 }}>
                   {p.amount}
                   <span style={{ fontFamily: MONO, fontSize: 13, color: muted }}>{p.period}</span>
                 </div>
@@ -375,7 +370,7 @@ const Pro = () => {
           {FAQ.map((item) => {
             const open = openFaq === item.q;
             return (
-              <div key={item.q} style={{ borderTop: "1px solid rgba(244,238,226,0.14)" }}>
+              <div key={item.q} style={{ borderTop: "1px solid rgba(31,31,31,0.12)" }}>
                 <button
                   onClick={() => setOpenFaq(open ? null : item.q)}
                   aria-expanded={open}
@@ -423,7 +418,7 @@ const Pro = () => {
         </div>
       </section>
 
-      <footer style={{ borderTop: "1px solid rgba(244,238,226,0.14)" }}>
+      <footer style={{ borderTop: "1px solid rgba(31,31,31,0.12)" }}>
         <div className="pro-wrap" style={{ paddingTop: 32, paddingBottom: 48 }}>
           <div
             style={{

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { CREAM, GOLD, MONO, NAVY, PRO_FONTS_HREF, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
+import { CREAM, GOLD, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 
 const LANGUAGES = ["Português", "Inglês", "Espanhol"];
 
@@ -76,7 +76,7 @@ export const ProProfileFields = ({
 
   const field = (label: string, key: keyof ProProfileForm, placeholder = "") => (
     <label style={{ display: "grid", gap: 6 }}>
-      <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>{label}</span>
+      <span style={{ fontSize: 12, color: "rgba(31,31,31,0.74)" }}>{label}</span>
       <input
         className="pro-input"
         value={form[key] as string}
@@ -100,7 +100,7 @@ export const ProProfileFields = ({
       {field("Instagram", "instagram", "@seuperfil")}
 
       <div style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Idiomas atendidos</span>
+        <span style={{ fontSize: 12, color: "rgba(31,31,31,0.74)" }}>Idiomas atendidos</span>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {LANGUAGES.map((l) => {
             const on = form.languages.includes(l);
@@ -123,7 +123,7 @@ export const ProProfileFields = ({
                   cursor: "pointer",
                   background: on ? TEAL : "transparent",
                   color: on ? NAVY : CREAM,
-                  border: `1px solid ${on ? TEAL : "rgba(244,238,226,0.25)"}`,
+                  border: `1px solid ${on ? TEAL : "rgba(31,31,31,0.2)"}`,
                 }}
               >
                 {l}
@@ -134,7 +134,7 @@ export const ProProfileFields = ({
       </div>
 
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Apresentação em português</span>
+        <span style={{ fontSize: 12, color: "rgba(31,31,31,0.74)" }}>Apresentação em português</span>
         <textarea
           className="pro-input"
           rows={4}
@@ -143,7 +143,7 @@ export const ProProfileFields = ({
         />
       </label>
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>Apresentação em inglês</span>
+        <span style={{ fontSize: 12, color: "rgba(31,31,31,0.74)" }}>Apresentação em inglês</span>
         <textarea
           className="pro-input"
           rows={4}
@@ -153,7 +153,7 @@ export const ProProfileFields = ({
       </label>
 
       <div style={{ display: "grid", gap: 8 }}>
-        <span style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}>
+        <span style={{ fontSize: 12, color: "rgba(31,31,31,0.74)" }}>
           Foto de perfil (opcional, você pode adicionar depois)
         </span>
         {form.image_url && (
@@ -172,7 +172,7 @@ export const ProProfileFields = ({
             const f = e.target.files?.[0];
             if (f) upload(f);
           }}
-          style={{ fontSize: 12, color: "rgba(244,238,226,0.7)" }}
+          style={{ fontSize: 12, color: "rgba(31,31,31,0.74)" }}
         />
       </div>
     </div>
@@ -252,11 +252,10 @@ const ProOnboarding = () => {
   const progress = Math.round((step / TOTAL_STEPS) * 100);
 
   return (
-    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: MONO }}>
+    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
       <Helmet>
         <title>Complete seu perfil. SalbCare Pro</title>
         <meta name="robots" content="noindex" />
-        <link rel="stylesheet" href={PRO_FONTS_HREF} />
       </Helmet>
       <style>{proStyles}</style>
 
@@ -272,7 +271,7 @@ const ProOnboarding = () => {
             marginTop: 12,
             height: 4,
             borderRadius: 999,
-            background: "rgba(244,238,226,0.14)",
+            background: "rgba(31,31,31,0.12)",
             overflow: "hidden",
           }}
         >
@@ -287,15 +286,15 @@ const ProOnboarding = () => {
 
           {step === 2 && (
             <div style={{ display: "grid", gap: 10, fontSize: 14 }}>
-              <div style={{ fontFamily: "'Gloock', Georgia, serif", fontSize: 22 }}>{form.name}</div>
-              <div style={{ color: "rgba(244,238,226,0.7)" }}>
+              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 22 }}>{form.name}</div>
+              <div style={{ color: "rgba(31,31,31,0.74)" }}>
                 {form.profession} {form.registration_number ? `· ${form.registration_number}` : ""}
               </div>
-              <div style={{ color: "rgba(244,238,226,0.7)" }}>{form.city}</div>
-              <div style={{ color: "rgba(244,238,226,0.7)" }}>{form.languages.join(", ")}</div>
-              <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>{form.description}</p>
+              <div style={{ color: "rgba(31,31,31,0.74)" }}>{form.city}</div>
+              <div style={{ color: "rgba(31,31,31,0.74)" }}>{form.languages.join(", ")}</div>
+              <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(31,31,31,0.8)" }}>{form.description}</p>
               {!form.image_url && (
-                <p style={{ margin: 0, fontSize: 12, color: "rgba(244,238,226,0.6)" }}>
+                <p style={{ margin: 0, fontSize: 12, color: "rgba(31,31,31,0.56)" }}>
                   Sem foto por enquanto. Você pode adicionar depois no painel.
                 </p>
               )}
@@ -305,7 +304,7 @@ const ProOnboarding = () => {
           {step === 3 && (
             <div style={{ display: "grid", gap: 12, fontSize: 14 }}>
               <div style={{ color: TEAL, fontSize: 13 }}>Sua página de agendamento está no ar.</div>
-              <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(244,238,226,0.8)" }}>
+              <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(31,31,31,0.8)" }}>
                 Seu perfil já pode ser encontrado por pacientes e viajantes.
               </p>
             </div>
@@ -324,7 +323,7 @@ const ProOnboarding = () => {
               </button>
               <button
                 className="pro-cta"
-                style={{ background: "transparent", color: CREAM, border: "1px solid rgba(244,238,226,0.25)" }}
+                style={{ background: "transparent", color: CREAM, border: "1px solid rgba(31,31,31,0.2)" }}
                 onClick={() => setStep(1)}
               >
                 Voltar e editar
@@ -344,7 +343,7 @@ const ProOnboarding = () => {
               <Link
                 to="/pro/painel"
                 className="pro-cta"
-                style={{ background: "transparent", color: CREAM, border: "1px solid rgba(244,238,226,0.25)" }}
+                style={{ background: "transparent", color: CREAM, border: "1px solid rgba(31,31,31,0.2)" }}
               >
                 Ver meu perfil público
               </Link>

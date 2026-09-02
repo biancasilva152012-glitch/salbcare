@@ -1,19 +1,67 @@
 /**
  * Sistema de marca compartilhado das páginas SalbCare Pro (/pro, /pro/onboarding, /pro/painel).
- * Mantido isolado do design system global para não afetar o restante do site.
+ * Identidade editorial: areia, café, oliva e tinta. Mantido isolado do design system global.
+ *
+ * Fontes self-hosted (arquivos estáticos, não variáveis, via @fontsource).
+ * Bug conhecido: os arquivos do Cormorant Garamond posicionam mal o acento
+ * circunflexo (â ê î ô û), deixando "você" com o acento deslocado. Por isso os
+ * cinco codepoints circunflexos são servidos pelo EB Garamond (mesmo espírito
+ * Garamond, acentos corretos), com unicode-range restrito. Ver CIRCUMFLEX_FIX.
  */
-export const NAVY = "#0F1F3A";
-export const CREAM = "#F4EEE2";
-export const TEAL = "#34BFB4";
-export const GOLD = "#CFA856";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/karla/400.css";
+import "@fontsource/karla/500.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+import ebRegular from "@fontsource/eb-garamond/files/eb-garamond-latin-400-normal.woff2?url";
+import ebSemibold from "@fontsource/eb-garamond/files/eb-garamond-latin-600-normal.woff2?url";
 
-export const MONO = "'IBM Plex Mono', ui-monospace, monospace";
-export const DISPLAY = "'Gloock', Georgia, serif";
+const CIRCUMFLEX_RANGE = "U+00C2,U+00CA,U+00CE,U+00D4,U+00DB,U+00E2,U+00EA,U+00EE,U+00F4,U+00FB";
+
+/** Precisa vir depois dos @font-face do Cormorant Garamond para vencer nesses codepoints. */
+const CIRCUMFLEX_FIX = `
+  @font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(${ebRegular}) format('woff2');
+    unicode-range: ${CIRCUMFLEX_RANGE};
+  }
+  @font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url(${ebSemibold}) format('woff2');
+    unicode-range: ${CIRCUMFLEX_RANGE};
+  }
+`;
+
+
+/** Paleta editorial */
+export const SAND = "#F7F3EE";
+export const COFFEE = "#5E4736";
+export const OLIVE = "#70755C";
+export const INK = "#1F1F1F";
+
+/**
+ * Aliases retrocompatíveis usados pelas páginas Pro.
+ * NAVY = fundo (areia), CREAM = texto (tinta), TEAL = detalhe (oliva), GOLD = ação (café).
+ */
+export const NAVY = SAND;
+export const CREAM = INK;
+export const TEAL = OLIVE;
+export const GOLD = COFFEE;
+
+export const MONO = "'JetBrains Mono', ui-monospace, monospace";
+export const DISPLAY = "'Cormorant Garamond', Georgia, serif";
 /** Sans legível para parágrafos longos. Mono fica só em labels e textos curtos. */
-export const SANS = "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif";
+export const SANS = "'Karla', system-ui, -apple-system, 'Segoe UI', sans-serif";
 
-export const PRO_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap";
+/** Fontes agora são self-hosted; mantido vazio para compatibilidade de imports. */
+export const PRO_FONTS_HREF = "";
 
 export const PRO_PRICES = {
   monthly: {
@@ -34,42 +82,55 @@ export const PRO_PRICES = {
 
 export type ProPlanKey = keyof typeof PRO_PRICES;
 
+/** Linhas e tons derivados da tinta sobre areia. */
+const RULE = "rgba(31,31,31,0.12)";
+const RULE_STRONG = "rgba(31,31,31,0.2)";
+const TEXT_SOFT = "rgba(31,31,31,0.74)";
+const TEXT_MUTED = "rgba(31,31,31,0.56)";
+
 export const proStyles = `
-  .pro-wrap { max-width: 880px; margin: 0 auto; padding: 0 22px; }
-  .pro-section { padding-block: 72px; }
-  @media (min-width: 768px) { .pro-section { padding-block: 96px; } }
-  .pro-rule { border: 0; border-top: 1px solid rgba(244,238,226,0.14); margin: 0; }
-  .pro-h1 { font-family: ${DISPLAY}; font-size: clamp(32px, 8vw, 52px); line-height: 1.06; margin: 18px 0 0; font-weight: 400; letter-spacing: -0.01em; text-wrap: balance; }
-  .pro-h2 { font-family: ${DISPLAY}; font-size: clamp(24px, 5vw, 32px); line-height: 1.18; margin: 0; font-weight: 400; text-wrap: balance; }
-  .pro-lead { font-family: ${SANS}; font-size: clamp(16px, 4vw, 18px); line-height: 1.6; color: rgba(244,238,226,0.78); }
-  .pro-body { font-family: ${SANS}; font-size: 15px; line-height: 1.65; color: rgba(244,238,226,0.72); }
-  .pro-mono { font-family: ${MONO}; font-size: 12px; letter-spacing: 0.06em; color: rgba(244,238,226,0.6); }
-  .pro-block { border-top: 1px solid rgba(244,238,226,0.14); padding: 20px 0; }
-  .pro-cta { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; border-radius: 4px; padding: 16px 24px; background: ${GOLD}; color: ${NAVY}; font-family: ${MONO}; font-weight: 600; font-size: 14px; letter-spacing: 0.04em; text-decoration: none; border: none; cursor: pointer; min-height: 52px; transition: opacity 160ms ease; }
-  .pro-cta:hover:not(:disabled) { opacity: 0.88; }
+${CIRCUMFLEX_FIX}
+  .pro-wrap { max-width: 920px; margin: 0 auto; padding: 0 22px; }
+  .pro-section { padding-block: 80px; }
+  @media (min-width: 768px) { .pro-section { padding-block: 112px; } }
+  .pro-rule { border: 0; border-top: 1px solid ${RULE}; margin: 0; }
+  .pro-h1 { font-family: ${DISPLAY}; font-size: clamp(40px, 10vw, 68px); line-height: 1.04; margin: 20px 0 0; font-weight: 400; letter-spacing: -0.015em; color: ${INK}; text-wrap: balance; }
+  .pro-h2 { font-family: ${DISPLAY}; font-size: clamp(28px, 6vw, 42px); line-height: 1.14; margin: 0; font-weight: 400; letter-spacing: -0.01em; color: ${INK}; text-wrap: balance; }
+  .pro-lead { font-family: ${SANS}; font-size: clamp(16px, 4vw, 19px); line-height: 1.6; color: ${TEXT_SOFT}; }
+  .pro-body { font-family: ${SANS}; font-size: 15.5px; line-height: 1.7; color: ${TEXT_SOFT}; }
+  .pro-mono { font-family: ${MONO}; font-size: 11.5px; letter-spacing: 0.06em; color: ${TEXT_MUTED}; }
+  .pro-block { border-top: 1px solid ${RULE}; padding: 22px 0; }
+  .pro-card { border: 1px solid ${RULE}; border-radius: 10px; padding: 22px; background: rgba(255,255,255,0.5); }
+  .pro-cta { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; border-radius: 999px; padding: 16px 28px; background: ${COFFEE}; color: ${SAND}; font-family: ${MONO}; font-weight: 500; font-size: 13px; letter-spacing: 0.06em; text-decoration: none; border: 1px solid ${COFFEE}; cursor: pointer; min-height: 52px; transition: background 160ms ease, color 160ms ease; }
+  .pro-cta:hover:not(:disabled) { background: ${OLIVE}; border-color: ${OLIVE}; }
   .pro-cta:disabled { opacity: 0.6; cursor: progress; }
-  .pro-cta:focus-visible { outline: 2px solid ${CREAM}; outline-offset: 3px; }
-  .pro-link { font-family: ${MONO}; font-size: 12px; color: rgba(244,238,226,0.6); text-decoration: none; }
-  .pro-link:hover { color: ${CREAM}; }
-  .pro-grid2 { display: grid; gap: 0; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+  .pro-cta:focus-visible { outline: 2px solid ${INK}; outline-offset: 3px; }
+  .pro-link { font-family: ${MONO}; font-size: 12px; color: ${TEXT_MUTED}; text-decoration: none; }
+  .pro-link:hover { color: ${COFFEE}; }
+  .pro-grid2 { display: grid; gap: 0; grid-template-columns: 1fr 1fr; column-gap: 40px; }
   @media (max-width: 640px) { .pro-grid2 { grid-template-columns: 1fr; } .pro-cta { max-width: none; } }
-  .pro-shot { width: 100%; display: block; border: 1px solid rgba(244,238,226,0.14); border-radius: 4px; background: rgba(244,238,226,0.03); }
-  .pro-plan { display: block; width: 100%; text-align: left; background: none; color: ${CREAM}; border: 1px solid rgba(244,238,226,0.16); border-radius: 4px; padding: 22px; cursor: pointer; font-family: ${SANS}; transition: border-color 160ms ease; }
-  .pro-plan[aria-pressed="true"] { border-color: ${GOLD}; }
-  .pro-plan:focus-visible { outline: 2px solid ${TEAL}; outline-offset: 2px; }
+  .pro-shot { width: 100%; display: block; border: 1px solid ${RULE}; border-radius: 10px; background: rgba(255,255,255,0.6); }
+  .pro-plan { display: block; width: 100%; text-align: left; background: rgba(255,255,255,0.5); color: ${INK}; border: 1px solid ${RULE_STRONG}; border-radius: 12px; padding: 26px; cursor: pointer; font-family: ${SANS}; transition: border-color 160ms ease, background 160ms ease; }
+  .pro-plan[aria-pressed="true"] { border-color: ${COFFEE}; background: rgba(94,71,54,0.06); }
+  .pro-plan:focus-visible { outline: 2px solid ${OLIVE}; outline-offset: 2px; }
+  .pro-nav-desktop { display: none; }
+  .pro-burger { display: inline-flex; align-items: center; background: none; border: 1px solid ${RULE_STRONG}; border-radius: 999px; padding: 8px 16px; color: ${INK}; font-family: ${MONO}; font-size: 12px; letter-spacing: 0.06em; cursor: pointer; }
+  @media (min-width: 768px) {
+    .pro-nav-desktop { display: flex; }
+    .pro-burger { display: none; }
+    .pro-nav-mobile { display: none; }
+  }
   @media (prefers-reduced-motion: reduce) { .pro-cta, .pro-plan { transition: none; } }
 `;
-
-
 
 export const ProLabel = ({ children }: { children: React.ReactNode }) => (
   <div
     style={{
       fontFamily: MONO,
       fontSize: 11,
-      letterSpacing: "0.18em",
+      letterSpacing: "0.2em",
       textTransform: "uppercase",
-      color: TEAL,
+      color: OLIVE,
     }}
   >
     {children}
