@@ -12,7 +12,6 @@ import {
   GOLD,
   MONO,
   NAVY,
-  PRO_FONTS_HREF,
   PRO_PRICES,
   ProLabel,
   ProPlanKey,
@@ -126,11 +125,7 @@ const Pro = () => {
         <meta
           name="description"
           content="Agenda, pacientes, financeiro e sua própria página de agendamento em um só lugar. Teste o SalbCare Pro por 14 dias, sem cartão de crédito."
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="preload" as="style" href={PRO_FONTS_HREF} />
-        <link rel="stylesheet" href={PRO_FONTS_HREF} />
+        />        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </Helmet>
       <style>{proStyles}</style>
 

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { CREAM, GOLD, MONO, NAVY, PRO_FONTS_HREF, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
+import { CREAM, GOLD, MONO, NAVY, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
 
 const LANGUAGES = ["Português", "Inglês", "Espanhol"];
 
@@ -256,7 +256,6 @@ const ProOnboarding = () => {
       <Helmet>
         <title>Complete seu perfil. SalbCare Pro</title>
         <meta name="robots" content="noindex" />
-        <link rel="stylesheet" href={PRO_FONTS_HREF} />
       </Helmet>
       <style>{proStyles}</style>
 

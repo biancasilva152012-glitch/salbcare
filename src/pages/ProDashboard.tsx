@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
-import { CREAM, GOLD, MONO, NAVY, PRO_FONTS_HREF, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
+import { CREAM, GOLD, MONO, NAVY, ProLabel, TEAL, proStyles } from "@/components/pro/brand";
 import { ProProfileFields, ProProfileForm, emptyProfile, normalizeLanguages } from "./ProOnboarding";
 
 type TabKey = "perfil" | "agenda" | "pacientes" | "financeiro" | "materiais" | "assinatura";
@@ -57,7 +57,7 @@ const dashStyles = `
   .pro-sidenav { display: grid; gap: 4px; position: sticky; top: 24px; }
   .pro-bottomnav { display: none; }
   .pro-navbtn { text-align: left; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: ${MONO}; cursor: pointer; background: transparent; color: ${CREAM}; border: 1px solid transparent; }
-  .pro-navbtn[aria-current="page"] { background: rgba(31,31,31,0.04); border-color: rgba(244,238,226,0.2); }
+  .pro-navbtn[aria-current="page"] { background: rgba(31,31,31,0.04); border-color: rgba(31,31,31,0.2); }
   .pro-row { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(31,31,31,0.12); padding-top: 10px; font-size: 13px; }
   .pro-ghostbtn { background: none; border: none; color: rgba(31,31,31,0.56); cursor: pointer; font-size: 12px; font-family: ${MONO}; }
   @media (max-width: 860px) {
@@ -325,7 +325,6 @@ const ProDashboard = () => {
       <Helmet>
         <title>Painel. SalbCare Pro</title>
         <meta name="robots" content="noindex" />
-        <link rel="stylesheet" href={PRO_FONTS_HREF} />
       </Helmet>
       <style>{proStyles + dashStyles}</style>
 
