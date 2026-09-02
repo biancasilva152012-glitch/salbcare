@@ -6,18 +6,12 @@
  * Cormorant Garamond do Google Fonts quebra acentos circunflexos (â ê î ô û),
  * por isso usamos os arquivos estáticos do pacote @fontsource com subset latin-ext.
  */
-import "@fontsource/cormorant-garamond/latin-400.css";
-import "@fontsource/cormorant-garamond/latin-ext-400.css";
-import "@fontsource/cormorant-garamond/latin-600.css";
-import "@fontsource/cormorant-garamond/latin-ext-600.css";
-import "@fontsource/karla/latin-400.css";
-import "@fontsource/karla/latin-ext-400.css";
-import "@fontsource/karla/latin-500.css";
-import "@fontsource/karla/latin-ext-500.css";
-import "@fontsource/jetbrains-mono/latin-400.css";
-import "@fontsource/jetbrains-mono/latin-ext-400.css";
-import "@fontsource/jetbrains-mono/latin-500.css";
-import "@fontsource/jetbrains-mono/latin-ext-500.css";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/karla/400.css";
+import "@fontsource/karla/500.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
 
 /** Paleta editorial */
 export const SAND = "#F7F3EE";
