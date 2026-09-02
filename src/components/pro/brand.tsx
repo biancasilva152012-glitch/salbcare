@@ -89,6 +89,7 @@ const TEXT_SOFT = "rgba(31,31,31,0.74)";
 const TEXT_MUTED = "rgba(31,31,31,0.56)";
 
 export const proStyles = `
+${CIRCUMFLEX_FIX}
   .pro-wrap { max-width: 920px; margin: 0 auto; padding: 0 22px; }
   .pro-section { padding-block: 80px; }
   @media (min-width: 768px) { .pro-section { padding-block: 112px; } }
