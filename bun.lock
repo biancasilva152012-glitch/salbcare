@@ -5,7 +5,9 @@
     "": {
       "name": "vite_react_shadcn_ts",
       "dependencies": {
+        "@fontsource/cormorant": "^5.3.0",
         "@fontsource/cormorant-garamond": "^5.3.0",
+        "@fontsource/eb-garamond": "^5.3.0",
         "@fontsource/jetbrains-mono": "^5.3.0",
         "@fontsource/karla": "^5.3.0",
         "@hookform/resolvers": "^3.10.0",
@@ -367,7 +369,11 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
+    "@fontsource/cormorant": ["@fontsource/cormorant@5.3.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@fontsource/cormorant/-/cormorant-5.3.0.tgz", {}, "sha512-r2xrO2/35L+miyYFaERPRn3TGA8G83fKAR4wGG3s4WC5pLRZ7Cw3brDjr8tRwESCHXgB3r7jZqjfK2kLPv3zrQ=="],
+
     "@fontsource/cormorant-garamond": ["@fontsource/cormorant-garamond@5.3.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@fontsource/cormorant-garamond/-/cormorant-garamond-5.3.0.tgz", {}, "sha512-weuGsCirGVWBWqpt6YUp0yLThTe4G8YO45noq8wxeJCRvEpq5lFrxNMFSTxcyOyV5k5otzJ8guDzYegdYlcLMQ=="],
+
+    "@fontsource/eb-garamond": ["@fontsource/eb-garamond@5.3.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@fontsource/eb-garamond/-/eb-garamond-5.3.0.tgz", {}, "sha512-VplwHpB8FLuzl+4G5LDci1b3Z4SghiuXH8XEgaxjnOb5aue5mEt1njmDKeO6iyLeGa73LffU7PC7hzncLRx0ZA=="],
 
     "@fontsource/jetbrains-mono": ["@fontsource/jetbrains-mono@5.3.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@fontsource/jetbrains-mono/-/jetbrains-mono-5.3.0.tgz", {}, "sha512-fqDfB5I9f1p1TV486aUgB9t8zP84P0O1FtQR5Ol9vjwPy+S+EIGlVYm1cvj2W5shcZMTg2nZFdVMoH5wFu8a1A=="],
 

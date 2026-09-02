@@ -22,7 +22,9 @@
     "check:seo:live": "node scripts/check-rendered-seo.mjs --base=https://salbcare.com"
   },
   "dependencies": {
+    "@fontsource/cormorant": "^5.3.0",
     "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/eb-garamond": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/karla": "^5.3.0",
     "@hookform/resolvers": "^3.10.0",
