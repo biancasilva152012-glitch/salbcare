@@ -2,9 +2,11 @@
  * Sistema de marca compartilhado das páginas SalbCare Pro (/pro, /pro/onboarding, /pro/painel).
  * Identidade editorial: areia, café, oliva e tinta. Mantido isolado do design system global.
  *
- * Fontes self-hosted (arquivos estáticos, não variáveis). A versão variável do
- * Cormorant Garamond do Google Fonts quebra acentos circunflexos (â ê î ô û),
- * por isso usamos os arquivos estáticos do pacote @fontsource com subset latin-ext.
+ * Fontes self-hosted (arquivos estáticos, não variáveis, via @fontsource).
+ * Bug conhecido: os arquivos do Cormorant Garamond posicionam mal o acento
+ * circunflexo (â ê î ô û), deixando "você" com o acento deslocado. Por isso os
+ * cinco codepoints circunflexos são servidos pelo EB Garamond (mesmo espírito
+ * Garamond, acentos corretos), com unicode-range restrito. Ver CIRCUMFLEX_FIX.
  */
 import "@fontsource/cormorant-garamond/400.css";
 import "@fontsource/cormorant-garamond/600.css";
@@ -12,6 +14,31 @@ import "@fontsource/karla/400.css";
 import "@fontsource/karla/500.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
+import ebRegular from "@fontsource/eb-garamond/files/eb-garamond-latin-400-normal.woff2?url";
+import ebSemibold from "@fontsource/eb-garamond/files/eb-garamond-latin-600-normal.woff2?url";
+
+const CIRCUMFLEX_RANGE = "U+00C2,U+00CA,U+00CE,U+00D4,U+00DB,U+00E2,U+00EA,U+00EE,U+00F4,U+00FB";
+
+/** Precisa vir depois dos @font-face do Cormorant Garamond para vencer nesses codepoints. */
+const CIRCUMFLEX_FIX = `
+  @font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(${ebRegular}) format('woff2');
+    unicode-range: ${CIRCUMFLEX_RANGE};
+  }
+  @font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url(${ebSemibold}) format('woff2');
+    unicode-range: ${CIRCUMFLEX_RANGE};
+  }
+`;
+
 
 /** Paleta editorial */
 export const SAND = "#F7F3EE";
