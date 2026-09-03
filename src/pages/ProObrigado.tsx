@@ -1,12 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-
-const NAVY = "#0F1F3A";
-const CREAM = "#F4EEE2";
-const TEAL = "#34BFB4";
-
-const MONO = "'IBM Plex Mono', ui-monospace, monospace";
-const DISPLAY = "'Cormorant Garamond', Georgia, serif";
+import { CREAM, DISPLAY, MONO, NAVY, TEAL } from "@/components/pro/brand";
 
 const ProObrigado = () => {
   return (
