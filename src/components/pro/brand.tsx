@@ -101,6 +101,13 @@ ${CIRCUMFLEX_FIX}
   .pro-mono { font-family: ${MONO}; font-size: 11.5px; letter-spacing: 0.06em; color: ${TEXT_MUTED}; }
   .pro-block { border-top: 1px solid ${RULE}; padding: 22px 0; }
   .pro-card { border: 1px solid ${RULE}; border-radius: 10px; padding: 22px; background: rgba(255,255,255,0.5); }
+  .pro-input { width: 100%; box-sizing: border-box; font-family: ${SANS}; font-size: 14px; line-height: 1.5; color: ${INK}; background: rgba(255,255,255,0.7); border: 1px solid ${RULE_STRONG}; border-radius: 8px; padding: 11px 13px; transition: border-color 160ms ease; }
+  .pro-input::placeholder { color: ${TEXT_MUTED}; }
+  .pro-input:focus { outline: none; border-color: ${COFFEE}; }
+  .pro-input:disabled { opacity: 0.6; cursor: not-allowed; }
+  select.pro-input { appearance: none; background-image: linear-gradient(45deg, transparent 50%, ${COFFEE} 50%), linear-gradient(135deg, ${COFFEE} 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 34px; }
+  textarea.pro-input { resize: vertical; }
+  @media (prefers-reduced-motion: reduce) { .pro-input { transition: none; } }
   .pro-cta { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; border-radius: 999px; padding: 16px 28px; background: ${COFFEE}; color: ${SAND}; font-family: ${MONO}; font-weight: 500; font-size: 13px; letter-spacing: 0.06em; text-decoration: none; border: 1px solid ${COFFEE}; cursor: pointer; min-height: 52px; transition: background 160ms ease, color 160ms ease; }
   .pro-cta:hover:not(:disabled) { background: ${OLIVE}; border-color: ${OLIVE}; }
   .pro-cta:disabled { opacity: 0.6; cursor: progress; }
