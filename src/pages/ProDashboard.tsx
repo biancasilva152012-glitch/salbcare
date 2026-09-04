@@ -353,7 +353,7 @@ const ProDashboard = () => {
       </header>
 
       <section className="pro-wrap pro-wrap--wide" style={{ paddingTop: 36, paddingBottom: 24 }}>
-        <ProLabel>SalbCare Pro</ProLabel>
+        <ProWordmark size={30} />
         <h1 className="pro-h1" style={{ fontSize: 32 }}>Painel</h1>
       </section>
 
