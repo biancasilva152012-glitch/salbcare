@@ -15,6 +15,7 @@ import {
   PRO_PRICES,
   ProLabel,
   ProPlanKey,
+  ProWordmark,
   SANS,
   TEAL,
   proStyles,
