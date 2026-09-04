@@ -326,8 +326,17 @@ const ProDashboard = () => {
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
       <Helmet>
-        <title>Painel. SalbCare Pro</title>
+        <title>Painel. SalbCare</title>
         <meta name="robots" content="noindex" />
+        {/* Painel instalável como app: manifesto próprio abrindo direto em /pro/painel */}
+        <link rel="manifest" href="/manifest-pro.json" />
+        <meta name="theme-color" content="#F7F3EE" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="SalbCare" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" href="/pro-splash.png" />
       </Helmet>
       <style>{proStyles + dashStyles}</style>
 
