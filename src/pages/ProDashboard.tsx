@@ -321,7 +321,7 @@ const ProDashboard = () => {
     </button>
   ));
 
-  const muted = "rgba(31,31,31,0.56)";
+  const muted = "rgba(31,31,31,0.66)";
 
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
