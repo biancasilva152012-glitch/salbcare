@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { CREAM, DISPLAY, MONO, NAVY, TEAL } from "@/components/pro/brand";
+import { CREAM, DISPLAY, MONO, NAVY, ProWordmark, TEAL } from "@/components/pro/brand";
 
 const ProObrigado = () => {
   return (
