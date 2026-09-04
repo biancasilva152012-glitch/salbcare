@@ -23,7 +23,9 @@ const ProObrigado = () => {
       </Helmet>
 
       <main style={{ maxWidth: 520, textAlign: "center" }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: TEAL }}>SalbCare Pro</div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <ProWordmark size={30} />
+        </div>
         <h1 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: 34, lineHeight: 1.15, margin: "14px 0 0" }}>
           Pagamento confirmado.
         </h1>
