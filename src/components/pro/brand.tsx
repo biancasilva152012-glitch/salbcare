@@ -130,6 +130,31 @@ ${CIRCUMFLEX_FIX}
   @media (prefers-reduced-motion: reduce) { .pro-cta, .pro-plan { transition: none; } }
 `;
 
+/** Logo oficial da SalbCare usada no lugar do texto "SalbCare Pro". */
+export const ProWordmark = ({ size = 30 }: { size?: number }) => (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+    <img
+      src="/salbcare-logo.png"
+      alt="SalbCare"
+      width={size}
+      height={size}
+      style={{ width: size, height: size, display: "block", borderRadius: 6 }}
+      loading="eager"
+    />
+    <span
+      style={{
+        fontFamily: DISPLAY,
+        fontSize: Math.round(size * 0.72),
+        lineHeight: 1,
+        color: INK,
+        letterSpacing: "-0.01em",
+      }}
+    >
+      SalbCare
+    </span>
+  </span>
+);
+
 export const ProLabel = ({ children }: { children: React.ReactNode }) => (
   <div
     style={{
