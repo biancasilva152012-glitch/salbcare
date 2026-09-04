@@ -101,7 +101,7 @@ ${CIRCUMFLEX_FIX}
   .pro-mono { font-family: ${MONO}; font-size: 11.5px; letter-spacing: 0.06em; color: ${TEXT_MUTED}; }
   .pro-block { border-top: 1px solid ${RULE}; padding: 22px 0; }
   .pro-card { border: 1px solid ${RULE}; border-radius: 10px; padding: 22px; background: rgba(255,255,255,0.5); }
-  .pro-input { width: 100%; box-sizing: border-box; font-family: ${SANS}; font-size: 14px; line-height: 1.5; color: ${INK}; background: rgba(255,255,255,0.7); border: 1px solid ${RULE_STRONG}; border-radius: 8px; padding: 11px 13px; transition: border-color 160ms ease; }
+  .pro-input { width: 100%; box-sizing: border-box; font-family: ${SANS}; font-size: 14px; line-height: 1.5; color: ${INK}; background: #FFFFFF; border: 1px solid ${RULE_STRONG}; border-radius: 8px; padding: 11px 13px; transition: border-color 160ms ease; color-scheme: light; accent-color: ${COFFEE}; }
   .pro-input::placeholder { color: ${TEXT_MUTED}; }
   .pro-input:focus { outline: none; border-color: ${COFFEE}; }
   .pro-input:disabled { opacity: 0.6; cursor: not-allowed; }
