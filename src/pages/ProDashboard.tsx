@@ -56,10 +56,13 @@ const dashStyles = `
   .pro-dash { display: grid; gap: 28px; grid-template-columns: 220px 1fr; align-items: start; }
   .pro-sidenav { display: grid; gap: 4px; position: sticky; top: 24px; }
   .pro-bottomnav { display: none; }
-  .pro-navbtn { text-align: left; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: ${MONO}; cursor: pointer; background: transparent; color: ${CREAM}; border: 1px solid transparent; }
-  .pro-navbtn[aria-current="page"] { background: rgba(31,31,31,0.04); border-color: rgba(31,31,31,0.2); }
-  .pro-row { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(31,31,31,0.12); padding-top: 10px; font-size: 13px; }
-  .pro-ghostbtn { background: none; border: none; color: rgba(31,31,31,0.56); cursor: pointer; font-size: 12px; font-family: ${MONO}; }
+  .pro-navbtn { text-align: left; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: ${MONO}; cursor: pointer; background: transparent; color: rgba(31,31,31,0.72); border: 1px solid transparent; }
+  .pro-navbtn:hover { color: ${CREAM}; background: rgba(31,31,31,0.05); }
+  .pro-navbtn[aria-current="page"] { background: #FFFFFF; border-color: rgba(31,31,31,0.28); color: ${CREAM}; font-weight: 500; }
+  .pro-navbtn:focus-visible { outline: 2px solid ${GOLD}; outline-offset: 2px; }
+  .pro-row { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(31,31,31,0.12); padding-top: 10px; font-size: 13px; color: ${CREAM}; }
+  .pro-ghostbtn { background: none; border: none; color: ${GOLD}; text-decoration: underline; cursor: pointer; font-size: 12px; font-family: ${MONO}; }
+  .pro-ghostbtn:hover { color: ${CREAM}; }
   @media (max-width: 860px) {
     .pro-dash { grid-template-columns: 1fr; }
     .pro-sidenav { display: none; }
@@ -318,13 +321,22 @@ const ProDashboard = () => {
     </button>
   ));
 
-  const muted = "rgba(31,31,31,0.56)";
+  const muted = "rgba(31,31,31,0.66)";
 
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
       <Helmet>
-        <title>Painel. SalbCare Pro</title>
+        <title>Painel. SalbCare</title>
         <meta name="robots" content="noindex" />
+        {/* Painel instalável como app: manifesto próprio abrindo direto em /pro/painel */}
+        <link rel="manifest" href="/manifest-pro.json" />
+        <meta name="theme-color" content="#F7F3EE" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="SalbCare" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" href="/pro-splash.png" />
       </Helmet>
       <style>{proStyles + dashStyles}</style>
 
@@ -341,7 +353,7 @@ const ProDashboard = () => {
       </header>
 
       <section className="pro-wrap pro-wrap--wide" style={{ paddingTop: 36, paddingBottom: 24 }}>
-        <ProLabel>SalbCare Pro</ProLabel>
+        <ProWordmark size={30} />
         <h1 className="pro-h1" style={{ fontSize: 32 }}>Painel</h1>
       </section>
 

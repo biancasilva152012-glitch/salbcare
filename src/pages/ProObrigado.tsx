@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { CREAM, DISPLAY, MONO, NAVY, TEAL } from "@/components/pro/brand";
+import { CREAM, DISPLAY, MONO, NAVY, ProWordmark, TEAL } from "@/components/pro/brand";
 
 const ProObrigado = () => {
   return (
@@ -23,7 +23,9 @@ const ProObrigado = () => {
       </Helmet>
 
       <main style={{ maxWidth: 520, textAlign: "center" }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: TEAL }}>SalbCare Pro</div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <ProWordmark size={30} />
+        </div>
         <h1 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: 34, lineHeight: 1.15, margin: "14px 0 0" }}>
           Pagamento confirmado.
         </h1>

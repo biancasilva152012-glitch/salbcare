@@ -15,6 +15,7 @@ import {
   PRO_PRICES,
   ProLabel,
   ProPlanKey,
+  ProWordmark,
   SANS,
   TEAL,
   proStyles,
@@ -142,17 +143,7 @@ const Pro = () => {
             gap: 16,
           }}
         >
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: 12,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              color: TEAL,
-            }}
-          >
-            SalbCare Pro
-          </span>
+          <ProWordmark size={30} />
 
           <nav className="pro-nav-desktop" style={{ alignItems: "center", gap: 24 }}>
             {NAV.map((item) => (
