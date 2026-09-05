@@ -96,6 +96,8 @@ const AdminQrPrintPage = lazyWithRetry(() => import("./pages/admin/AdminQrPrintP
 const AdminKiteBookingsPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingsPage"), "AdminKiteBookingsPage");
 const AdminKiteBookingDetailPage = lazyWithRetry(() => import("./pages/admin/AdminKiteBookingDetailPage"), "AdminKiteBookingDetailPage");
 const AdminLocalPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminLocalPartnersPage"), "AdminLocalPartnersPage");
+const AdminProAccountsPage = lazyWithRetry(() => import("./pages/admin/AdminProAccountsPage"), "AdminProAccountsPage");
+const AdminLogin = lazyWithRetry(() => import("./pages/AdminLogin"), "AdminLogin");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
@@ -349,7 +351,9 @@ const App = () => (
               <Route path="/verificar/:hash" element={<VerifyDocument />} />
               <Route path="/verificado/:slug" element={<SalbScoreSelo />} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminOverviewPage />} />
+              <Route path="/admin/pro-accounts" element={<AdminProAccountsPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/subscriptions" element={<AdminSubscriptionsPage />} />
               <Route path="/admin/finance" element={<AdminFinancePage />} />
