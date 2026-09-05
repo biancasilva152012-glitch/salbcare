@@ -8,7 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PLANS = ["mensal", "anual"] as const;
+const PLANS = ["monthly", "annual"] as const;
 const STATUSES = ["trialing", "active", "past_due", "canceled"] as const;
 
 type Plan = (typeof PLANS)[number];
@@ -22,7 +22,7 @@ function periodEnd(plan: Plan, status: Status): string | null {
   if (status === "canceled") return new Date().toISOString();
   const d = new Date();
   if (status === "trialing") d.setDate(d.getDate() + 14);
-  else if (plan === "anual") d.setFullYear(d.getFullYear() + 1);
+  else if (plan === "annual") d.setFullYear(d.getFullYear() + 1);
   else d.setMonth(d.getMonth() + 1);
   return d.toISOString();
 }
@@ -119,7 +119,7 @@ serve(async (req) => {
       const profession = str(body.profession, 60) || "dentista";
       const city = str(body.city, 120);
       const whatsapp = str(body.whatsapp, 30);
-      const plan: Plan = body.plan === "anual" ? "anual" : "mensal";
+      const plan: Plan = body.plan === "annual" ? "annual" : "monthly";
       const status: Status = STATUSES.includes(body.status) ? body.status : "active";
 
       if (!name || !email) throw new Error("Nome e e-mail são obrigatórios");
@@ -189,7 +189,7 @@ serve(async (req) => {
     // ---------- SET SUBSCRIPTION ----------
     if (action === "set_subscription") {
       const userId = str(body.user_id, 60);
-      const plan: Plan = body.plan === "anual" ? "anual" : "mensal";
+      const plan: Plan = body.plan === "annual" ? "annual" : "monthly";
       const status: Status = STATUSES.includes(body.status) ? body.status : "active";
       if (!userId) throw new Error("Profissional inválido");
 
