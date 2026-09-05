@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users, BarChart3, Database, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight,
-  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard, QrCode, FileLock2, Wind, Globe2,
+  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard, QrCode, FileLock2, Wind, Globe2, Stethoscope,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import RlsHealthGate from "./RlsHealthGate";
 const NAV_ITEMS = [
   { label: "Visão Geral", icon: LayoutDashboard, path: "/admin" },
   { label: "Adesões", icon: CreditCard, path: "/admin/subscriptions" },
+  { label: "Profissionais Pro", icon: Stethoscope, path: "/admin/pro-accounts" },
   { label: "Usuários", icon: Users, path: "/admin/users" },
   { label: "Permissões", icon: ShieldCheck, path: "/admin/roles" },
   { label: "Financeiro", icon: BarChart3, path: "/admin/finance" },
@@ -64,12 +65,12 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      navigate("/login", { replace: true });
+      navigate("/admin/login", { replace: true });
       return;
     }
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        navigate("/login", { replace: true });
+        navigate("/admin/login", { replace: true });
         return;
       }
       supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data, error }) => {
