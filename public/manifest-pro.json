@@ -1,0 +1,32 @@
+{
+  "id": "/pro/painel",
+  "name": "SalbCare Painel",
+  "short_name": "SalbCare",
+  "description": "Painel do profissional SalbCare: agenda, pacientes e financeiro.",
+  "start_url": "/pro/painel",
+  "scope": "/pro/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F3EE",
+  "theme_color": "#F7F3EE",
+  "icons": [
+    {
+      "src": "/pro-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pro-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pro-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
