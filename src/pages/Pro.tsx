@@ -30,8 +30,8 @@ import {
 } from "@/components/pro/brand";
 
 const PAINS = [
-  { text: "Agenda espalhada entre papel, caderno e WhatsApp.", Icon: CalendarX2 },
-  { text: "Faltas e remarcações que você descobre tarde demais.", Icon: Globe },
+  { text: "Agenda espalhada entre papel, caderno e WhatsApp.", Icon: NotebookPen },
+  { text: "Faltas e remarcações que você descobre tarde demais.", Icon: CalendarX2 },
   { text: "Financeiro do consultório sem controle no fim do mês.", Icon: Wallet },
 ];
 
