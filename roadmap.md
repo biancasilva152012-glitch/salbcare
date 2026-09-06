@@ -10,10 +10,10 @@
 - [ ] Cadastrar um profissional real e conferir agenda, pacientes e lançamentos no painel
 
 ## Novo pedido (06/09) - ajustes de layout da landing
-- [ ] Hero: mockup da Agenda em miniatura no lado direito, frame com sombra suave
-- [ ] Seção de dor: três cards lado a lado com ícone de contorno e fundo destacado
-- [ ] Quatro ferramentas: ícone teal acima de cada título e mais respiro entre os pares
-- [ ] "É simples assim por dentro": frame único de app com barra de topo e breadcrumb,
+- [x] Hero: mockup da Agenda em miniatura no lado direito, frame com sombra suave
+- [x] Seção de dor: três cards lado a lado com ícone de contorno e fundo destacado
+- [x] Quatro ferramentas: ícone teal acima de cada título e mais respiro entre os pares
+- [x] "É simples assim por dentro": frame único de app com barra de topo e breadcrumb,
       inputs em creme com borda fina, ícones no menu lateral, resumo financeiro como
       card secundário à direita e o valor destacado em Gloock dourado
 - [ ] Confirmar com a Bianca se a paleta volta para navy/creme/teal/dourado
