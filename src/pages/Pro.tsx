@@ -230,11 +230,14 @@ const Pro = () => {
         <h2 className="pro-h2" style={{ maxWidth: 620 }}>
           Você estudou para cuidar de pessoas. Não para administrar planilhas.
         </h2>
-        <div style={{ marginTop: 28 }}>
-          {PAINS.map((p) => (
-            <p key={p} className="pro-block pro-body" style={{ margin: 0 }}>
-              {p}
-            </p>
+        <div className="pro-pain-grid" style={{ marginTop: 28 }}>
+          {PAINS.map(({ text, Icon }) => (
+            <div key={text} className="pro-pain-card">
+              <Icon size={22} strokeWidth={1.5} color={TEAL} aria-hidden />
+              <p className="pro-body" style={{ margin: "14px 0 0" }}>
+                {text}
+              </p>
+            </div>
           ))}
         </div>
       </section>
@@ -247,10 +250,11 @@ const Pro = () => {
         <h2 className="pro-h2" style={{ marginTop: 14 }}>
           Quatro ferramentas, um único lugar.
         </h2>
-        <div className="pro-grid2" style={{ marginTop: 28 }}>
-          {FEATURES.map(({ title, line }) => (
+        <div className="pro-grid2" style={{ marginTop: 28, rowGap: 44 }}>
+          {FEATURES.map(({ title, line, Icon }) => (
             <div key={title} className="pro-block">
-              <div style={{ fontFamily: MONO, fontSize: 13, letterSpacing: "0.04em" }}>{title}</div>
+              <Icon size={20} strokeWidth={1.5} color={TEAL} aria-hidden />
+              <div style={{ fontFamily: MONO, fontSize: 13, letterSpacing: "0.04em", marginTop: 12 }}>{title}</div>
               <p className="pro-body" style={{ margin: "8px 0 0" }}>
                 {line}
               </p>
@@ -261,31 +265,20 @@ const Pro = () => {
 
       <hr className="pro-rule" />
 
-      {/* PRODUTO EM TELAS REAIS */}
+      {/* PRODUTO */}
       <section id="produto" className="pro-wrap pro-section" style={{ scrollMarginTop: 24 }}>
         <ProLabel>O produto</ProLabel>
         <h2 className="pro-h2" style={{ marginTop: 14 }}>
           É simples assim por dentro.
         </h2>
-        <div style={{ marginTop: 28, display: "grid", gap: 32 }}>
-          {SHOTS.map((shot) => (
-            <figure key={shot.caption} style={{ margin: 0 }}>
-              <img
-                className="pro-shot"
-                src={shot.src}
-                alt={shot.caption}
-                width={1280}
-                height={620}
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption className="pro-mono" style={{ marginTop: 10 }}>
-                {shot.caption}
-              </figcaption>
-            </figure>
-          ))}
+        <div style={{ marginTop: 28 }}>
+          <ProPanelMock />
+          <p className="pro-mono" style={{ marginTop: 12 }}>
+            Agenda do dia, cadastro do atendimento e o resultado do mês na mesma tela.
+          </p>
         </div>
       </section>
+
 
       <hr className="pro-rule" />
 
