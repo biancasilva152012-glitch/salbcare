@@ -5,9 +5,9 @@ import { toast } from "sonner";
 import {
   CalendarDays,
   CalendarX2,
-  Globe,
   LineChart,
   Link2,
+  NotebookPen,
   Users,
   Wallet,
 } from "lucide-react";
