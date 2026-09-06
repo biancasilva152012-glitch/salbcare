@@ -2,11 +2,19 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  CalendarDays,
+  CalendarX2,
+  Globe,
+  LineChart,
+  Link2,
+  Users,
+  Wallet,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
-import shotAgenda from "@/assets/pro/painel-agenda.jpg";
-import shotFinanceiro from "@/assets/pro/painel-financeiro.jpg";
+import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import {
   CREAM,
   GOLD,
@@ -22,22 +30,50 @@ import {
 } from "@/components/pro/brand";
 
 const PAINS = [
-  "Agenda espalhada entre papel, caderno e WhatsApp.",
-  "Faltas e remarcações que você descobre tarde demais.",
-  "Financeiro do consultório sem controle no fim do mês.",
+  { text: "Agenda espalhada entre papel, caderno e WhatsApp.", Icon: CalendarX2 },
+  { text: "Faltas e remarcações que você descobre tarde demais.", Icon: Globe },
+  { text: "Financeiro do consultório sem controle no fim do mês.", Icon: Wallet },
 ];
 
 const FEATURES = [
-  { title: "Agenda", line: "Todos os atendimentos do dia em uma única tela, sem papel." },
-  { title: "Pacientes", line: "Histórico, contato e observações de cada paciente organizados." },
-  { title: "Financeiro", line: "Entradas e saídas do consultório com o resultado do mês pronto." },
-  { title: "Página de agendamento", line: "Um link próprio para você divulgar e receber solicitações." },
+  {
+    title: "Agenda",
+    line: "Todos os atendimentos do dia em uma única tela, sem papel.",
+    Icon: CalendarDays,
+  },
+  {
+    title: "Pacientes",
+    line: "Histórico, contato e observações de cada paciente organizados.",
+    Icon: Users,
+  },
+  {
+    title: "Financeiro",
+    line: "Entradas e saídas do consultório com o resultado do mês pronto.",
+    Icon: LineChart,
+  },
+  {
+    title: "Página de agendamento",
+    line: "Um link próprio para você divulgar e receber solicitações.",
+    Icon: Link2,
+  },
 ];
 
-const SHOTS = [
-  { src: shotAgenda, caption: "Agenda do consultório, com os próximos atendimentos." },
-  { src: shotFinanceiro, caption: "Financeiro do mês, com receitas, despesas e resultado." },
-];
+const LANDING_STYLES = `
+  .pro-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+  .pro-hero-mock { min-width: 0; }
+  .pro-pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pro-pain-card {
+    background: rgba(94,71,54,0.05);
+    border: 1px solid rgba(31,31,31,0.12);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  @media (max-width: 900px) {
+    .pro-hero { grid-template-columns: 1fr; gap: 32px; }
+    .pro-pain-grid { grid-template-columns: 1fr; }
+  }
+`;
+
 
 const FAQ = [
   {
