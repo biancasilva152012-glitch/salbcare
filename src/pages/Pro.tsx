@@ -164,7 +164,7 @@ const Pro = () => {
           content="Agenda, pacientes, financeiro e sua própria página de agendamento em um só lugar. Teste o SalbCare Pro por 14 dias, sem cartão de crédito."
         />        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </Helmet>
-      <style>{proStyles}</style>
+      <style>{proStyles + panelMockStyles + LANDING_STYLES}</style>
 
       {/* NAVEGAÇÃO */}
       <header style={{ borderBottom: "1px solid rgba(31,31,31,0.12)" }}>
