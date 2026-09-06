@@ -2,11 +2,19 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  CalendarDays,
+  CalendarX2,
+  LineChart,
+  Link2,
+  NotebookPen,
+  Users,
+  Wallet,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
-import shotAgenda from "@/assets/pro/painel-agenda.jpg";
-import shotFinanceiro from "@/assets/pro/painel-financeiro.jpg";
+import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import {
   CREAM,
   GOLD,
@@ -22,22 +30,50 @@ import {
 } from "@/components/pro/brand";
 
 const PAINS = [
-  "Agenda espalhada entre papel, caderno e WhatsApp.",
-  "Faltas e remarcações que você descobre tarde demais.",
-  "Financeiro do consultório sem controle no fim do mês.",
+  { text: "Agenda espalhada entre papel, caderno e WhatsApp.", Icon: NotebookPen },
+  { text: "Faltas e remarcações que você descobre tarde demais.", Icon: CalendarX2 },
+  { text: "Financeiro do consultório sem controle no fim do mês.", Icon: Wallet },
 ];
 
 const FEATURES = [
-  { title: "Agenda", line: "Todos os atendimentos do dia em uma única tela, sem papel." },
-  { title: "Pacientes", line: "Histórico, contato e observações de cada paciente organizados." },
-  { title: "Financeiro", line: "Entradas e saídas do consultório com o resultado do mês pronto." },
-  { title: "Página de agendamento", line: "Um link próprio para você divulgar e receber solicitações." },
+  {
+    title: "Agenda",
+    line: "Todos os atendimentos do dia em uma única tela, sem papel.",
+    Icon: CalendarDays,
+  },
+  {
+    title: "Pacientes",
+    line: "Histórico, contato e observações de cada paciente organizados.",
+    Icon: Users,
+  },
+  {
+    title: "Financeiro",
+    line: "Entradas e saídas do consultório com o resultado do mês pronto.",
+    Icon: LineChart,
+  },
+  {
+    title: "Página de agendamento",
+    line: "Um link próprio para você divulgar e receber solicitações.",
+    Icon: Link2,
+  },
 ];
 
-const SHOTS = [
-  { src: shotAgenda, caption: "Agenda do consultório, com os próximos atendimentos." },
-  { src: shotFinanceiro, caption: "Financeiro do mês, com receitas, despesas e resultado." },
-];
+const LANDING_STYLES = `
+  .pro-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+  .pro-hero-mock { min-width: 0; }
+  .pro-pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pro-pain-card {
+    background: rgba(94,71,54,0.05);
+    border: 1px solid rgba(31,31,31,0.12);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  @media (max-width: 900px) {
+    .pro-hero { grid-template-columns: 1fr; gap: 32px; }
+    .pro-pain-grid { grid-template-columns: 1fr; }
+  }
+`;
+
 
 const FAQ = [
   {
@@ -128,7 +164,7 @@ const Pro = () => {
           content="Agenda, pacientes, financeiro e sua própria página de agendamento em um só lugar. Teste o SalbCare Pro por 14 dias, sem cartão de crédito."
         />        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </Helmet>
-      <style>{proStyles}</style>
+      <style>{proStyles + panelMockStyles + LANDING_STYLES}</style>
 
       {/* NAVEGAÇÃO */}
       <header style={{ borderBottom: "1px solid rgba(31,31,31,0.12)" }}>
@@ -198,24 +234,30 @@ const Pro = () => {
       </header>
 
       {/* HERO */}
-      <section className="pro-wrap pro-section">
-        <ProLabel>Care, without borders.</ProLabel>
-        <h1 className="pro-h1" style={{ maxWidth: 700 }}>
-          Seu consultório organizado, do agendamento ao financeiro.
-        </h1>
-        <p className="pro-lead" style={{ marginTop: 20, maxWidth: 520 }}>
-          Agenda, pacientes, financeiro e sua própria página de agendamento. Feito para dentistas e fisioterapeutas
-          autônomos.
-        </p>
-        <div style={{ marginTop: 32 }}>
-          <button className="pro-cta" onClick={startTrial}>
-            {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
-          </button>
+      <section className="pro-wrap pro-section pro-hero">
+        <div>
+          <ProLabel>Care, without borders.</ProLabel>
+          <h1 className="pro-h1" style={{ maxWidth: 700 }}>
+            Seu consultório organizado, do agendamento ao financeiro.
+          </h1>
+          <p className="pro-lead" style={{ marginTop: 20, maxWidth: 520 }}>
+            Agenda, pacientes, financeiro e sua própria página de agendamento. Feito para dentistas e fisioterapeutas
+            autônomos.
+          </p>
+          <div style={{ marginTop: 32 }}>
+            <button className="pro-cta" onClick={startTrial}>
+              {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
+            </button>
+          </div>
+          <p className="pro-mono" style={{ marginTop: 14 }}>
+            Sem cartão de crédito. Configuração em cerca de 10 minutos. Sem comissão por consulta.
+          </p>
         </div>
-        <p className="pro-mono" style={{ marginTop: 14 }}>
-          Sem cartão de crédito. Configuração em cerca de 10 minutos. Sem comissão por consulta.
-        </p>
+        <div className="pro-hero-mock">
+          <ProAgendaMini />
+        </div>
       </section>
+
 
       <hr className="pro-rule" />
 
@@ -224,11 +266,14 @@ const Pro = () => {
         <h2 className="pro-h2" style={{ maxWidth: 620 }}>
           Você estudou para cuidar de pessoas. Não para administrar planilhas.
         </h2>
-        <div style={{ marginTop: 28 }}>
-          {PAINS.map((p) => (
-            <p key={p} className="pro-block pro-body" style={{ margin: 0 }}>
-              {p}
-            </p>
+        <div className="pro-pain-grid" style={{ marginTop: 28 }}>
+          {PAINS.map(({ text, Icon }) => (
+            <div key={text} className="pro-pain-card">
+              <Icon size={22} strokeWidth={1.5} color={TEAL} aria-hidden />
+              <p className="pro-body" style={{ margin: "14px 0 0" }}>
+                {text}
+              </p>
+            </div>
           ))}
         </div>
       </section>
@@ -241,10 +286,11 @@ const Pro = () => {
         <h2 className="pro-h2" style={{ marginTop: 14 }}>
           Quatro ferramentas, um único lugar.
         </h2>
-        <div className="pro-grid2" style={{ marginTop: 28 }}>
-          {FEATURES.map(({ title, line }) => (
+        <div className="pro-grid2" style={{ marginTop: 28, rowGap: 44 }}>
+          {FEATURES.map(({ title, line, Icon }) => (
             <div key={title} className="pro-block">
-              <div style={{ fontFamily: MONO, fontSize: 13, letterSpacing: "0.04em" }}>{title}</div>
+              <Icon size={20} strokeWidth={1.5} color={TEAL} aria-hidden />
+              <div style={{ fontFamily: MONO, fontSize: 13, letterSpacing: "0.04em", marginTop: 12 }}>{title}</div>
               <p className="pro-body" style={{ margin: "8px 0 0" }}>
                 {line}
               </p>
@@ -255,31 +301,20 @@ const Pro = () => {
 
       <hr className="pro-rule" />
 
-      {/* PRODUTO EM TELAS REAIS */}
+      {/* PRODUTO */}
       <section id="produto" className="pro-wrap pro-section" style={{ scrollMarginTop: 24 }}>
         <ProLabel>O produto</ProLabel>
         <h2 className="pro-h2" style={{ marginTop: 14 }}>
           É simples assim por dentro.
         </h2>
-        <div style={{ marginTop: 28, display: "grid", gap: 32 }}>
-          {SHOTS.map((shot) => (
-            <figure key={shot.caption} style={{ margin: 0 }}>
-              <img
-                className="pro-shot"
-                src={shot.src}
-                alt={shot.caption}
-                width={1280}
-                height={620}
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption className="pro-mono" style={{ marginTop: 10 }}>
-                {shot.caption}
-              </figcaption>
-            </figure>
-          ))}
+        <div style={{ marginTop: 28 }}>
+          <ProPanelMock />
+          <p className="pro-mono" style={{ marginTop: 12 }}>
+            Agenda do dia, cadastro do atendimento e o resultado do mês na mesma tela.
+          </p>
         </div>
       </section>
+
 
       <hr className="pro-rule" />
 
