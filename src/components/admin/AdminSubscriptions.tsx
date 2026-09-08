@@ -35,8 +35,10 @@ function fmtDate(ts: string | number | null): string {
 
 const AdminSubscriptions = () => {
   const { data: users = [], isLoading } = useAdminUsers();
+  const { data: finance, isLoading: financeLoading } = useAdminMRR();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "paying" | "trial" | "canceled" | "none">("all");
+
 
   const subs = useMemo(() => {
     return users
