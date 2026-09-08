@@ -223,7 +223,7 @@ const QuickCard = () => {
                 Assinantes do PRO têm tudo incluso
               </Link>
               {!isLoggedIn && !accessLoading && (
-                <Link to="/login?redirect=/quick-card" className="pro-link">
+                <Link to="/login?next=/quick-card" className="pro-link">
                   Já comprou ou assina? Entrar para liberar
                 </Link>
               )}
