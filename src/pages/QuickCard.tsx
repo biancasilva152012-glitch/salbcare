@@ -88,9 +88,43 @@ const QuickCard = () => {
     [],
   );
 
-  const { access, isLoggedIn, loading: accessLoading } = useAcademyAccess();
+  const { access, isLoggedIn, loading: accessLoading, refresh } = useAcademyAccess();
   const activeCategory = QUICK_CARD.find((c) => c.id === tab);
   const locked = !!activeCategory && !activeCategory.free && !access;
+
+  const buy = async () => {
+    setBuying(true);
+    try {
+      const { data } = await supabase.functions.invoke("academy-checkout", {
+        body: { slug: APOSTILA_SLUG },
+      });
+      if (data?.url) window.location.href = data.url as string;
+    } catch {
+      /* sem checkout */
+    }
+    setBuying(false);
+  };
+
+  const redeem = async () => {
+    setRedeeming(true);
+    setTokenError(null);
+    try {
+      const { data } = await supabase.functions.invoke("academy-unlock", {
+        body: { token: token.trim() },
+      });
+      if (data?.access) {
+        saveAcademyToken({ token: data.token, slug: data.slug, expiresAt: data.expires_at });
+        await refresh();
+        setShowToken(false);
+      } else {
+        setTokenError("Não encontramos esse link. Confira o e-mail da compra.");
+      }
+    } catch {
+      setTokenError("Não encontramos esse link. Confira o e-mail da compra.");
+    }
+    setRedeeming(false);
+  };
+
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
