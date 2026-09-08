@@ -98,14 +98,18 @@ serve(async (req) => {
         .from("academy_purchases")
         .update({ downloads: purchase.downloads + 1 })
         .eq("id", purchase.id);
+      const downloads = await signedList(purchase.slug);
       return json({
         access: true,
         slug: purchase.slug,
         token: purchase.token,
-        download_url: await signed(purchase.slug),
+        langs: LANGS[purchase.slug] ?? ["pt"],
+        downloads,
+        download_url: downloads[0]?.url ?? null,
         expires_at: purchase.expires_at,
       });
     }
+
 
     if (!sessionId) return json({ access: false, reason: "missing" }, 400);
 
