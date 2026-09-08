@@ -93,6 +93,26 @@ export const ACADEMY_PRODUCTS: AcademyProduct[] = [
     ],
     audience: "Quem atende turistas e pacientes internacionais e não quer escolher entre um idioma e outro.",
   },
+  {
+    slug: "pacote-completo",
+    title: "Pacote Completo",
+    format: "bundle",
+    formatLabel: "Apostilas 2 a 6, conforme publicadas",
+    status: "soon",
+    statusLabel: "Em breve",
+    summary:
+      "Todas as próximas apostilas da Academy em um só acesso, liberadas conforme cada material é publicado.",
+    description: [
+      "Reúne as apostilas 2 a 6 da SalbCare Academy, com acesso liberado a cada novo material publicado.",
+      "O preço aparece aqui assim que o pacote entra no ar.",
+    ],
+    contents: [
+      "Acesso às apostilas 2 a 6, conforme publicadas",
+      "Quick Card completo nos idiomas cobertos",
+      "Atualizações incluídas, sem cobrança extra",
+    ],
+    audience: "Quem quer acompanhar toda a trilha da Academy sem comprar material por material.",
+  },
 ];
 
 export const getAcademyProduct = (slug?: string) => ACADEMY_PRODUCTS.find((p) => p.slug === slug);
