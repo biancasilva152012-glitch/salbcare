@@ -13,9 +13,11 @@ const NAV: NavItem[] = [
   { label: "Início", to: "/" },
   { label: "PRO", to: "/pro" },
   { label: "Academy", to: "/academy" },
+  { label: "Quick Card", to: "/quick-card" },
   { label: "Recursos", to: "/journal" },
   { label: "Preços", to: "/pro#planos" },
 ];
+
 
 export function SiteHeader() {
   const { isActive } = useProSubscription();
@@ -101,6 +103,10 @@ export function SiteFooter() {
           <Link to="/academy" className="pro-link">
             Academy
           </Link>
+          <Link to="/quick-card" className="pro-link">
+            Quick Card
+          </Link>
+
           <Link to="/terms" className="pro-link">
             Termos de uso
           </Link>
@@ -122,8 +128,9 @@ export function SiteFooter() {
           O valor de cada atendimento é definido pelo próprio profissional e a SalbCare não cobra comissão por consulta.
         </p>
         <p className="pro-mono" style={{ marginTop: 12 }}>
-          © {new Date().getFullYear()} SalbCare. Care, without borders.
+          © {new Date().getFullYear()} SalbCare.
         </p>
+
       </div>
     </footer>
   );

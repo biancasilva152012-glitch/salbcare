@@ -12,6 +12,8 @@ import {
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
+import { ACADEMY_PRODUCTS } from "@/config/academy";
+
 
 const PRO_ITEMS = [
   { title: "Agenda", line: "Os atendimentos do dia em uma única tela.", Icon: CalendarDays },
@@ -22,23 +24,13 @@ const PRO_ITEMS = [
   { title: "Atendimento internacional", line: "Recursos em português, inglês e espanhol.", Icon: Globe2 },
 ];
 
-const ACADEMY_ITEMS = [
-  {
-    title: "Inglês para Atendimento em Saúde",
-    line: "Frases, roteiros e vocabulário prontos para receber paciente estrangeiro no consultório.",
-    status: "Primeiro material",
-  },
-  {
-    title: "Templates de consultório",
-    line: "Modelos de anamnese, orientações e mensagens para o dia a dia da clínica.",
-    status: "Em preparação",
-  },
-  {
-    title: "Checklists de gestão",
-    line: "Rotinas simples de agenda, cobrança e fechamento financeiro.",
-    status: "Em preparação",
-  },
-];
+const ACADEMY_ITEMS = ACADEMY_PRODUCTS.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  line: p.summary,
+  status: p.price ?? "",
+}));
+
 
 const HOME_STYLES = `
   .home-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
@@ -82,12 +74,12 @@ const Home = () => (
     <SiteHeader />
 
     {/* HERO */}
-    <section className="pro-wrap pro-section home-hero">
+    <section className="pro-wrap pro-section home-hero" style={{ paddingTop: 56 }}>
       <div>
-        <ProLabel>Care, without borders.</ProLabel>
-        <h1 className="pro-h1" style={{ maxWidth: 660 }}>
+        <h1 className="pro-h1" style={{ maxWidth: 660, marginTop: 0 }}>
           Sua carreira na saúde, no mapa do mundo.
         </h1>
+
         <p className="pro-lead" style={{ marginTop: 20, maxWidth: 540 }}>
           Gestão, conhecimento e ferramentas para profissionais de saúde que querem cuidar melhor, trabalhar melhor e
           estar preparados para atender pacientes de qualquer lugar do mundo.
@@ -145,14 +137,14 @@ const Home = () => (
     <section className="pro-wrap pro-section">
       <ProLabel>SalbCare Academy</ProLabel>
       <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 620 }}>
-        Aprenda o que sua faculdade não ensinou.
+        Comece por {ACADEMY_PRODUCTS[0].price}
       </h2>
       <p className="pro-body" style={{ marginTop: 16, maxWidth: 580 }}>
-        Materiais práticos para melhorar sua comunicação, gestão e atendimento.
+        Apostilas de Inglês e Espanhol para Atendimento em Saúde, sem precisar assinar nada.
       </p>
       <div className="home-grid3" style={{ marginTop: 28 }}>
-        {ACADEMY_ITEMS.map(({ title, line, status }) => (
-          <article key={title} className="pro-card">
+        {ACADEMY_ITEMS.map(({ slug, title, line, status }) => (
+          <Link key={slug} to={`/academy/${slug}`} className="pro-card" style={{ textDecoration: "none", color: "inherit" }}>
             <BookOpen size={20} strokeWidth={1.5} color={TEAL} aria-hidden />
             <p className="pro-mono" style={{ margin: "12px 0 0" }}>
               {status}
@@ -163,15 +155,34 @@ const Home = () => (
             <p className="pro-body" style={{ margin: "8px 0 0" }}>
               {line}
             </p>
-          </article>
+          </Link>
         ))}
       </div>
       <div style={{ marginTop: 32 }}>
-        <Link to="/academy/ingles-para-atendimento-em-saude" className="pro-cta" style={{ textDecoration: "none" }}>
-          Ver material
+        <Link to="/academy" className="pro-cta" style={{ textDecoration: "none" }}>
+          Ver na Academy
         </Link>
       </div>
     </section>
+
+    <hr className="pro-rule" />
+
+    {/* QUICK CARD */}
+    <section className="pro-wrap pro-section">
+      <ProLabel>Quick Card</ProLabel>
+      <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 620 }}>
+        Treine igual um app de idiomas, feito para o consultório.
+      </h2>
+      <p className="pro-body" style={{ marginTop: 16, maxWidth: 580 }}>
+        Frases de emergência grátis, direto no navegador. Sem cadastro.
+      </p>
+      <div style={{ marginTop: 28 }}>
+        <Link to="/quick-card" className="pro-cta" style={{ textDecoration: "none" }}>
+          Começar agora
+        </Link>
+      </div>
+    </section>
+
 
     <hr className="pro-rule" />
 
@@ -199,7 +210,8 @@ const Home = () => (
     <section className="pro-wrap pro-section" style={{ textAlign: "center" }}>
       <h2 className="pro-h2">Comece pelo que você precisa hoje.</h2>
       <p className="pro-body" style={{ margin: "18px auto 0", maxWidth: 470 }}>
-        Teste o sistema completo por 14 dias, sem cartão de crédito, ou comece pelos materiais da Academy.
+        Teste o sistema completo por 7 dias, sem cartão de crédito, ou comece pelos materiais da Academy.
+
       </p>
       <div className="home-ctas" style={{ marginTop: 28, justifyContent: "center" }}>
         <Link to="/pro" className="pro-cta" style={{ textDecoration: "none" }}>
