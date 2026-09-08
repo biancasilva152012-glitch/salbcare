@@ -102,6 +102,7 @@ const AdminLogin = lazyWithRetry(() => import("./pages/AdminLogin"), "AdminLogin
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const Academy = lazyWithRetry(() => import("./pages/Academy"), "Academy");
 const AcademyProduct = lazyWithRetry(() => import("./pages/AcademyProduct"), "AcademyProduct");
+const AcademyObrigado = lazyWithRetry(() => import("./pages/AcademyObrigado"), "AcademyObrigado");
 const QuickCard = lazyWithRetry(() => import("./pages/QuickCard"), "QuickCard");
 const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
 const Offline = lazyWithRetry(() => import("./pages/Offline"), "Offline");
@@ -183,6 +184,7 @@ const App = () => (
               <Route path="/hub" element={<Navigate to="/" replace />} />
               <Route path="/pro" element={<Pro />} />
               <Route path="/academy" element={<Academy />} />
+              <Route path="/academy/obrigado" element={<AcademyObrigado />} />
               <Route path="/academy/:slug" element={<AcademyProduct />} />
               <Route path="/quick-card" element={<QuickCard />} />
               <Route path="/instalar" element={<Install />} />

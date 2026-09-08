@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import { Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 import { academyWhatsAppLink, getAcademyProduct } from "@/config/academy";
@@ -38,8 +41,36 @@ const AcademyProduct = () => {
     );
   }
 
-  const buyLink = academyWhatsAppLink(product.title);
   const available = product.status === "available";
+  const buyLink = academyWhatsAppLink(product.title);
+  const [loading, setLoading] = useState(false);
+
+  const startCheckout = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("academy-checkout", {
+        body: { slug: product.slug },
+      });
+      if (error || !data?.url) throw new Error(data?.error || "checkout");
+      window.location.href = data.url as string;
+    } catch {
+      toast.error("Não foi possível abrir o pagamento. Tente novamente.");
+      setLoading(false);
+    }
+  };
+
+  const buyLabel = loading ? "Abrindo pagamento" : `Comprar por ${product.price ?? ""}`.trim();
+
+  const BuyButton = ({ mono = false }: { mono?: boolean }) =>
+    available ? (
+      <button type="button" className="pro-cta" onClick={startCheckout} disabled={loading} style={mono ? { fontFamily: MONO } : undefined}>
+        {buyLabel}
+      </button>
+    ) : (
+      <a href={buyLink} target="_blank" rel="noreferrer" className="pro-cta" style={{ textDecoration: "none", ...(mono ? { fontFamily: MONO } : {}) }}>
+        Avise-me no lançamento
+      </a>
+    );
 
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
@@ -69,10 +100,13 @@ const AcademyProduct = () => {
           {product.price ? ` · ${product.price}` : ""}
         </p>
         <div style={{ marginTop: 28 }}>
-          <a href={buyLink} target="_blank" rel="noreferrer" className="pro-cta" style={{ textDecoration: "none" }}>
-            {available ? "Quero este material" : "Avise-me no lançamento"}
-          </a>
+          <BuyButton />
         </div>
+        {available && (
+          <p className="pro-note" style={{ marginTop: 12 }}>
+            Pagamento seguro pelo Stripe. Cartão, Apple Pay e Google Pay. Envio do PDF por e-mail.
+          </p>
+        )}
       </section>
 
       <hr className="pro-rule" />
@@ -130,15 +164,7 @@ const AcademyProduct = () => {
       <SiteFooter />
 
       <div className="academy-sticky">
-        <a
-          href={buyLink}
-          target="_blank"
-          rel="noreferrer"
-          className="pro-cta"
-          style={{ textDecoration: "none", fontFamily: MONO }}
-        >
-          {available ? "Quero este material" : "Avise-me no lançamento"}
-        </a>
+        <BuyButton mono />
       </div>
     </div>
   );
