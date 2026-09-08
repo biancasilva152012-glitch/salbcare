@@ -240,17 +240,17 @@ const Pro = () => {
           <h1 className="pro-h1" style={{ maxWidth: 700 }}>
             Seu consultório organizado, do agendamento ao financeiro.
           </h1>
-          <p className="pro-lead" style={{ marginTop: 20, maxWidth: 520 }}>
-            Agenda, pacientes, financeiro e sua própria página de agendamento. Feito para dentistas e fisioterapeutas
-            autônomos.
+          <p className="pro-lead" style={{ marginTop: 20, maxWidth: 540 }}>
+            Agenda, pacientes, financeiro e sua própria página de agendamento. E quando chegar um paciente que só fala
+            inglês, você está pronto.
           </p>
           <div style={{ marginTop: 32 }}>
             <button className="pro-cta" onClick={startTrial}>
               {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
             </button>
           </div>
-          <p className="pro-mono" style={{ marginTop: 14 }}>
-            Sem cartão de crédito. Configuração em cerca de 10 minutos. Sem comissão por consulta.
+          <p className="pro-note" style={{ marginTop: 14 }}>
+            Sem cartão de crédito. Configuração em cerca de 10 minutos.
           </p>
         </div>
         <div className="pro-hero-mock">
