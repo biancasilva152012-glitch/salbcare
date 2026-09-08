@@ -356,28 +356,13 @@ const Pro = () => {
       <section className="pro-wrap pro-section">
         <ProLabel>SalbCare Academy</ProLabel>
         <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 620 }}>
-          Comece por {ACADEMY_PRODUCTS[0].price}
+          Comece pelos materiais da Academy.
         </h2>
         <p className="pro-body" style={{ marginTop: 16, maxWidth: 580 }}>
           Apostilas de Inglês e Espanhol para Atendimento em Saúde, sem precisar assinar nada.
         </p>
-        <div className="pro-pain-grid" style={{ marginTop: 28 }}>
-          {ACADEMY_PRODUCTS.map((p) => (
-            <Link
-              key={p.slug}
-              to={`/academy/${p.slug}`}
-              className="pro-pain-card"
-              style={{ textDecoration: "none", color: "inherit", display: "block" }}
-            >
-              <span className="pro-mono">{p.price}</span>
-              <p className="pro-body" style={{ margin: "10px 0 0", fontWeight: 500 }}>
-                {p.title}
-              </p>
-              <p className="pro-body" style={{ margin: "6px 0 0" }}>
-                {p.summary}
-              </p>
-            </Link>
-          ))}
+        <div style={{ marginTop: 28 }}>
+          <AcademyCardGrid className="pro-pain-grid" />
         </div>
         <div style={{ marginTop: 28 }}>
           <Link to="/academy" className="pro-cta" style={{ textDecoration: "none" }}>
