@@ -187,6 +187,7 @@ const App = () => (
               <Route path="/pro" element={<Pro />} />
               <Route path="/academy" element={<Academy />} />
               <Route path="/academy/obrigado" element={<AcademyObrigado />} />
+              <Route path="/academy/jogo" element={<AcademyGame />} />
               <Route path="/academy/:slug" element={<AcademyProduct />} />
               <Route path="/quick-card" element={<QuickCard />} />
               <Route path="/instalar" element={<Install />} />
