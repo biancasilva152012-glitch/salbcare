@@ -377,7 +377,11 @@ const ProDashboard = () => {
 
       <section className="pro-wrap pro-wrap--wide" style={{ paddingTop: 36, paddingBottom: 24 }}>
         <ProWordmark size={30} />
+        <p className="pro-breadcrumb" style={{ marginTop: 12 }}>
+          {form.name ? `${form.name} · Painel` : "Consultório SalbCare · Painel"} &gt; {TABS.find((t) => t.key === tab)?.label}
+        </p>
         <h1 className="pro-h1" style={{ fontSize: 32 }}>Painel</h1>
+
       </section>
 
       <div className="pro-wrap pro-wrap--wide pro-dashpad" style={{ paddingBottom: 72 }}>
