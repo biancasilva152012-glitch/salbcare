@@ -48,7 +48,18 @@ export const ALLOWED_ORIGINS = [
 export function originAllowed(req: Request, extra: string[] = []): boolean {
   const origin = req.headers.get("origin");
   if (!origin) return true;
-  return [...ALLOWED_ORIGINS, ...extra].includes(origin);
+  if ([...ALLOWED_ORIGINS, ...extra].includes(origin)) return true;
+  try {
+    const u = new URL(origin);
+    // Lovable preview/sandbox surfaces and local development.
+    if (u.hostname === "localhost" || u.hostname === "127.0.0.1") return true;
+    if (u.hostname.endsWith(".lovable.app")) return true;
+    if (u.hostname.endsWith(".lovableproject.com")) return true;
+    if (u.hostname.endsWith(".sandbox.lovable.dev")) return true;
+  } catch {
+    return false;
+  }
+  return false;
 }
 
 /** Generic 403 response for origin rejections — does not leak the allowlist. */
