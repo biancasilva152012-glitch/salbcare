@@ -9,6 +9,7 @@ import { Lock, Volume2 } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { CREAM, DISPLAY, GOLD, MONO, NAVY, ProLabel, SANS, TEAL_DEEP, proStyles } from "@/components/pro/brand";
 import PatientAvatar from "@/components/academy/PatientAvatar";
+import CertificateIssuer from "@/components/academy/CertificateIssuer";
 import {
   CONFIDENCE_NEAR,
   CONFIDENCE_START,
