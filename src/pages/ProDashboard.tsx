@@ -5,8 +5,11 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
-import { CREAM, GOLD, MONO, NAVY, ProLabel, ProWordmark, SANS, TEAL, proStyles } from "@/components/pro/brand";
+import { CREAM, MONO, NAVY, ProLabel, ProWordmark, SANS, TEAL, proStyles } from "@/components/pro/brand";
+import ProSubscriptionPanel from "@/components/pro/ProSubscriptionPanel";
+import ProOfflineMaterials from "@/components/pro/ProOfflineMaterials";
 import { ProProfileFields, ProProfileForm, emptyProfile, normalizeLanguages } from "./ProOnboarding";
+
 
 type TabKey = "perfil" | "agenda" | "pacientes" | "financeiro" | "materiais" | "assinatura";
 
