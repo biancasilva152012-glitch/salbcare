@@ -213,23 +213,40 @@ const QuickCard = () => {
             </h2>
             <p className="pro-body" style={{ margin: "10px auto 0", maxWidth: 420 }}>
               A categoria Emergência é gratuita. As outras categorias fazem parte da apostila completa, com cerca de 80
-              frases, categorias e favoritos.
+              frases, categorias e favoritos. A compra é feita sem criar conta.
             </p>
             <div style={{ marginTop: 20, display: "grid", gap: 12, justifyItems: "center" }}>
-              <Link to="/academy" className="pro-cta">
-                Ver na Academy
-              </Link>
+              <button type="button" className="pro-cta" onClick={() => void buy()} disabled={buying}>
+                {buying ? "Abrindo o pagamento" : "Comprar a apostila"}
+              </button>
               <Link to="/pro" className="pro-link">
                 Assinantes do PRO têm tudo incluso
               </Link>
-              {!isLoggedIn && !accessLoading && (
-                <Link to="/login?next=/quick-card" className="pro-link">
-                  Já comprou ou assina? Entrar para liberar
-                </Link>
+              <button type="button" className="pro-link" onClick={() => setShowToken((v) => !v)}>
+                Já comprou? Ver com meu link de acesso
+              </button>
+              {showToken && (
+                <div style={{ width: "100%", maxWidth: 420, display: "grid", gap: 8, textAlign: "left" }}>
+                  <label htmlFor="qc-token" className="pro-mono">
+                    COLE O LINK OU O CÓDIGO DO E-MAIL
+                  </label>
+                  <input
+                    id="qc-token"
+                    className="pro-input"
+                    value={token}
+                    onChange={(e) => setToken(e.target.value)}
+                    placeholder="https://salbcare.com/academy/obrigado?token=..."
+                  />
+                  <button type="button" className="pro-cta" onClick={() => void redeem()} disabled={redeeming}>
+                    {redeeming ? "Verificando" : "Liberar as categorias"}
+                  </button>
+                  {tokenError && <p className="pro-body" style={{ margin: 0 }}>{tokenError}</p>}
+                </div>
               )}
             </div>
           </div>
         )}
+
       </main>
 
       <InstallPrompt />
