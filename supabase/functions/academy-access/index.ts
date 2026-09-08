@@ -13,8 +13,14 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const APOSTILA_PRICE = "price_1UDSqwBUEEEAHx2hlH8vQon7";
+// Preco -> idiomas liberados no Quick Card.
+const PRICE_LANGS: Record<string, string[]> = {
+  price_1UDSqwBUEEEAHx2hlH8vQon7: ["pt", "en"],
+  price_1UDVX0BUEEEAHx2htRTwbhZF: ["pt", "es"],
+  price_1UDVZrBUEEEAHx2hNV5nV2Ar: ["pt", "en", "es"],
+};
 const ACTIVE = ["active", "trialing", "past_due"];
+
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
