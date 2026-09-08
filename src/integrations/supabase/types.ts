@@ -2767,6 +2767,7 @@ export type Database = {
       }
       increment_qr_scan: { Args: { _slug: string }; Returns: undefined }
       is_admin_or_contador: { Args: { _user_id: string }; Returns: boolean }
+      is_privileged_writer: { Args: never; Returns: boolean }
       log_pii_view: {
         Args: {
           _patient_id?: string
