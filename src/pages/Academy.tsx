@@ -46,8 +46,11 @@ const Academy = () => {
         Conhecimento e ferramentas para profissionais de saúde que querem atender melhor, inclusive pacientes
         internacionais.
       </p>
-      <div style={{ marginTop: 30 }}>
-        <Link to={`/academy/${products[0].slug}`} className="pro-cta" style={{ textDecoration: "none" }}>
+      <div style={{ marginTop: 30, display: "grid", gap: 10, maxWidth: 320 }}>
+        <Link to="/academy/jogo" className="pro-cta" style={{ textDecoration: "none" }}>
+          Praticar atendimento grátis
+        </Link>
+        <Link to={`/academy/${products[0].slug}`} className="pro-cta pro-cta-ghost" style={{ textDecoration: "none" }}>
           Ver material
         </Link>
       </div>

@@ -140,8 +140,11 @@ const Home = () => (
       <div style={{ marginTop: 28 }}>
         <AcademyCardGrid className="home-grid3" />
       </div>
-      <div style={{ marginTop: 32 }}>
-        <Link to="/academy" className="pro-cta" style={{ textDecoration: "none" }}>
+      <div className="home-ctas" style={{ marginTop: 32 }}>
+        <Link to="/academy/jogo" className="pro-cta" style={{ textDecoration: "none" }}>
+          Praticar atendimento grátis
+        </Link>
+        <Link to="/academy" className="home-cta-secondary">
           Ver na Academy
         </Link>
       </div>
