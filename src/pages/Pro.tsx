@@ -104,28 +104,35 @@ const NAV = [
   { label: "Planos", href: "#planos" },
 ];
 
-const MONTHLY_VALUE = 99;
-const ANNUAL_VALUE = 897;
-const brl = (n: number) =>
-  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
-const annualSaving = MONTHLY_VALUE * 12 - ANNUAL_VALUE;
-const annualMonthly = ANNUAL_VALUE / 12;
-const annualPercent = Math.round((annualSaving / (MONTHLY_VALUE * 12)) * 100);
+type GtagWindow = Window & { gtag?: (...args: unknown[]) => void };
+
+const track = (event: string, params: Record<string, unknown>) => {
+  const g = (window as GtagWindow).gtag;
+  if (typeof g === "function") g("event", event, params);
+};
 
 const Pro = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isActive } = useProSubscription();
-  const [plan, setPlan] = useState<ProPlanKey>("annual");
+  const [plan, setPlan] = useState<ProPlanKey>("completo");
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const muted = "rgba(31,31,31,0.56)";
-  const soft = "rgba(31,31,31,0.74)";
+  const soft = "#243447";
 
   const startTrial = () => {
     navigate(isActive ? "/pro/painel" : "/register");
+  };
+
+  const selectPlan = (key: ProPlanKey) => {
+    setPlan(key);
+    track("select_item", {
+      item_list_name: "planos_salbcare",
+      items: [{ item_id: PRO_PLANS[key].id, item_name: PRO_PLANS[key].label, price: PRO_PLANS[key].amount }],
+      currency: "BRL",
+    });
   };
 
   const handleSubscribe = async () => {
@@ -133,6 +140,12 @@ const Pro = () => {
       navigate("/pro/painel");
       return;
     }
+    const selected = PRO_PLANS[plan];
+    track("begin_checkout", {
+      currency: "BRL",
+      value: selected.amount,
+      items: [{ item_id: selected.id, item_name: selected.label, price: selected.amount }],
+    });
     if (!user) {
       navigate("/login", { state: { from: { pathname: "/pro" } } });
       return;
@@ -140,7 +153,7 @@ const Pro = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("pro-checkout", {
-        body: { priceId: PRO_PRICES[plan].id },
+        body: { priceId: selected.id },
       });
       if (error || !data?.url) throw error ?? new Error("sem url");
       window.location.href = data.url;
@@ -151,9 +164,9 @@ const Pro = () => {
   };
 
   const planSummary =
-    plan === "annual"
-      ? `Plano anual selecionado. ${brl(ANNUAL_VALUE)} por ano, equivalente a ${brl(annualMonthly)} por mês.`
-      : `Plano mensal selecionado. ${brl(MONTHLY_VALUE)} por mês, cobrado todo mês.`;
+    plan === "anual"
+      ? `Plano ${PRO_PLANS.anual.label} selecionado. ${brl(PRO_PLANS.anual.amount)} por ano, equivalente a ${brl(annualEquivalentMonthly)} por mês. Economize ${brl(annualSaving)} por ano em relação a doze meses do plano Completo.`
+      : `Plano ${PRO_PLANS[plan].label} selecionado. ${brl(PRO_PLANS[plan].amount)} por mês, cobrado todo mês.`;
 
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
