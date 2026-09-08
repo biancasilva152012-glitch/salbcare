@@ -51,7 +51,7 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .maybeSingle();
     if (sub && ACTIVE.includes(String(sub.status))) {
-      return json({ access: true, source: "pro" });
+      return json({ access: true, source: "pro", langs: ["pt", "en", "es"] });
     }
 
     // 2) Compra avulsa
@@ -59,23 +59,29 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    if (customers.data.length === 0) return json({ access: false, source: null });
+    if (customers.data.length === 0) return json({ access: false, source: null, langs: [] });
 
     const sessions = await stripe.checkout.sessions.list({
       customer: customers.data[0].id,
       limit: 20,
     });
+    const langs = new Set<string>();
     for (const s of sessions.data) {
       if (s.payment_status !== "paid") continue;
       const items = await stripe.checkout.sessions.listLineItems(s.id, { limit: 10 });
-      if (items.data.some((li) => li.price?.id === APOSTILA_PRICE)) {
-        return json({ access: true, source: "apostila" });
+      for (const li of items.data) {
+        const found = li.price?.id ? PRICE_LANGS[li.price.id] : undefined;
+        found?.forEach((l) => langs.add(l));
       }
     }
+    if (langs.size > 0) {
+      return json({ access: true, source: "apostila", langs: [...langs] });
+    }
 
-    return json({ access: false, source: null });
+    return json({ access: false, source: null, langs: [] });
   } catch (error) {
     console.error("[ACADEMY-ACCESS]", error instanceof Error ? error.message : error);
-    return json({ access: false, source: null });
+    return json({ access: false, source: null, langs: [] });
   }
 });
+
