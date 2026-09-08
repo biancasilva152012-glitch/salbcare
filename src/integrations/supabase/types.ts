@@ -71,6 +71,45 @@ export type Database = {
         }
         Relationships: []
       }
+      academy_purchases: {
+        Row: {
+          created_at: string
+          downloads: number
+          email: string | null
+          expires_at: string
+          id: string
+          max_downloads: number
+          slug: string
+          stripe_session_id: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          downloads?: number
+          email?: string | null
+          expires_at?: string
+          id?: string
+          max_downloads?: number
+          slug: string
+          stripe_session_id: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          downloads?: number
+          email?: string | null
+          expires_at?: string
+          id?: string
+          max_downloads?: number
+          slug?: string
+          stripe_session_id?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       accounting_partners: {
         Row: {
           company_name: string
