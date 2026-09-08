@@ -13,14 +13,15 @@ import { ProProfileFields, ProProfileForm, emptyProfile, normalizeLanguages } fr
 
 type TabKey = "perfil" | "agenda" | "pacientes" | "financeiro" | "materiais" | "assinatura";
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "perfil", label: "Perfil" },
-  { key: "agenda", label: "Agenda" },
-  { key: "pacientes", label: "Pacientes" },
-  { key: "financeiro", label: "Financeiro" },
-  { key: "materiais", label: "Materiais" },
-  { key: "assinatura", label: "Assinatura" },
+const TABS: { key: TabKey; label: string; Icon: LucideIcon }[] = [
+  { key: "perfil", label: "Perfil", Icon: UserRound },
+  { key: "agenda", label: "Agenda", Icon: CalendarDays },
+  { key: "pacientes", label: "Pacientes", Icon: Users },
+  { key: "financeiro", label: "Financeiro", Icon: LineChart },
+  { key: "materiais", label: "Materiais", Icon: FolderOpen },
+  { key: "assinatura", label: "Assinatura", Icon: CreditCard },
 ];
+
 
 type Appointment = {
   id: string;
@@ -57,15 +58,17 @@ const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", curren
 
 const dashStyles = `
   .pro-dash { display: grid; gap: 28px; grid-template-columns: 220px 1fr; align-items: start; }
-  .pro-sidenav { display: grid; gap: 4px; position: sticky; top: 24px; }
+  .pro-sidenav { display: grid; gap: 2px; position: sticky; top: 24px; background: transparent; }
   .pro-bottomnav { display: none; }
-  .pro-navbtn { text-align: left; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: ${MONO}; cursor: pointer; background: transparent; color: rgba(31,31,31,0.72); border: 1px solid transparent; }
-  .pro-navbtn:hover { color: ${CREAM}; background: rgba(31,31,31,0.05); }
-  .pro-navbtn[aria-current="page"] { background: #FFFFFF; border-color: rgba(31,31,31,0.28); color: ${CREAM}; font-weight: 500; }
+  .pro-navbtn { display: flex; align-items: center; gap: 9px; text-align: left; border-radius: 12px; padding: 10px 12px; font-size: 12.5px; font-family: ${MONO}; text-transform: lowercase; cursor: pointer; background: transparent; color: rgba(10,22,40,0.62); border: none; }
+  .pro-navbtn:hover { color: ${CREAM}; }
+  .pro-navbtn[aria-current="page"] { background: #FFFFFF; color: ${CREAM}; }
   .pro-navbtn:focus-visible { outline: 2px solid ${GOLD}; outline-offset: 2px; }
+  .pro-breadcrumb { font-family: ${MONO}; font-size: 11.5px; letter-spacing: 0.08em; color: rgba(10,22,40,0.55); }
   .pro-row { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(31,31,31,0.12); padding-top: 10px; font-size: 13px; color: ${CREAM}; }
   .pro-ghostbtn { background: none; border: none; color: ${GOLD}; text-decoration: underline; cursor: pointer; font-size: 12px; font-family: ${MONO}; }
   .pro-ghostbtn:hover { color: ${CREAM}; }
+
   @media (max-width: 860px) {
     .pro-dash { grid-template-columns: 1fr; }
     .pro-sidenav { display: none; }
