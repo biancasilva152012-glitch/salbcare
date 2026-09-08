@@ -350,6 +350,62 @@ const Pro = () => {
 
       <hr className="pro-rule" />
 
+      {/* ACADEMY */}
+      <section className="pro-wrap pro-section">
+        <ProLabel>SalbCare Academy</ProLabel>
+        <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 620 }}>
+          Comece por {ACADEMY_PRODUCTS[0].price}
+        </h2>
+        <p className="pro-body" style={{ marginTop: 16, maxWidth: 580 }}>
+          Apostilas de Inglês e Espanhol para Atendimento em Saúde, sem precisar assinar nada.
+        </p>
+        <div className="pro-pain-grid" style={{ marginTop: 28 }}>
+          {ACADEMY_PRODUCTS.map((p) => (
+            <Link
+              key={p.slug}
+              to={`/academy/${p.slug}`}
+              className="pro-pain-card"
+              style={{ textDecoration: "none", color: "inherit", display: "block" }}
+            >
+              <span className="pro-mono">{p.price}</span>
+              <p className="pro-body" style={{ margin: "10px 0 0", fontWeight: 500 }}>
+                {p.title}
+              </p>
+              <p className="pro-body" style={{ margin: "6px 0 0" }}>
+                {p.summary}
+              </p>
+            </Link>
+          ))}
+        </div>
+        <div style={{ marginTop: 28 }}>
+          <Link to="/academy" className="pro-cta" style={{ textDecoration: "none" }}>
+            Ver na Academy
+          </Link>
+        </div>
+      </section>
+
+      <hr className="pro-rule" />
+
+      {/* QUICK CARD */}
+      <section className="pro-wrap pro-section">
+        <ProLabel>Quick Card</ProLabel>
+        <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 640 }}>
+          Treine igual um app de idiomas, feito para o consultório.
+        </h2>
+        <p className="pro-body" style={{ marginTop: 16, maxWidth: 560 }}>
+          Frases de emergência grátis, direto no navegador. Sem cadastro.
+        </p>
+        <div style={{ marginTop: 28 }}>
+          <Link to="/quick-card" className="pro-cta" style={{ textDecoration: "none" }}>
+            Começar agora
+          </Link>
+        </div>
+      </section>
+
+      <hr className="pro-rule" />
+
+
+
       {/* PLANOS */}
       <section id="planos" className="pro-wrap pro-section" style={{ scrollMarginTop: 24 }}>
         <ProLabel>Planos</ProLabel>
