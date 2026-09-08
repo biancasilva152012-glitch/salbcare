@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
 import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
-import { ACADEMY_PRODUCTS } from "@/config/academy";
+import { AcademyCardGrid } from "@/components/academy/AcademyCards";
 
 import {
   CREAM,
