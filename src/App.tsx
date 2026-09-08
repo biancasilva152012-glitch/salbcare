@@ -105,6 +105,7 @@ const Academy = lazyWithRetry(() => import("./pages/Academy"), "Academy");
 const AcademyProduct = lazyWithRetry(() => import("./pages/AcademyProduct"), "AcademyProduct");
 const AcademyObrigado = lazyWithRetry(() => import("./pages/AcademyObrigado"), "AcademyObrigado");
 const AcademyGame = lazyWithRetry(() => import("./pages/AcademyGame"), "AcademyGame");
+const AcademyCertificate = lazyWithRetry(() => import("./pages/AcademyCertificate"), "AcademyCertificate");
 const QuickCard = lazyWithRetry(() => import("./pages/QuickCard"), "QuickCard");
 const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
 const Offline = lazyWithRetry(() => import("./pages/Offline"), "Offline");
