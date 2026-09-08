@@ -99,6 +99,16 @@ const AdminProAccounts = () => {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const funnel = {
+    total: professionals.length,
+    trialing: professionals.filter((p) => p.status === "trialing").length,
+    active: professionals.filter((p) => p.status === "active").length,
+    past_due: professionals.filter((p) => p.status === "past_due").length,
+    canceled: professionals.filter((p) => p.status === "canceled").length,
+    monthly: professionals.filter((p) => p.plan === "monthly" && p.status !== "canceled").length,
+    annual: professionals.filter((p) => p.plan === "annual" && p.status !== "canceled").length,
+  };
+
   return (
     <div className="space-y-8">
       <header>
@@ -108,6 +118,27 @@ const AdminProAccounts = () => {
           e-mail e senha.
         </p>
       </header>
+
+      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <h2 className="mb-4 text-sm font-semibold text-white">Funil de assinaturas</h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {[
+            { k: "Contas", v: funnel.total },
+            { k: "Em teste", v: funnel.trialing },
+            { k: "Ativas", v: funnel.active },
+            { k: "Pagamento atrasado", v: funnel.past_due },
+            { k: "Canceladas", v: funnel.canceled },
+            { k: "Plano mensal", v: funnel.monthly },
+            { k: "Plano anual", v: funnel.annual },
+          ].map((c) => (
+            <div key={c.k} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div className="text-2xl font-semibold text-white">{c.v}</div>
+              <div className="mt-1 text-[11px] uppercase tracking-wider text-white/40">{c.k}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
         <h2 className="mb-4 text-sm font-semibold text-white">Novo profissional</h2>
