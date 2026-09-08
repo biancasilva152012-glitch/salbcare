@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
 import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import { AcademyCardGrid } from "@/components/academy/AcademyCards";
+import ProSandbox from "@/components/pro/ProSandbox";
 
 import {
   CREAM,
