@@ -14,9 +14,25 @@ const corsHeaders = {
 };
 
 const BUCKET = "academy-materials";
-const FILES: Record<string, string> = {
-  "ingles-para-atendimento-em-saude": "ingles-para-atendimento-em-saude.pdf",
+// Cada produto pode liberar um ou mais PDFs (o pacote libera os dois).
+const FILES: Record<string, { file: string; title: string }[]> = {
+  "ingles-para-atendimento-em-saude": [
+    { file: "ingles-para-atendimento-em-saude.pdf", title: "Inglês para Atendimento em Saúde" },
+  ],
+  "espanhol-para-atendimento-em-saude": [
+    { file: "espanhol-para-atendimento-em-saude.pdf", title: "Espanhol para Atendimento em Saúde" },
+  ],
+  "international-healthcare-kit": [
+    { file: "ingles-para-atendimento-em-saude.pdf", title: "Inglês para Atendimento em Saúde" },
+    { file: "espanhol-para-atendimento-em-saude.pdf", title: "Espanhol para Atendimento em Saúde" },
+  ],
 };
+const LANGS: Record<string, string[]> = {
+  "ingles-para-atendimento-em-saude": ["pt", "en"],
+  "espanhol-para-atendimento-em-saude": ["pt", "es"],
+  "international-healthcare-kit": ["pt", "en", "es"],
+};
+
 
 const newToken = () => {
   const bytes = new Uint8Array(24);
