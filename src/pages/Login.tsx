@@ -156,7 +156,7 @@ const Login = () => {
             whileHover={{ scale: 1.05, rotate: 3 }}
             whileTap={{ scale: 0.95 }}
           >
-            <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt="SALBCARE" className="h-full w-full object-contain" />
+            <img loading="eager" decoding="async" src="/salbcare-shield.png" alt="SalbCare" className="h-full w-full object-contain" />
           </motion.div>
 
           <motion.h1
