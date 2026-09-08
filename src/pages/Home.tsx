@@ -142,21 +142,8 @@ const Home = () => (
       <p className="pro-body" style={{ marginTop: 16, maxWidth: 580 }}>
         Apostilas de Inglês e Espanhol para Atendimento em Saúde, sem precisar assinar nada.
       </p>
-      <div className="home-grid3" style={{ marginTop: 28 }}>
-        {ACADEMY_ITEMS.map(({ slug, title, line, status }) => (
-          <Link key={slug} to={`/academy/${slug}`} className="pro-card" style={{ textDecoration: "none", color: "inherit" }}>
-            <BookOpen size={20} strokeWidth={1.5} color={TEAL} aria-hidden />
-            <p className="pro-mono" style={{ margin: "12px 0 0" }}>
-              {status}
-            </p>
-            <h3 style={{ fontFamily: MONO, fontSize: 13, letterSpacing: "0.04em", margin: "10px 0 0", fontWeight: 500 }}>
-              {title}
-            </h3>
-            <p className="pro-body" style={{ margin: "8px 0 0" }}>
-              {line}
-            </p>
-          </Link>
-        ))}
+      <div style={{ marginTop: 28 }}>
+        <AcademyCardGrid className="home-grid3" />
       </div>
       <div style={{ marginTop: 32 }}>
         <Link to="/academy" className="pro-cta" style={{ textDecoration: "none" }}>
