@@ -24,12 +24,6 @@ const PRO_ITEMS = [
   { title: "Atendimento internacional", line: "Recursos em português, inglês e espanhol.", Icon: Globe2 },
 ];
 
-const ACADEMY_ITEMS = ACADEMY_PRODUCTS.map((p) => ({
-  slug: p.slug,
-  title: p.title,
-  line: p.summary,
-  status: p.price ?? "",
-}));
 
 
 const HOME_STYLES = `
