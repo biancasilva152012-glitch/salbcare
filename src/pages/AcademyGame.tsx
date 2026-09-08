@@ -409,6 +409,8 @@ const AcademyGame = () => {
             <p className="pro-mono" style={{ marginTop: 12 }}>TEMPO TOTAL {fmtTime(elapsed)}</p>
           </div>
 
+          <CertificateIssuer language={activeCase.language} score={confidence} />
+
           <div className="pro-card" style={{ marginTop: 18 }}>
             <div className="pro-mono" style={{ color: TEAL_DEEP }}>
               ACERTOS DE PRIMEIRA
