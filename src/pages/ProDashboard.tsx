@@ -1,7 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
+import {
+  CalendarDays,
+  CreditCard,
+  FolderOpen,
+  LineChart,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { toast } from "sonner";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
