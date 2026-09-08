@@ -110,8 +110,7 @@ const AdminAcademyCatalog = () => {
       return;
     }
     setSavingId(row.id || row.slug);
-    const payload = { ...row } as Record<string, unknown>;
-    delete payload.id;
+    const { id: _ignored, ...payload } = row;
     const { error } = row.id
       ? await supabase.from("academy_products").update(payload).eq("id", row.id)
       : await supabase.from("academy_products").insert(payload);
@@ -130,8 +129,7 @@ const AdminAcademyCatalog = () => {
       return;
     }
     setSavingId(row.id || row.plan_key);
-    const payload = { ...row } as Record<string, unknown>;
-    delete payload.id;
+    const { id: _ignored, ...payload } = row;
     const { error } = row.id
       ? await supabase.from("pro_plans").update(payload).eq("id", row.id)
       : await supabase.from("pro_plans").insert(payload);
