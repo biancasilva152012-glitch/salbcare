@@ -87,12 +87,15 @@ serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const slug = typeof body?.slug === "string" ? body.slug : "";
-    const price = ACADEMY_PRICES[slug];
-    if (!price) return json({ error: "Material indisponivel para compra." }, 400);
+    if (!MATCHERS[slug]) return json({ error: "Material indisponivel para compra." }, 400);
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
+
+    const price = (await resolvePrice(stripe, slug)) ?? ACADEMY_PRICES[slug];
+    if (!price) return json({ error: "Material indisponivel para compra." }, 400);
+
 
     // Login opcional: se houver sessao, reaproveita o cliente Stripe do e-mail.
     let email: string | undefined;
