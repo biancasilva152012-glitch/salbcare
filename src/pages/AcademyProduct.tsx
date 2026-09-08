@@ -8,6 +8,7 @@ import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 import { academyWhatsAppLink } from "@/config/academy";
 import { useAcademyProduct } from "@/hooks/useAcademyCatalog";
+import { useAcademyPrices } from "@/hooks/useAcademyPrices";
 
 const PRODUCT_STYLES = `
   .academy-sticky {
@@ -23,6 +24,7 @@ const PRODUCT_STYLES = `
 const AcademyProduct = () => {
   const { slug } = useParams();
   const { product } = useAcademyProduct(slug);
+  const { prices } = useAcademyPrices();
 
   if (!product) {
     return (
@@ -62,7 +64,7 @@ const AcademyProduct = () => {
     }
   };
 
-  const buyLabel = loading ? "Abrindo pagamento" : `Comprar por ${product.price ?? ""}`.trim();
+  const buyLabel = loading ? "Abrindo pagamento" : `Comprar por ${price ?? ""}`.trim();
 
   const BuyButton = ({ mono = false }: { mono?: boolean }) =>
     available ? (
@@ -100,7 +102,7 @@ const AcademyProduct = () => {
         </p>
         <p className="pro-mono" style={{ marginTop: 16 }}>
           {product.statusLabel} · {product.formatLabel}
-          {product.price ? ` · ${product.price}` : ""}
+          {price ? ` · ${price}` : " · Consulte o preço"}
         </p>
         <div style={{ marginTop: 28 }}>
           <BuyButton />
