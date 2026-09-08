@@ -17,10 +17,12 @@ import { useProSubscription } from "@/hooks/useProSubscription";
 import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import {
   CREAM,
-  GOLD,
   MONO,
   NAVY,
-  PRO_PRICES,
+  PRO_PLANS,
+  annualEquivalentMonthly,
+  annualSaving,
+  brl,
   ProLabel,
   ProPlanKey,
   ProWordmark,
@@ -82,7 +84,7 @@ const FAQ = [
   },
   {
     q: "Quanto custa e existe alguma taxa por consulta?",
-    a: "São R$ 99 por mês ou R$ 897 por ano, sem taxa de adesão. A SalbCare não cobra comissão por consulta: o valor do atendimento é definido por você e recebido diretamente por você.",
+    a: "O plano Essencial custa R$ 49 por mês, o Completo R$ 89 por mês e o Anual Fundador R$ 797 por ano, sem taxa de adesão. A SalbCare não cobra comissão por consulta: o valor do atendimento é definido por você e recebido diretamente por você.",
   },
   {
     q: "Quanto tempo leva para começar a usar de verdade?",
@@ -104,28 +106,35 @@ const NAV = [
   { label: "Planos", href: "#planos" },
 ];
 
-const MONTHLY_VALUE = 99;
-const ANNUAL_VALUE = 897;
-const brl = (n: number) =>
-  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
-const annualSaving = MONTHLY_VALUE * 12 - ANNUAL_VALUE;
-const annualMonthly = ANNUAL_VALUE / 12;
-const annualPercent = Math.round((annualSaving / (MONTHLY_VALUE * 12)) * 100);
+type GtagWindow = Window & { gtag?: (...args: unknown[]) => void };
+
+const track = (event: string, params: Record<string, unknown>) => {
+  const g = (window as GtagWindow).gtag;
+  if (typeof g === "function") g("event", event, params);
+};
 
 const Pro = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isActive } = useProSubscription();
-  const [plan, setPlan] = useState<ProPlanKey>("annual");
+  const [plan, setPlan] = useState<ProPlanKey>("completo");
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const muted = "rgba(31,31,31,0.56)";
-  const soft = "rgba(31,31,31,0.74)";
+  const soft = "#243447";
 
   const startTrial = () => {
     navigate(isActive ? "/pro/painel" : "/register");
+  };
+
+  const selectPlan = (key: ProPlanKey) => {
+    setPlan(key);
+    track("select_item", {
+      item_list_name: "planos_salbcare",
+      items: [{ item_id: PRO_PLANS[key].id, item_name: PRO_PLANS[key].label, price: PRO_PLANS[key].amount }],
+      currency: "BRL",
+    });
   };
 
   const handleSubscribe = async () => {
@@ -133,6 +142,12 @@ const Pro = () => {
       navigate("/pro/painel");
       return;
     }
+    const selected = PRO_PLANS[plan];
+    track("begin_checkout", {
+      currency: "BRL",
+      value: selected.amount,
+      items: [{ item_id: selected.id, item_name: selected.label, price: selected.amount }],
+    });
     if (!user) {
       navigate("/login", { state: { from: { pathname: "/pro" } } });
       return;
@@ -140,7 +155,7 @@ const Pro = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("pro-checkout", {
-        body: { priceId: PRO_PRICES[plan].id },
+        body: { priceId: selected.id },
       });
       if (error || !data?.url) throw error ?? new Error("sem url");
       window.location.href = data.url;
@@ -151,9 +166,9 @@ const Pro = () => {
   };
 
   const planSummary =
-    plan === "annual"
-      ? `Plano anual selecionado. ${brl(ANNUAL_VALUE)} por ano, equivalente a ${brl(annualMonthly)} por mês.`
-      : `Plano mensal selecionado. ${brl(MONTHLY_VALUE)} por mês, cobrado todo mês.`;
+    plan === "anual"
+      ? `Plano ${PRO_PLANS.anual.label} selecionado. ${brl(PRO_PLANS.anual.amount)} por ano, equivalente a ${brl(annualEquivalentMonthly)} por mês. Economize ${brl(annualSaving)} por ano em relação a doze meses do plano Completo.`
+      : `Plano ${PRO_PLANS[plan].label} selecionado. ${brl(PRO_PLANS[plan].amount)} por mês, cobrado todo mês.`;
 
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
@@ -240,17 +255,17 @@ const Pro = () => {
           <h1 className="pro-h1" style={{ maxWidth: 700 }}>
             Seu consultório organizado, do agendamento ao financeiro.
           </h1>
-          <p className="pro-lead" style={{ marginTop: 20, maxWidth: 520 }}>
-            Agenda, pacientes, financeiro e sua própria página de agendamento. Feito para dentistas e fisioterapeutas
-            autônomos.
+          <p className="pro-lead" style={{ marginTop: 20, maxWidth: 540 }}>
+            Agenda, pacientes, financeiro e sua própria página de agendamento. E quando chegar um paciente que só fala
+            inglês, você está pronto.
           </p>
           <div style={{ marginTop: 32 }}>
             <button className="pro-cta" onClick={startTrial}>
               {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
             </button>
           </div>
-          <p className="pro-mono" style={{ marginTop: 14 }}>
-            Sem cartão de crédito. Configuração em cerca de 10 minutos. Sem comissão por consulta.
+          <p className="pro-note" style={{ marginTop: 14 }}>
+            Sem cartão de crédito. Configuração em cerca de 10 minutos.
           </p>
         </div>
         <div className="pro-hero-mock">
@@ -340,51 +355,80 @@ const Pro = () => {
       <section id="planos" className="pro-wrap pro-section" style={{ scrollMarginTop: 24 }}>
         <ProLabel>Planos</ProLabel>
         <h2 className="pro-h2" style={{ marginTop: 14 }}>
-          Um plano só, com tudo incluído.
+          Escolha o seu plano.
         </h2>
-        <p className="pro-body" style={{ marginTop: 14, maxWidth: 520 }}>
-          Escolha o período de cobrança antes de continuar. Agenda, pacientes, financeiro, página de agendamento e
-          módulo internacional estão nos dois.
+        <p className="pro-body" style={{ marginTop: 14, maxWidth: 560 }}>
+          Toque no plano para selecionar. Você confirma o pagamento na tela seguinte.
         </p>
 
-        <div className="pro-grid2" style={{ marginTop: 28, columnGap: 20, rowGap: 16 }}>
-          {(Object.keys(PRO_PRICES) as ProPlanKey[]).map((key) => {
-            const p = PRO_PRICES[key];
+        <div className="pro-plans" role="radiogroup" aria-label="Planos SalbCare" style={{ marginTop: 28 }}>
+          {(Object.keys(PRO_PLANS) as ProPlanKey[]).map((key) => {
+            const p = PRO_PLANS[key];
             const selected = plan === key;
             return (
-              <button key={key} type="button" onClick={() => setPlan(key)} aria-pressed={selected} className="pro-plan">
-                <span className="pro-mono" style={{ color: selected ? GOLD : muted }}>
-                  {selected ? "Selecionado" : "Selecionar"}
-                </span>
-                <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 13 }}>{p.label}</div>
-                <div style={{ marginTop: 10, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 34 }}>
-                  {p.amount}
-                  <span style={{ fontFamily: MONO, fontSize: 13, color: muted }}>{p.period}</span>
+              <div
+                key={key}
+                role="radio"
+                tabIndex={0}
+                aria-checked={selected}
+                className="pro-plan"
+                onClick={() => selectPlan(key)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    selectPlan(key);
+                  }
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                  <span className="pro-radio" aria-hidden>
+                    {selected && <span className="pro-radio-dot" />}
+                  </span>
+                  {p.badge && <span className="pro-badge">{p.badge}</span>}
                 </div>
-                <p className="pro-body" style={{ margin: "12px 0 0" }}>
-                  {p.note}
+
+                <div className="pro-mono" style={{ marginTop: 16, fontSize: 12.5, letterSpacing: "0.1em" }}>
+                  {p.label.toUpperCase()}
+                </div>
+                <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", gap: 6 }}>
+                  <span className="pro-price">{brl(p.amount)}</span>
+                  <span className="pro-mono" style={{ fontSize: 12.5 }}>
+                    {p.interval === "year" ? "/ano" : "/mês"}
+                  </span>
+                </div>
+                {p.interval === "year" && (
+                  <div className="pro-mono" style={{ marginTop: 8, fontSize: 12.5 }}>
+                    Equivale a {brl(annualEquivalentMonthly)} por mês.
+                  </div>
+                )}
+                <p className="pro-body" style={{ margin: "12px 0 0", fontSize: 14.5 }}>
+                  {p.tagline}
                 </p>
-              </button>
+                <ul
+                  className="pro-body"
+                  style={{ margin: "12px 0 0", paddingLeft: 18, fontSize: 14.5, display: "grid", gap: 4 }}
+                >
+                  {p.includes.map((f) => (
+                    <li key={f}>{f}</li>
+                  ))}
+                </ul>
+              </div>
             );
           })}
         </div>
 
-        <p className="pro-mono" style={{ marginTop: 24, color: soft }}>
+        <p className="pro-mono" style={{ marginTop: 20, fontSize: 12.5 }}>
           {planSummary}
         </p>
-        <p className="pro-mono" style={{ marginTop: 8 }}>
-          No anual você economiza {brl(annualSaving)} por ano, cerca de {annualPercent} por cento em relação a doze
-          meses do plano mensal.
-        </p>
 
-        <div style={{ marginTop: 24 }}>
+        <div className="pro-sticky" style={{ marginTop: 20 }}>
           <button className="pro-cta" onClick={handleSubscribe} disabled={loading}>
             {loading ? "Abrindo pagamento" : isActive ? "Ir para o painel" : "Continuar para o pagamento"}
           </button>
+          <p className="pro-note" style={{ marginTop: 10 }}>
+            {PRO_PLANS[plan].safety} Pagamento seguro pelo Stripe.
+          </p>
         </div>
-        <p className="pro-mono" style={{ marginTop: 12 }}>
-          Pagamento seguro pelo Stripe. Cancelamento a qualquer momento no painel.
-        </p>
       </section>
 
       <hr className="pro-rule" />

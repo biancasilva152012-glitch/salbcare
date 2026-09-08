@@ -71,12 +71,12 @@ export default defineConfig(({ mode }) => ({
         name: "SALBCARE - Plataforma de Saúde",
         short_name: "SALBCARE",
         description: "Gestão completa para profissionais de saúde. Agenda, pacientes, financeiro e contador incluso.",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
+        theme_color: "#0A1628",
+        background_color: "#F7F3EA",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
-        start_url: "/",
+        start_url: "/?source=pwa",
         icons: [
           {
             src: "/pwa-icon-192.png",
@@ -89,10 +89,10 @@ export default defineConfig(({ mode }) => ({
             type: "image/png",
           },
           {
-            src: "/pwa-icon-512.png",
+            src: "/pwa-icon-maskable-512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "maskable",
           },
         ],
       },

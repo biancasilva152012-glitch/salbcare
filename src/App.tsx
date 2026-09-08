@@ -20,6 +20,7 @@ import GuestDataSyncRedirector from "@/components/GuestDataSyncRedirector";
 import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
+import InstallPrompt from "@/components/pro/InstallPrompt";
 import { useTracking } from "@/hooks/useTracking";
 import { useLocation, useParams } from "react-router-dom";
 
@@ -99,6 +100,11 @@ const AdminLocalPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminLo
 const AdminProAccountsPage = lazyWithRetry(() => import("./pages/admin/AdminProAccountsPage"), "AdminProAccountsPage");
 const AdminLogin = lazyWithRetry(() => import("./pages/AdminLogin"), "AdminLogin");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
+const Academy = lazyWithRetry(() => import("./pages/Academy"), "Academy");
+const AcademyProduct = lazyWithRetry(() => import("./pages/AcademyProduct"), "AcademyProduct");
+const QuickCard = lazyWithRetry(() => import("./pages/QuickCard"), "QuickCard");
+const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
+const Offline = lazyWithRetry(() => import("./pages/Offline"), "Offline");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
 const ProDashboard = lazyWithRetry(() => import("./pages/ProDashboard"), "ProDashboard");
@@ -167,6 +173,7 @@ const App = () => (
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
           <GlobalStatusBanner />
+          <InstallPrompt />
           {/* FreemiumDebugPanelGate removed — debug widget no longer rendered globally */}
           <Suspense fallback={<LazyFallback />}>
             <Routes>
@@ -175,6 +182,11 @@ const App = () => (
               {/* Brand hub + alias for current SaaS landing (Index) */}
               <Route path="/hub" element={<Navigate to="/" replace />} />
               <Route path="/pro" element={<Pro />} />
+              <Route path="/academy" element={<Academy />} />
+              <Route path="/academy/:slug" element={<AcademyProduct />} />
+              <Route path="/quick-card" element={<QuickCard />} />
+              <Route path="/instalar" element={<Install />} />
+              <Route path="/offline" element={<Offline />} />
               <Route path="/pro/obrigado" element={<ProObrigado />} />
               <Route path="/pro/onboarding" element={<ProRoute><ProOnboarding /></ProRoute>} />
               <Route path="/pro/bem-vindo" element={<ProRoute><ProOnboarding /></ProRoute>} />
