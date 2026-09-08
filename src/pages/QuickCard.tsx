@@ -12,6 +12,7 @@ import {
   proStyles,
 } from "@/components/pro/brand";
 import InstallPrompt from "@/components/pro/InstallPrompt";
+import { useAcademyAccess } from "@/hooks/useAcademyAccess";
 import { QUICK_CARD, QUICK_CARD_LANGS, type QuickCardLang } from "@/config/quickCard";
 
 const FAV_KEY = "salbcare_quickcard_favorites";
@@ -79,8 +80,9 @@ const QuickCard = () => {
     [],
   );
 
+  const { access, isLoggedIn, loading: accessLoading } = useAcademyAccess();
   const activeCategory = QUICK_CARD.find((c) => c.id === tab);
-  const locked = !!activeCategory && !activeCategory.free;
+  const locked = !!activeCategory && !activeCategory.free && !access;
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -89,7 +91,7 @@ const QuickCard = () => {
         ? allPhrases.filter((p) => favorites.includes(p.key))
         : allPhrases.filter((p) => p.category === tab);
     const searchable = q ? base.filter((p) => `${p.pt} ${p.en} ${p.es}`.toLowerCase().includes(q)) : base;
-    return searchable.filter((p) => p.free || tab === FAVORITES_TAB);
+    return searchable.filter((p) => p.free || access || tab === FAVORITES_TAB);
   }, [allPhrases, favorites, query, tab]);
 
   return (
@@ -147,7 +149,7 @@ const QuickCard = () => {
                 className="qc-tab"
                 onClick={() => setTab(cat.id)}
               >
-                {!cat.free && <Lock size={13} strokeWidth={1.8} aria-hidden />}
+                {!cat.free && !access && <Lock size={13} strokeWidth={1.8} aria-hidden />}
                 {cat.label}
               </button>
             ))}
@@ -220,6 +222,11 @@ const QuickCard = () => {
               <Link to="/pro" className="pro-link">
                 Assinantes do PRO têm tudo incluso
               </Link>
+              {!isLoggedIn && !accessLoading && (
+                <Link to="/login?redirect=/quick-card" className="pro-link">
+                  Já comprou ou assina? Entrar para liberar
+                </Link>
+              )}
             </div>
           </div>
         )}
