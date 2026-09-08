@@ -264,7 +264,7 @@ const MARKUP = `
 
   <footer>
     <div class="mark">salbcare</div>
-    <p data-i18n="foot">Care, without borders</p>
+    <p data-i18n="foot"></p>
     <a href="https://salbcare.com" target="_blank" rel="noopener">salbcare.com</a>
   </footer>
 </div>
@@ -430,7 +430,7 @@ const I18N: Record<string, Record<string, string>> = {
     p4b: "Em breve",
     p5e: "Comunidade global", p5t: "Entrar no WhatsApp",
     p5d: "Boletim do vento, downwinds e suporte de saúde para viajantes.",
-    foot: "Care, without borders",
+    foot: "SalbCare",
   },
   en: {
     tagline: "We connect those who care, to those who need it.",
@@ -447,7 +447,7 @@ const I18N: Record<string, Record<string, string>> = {
     p4b: "Coming soon",
     p5e: "Global community", p5t: "Join us on WhatsApp",
     p5d: "Wind bulletin, downwinds and health support for travelers.",
-    foot: "Care, without borders",
+    foot: "SalbCare",
   },
   es: {
     tagline: "Conectamos a quienes cuidan, con quienes lo necesitan.",
@@ -464,7 +464,7 @@ const I18N: Record<string, Record<string, string>> = {
     p4b: "Próximamente",
     p5e: "Comunidad global", p5t: "Entrar al WhatsApp",
     p5d: "Boletín del viento, downwinds y apoyo de salud para viajeros.",
-    foot: "Care, without borders",
+    foot: "SalbCare",
   },
 };
 
