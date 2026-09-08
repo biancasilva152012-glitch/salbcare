@@ -323,9 +323,16 @@ const ProDashboard = () => {
       onClick={() => setTab(t.key)}
       aria-current={tab === t.key ? "page" : undefined}
     >
-      {t.label}
+      <t.Icon
+        size={15}
+        strokeWidth={1.7}
+        aria-hidden
+        color={tab === t.key ? CREAM : "rgba(10,22,40,0.55)"}
+      />
+      {t.label.toLowerCase()}
     </button>
   ));
+
 
   const muted = "rgba(31,31,31,0.66)";
 
