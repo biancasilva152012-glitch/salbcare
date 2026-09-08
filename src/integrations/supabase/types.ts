@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_products: {
+        Row: {
+          audience: string
+          contents: string[]
+          created_at: string
+          description: string[]
+          format_label: string
+          id: string
+          price_cents: number | null
+          published: boolean
+          slug: string
+          sort_order: number
+          status: string
+          status_label: string
+          stripe_price_id: string | null
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          contents?: string[]
+          created_at?: string
+          description?: string[]
+          format_label?: string
+          id?: string
+          price_cents?: number | null
+          published?: boolean
+          slug: string
+          sort_order?: number
+          status?: string
+          status_label?: string
+          stripe_price_id?: string | null
+          summary?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          contents?: string[]
+          created_at?: string
+          description?: string[]
+          format_label?: string
+          id?: string
+          price_cents?: number | null
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          status?: string
+          status_label?: string
+          stripe_price_id?: string | null
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       accounting_partners: {
         Row: {
           company_name: string
@@ -1943,6 +2000,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pro_plans: {
+        Row: {
+          billing_interval: string
+          created_at: string
+          features: string[]
+          highlight: boolean
+          id: string
+          name: string
+          plan_key: string
+          price_cents: number
+          published: boolean
+          sort_order: number
+          stripe_price_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_interval?: string
+          created_at?: string
+          features?: string[]
+          highlight?: boolean
+          id?: string
+          name: string
+          plan_key: string
+          price_cents?: number
+          published?: boolean
+          sort_order?: number
+          stripe_price_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_interval?: string
+          created_at?: string
+          features?: string[]
+          highlight?: boolean
+          id?: string
+          name?: string
+          plan_key?: string
+          price_cents?: number
+          published?: boolean
+          sort_order?: number
+          stripe_price_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       pro_subscriptions: {
         Row: {
