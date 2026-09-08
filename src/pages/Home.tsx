@@ -13,6 +13,7 @@ import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 import { ACADEMY_PRODUCTS } from "@/config/academy";
+import { AcademyCardGrid } from "@/components/academy/AcademyCards";
 
 
 const PRO_ITEMS = [
