@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { BookOpen } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
-import { ACADEMY_PRODUCTS } from "@/config/academy";
+import { useAcademyCatalog } from "@/hooks/useAcademyCatalog";
 
 const ACADEMY_STYLES = `
   .academy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
@@ -13,7 +13,9 @@ const ACADEMY_STYLES = `
   @media (prefers-reduced-motion: reduce) { .academy-card { transition: none; } }
 `;
 
-const Academy = () => (
+const Academy = () => {
+  const { products } = useAcademyCatalog();
+  return (
   <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
     <Helmet>
       <title>SalbCare Academy | Materiais práticos para profissionais de saúde</title>
@@ -44,7 +46,7 @@ const Academy = () => (
         internacionais.
       </p>
       <div style={{ marginTop: 30 }}>
-        <Link to={`/academy/${ACADEMY_PRODUCTS[0].slug}`} className="pro-cta" style={{ textDecoration: "none" }}>
+        <Link to={`/academy/${products[0].slug}`} className="pro-cta" style={{ textDecoration: "none" }}>
           Ver material
         </Link>
       </div>
@@ -58,7 +60,7 @@ const Academy = () => (
         Materiais práticos, prontos para usar.
       </h2>
       <div className="academy-grid" style={{ marginTop: 28 }}>
-        {ACADEMY_PRODUCTS.map((p) => (
+        {products.map((p) => (
           <Link key={p.slug} to={`/academy/${p.slug}`} className="pro-card academy-card">
             <BookOpen size={20} strokeWidth={1.5} color={TEAL} aria-hidden />
             <p className="pro-mono" style={{ margin: "12px 0 0" }}>
