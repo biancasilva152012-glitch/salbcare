@@ -127,7 +127,11 @@ const Pro = () => {
   const soft = "#243447";
 
   const startTrial = () => {
-    navigate(isActive ? "/pro/painel" : "/register");
+    if (isActive) {
+      navigate("/pro/painel");
+      return;
+    }
+    navigate(user ? "/dashboard" : "/register?next=%2Fdashboard");
   };
 
   const selectPlan = (key: ProPlanKey) => {
