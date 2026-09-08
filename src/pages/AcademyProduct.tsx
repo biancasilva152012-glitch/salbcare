@@ -6,7 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
-import { academyWhatsAppLink, getAcademyProduct } from "@/config/academy";
+import { academyWhatsAppLink } from "@/config/academy";
+import { useAcademyProduct } from "@/hooks/useAcademyCatalog";
 
 const PRODUCT_STYLES = `
   .academy-sticky {
@@ -21,7 +22,7 @@ const PRODUCT_STYLES = `
 
 const AcademyProduct = () => {
   const { slug } = useParams();
-  const product = getAcademyProduct(slug);
+  const { product } = useAcademyProduct(slug);
 
   if (!product) {
     return (

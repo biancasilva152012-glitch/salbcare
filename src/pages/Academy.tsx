@@ -98,7 +98,8 @@ const Academy = () => {
     </section>
 
     <SiteFooter />
-  </div>
-);
+    </div>
+  );
+};
 
 export default Academy;
