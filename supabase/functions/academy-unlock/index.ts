@@ -55,12 +55,16 @@ serve(async (req) => {
     { auth: { persistSession: false } },
   );
 
-  const signed = async (slug: string) => {
-    const file = FILES[slug];
-    if (!file) return null;
-    const { data } = await admin.storage.from(BUCKET).createSignedUrl(file, 60 * 60 * 24 * 7);
-    return data?.signedUrl ?? null;
+  const signedList = async (slug: string) => {
+    const files = FILES[slug] ?? [];
+    const out: { title: string; url: string }[] = [];
+    for (const f of files) {
+      const { data } = await admin.storage.from(BUCKET).createSignedUrl(f.file, 60 * 60 * 24 * 7);
+      if (data?.signedUrl) out.push({ title: f.title, url: data.signedUrl });
+    }
+    return out;
   };
+
 
   try {
     const body = await req.json().catch(() => ({}));
