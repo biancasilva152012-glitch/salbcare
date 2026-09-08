@@ -12,6 +12,8 @@ import {
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
+import { ACADEMY_PRODUCTS } from "@/config/academy";
+
 
 const PRO_ITEMS = [
   { title: "Agenda", line: "Os atendimentos do dia em uma única tela.", Icon: CalendarDays },
@@ -22,23 +24,13 @@ const PRO_ITEMS = [
   { title: "Atendimento internacional", line: "Recursos em português, inglês e espanhol.", Icon: Globe2 },
 ];
 
-const ACADEMY_ITEMS = [
-  {
-    title: "Inglês para Atendimento em Saúde",
-    line: "Frases, roteiros e vocabulário prontos para receber paciente estrangeiro no consultório.",
-    status: "Primeiro material",
-  },
-  {
-    title: "Templates de consultório",
-    line: "Modelos de anamnese, orientações e mensagens para o dia a dia da clínica.",
-    status: "Em preparação",
-  },
-  {
-    title: "Checklists de gestão",
-    line: "Rotinas simples de agenda, cobrança e fechamento financeiro.",
-    status: "Em preparação",
-  },
-];
+const ACADEMY_ITEMS = ACADEMY_PRODUCTS.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  line: p.summary,
+  status: p.price ?? "",
+}));
+
 
 const HOME_STYLES = `
   .home-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
