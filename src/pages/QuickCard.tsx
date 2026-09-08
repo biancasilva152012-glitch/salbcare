@@ -34,12 +34,20 @@ const QUICK_CARD_STYLES = `
   .qc-locked { border: 1px solid rgba(10,22,40,0.12); border-radius: 14px; background: #FFFFFF; padding: 24px; text-align: center; }
 `;
 
+const APOSTILA_SLUG = "ingles-para-atendimento-em-saude";
+
 const QuickCard = () => {
   const [lang, setLang] = useState<QuickCardLang>("en");
   const [tab, setTab] = useState<string>(QUICK_CARD[0].id);
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
+  const [buying, setBuying] = useState(false);
+  const [showToken, setShowToken] = useState(false);
+  const [token, setToken] = useState("");
+  const [tokenError, setTokenError] = useState<string | null>(null);
+  const [redeeming, setRedeeming] = useState(false);
+
 
   useEffect(() => {
     try {
