@@ -80,6 +80,65 @@ const AdminSubscriptions = () => {
     );
   }, [subs, filter, search]);
 
+  const upcoming = useMemo(() => {
+    const now = Date.now();
+    return subs
+      .map((u) => {
+        const end = u.stripe?.subscription?.current_period_end;
+        if (!end) return null;
+        const ms = end * 1000;
+        return { user: u, end, days: Math.ceil((ms - now) / 86_400_000) };
+      })
+      .filter((r): r is { user: AdminUser; end: number; days: number } => !!r && r.days >= 0 && r.days <= 30)
+      .sort((a, b) => a.end - b.end);
+  }, [subs]);
+
+  const alerts = useMemo(() => {
+    const out: { id: string; name: string; message: string; tag: string; color: string }[] = [];
+    const now = Date.now();
+    subs.forEach((u) => {
+      const s = getStatus(u);
+      const end = u.stripe?.subscription?.current_period_end;
+      const days = end ? Math.ceil((end * 1000 - now) / 86_400_000) : null;
+      if (s === "past_due") {
+        out.push({
+          id: `${u.id}-due`,
+          name: u.name,
+          message: "Pagamento atrasado. Vale entrar em contato hoje.",
+          tag: "Atrasado",
+          color: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+        });
+      } else if (s === "trialing" && days !== null && days <= 3) {
+        out.push({
+          id: `${u.id}-trial`,
+          name: u.name,
+          message: `Teste termina ${days <= 0 ? "hoje" : `em ${days} dia(s)`}. Bom momento para lembrar da assinatura.`,
+          tag: "Fim do teste",
+          color: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+        });
+      } else if (s === "active" && days !== null && days <= 7) {
+        out.push({
+          id: `${u.id}-renew`,
+          name: u.name,
+          message: `Renovação ${days <= 0 ? "hoje" : `em ${days} dia(s)`}.`,
+          tag: "Renova em breve",
+          color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
+        });
+      } else if (u.stripe?.subscription?.cancel_at_period_end) {
+        out.push({
+          id: `${u.id}-cancel`,
+          name: u.name,
+          message: "Cancelamento pedido. A assinatura termina no fim do período.",
+          tag: "Vai cancelar",
+          color: "bg-red-500/15 text-red-400 border-red-500/20",
+        });
+      }
+    });
+    return out;
+  }, [subs]);
+
+
+
   const exportCSV = () => {
     const rows = [
       ["Nome", "Email", "Telefone", "Status", "Plano (R$/mês)", "Data Cadastro", "Próx. Renovação"],
