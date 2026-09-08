@@ -14,7 +14,11 @@ const logStep = (step: string, details?: unknown) => {
 
 /** Preços SalbCare Pro (conta live "Salb Care"). Whitelist server-side. */
 const PRO_PRICES: Record<string, string> = {
-  // Atuais: R$ 99/mês e R$ 897/ano
+  // Atuais: Essencial R$ 49/mes, Completo R$ 89/mes e Anual Fundador R$ 797/ano
+  "price_1UDSWjBUEEEAHx2hFUrls8HR": "monthly",
+  "price_1UDSXKBUEEEAHx2hNK74eScH": "monthly",
+  "price_1UDSZYBUEEEAHx2h6gq87E00": "annual",
+  // Legado (mantidos para assinaturas antigas)
   "price_1U6GvUBUEEEAHx2hAkDxAQbF": "monthly",
   "price_1U6GvoBUEEEAHx2hmyZMqKCo": "annual",
   // Legado (mantidos para assinaturas antigas)
@@ -22,7 +26,7 @@ const PRO_PRICES: Record<string, string> = {
   "price_1TyCJdBUEEEAHx2hYIvZ6EOH": "monthly",
   "price_1TyCJeBUEEEAHx2hvxyCs0Dz": "annual",
 };
-const DEFAULT_PRICE = "price_1U6GvUBUEEEAHx2hAkDxAQbF";
+const DEFAULT_PRICE = "price_1UDSXKBUEEEAHx2hNK74eScH";
 
 const ALLOWED_ORIGINS = [
   "https://salbcare.com",

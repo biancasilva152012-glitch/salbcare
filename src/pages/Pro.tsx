@@ -17,7 +17,6 @@ import { useProSubscription } from "@/hooks/useProSubscription";
 import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import {
   CREAM,
-  GOLD,
   MONO,
   NAVY,
   PRO_PLANS,
@@ -85,7 +84,7 @@ const FAQ = [
   },
   {
     q: "Quanto custa e existe alguma taxa por consulta?",
-    a: "São R$ 99 por mês ou R$ 897 por ano, sem taxa de adesão. A SalbCare não cobra comissão por consulta: o valor do atendimento é definido por você e recebido diretamente por você.",
+    a: "O plano Essencial custa R$ 49 por mês, o Completo R$ 89 por mês e o Anual Fundador R$ 797 por ano, sem taxa de adesão. A SalbCare não cobra comissão por consulta: o valor do atendimento é definido por você e recebido diretamente por você.",
   },
   {
     q: "Quanto tempo leva para começar a usar de verdade?",
