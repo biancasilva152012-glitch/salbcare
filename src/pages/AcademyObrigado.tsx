@@ -5,12 +5,12 @@ import { Check, Download } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { CREAM, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 import { supabase } from "@/integrations/supabase/client";
-import { saveAcademyToken } from "@/lib/academyAccess";
+import { cacheAcademyPdf, saveAcademyToken, type AcademyDownload } from "@/lib/academyAccess";
 
 const AcademyObrigado = () => {
   const [params] = useSearchParams();
   const sessionId = params.get("session_id");
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [downloads, setDownloads] = useState<AcademyDownload[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "pending">("loading");
 
   useEffect(() => {
@@ -24,8 +24,17 @@ const AcademyObrigado = () => {
           body: { session_id: sessionId },
         });
         if (data?.access) {
-          saveAcademyToken({ token: data.token, slug: data.slug, expiresAt: data.expires_at });
-          setDownloadUrl(data.download_url ?? null);
+          saveAcademyToken({
+            token: data.token,
+            slug: data.slug,
+            expiresAt: data.expires_at,
+            langs: data.langs,
+            downloads: data.downloads,
+          });
+          const list: AcademyDownload[] = data.downloads ?? [];
+          setDownloads(list);
+          // Guarda o PDF no app para abrir offline, sem depender do e-mail.
+          await Promise.all(list.map((d) => cacheAcademyPdf(d.url)));
           setState("ready");
           return;
         }
@@ -52,12 +61,19 @@ const AcademyObrigado = () => {
           Sua compra foi confirmada.
         </h1>
 
-        <div style={{ marginTop: 28, display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-          {downloadUrl ? (
-            <a href={downloadUrl} className="pro-cta" style={{ textDecoration: "none", display: "inline-flex", gap: 8, alignItems: "center" }}>
-              <Download size={16} strokeWidth={1.8} aria-hidden />
-              Baixar o material em PDF
-            </a>
+        <div style={{ marginTop: 28, display: "grid", gap: 12, justifyItems: "start" }}>
+          {downloads.length > 0 ? (
+            downloads.map((d) => (
+              <a
+                key={d.url}
+                href={d.url}
+                className="pro-cta"
+                style={{ textDecoration: "none", display: "inline-flex", gap: 8, alignItems: "center" }}
+              >
+                <Download size={16} strokeWidth={1.8} aria-hidden />
+                Baixar {d.title}
+              </a>
+            ))
           ) : (
             <span className="pro-body">
               {state === "loading" ? "Preparando o seu material." : "Preparando o seu material. O link chega no seu e-mail."}
@@ -66,8 +82,10 @@ const AcademyObrigado = () => {
         </div>
 
         <p className="pro-body" style={{ marginTop: 18, maxWidth: 560 }}>
-          Enviamos também o link para o seu e-mail, caso precise depois.
+          Enviamos também o link para o seu e-mail, caso precise depois. O material fica salvo neste aparelho e abre
+          offline pelo app instalado.
         </p>
+
 
         <div
           style={{

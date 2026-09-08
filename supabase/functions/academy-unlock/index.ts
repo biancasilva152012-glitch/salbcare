@@ -14,9 +14,25 @@ const corsHeaders = {
 };
 
 const BUCKET = "academy-materials";
-const FILES: Record<string, string> = {
-  "ingles-para-atendimento-em-saude": "ingles-para-atendimento-em-saude.pdf",
+// Cada produto pode liberar um ou mais PDFs (o pacote libera os dois).
+const FILES: Record<string, { file: string; title: string }[]> = {
+  "ingles-para-atendimento-em-saude": [
+    { file: "ingles-para-atendimento-em-saude.pdf", title: "Inglês para Atendimento em Saúde" },
+  ],
+  "espanhol-para-atendimento-em-saude": [
+    { file: "espanhol-para-atendimento-em-saude.pdf", title: "Espanhol para Atendimento em Saúde" },
+  ],
+  "international-healthcare-kit": [
+    { file: "ingles-para-atendimento-em-saude.pdf", title: "Inglês para Atendimento em Saúde" },
+    { file: "espanhol-para-atendimento-em-saude.pdf", title: "Espanhol para Atendimento em Saúde" },
+  ],
 };
+const LANGS: Record<string, string[]> = {
+  "ingles-para-atendimento-em-saude": ["pt", "en"],
+  "espanhol-para-atendimento-em-saude": ["pt", "es"],
+  "international-healthcare-kit": ["pt", "en", "es"],
+};
+
 
 const newToken = () => {
   const bytes = new Uint8Array(24);
@@ -39,12 +55,16 @@ serve(async (req) => {
     { auth: { persistSession: false } },
   );
 
-  const signed = async (slug: string) => {
-    const file = FILES[slug];
-    if (!file) return null;
-    const { data } = await admin.storage.from(BUCKET).createSignedUrl(file, 60 * 60 * 24 * 7);
-    return data?.signedUrl ?? null;
+  const signedList = async (slug: string) => {
+    const files = FILES[slug] ?? [];
+    const out: { title: string; url: string }[] = [];
+    for (const f of files) {
+      const { data } = await admin.storage.from(BUCKET).createSignedUrl(f.file, 60 * 60 * 24 * 7);
+      if (data?.signedUrl) out.push({ title: f.title, url: data.signedUrl });
+    }
+    return out;
   };
+
 
   try {
     const body = await req.json().catch(() => ({}));
@@ -78,14 +98,18 @@ serve(async (req) => {
         .from("academy_purchases")
         .update({ downloads: purchase.downloads + 1 })
         .eq("id", purchase.id);
+      const downloads = await signedList(purchase.slug);
       return json({
         access: true,
         slug: purchase.slug,
         token: purchase.token,
-        download_url: await signed(purchase.slug),
+        langs: LANGS[purchase.slug] ?? ["pt"],
+        downloads,
+        download_url: downloads[0]?.url ?? null,
         expires_at: purchase.expires_at,
       });
     }
+
 
     if (!sessionId) return json({ access: false, reason: "missing" }, 400);
 
@@ -117,14 +141,18 @@ serve(async (req) => {
       purchase = inserted;
     }
 
+    const downloads = await signedList(purchase.slug);
     return json({
       access: true,
       slug: purchase.slug,
       token: purchase.token,
       email: purchase.email,
-      download_url: await signed(purchase.slug),
+      langs: LANGS[purchase.slug] ?? ["pt"],
+      downloads,
+      download_url: downloads[0]?.url ?? null,
       expires_at: purchase.expires_at,
     });
+
   } catch (error) {
     console.error("[ACADEMY-UNLOCK]", error instanceof Error ? error.message : error);
     return json({ access: false, reason: "error" }, 500);

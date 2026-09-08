@@ -14,7 +14,10 @@ const corsHeaders = {
 // Precos da Academy permitidos (nunca aceitar price vindo do cliente).
 const ACADEMY_PRICES: Record<string, string> = {
   "ingles-para-atendimento-em-saude": "price_1UDSqwBUEEEAHx2hlH8vQon7",
+  "espanhol-para-atendimento-em-saude": "price_1UDVX0BUEEEAHx2htRTwbhZF",
+  "international-healthcare-kit": "price_1UDVZrBUEEEAHx2hNV5nV2Ar",
 };
+
 
 const ALLOWED_ORIGIN_SUFFIX = [".lovable.app", ".lovableproject.com", ".sandbox.lovable.dev"];
 const ALLOWED_ORIGINS = [

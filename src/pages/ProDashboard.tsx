@@ -6,7 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
 import { CREAM, GOLD, MONO, NAVY, ProLabel, ProWordmark, SANS, TEAL, proStyles } from "@/components/pro/brand";
+import ProSubscriptionPanel from "@/components/pro/ProSubscriptionPanel";
+import ProOfflineMaterials from "@/components/pro/ProOfflineMaterials";
 import { ProProfileFields, ProProfileForm, emptyProfile, normalizeLanguages } from "./ProOnboarding";
+
 
 type TabKey = "perfil" | "agenda" | "pacientes" | "financeiro" | "materiais" | "assinatura";
 
@@ -608,51 +611,40 @@ const ProDashboard = () => {
             )}
 
             {tab === "materiais" && (
-              <div className="pro-card" style={{ display: "grid", gap: 12 }}>
-                <ProLabel>Materiais de atendimento</ProLabel>
-                {materials.length === 0 && (
-                  <p style={{ margin: 0, fontSize: 13, color: muted }}>
-                    Os materiais aparecem aqui assim que forem publicados pela equipe.
-                  </p>
-                )}
-                {materials.map((m) => (
-                  <button
-                    key={m.name}
-                    onClick={() => downloadMaterial(m.name)}
-                    style={{
-                      textAlign: "left",
-                      background: "none",
-                      border: "none",
-                      borderTop: "1px solid rgba(31,31,31,0.12)",
-                      paddingTop: 10,
-                      color: CREAM,
-                      fontFamily: MONO,
-                      fontSize: 13,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {m.name}
-                  </button>
-                ))}
+              <div style={{ display: "grid", gap: 16 }}>
+                <ProOfflineMaterials />
+                <div className="pro-card" style={{ display: "grid", gap: 12 }}>
+                  <ProLabel>Materiais da equipe</ProLabel>
+                  {materials.length === 0 && (
+                    <p style={{ margin: 0, fontSize: 13, color: muted }}>
+                      Os materiais aparecem aqui assim que forem publicados pela equipe.
+                    </p>
+                  )}
+                  {materials.map((m) => (
+                    <button
+                      key={m.name}
+                      onClick={() => downloadMaterial(m.name)}
+                      style={{
+                        textAlign: "left",
+                        background: "none",
+                        border: "none",
+                        borderTop: "1px solid rgba(31,31,31,0.12)",
+                        paddingTop: 10,
+                        color: CREAM,
+                        fontFamily: MONO,
+                        fontSize: 13,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
-            {tab === "assinatura" && (
-              <div className="pro-card" style={{ display: "grid", gap: 12 }}>
-                <ProLabel>Assinatura</ProLabel>
-                <div style={{ fontSize: 14 }}>
-                  Plano {subscription?.plan === "annual" ? "Anual Fundador" : "Mensal"} · status {subscription?.status}
-                </div>
-                {subscription?.current_period_end && (
-                  <div style={{ fontSize: 13, color: muted }}>
-                    Proxima renovacao em {new Date(subscription.current_period_end).toLocaleDateString("pt-BR")}
-                  </div>
-                )}
-                <button className="pro-cta" style={{ background: GOLD, color: NAVY }} onClick={openPortal}>
-                  Gerenciar pagamento
-                </button>
-              </div>
-            )}
+            {tab === "assinatura" && <ProSubscriptionPanel onManage={openPortal} />}
+
           </section>
         </div>
       </div>

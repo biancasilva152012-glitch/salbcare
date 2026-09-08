@@ -2,8 +2,9 @@
  * Catálogo da SalbCare Academy (produtos educacionais).
  * Fonte única usada pelas páginas /academy e /academy/:slug.
  * A Academy é uma loja de produtos digitais próprios, não um marketplace.
+ * A compra é feita sem criar conta: e-mail e pagamento no Stripe Checkout.
  */
-export type AcademyFormat = "apostila" | "ebook" | "curso" | "template" | "checklist";
+export type AcademyFormat = "apostila" | "ebook" | "curso" | "template" | "checklist" | "bundle";
 
 export interface AcademyProduct {
   slug: string;
@@ -36,50 +37,67 @@ export const ACADEMY_PRODUCTS: AcademyProduct[] = [
     ],
     contents: [
       "Roteiro completo da consulta em inglês, etapa por etapa",
-      "Perguntas de anamnese e histórico com respostas mais comuns do paciente",
-      "Vocabulário de sintomas, dor, região do corpo e medicação",
-      "Frases para explicar procedimento, valor e forma de pagamento",
-      "Mensagens prontas de confirmação, remarcação e orientação pós-atendimento",
-      "Glossário de termos clínicos em português, inglês e espanhol",
+      "Perguntas de anamnese, alergias e medicação em uso",
+      "Vocabulário de dor, sintomas e região do corpo",
+      "Comandos curtos para conduzir o exame físico",
+      "Frases de valor, forma de pagamento e recibo para seguro viagem",
+      "Acesso às categorias pagas do Quick Card em português e inglês",
     ],
     audience: "Dentistas, fisioterapeutas e outros profissionais de saúde que atendem ou querem atender estrangeiros.",
   },
   {
-    slug: "templates-de-consultorio",
-    title: "Templates de Consultório",
-    format: "template",
-    formatLabel: "Pacote de modelos editáveis",
-    status: "soon",
-    statusLabel: "Em preparação",
-    summary: "Modelos de anamnese, orientações e mensagens ao paciente prontos para adaptar ao seu consultório.",
+    slug: "espanhol-para-atendimento-em-saude",
+    title: "Espanhol para Atendimento em Saúde",
+    format: "apostila",
+    formatLabel: "Apostila prática em PDF",
+    status: "available",
+    statusLabel: "Disponível",
+    price: "R$ 29,90",
+    summary:
+      "As mesmas situações de atendimento, agora em espanhol, para receber pacientes da América Latina e da Espanha.",
     description: [
-      "Um pacote de documentos e mensagens que todo consultório precisa e quase ninguém tem pronto.",
+      "Material de trabalho, não curso de idioma. A frase pronta em espanhol, a tradução em português e o momento certo de usar.",
+      "Segue a ordem real da consulta, da recepção à orientação final e ao retorno.",
     ],
     contents: [
-      "Fichas de anamnese por especialidade",
-      "Termos de orientação e consentimento",
-      "Mensagens de confirmação e cobrança",
+      "Roteiro completo da consulta em espanhol, etapa por etapa",
+      "Perguntas de anamnese, alergias e medicação em uso",
+      "Vocabulário de dor, sintomas e região do corpo",
+      "Comandos curtos para conduzir o exame físico",
+      "Frases de valor, forma de pagamento e recibo para seguro",
+      "Acesso às categorias pagas do Quick Card em português e espanhol",
     ],
-    audience: "Profissionais autônomos que cuidam sozinhos da rotina administrativa.",
+    audience: "Profissionais de saúde que atendem pacientes hispanofalantes, no consultório ou em viagem.",
   },
   {
-    slug: "checklists-de-gestao",
-    title: "Checklists de Gestão",
-    format: "checklist",
-    formatLabel: "Checklists em PDF",
-    status: "soon",
-    statusLabel: "Em preparação",
-    summary: "Rotinas curtas de agenda, cobrança e fechamento financeiro para manter o consultório em ordem.",
-    description: ["Rotinas simples, do dia, da semana e do fechamento do mês, em uma página cada."],
-    contents: ["Rotina diária de agenda", "Rotina semanal de cobrança", "Fechamento financeiro do mês"],
-    audience: "Quem quer organizar a gestão sem contratar equipe administrativa.",
+    slug: "international-healthcare-kit",
+    title: "International Healthcare Kit",
+    format: "bundle",
+    formatLabel: "Pacote com as duas apostilas",
+    status: "available",
+    statusLabel: "Melhor escolha",
+    price: "R$ 49,90",
+    summary:
+      "As duas apostilas juntas e o Quick Card completo em português, inglês e espanhol, com o seletor de idioma liberado.",
+    description: [
+      "O pacote reúne Inglês e Espanhol para Atendimento em Saúde, com desconto em relação à compra separada.",
+      "Libera todas as categorias do Quick Card nos três idiomas, com troca de idioma durante o atendimento.",
+    ],
+    contents: [
+      "Apostila de Inglês para Atendimento em Saúde em PDF",
+      "Apostila de Espanhol para Atendimento em Saúde em PDF",
+      "Quick Card completo em português, inglês e espanhol",
+      "Seletor de idioma ativo nas cinco categorias",
+      "Vocabulário de apoio de cada categoria",
+      "Acesso pelo link do e-mail, em qualquer aparelho",
+    ],
+    audience: "Quem atende turistas e pacientes internacionais e não quer escolher entre um idioma e outro.",
   },
 ];
 
-export const getAcademyProduct = (slug?: string) =>
-  ACADEMY_PRODUCTS.find((p) => p.slug === slug);
+export const getAcademyProduct = (slug?: string) => ACADEMY_PRODUCTS.find((p) => p.slug === slug);
 
-/** Contato oficial para compra e dúvidas dos materiais. */
+/** Contato oficial para dúvidas dos materiais. */
 export const ACADEMY_WHATSAPP = "5588996924700";
 
 export const academyWhatsAppLink = (title: string) =>
