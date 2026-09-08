@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_certificates: {
+        Row: {
+          code: string
+          created_at: string
+          holder_name: string
+          id: string
+          issued_at: string
+          language: string
+          purchase_id: string
+          score: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          holder_name: string
+          id?: string
+          issued_at?: string
+          language: string
+          purchase_id: string
+          score: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          holder_name?: string
+          id?: string
+          issued_at?: string
+          language?: string
+          purchase_id?: string
+          score?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_certificates_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "academy_purchases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       academy_products: {
         Row: {
           audience: string
@@ -2943,6 +2990,17 @@ export type Database = {
       purge_pii_access_log: {
         Args: { _retention_days?: number }
         Returns: number
+      }
+      verify_academy_certificate: {
+        Args: { _code: string }
+        Returns: {
+          code: string
+          holder_name: string
+          issued_at: string
+          language: string
+          score: number
+          slug: string
+        }[]
       }
       verify_document_by_hash: {
         Args: { _hash: string }

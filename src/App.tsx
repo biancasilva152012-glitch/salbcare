@@ -105,6 +105,7 @@ const Academy = lazyWithRetry(() => import("./pages/Academy"), "Academy");
 const AcademyProduct = lazyWithRetry(() => import("./pages/AcademyProduct"), "AcademyProduct");
 const AcademyObrigado = lazyWithRetry(() => import("./pages/AcademyObrigado"), "AcademyObrigado");
 const AcademyGame = lazyWithRetry(() => import("./pages/AcademyGame"), "AcademyGame");
+const AcademyCertificate = lazyWithRetry(() => import("./pages/AcademyCertificate"), "AcademyCertificate");
 const QuickCard = lazyWithRetry(() => import("./pages/QuickCard"), "QuickCard");
 const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
 const Offline = lazyWithRetry(() => import("./pages/Offline"), "Offline");
@@ -188,6 +189,7 @@ const App = () => (
               <Route path="/academy" element={<Academy />} />
               <Route path="/academy/obrigado" element={<AcademyObrigado />} />
               <Route path="/academy/jogo" element={<AcademyGame />} />
+              <Route path="/certificado/:codigo" element={<AcademyCertificate />} />
               <Route path="/academy/:slug" element={<AcademyProduct />} />
               <Route path="/quick-card" element={<QuickCard />} />
               <Route path="/instalar" element={<Install />} />

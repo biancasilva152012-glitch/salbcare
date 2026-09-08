@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
 import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
 import { AcademyCardGrid } from "@/components/academy/AcademyCards";
+import ProSandbox from "@/components/pro/ProSandbox";
 
 import {
   CREAM,
@@ -127,7 +128,11 @@ const Pro = () => {
   const soft = "#243447";
 
   const startTrial = () => {
-    navigate(isActive ? "/pro/painel" : "/register");
+    if (isActive) {
+      navigate("/pro/painel");
+      return;
+    }
+    navigate(user ? "/dashboard" : "/register?next=%2Fdashboard");
   };
 
   const selectPlan = (key: ProPlanKey) => {
@@ -331,8 +336,25 @@ const Pro = () => {
         </div>
       </section>
 
+      <hr className="pro-rule" />
+
+      {/* DEMONSTRAÇÃO INTERATIVA */}
+      <section id="demonstracao" className="pro-wrap pro-section" style={{ scrollMarginTop: 24 }}>
+        <ProLabel>Experimente agora</ProLabel>
+        <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 620 }}>
+          Use o painel aqui mesmo, sem criar conta.
+        </h2>
+        <p className="pro-body" style={{ marginTop: 16, maxWidth: 560 }}>
+          Os dados desta demonstração são fictícios e não são salvos. Marque um atendimento, cadastre um paciente e
+          lance um valor recebido para sentir como é o dia a dia.
+        </p>
+        <div style={{ marginTop: 26, maxWidth: 680 }}>
+          <ProSandbox onTrial={startTrial} />
+        </div>
+      </section>
 
       <hr className="pro-rule" />
+
 
       {/* MÓDULO INTERNACIONAL */}
       <section className="pro-wrap pro-section">
