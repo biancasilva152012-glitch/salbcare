@@ -13,7 +13,10 @@ import {
 } from "@/components/pro/brand";
 import InstallPrompt from "@/components/pro/InstallPrompt";
 import { useAcademyAccess } from "@/hooks/useAcademyAccess";
+import { saveAcademyToken } from "@/lib/academyAccess";
+import { supabase } from "@/integrations/supabase/client";
 import { QUICK_CARD, QUICK_CARD_LANGS, type QuickCardLang } from "@/config/quickCard";
+
 
 const FAV_KEY = "salbcare_quickcard_favorites";
 const FAVORITES_TAB = "favoritas";
