@@ -229,7 +229,113 @@ const AdminSubscriptions = () => {
           </div>
         )}
       </div>
+
+      {/* Próximos vencimentos */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="flex items-center gap-2">
+          <CalendarClock className="h-4 w-4 text-blue-400" />
+          <h3 className="text-sm font-semibold text-white">Próximos vencimentos (30 dias)</h3>
+        </div>
+        <div className="mt-3 space-y-2">
+          {upcoming.map((r) => (
+            <div key={r.user.id} className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-2 last:border-0">
+              <div className="min-w-0">
+                <p className="truncate text-sm text-white">{r.user.name}</p>
+                <p className="truncate text-xs text-white/40">{r.user.email}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-white/70">{fmtDate(r.end)}</p>
+                <p className="text-[11px] text-white/40">
+                  {r.days <= 0 ? "vence hoje" : `em ${r.days} ${r.days === 1 ? "dia" : "dias"}`}
+                </p>
+              </div>
+            </div>
+          ))}
+          {upcoming.length === 0 && (
+            <p className="text-sm text-white/30">Nenhuma renovação nos próximos 30 dias.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Avisos de renovação */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="flex items-center gap-2">
+          <BellRing className="h-4 w-4 text-amber-400" />
+          <h3 className="text-sm font-semibold text-white">Avisos de renovação</h3>
+        </div>
+        <div className="mt-3 space-y-2">
+          {alerts.map((a) => (
+            <div key={a.id} className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-2 last:border-0">
+              <div className="min-w-0">
+                <p className="truncate text-sm text-white">{a.name}</p>
+                <p className="truncate text-xs text-white/40">{a.message}</p>
+              </div>
+              <Badge variant="outline" className={`text-[10px] ${a.color}`}>{a.tag}</Badge>
+            </div>
+          ))}
+          {alerts.length === 0 && (
+            <p className="text-sm text-white/30">Nada pendente. Todas as assinaturas em dia.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Histórico de pagamentos */}
+      <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+        <div className="flex items-center gap-2 p-4">
+          <CreditCard className="h-4 w-4 text-emerald-400" />
+          <h3 className="text-sm font-semibold text-white">Histórico de pagamentos</h3>
+        </div>
+        {financeLoading ? (
+          <div className="flex items-center justify-center py-10">
+            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-white/[0.06] hover:bg-transparent">
+                  <TableHead className="text-white/50 text-xs">Data</TableHead>
+                  <TableHead className="text-white/50 text-xs">Pagante</TableHead>
+                  <TableHead className="text-white/50 text-xs">Valor</TableHead>
+                  <TableHead className="text-white/50 text-xs">Situação</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(finance?.recent_charges ?? []).map((c) => (
+                  <TableRow key={c.id} className="border-white/[0.04] hover:bg-white/[0.02]">
+                    <TableCell className="text-xs text-white/50">{fmtDate(c.created)}</TableCell>
+                    <TableCell className="text-xs text-white/70">{c.customer_email || "—"}</TableCell>
+                    <TableCell className="text-xs text-white/70">R$ {formatBRL(c.amount)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] ${
+                          c.refunded
+                            ? "bg-red-500/15 text-red-400 border-red-500/20"
+                            : c.paid
+                              ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
+                              : "bg-amber-500/15 text-amber-400 border-amber-500/20"
+                        }`}
+                      >
+                        {c.refunded ? "Devolvido" : c.paid ? "Pago" : "Pendente"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {(finance?.recent_charges ?? []).length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-10 text-white/30 text-sm">
+                      Nenhum pagamento registrado ainda.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
     </div>
+
   );
 };
 
