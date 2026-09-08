@@ -42,7 +42,9 @@ const AcademyProduct = () => {
     );
   }
 
-  const available = product.status === "available";
+  const remote = prices[product.slug];
+  const available = remote ? remote.available : product.status === "available";
+  const price = remote?.price ?? product.price ?? null;
   const buyLink = academyWhatsAppLink(product.title);
   const [loading, setLoading] = useState(false);
 
