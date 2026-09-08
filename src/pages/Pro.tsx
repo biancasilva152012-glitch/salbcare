@@ -79,8 +79,8 @@ const LANDING_STYLES = `
 
 const FAQ = [
   {
-    q: "Como funciona o teste de 14 dias e o que acontece depois?",
-    a: "Você cria sua conta e usa o sistema completo por 14 dias, sem cartão de crédito. Ao final, escolhe o plano mensal ou anual. Se não escolher nenhum, a conta apenas fica bloqueada e seus dados continuam salvos.",
+    q: "Como funciona o teste de 7 dias e o que acontece depois?",
+    a: "Você cria sua conta e usa o sistema completo por 7 dias, sem cartão de crédito. Ao final, escolhe o plano mensal ou anual. Se não escolher nenhum, a conta apenas fica bloqueada e seus dados continuam salvos.",
   },
   {
     q: "Quanto custa e existe alguma taxa por consulta?",
@@ -176,7 +176,7 @@ const Pro = () => {
         <title>SalbCare Pro. Gestão de consultório para dentistas e fisioterapeutas</title>
         <meta
           name="description"
-          content="Agenda, pacientes, financeiro e sua própria página de agendamento em um só lugar. Teste o SalbCare Pro por 14 dias, sem cartão de crédito."
+          content="Agenda, pacientes, financeiro e sua própria página de agendamento em um só lugar. Teste o SalbCare Pro por 7 dias, sem cartão de crédito."
         />        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </Helmet>
       <style>{proStyles + panelMockStyles + LANDING_STYLES}</style>
@@ -251,7 +251,6 @@ const Pro = () => {
       {/* HERO */}
       <section className="pro-wrap pro-section pro-hero">
         <div>
-          <ProLabel>Care, without borders.</ProLabel>
           <h1 className="pro-h1" style={{ maxWidth: 700 }}>
             Seu consultório organizado, do agendamento ao financeiro.
           </h1>
@@ -261,7 +260,7 @@ const Pro = () => {
           </p>
           <div style={{ marginTop: 32 }}>
             <button className="pro-cta" onClick={startTrial}>
-              {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
+              {isActive ? "Ir para o painel" : "Testar 7 dias grátis"}
             </button>
           </div>
           <p className="pro-note" style={{ marginTop: 14 }}>
@@ -479,11 +478,11 @@ const Pro = () => {
       <section className="pro-wrap pro-section" style={{ textAlign: "center" }}>
         <h2 className="pro-h2">Comece hoje a organizar seu consultório.</h2>
         <p className="pro-body" style={{ margin: "18px auto 0", maxWidth: 460 }}>
-          Teste o sistema completo por 14 dias, sem cartão de crédito.
+          Teste o sistema completo por 7 dias, sem cartão de crédito.
         </p>
         <div style={{ marginTop: 28, display: "flex", justifyContent: "center" }}>
           <button className="pro-cta" onClick={startTrial}>
-            {isActive ? "Ir para o painel" : "Testar 14 dias grátis"}
+            {isActive ? "Ir para o painel" : "Testar 7 dias grátis"}
           </button>
         </div>
       </section>
@@ -523,7 +522,7 @@ const Pro = () => {
             não cobra comissão por consulta.
           </p>
           <p className="pro-mono" style={{ marginTop: 12 }}>
-            © {new Date().getFullYear()} SalbCare. Care, without borders.
+            © {new Date().getFullYear()} SalbCare.
           </p>
         </div>
       </footer>

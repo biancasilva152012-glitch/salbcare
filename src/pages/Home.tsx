@@ -82,12 +82,12 @@ const Home = () => (
     <SiteHeader />
 
     {/* HERO */}
-    <section className="pro-wrap pro-section home-hero">
+    <section className="pro-wrap pro-section home-hero" style={{ paddingTop: 56 }}>
       <div>
-        <ProLabel>Care, without borders.</ProLabel>
-        <h1 className="pro-h1" style={{ maxWidth: 660 }}>
+        <h1 className="pro-h1" style={{ maxWidth: 660, marginTop: 0 }}>
           Sua carreira na saúde, no mapa do mundo.
         </h1>
+
         <p className="pro-lead" style={{ marginTop: 20, maxWidth: 540 }}>
           Gestão, conhecimento e ferramentas para profissionais de saúde que querem cuidar melhor, trabalhar melhor e
           estar preparados para atender pacientes de qualquer lugar do mundo.
@@ -199,7 +199,8 @@ const Home = () => (
     <section className="pro-wrap pro-section" style={{ textAlign: "center" }}>
       <h2 className="pro-h2">Comece pelo que você precisa hoje.</h2>
       <p className="pro-body" style={{ margin: "18px auto 0", maxWidth: 470 }}>
-        Teste o sistema completo por 14 dias, sem cartão de crédito, ou comece pelos materiais da Academy.
+        Teste o sistema completo por 7 dias, sem cartão de crédito, ou comece pelos materiais da Academy.
+
       </p>
       <div className="home-ctas" style={{ marginTop: 28, justifyContent: "center" }}>
         <Link to="/pro" className="pro-cta" style={{ textDecoration: "none" }}>
