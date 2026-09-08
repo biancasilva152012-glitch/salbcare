@@ -141,14 +141,18 @@ serve(async (req) => {
       purchase = inserted;
     }
 
+    const downloads = await signedList(purchase.slug);
     return json({
       access: true,
       slug: purchase.slug,
       token: purchase.token,
       email: purchase.email,
-      download_url: await signed(purchase.slug),
+      langs: LANGS[purchase.slug] ?? ["pt"],
+      downloads,
+      download_url: downloads[0]?.url ?? null,
       expires_at: purchase.expires_at,
     });
+
   } catch (error) {
     console.error("[ACADEMY-UNLOCK]", error instanceof Error ? error.message : error);
     return json({ access: false, reason: "error" }, 500);
