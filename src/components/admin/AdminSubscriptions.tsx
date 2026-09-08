@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useAdminUsers, AdminUser } from "@/hooks/useAdminData";
+import { useAdminUsers, useAdminMRR, AdminUser } from "@/hooks/useAdminData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,9 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Search, Download, Loader2, TrendingUp, Users as UsersIcon, CreditCard, AlertCircle } from "lucide-react";
+import { Search, Download, Loader2, TrendingUp, Users as UsersIcon, CreditCard, AlertCircle, BellRing, CalendarClock } from "lucide-react";
 import { formatBRL } from "@/utils/currencyMask";
+
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   active: { label: "Pagante", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" },
@@ -34,8 +35,10 @@ function fmtDate(ts: string | number | null): string {
 
 const AdminSubscriptions = () => {
   const { data: users = [], isLoading } = useAdminUsers();
+  const { data: finance, isLoading: financeLoading } = useAdminMRR();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "paying" | "trial" | "canceled" | "none">("all");
+
 
   const subs = useMemo(() => {
     return users
@@ -76,6 +79,65 @@ const AdminSubscriptions = () => {
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
   }, [subs, filter, search]);
+
+  const upcoming = useMemo(() => {
+    const now = Date.now();
+    return subs
+      .map((u) => {
+        const end = u.stripe?.subscription?.current_period_end;
+        if (!end) return null;
+        const ms = end * 1000;
+        return { user: u, end, days: Math.ceil((ms - now) / 86_400_000) };
+      })
+      .filter((r): r is { user: AdminUser; end: number; days: number } => !!r && r.days >= 0 && r.days <= 30)
+      .sort((a, b) => a.end - b.end);
+  }, [subs]);
+
+  const alerts = useMemo(() => {
+    const out: { id: string; name: string; message: string; tag: string; color: string }[] = [];
+    const now = Date.now();
+    subs.forEach((u) => {
+      const s = getStatus(u);
+      const end = u.stripe?.subscription?.current_period_end;
+      const days = end ? Math.ceil((end * 1000 - now) / 86_400_000) : null;
+      if (s === "past_due") {
+        out.push({
+          id: `${u.id}-due`,
+          name: u.name,
+          message: "Pagamento atrasado. Vale entrar em contato hoje.",
+          tag: "Atrasado",
+          color: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+        });
+      } else if (s === "trialing" && days !== null && days <= 3) {
+        out.push({
+          id: `${u.id}-trial`,
+          name: u.name,
+          message: `Teste termina ${days <= 0 ? "hoje" : `em ${days} dia(s)`}. Bom momento para lembrar da assinatura.`,
+          tag: "Fim do teste",
+          color: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+        });
+      } else if (s === "active" && days !== null && days <= 7) {
+        out.push({
+          id: `${u.id}-renew`,
+          name: u.name,
+          message: `Renovação ${days <= 0 ? "hoje" : `em ${days} dia(s)`}.`,
+          tag: "Renova em breve",
+          color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
+        });
+      } else if (u.stripe?.subscription?.cancel_at_period_end) {
+        out.push({
+          id: `${u.id}-cancel`,
+          name: u.name,
+          message: "Cancelamento pedido. A assinatura termina no fim do período.",
+          tag: "Vai cancelar",
+          color: "bg-red-500/15 text-red-400 border-red-500/20",
+        });
+      }
+    });
+    return out;
+  }, [subs]);
+
+
 
   const exportCSV = () => {
     const rows = [
@@ -226,7 +288,113 @@ const AdminSubscriptions = () => {
           </div>
         )}
       </div>
+
+      {/* Próximos vencimentos */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="flex items-center gap-2">
+          <CalendarClock className="h-4 w-4 text-blue-400" />
+          <h3 className="text-sm font-semibold text-white">Próximos vencimentos (30 dias)</h3>
+        </div>
+        <div className="mt-3 space-y-2">
+          {upcoming.map((r) => (
+            <div key={r.user.id} className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-2 last:border-0">
+              <div className="min-w-0">
+                <p className="truncate text-sm text-white">{r.user.name}</p>
+                <p className="truncate text-xs text-white/40">{r.user.email}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-white/70">{fmtDate(r.end)}</p>
+                <p className="text-[11px] text-white/40">
+                  {r.days <= 0 ? "vence hoje" : `em ${r.days} ${r.days === 1 ? "dia" : "dias"}`}
+                </p>
+              </div>
+            </div>
+          ))}
+          {upcoming.length === 0 && (
+            <p className="text-sm text-white/30">Nenhuma renovação nos próximos 30 dias.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Avisos de renovação */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="flex items-center gap-2">
+          <BellRing className="h-4 w-4 text-amber-400" />
+          <h3 className="text-sm font-semibold text-white">Avisos de renovação</h3>
+        </div>
+        <div className="mt-3 space-y-2">
+          {alerts.map((a) => (
+            <div key={a.id} className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-2 last:border-0">
+              <div className="min-w-0">
+                <p className="truncate text-sm text-white">{a.name}</p>
+                <p className="truncate text-xs text-white/40">{a.message}</p>
+              </div>
+              <Badge variant="outline" className={`text-[10px] ${a.color}`}>{a.tag}</Badge>
+            </div>
+          ))}
+          {alerts.length === 0 && (
+            <p className="text-sm text-white/30">Nada pendente. Todas as assinaturas em dia.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Histórico de pagamentos */}
+      <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+        <div className="flex items-center gap-2 p-4">
+          <CreditCard className="h-4 w-4 text-emerald-400" />
+          <h3 className="text-sm font-semibold text-white">Histórico de pagamentos</h3>
+        </div>
+        {financeLoading ? (
+          <div className="flex items-center justify-center py-10">
+            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-white/[0.06] hover:bg-transparent">
+                  <TableHead className="text-white/50 text-xs">Data</TableHead>
+                  <TableHead className="text-white/50 text-xs">Pagante</TableHead>
+                  <TableHead className="text-white/50 text-xs">Valor</TableHead>
+                  <TableHead className="text-white/50 text-xs">Situação</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(finance?.recent_charges ?? []).map((c) => (
+                  <TableRow key={c.id} className="border-white/[0.04] hover:bg-white/[0.02]">
+                    <TableCell className="text-xs text-white/50">{fmtDate(c.created)}</TableCell>
+                    <TableCell className="text-xs text-white/70">{c.customer_email || "—"}</TableCell>
+                    <TableCell className="text-xs text-white/70">R$ {formatBRL(c.amount)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] ${
+                          c.refunded
+                            ? "bg-red-500/15 text-red-400 border-red-500/20"
+                            : c.paid
+                              ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
+                              : "bg-amber-500/15 text-amber-400 border-amber-500/20"
+                        }`}
+                      >
+                        {c.refunded ? "Devolvido" : c.paid ? "Pago" : "Pendente"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {(finance?.recent_charges ?? []).length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-10 text-white/30 text-sm">
+                      Nenhum pagamento registrado ainda.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
     </div>
+
   );
 };
 
