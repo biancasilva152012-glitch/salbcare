@@ -11,12 +11,47 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Precos da Academy permitidos (nunca aceitar price vindo do cliente).
+// Fallback de precos da Academy (nunca aceitar price vindo do cliente).
+// O preco ativo e buscado no Stripe; este mapa serve como rede de seguranca.
 const ACADEMY_PRICES: Record<string, string> = {
   "ingles-para-atendimento-em-saude": "price_1UDSqwBUEEEAHx2hlH8vQon7",
   "espanhol-para-atendimento-em-saude": "price_1UDVX0BUEEEAHx2htRTwbhZF",
   "international-healthcare-kit": "price_1UDVZrBUEEEAHx2hNV5nV2Ar",
 };
+
+/** Palavras-chave por material, iguais as usadas em academy-prices. */
+const MATCHERS: Record<string, string[][]> = {
+  "ingles-para-atendimento-em-saude": [["apostila", "ingl"], ["ingl"]],
+  "espanhol-para-atendimento-em-saude": [["apostila", "espanhol"], ["espanhol"]],
+  "international-healthcare-kit": [["bundle"], ["kit"], ["ingl", "espanhol"]],
+  "pacote-completo": [["pacote", "completo"]],
+};
+
+/** Busca no Stripe o price_id ativo mais recente do material. */
+async function resolvePrice(stripe: Stripe, slug: string): Promise<string | undefined> {
+  const groups = MATCHERS[slug];
+  if (!groups) return undefined;
+  try {
+    const products = await stripe.products.list({ active: true, limit: 100 });
+    for (const group of groups) {
+      const product = products.data.find((p) => {
+        const name = (p.name || "").toLowerCase();
+        if (name.includes("mensal") || name.includes("anual") || name.includes("essencial")) return false;
+        return group.every((k) => name.includes(k));
+      });
+      if (!product) continue;
+      const prices = await stripe.prices.list({ product: product.id, active: true, limit: 10 });
+      const oneOff = prices.data
+        .filter((p) => !p.recurring && typeof p.unit_amount === "number")
+        .sort((a, b) => b.created - a.created)[0];
+      if (oneOff) return oneOff.id;
+    }
+  } catch (e) {
+    console.error("[ACADEMY-CHECKOUT] resolvePrice", e instanceof Error ? e.message : e);
+  }
+  return undefined;
+}
+
 
 
 const ALLOWED_ORIGIN_SUFFIX = [".lovable.app", ".lovableproject.com", ".sandbox.lovable.dev"];
