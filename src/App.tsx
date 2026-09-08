@@ -20,6 +20,7 @@ import GuestDataSyncRedirector from "@/components/GuestDataSyncRedirector";
 import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import FreemiumDebugPanel from "@/components/FreemiumDebugPanel";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
+import InstallPrompt from "@/components/pro/InstallPrompt";
 import { useTracking } from "@/hooks/useTracking";
 import { useLocation, useParams } from "react-router-dom";
 
@@ -172,6 +173,7 @@ const App = () => (
           <GlobalDemoMigration />
           <GuestDataSyncRedirector />
           <GlobalStatusBanner />
+          <InstallPrompt />
           {/* FreemiumDebugPanelGate removed — debug widget no longer rendered globally */}
           <Suspense fallback={<LazyFallback />}>
             <Routes>
