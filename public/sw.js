@@ -8,12 +8,24 @@
 // SW keeps the same behavior guarantees for dev/preview and for any environment where the
 // Workbox build is not applied.
 
-const CACHE_VERSION = "salbcare-v2026-07-17-1";
+const CACHE_VERSION = "salbcare-v2026-09-08-1";
+// Rotas que precisam abrir offline (Quick Card e tela de instalação).
+const OFFLINE_ROUTES = ["/", "/quick-card", "/instalar"];
 const HTML_CACHE = `${CACHE_VERSION}-html`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(self.skipWaiting());
+  event.waitUntil(
+    (async () => {
+      try {
+        const cache = await caches.open(HTML_CACHE);
+        await cache.addAll(OFFLINE_ROUTES);
+      } catch {
+        /* rede indisponivel no install */
+      }
+      await self.skipWaiting();
+    })(),
+  );
 });
 
 self.addEventListener("activate", (event) => {
@@ -52,7 +64,10 @@ self.addEventListener("fetch", (event) => {
           return fresh;
         } catch {
           const cached = await caches.match(req);
-          return cached || caches.match("/");
+          if (cached) return cached;
+          const cache = await caches.open(HTML_CACHE);
+          const route = OFFLINE_ROUTES.find((r) => url.pathname === r || url.pathname.startsWith(r + "/"));
+          return (route && (await cache.match(route))) || (await cache.match("/")) || Response.error();
         }
       })(),
     );
