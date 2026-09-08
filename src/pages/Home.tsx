@@ -137,14 +137,14 @@ const Home = () => (
     <section className="pro-wrap pro-section">
       <ProLabel>SalbCare Academy</ProLabel>
       <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 620 }}>
-        Aprenda o que sua faculdade não ensinou.
+        Comece por {ACADEMY_PRODUCTS[0].price}
       </h2>
       <p className="pro-body" style={{ marginTop: 16, maxWidth: 580 }}>
-        Materiais práticos para melhorar sua comunicação, gestão e atendimento.
+        Apostilas de Inglês e Espanhol para Atendimento em Saúde, sem precisar assinar nada.
       </p>
       <div className="home-grid3" style={{ marginTop: 28 }}>
-        {ACADEMY_ITEMS.map(({ title, line, status }) => (
-          <article key={title} className="pro-card">
+        {ACADEMY_ITEMS.map(({ slug, title, line, status }) => (
+          <Link key={slug} to={`/academy/${slug}`} className="pro-card" style={{ textDecoration: "none", color: "inherit" }}>
             <BookOpen size={20} strokeWidth={1.5} color={TEAL} aria-hidden />
             <p className="pro-mono" style={{ margin: "12px 0 0" }}>
               {status}
@@ -155,15 +155,34 @@ const Home = () => (
             <p className="pro-body" style={{ margin: "8px 0 0" }}>
               {line}
             </p>
-          </article>
+          </Link>
         ))}
       </div>
       <div style={{ marginTop: 32 }}>
-        <Link to="/academy/ingles-para-atendimento-em-saude" className="pro-cta" style={{ textDecoration: "none" }}>
-          Ver material
+        <Link to="/academy" className="pro-cta" style={{ textDecoration: "none" }}>
+          Ver na Academy
         </Link>
       </div>
     </section>
+
+    <hr className="pro-rule" />
+
+    {/* QUICK CARD */}
+    <section className="pro-wrap pro-section">
+      <ProLabel>Quick Card</ProLabel>
+      <h2 className="pro-h2" style={{ marginTop: 14, maxWidth: 620 }}>
+        Treine igual um app de idiomas, feito para o consultório.
+      </h2>
+      <p className="pro-body" style={{ marginTop: 16, maxWidth: 580 }}>
+        Frases de emergência grátis, direto no navegador. Sem cadastro.
+      </p>
+      <div style={{ marginTop: 28 }}>
+        <Link to="/quick-card" className="pro-cta" style={{ textDecoration: "none" }}>
+          Começar agora
+        </Link>
+      </div>
+    </section>
+
 
     <hr className="pro-rule" />
 
