@@ -13,7 +13,10 @@ import {
 } from "@/components/pro/brand";
 import InstallPrompt from "@/components/pro/InstallPrompt";
 import { useAcademyAccess } from "@/hooks/useAcademyAccess";
+import { saveAcademyToken } from "@/lib/academyAccess";
+import { supabase } from "@/integrations/supabase/client";
 import { QUICK_CARD, QUICK_CARD_LANGS, type QuickCardLang } from "@/config/quickCard";
+
 
 const FAV_KEY = "salbcare_quickcard_favorites";
 const FAVORITES_TAB = "favoritas";
@@ -34,12 +37,20 @@ const QUICK_CARD_STYLES = `
   .qc-locked { border: 1px solid rgba(10,22,40,0.12); border-radius: 14px; background: #FFFFFF; padding: 24px; text-align: center; }
 `;
 
+const APOSTILA_SLUG = "ingles-para-atendimento-em-saude";
+
 const QuickCard = () => {
   const [lang, setLang] = useState<QuickCardLang>("en");
   const [tab, setTab] = useState<string>(QUICK_CARD[0].id);
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
+  const [buying, setBuying] = useState(false);
+  const [showToken, setShowToken] = useState(false);
+  const [token, setToken] = useState("");
+  const [tokenError, setTokenError] = useState<string | null>(null);
+  const [redeeming, setRedeeming] = useState(false);
+
 
   useEffect(() => {
     try {
@@ -80,9 +91,43 @@ const QuickCard = () => {
     [],
   );
 
-  const { access, isLoggedIn, loading: accessLoading } = useAcademyAccess();
+  const { access, isLoggedIn, loading: accessLoading, refresh } = useAcademyAccess();
   const activeCategory = QUICK_CARD.find((c) => c.id === tab);
   const locked = !!activeCategory && !activeCategory.free && !access;
+
+  const buy = async () => {
+    setBuying(true);
+    try {
+      const { data } = await supabase.functions.invoke("academy-checkout", {
+        body: { slug: APOSTILA_SLUG },
+      });
+      if (data?.url) window.location.href = data.url as string;
+    } catch {
+      /* sem checkout */
+    }
+    setBuying(false);
+  };
+
+  const redeem = async () => {
+    setRedeeming(true);
+    setTokenError(null);
+    try {
+      const { data } = await supabase.functions.invoke("academy-unlock", {
+        body: { token: token.trim() },
+      });
+      if (data?.access) {
+        saveAcademyToken({ token: data.token, slug: data.slug, expiresAt: data.expires_at });
+        await refresh();
+        setShowToken(false);
+      } else {
+        setTokenError("Não encontramos esse link. Confira o e-mail da compra.");
+      }
+    } catch {
+      setTokenError("Não encontramos esse link. Confira o e-mail da compra.");
+    }
+    setRedeeming(false);
+  };
+
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -213,23 +258,40 @@ const QuickCard = () => {
             </h2>
             <p className="pro-body" style={{ margin: "10px auto 0", maxWidth: 420 }}>
               A categoria Emergência é gratuita. As outras categorias fazem parte da apostila completa, com cerca de 80
-              frases, categorias e favoritos.
+              frases, categorias e favoritos. A compra é feita sem criar conta.
             </p>
             <div style={{ marginTop: 20, display: "grid", gap: 12, justifyItems: "center" }}>
-              <Link to="/academy" className="pro-cta">
-                Ver na Academy
-              </Link>
+              <button type="button" className="pro-cta" onClick={() => void buy()} disabled={buying}>
+                {buying ? "Abrindo o pagamento" : "Comprar a apostila"}
+              </button>
               <Link to="/pro" className="pro-link">
                 Assinantes do PRO têm tudo incluso
               </Link>
-              {!isLoggedIn && !accessLoading && (
-                <Link to="/login?next=/quick-card" className="pro-link">
-                  Já comprou ou assina? Entrar para liberar
-                </Link>
+              <button type="button" className="pro-link" onClick={() => setShowToken((v) => !v)}>
+                Já comprou? Ver com meu link de acesso
+              </button>
+              {showToken && (
+                <div style={{ width: "100%", maxWidth: 420, display: "grid", gap: 8, textAlign: "left" }}>
+                  <label htmlFor="qc-token" className="pro-mono">
+                    COLE O LINK OU O CÓDIGO DO E-MAIL
+                  </label>
+                  <input
+                    id="qc-token"
+                    className="pro-input"
+                    value={token}
+                    onChange={(e) => setToken(e.target.value)}
+                    placeholder="https://salbcare.com/academy/obrigado?token=..."
+                  />
+                  <button type="button" className="pro-cta" onClick={() => void redeem()} disabled={redeeming}>
+                    {redeeming ? "Verificando" : "Liberar as categorias"}
+                  </button>
+                  {tokenError && <p className="pro-body" style={{ margin: 0 }}>{tokenError}</p>}
+                </div>
               )}
             </div>
           </div>
         )}
+
       </main>
 
       <InstallPrompt />
