@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useAdminUsers, AdminUser } from "@/hooks/useAdminData";
+import { useAdminUsers, useAdminMRR, AdminUser } from "@/hooks/useAdminData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,9 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Search, Download, Loader2, TrendingUp, Users as UsersIcon, CreditCard, AlertCircle } from "lucide-react";
+import { Search, Download, Loader2, TrendingUp, Users as UsersIcon, CreditCard, AlertCircle, BellRing, CalendarClock } from "lucide-react";
 import { formatBRL } from "@/utils/currencyMask";
+
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   active: { label: "Pagante", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" },
