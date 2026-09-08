@@ -4,6 +4,7 @@ import { BookOpen } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/pro/SiteChrome";
 import { CREAM, MONO, NAVY, ProLabel, SANS, TEAL, proStyles } from "@/components/pro/brand";
 import { useAcademyCatalog } from "@/hooks/useAcademyCatalog";
+import { AcademyCardGrid } from "@/components/academy/AcademyCards";
 
 const ACADEMY_STYLES = `
   .academy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
@@ -59,23 +60,8 @@ const Academy = () => {
       <h2 className="pro-h2" style={{ marginTop: 14 }}>
         Materiais práticos, prontos para usar.
       </h2>
-      <div className="academy-grid" style={{ marginTop: 28 }}>
-        {products.map((p) => (
-          <Link key={p.slug} to={`/academy/${p.slug}`} className="pro-card academy-card">
-            <BookOpen size={20} strokeWidth={1.5} color={TEAL} aria-hidden />
-            <p className="pro-mono" style={{ margin: "12px 0 0" }}>
-              {p.statusLabel} · {p.formatLabel}
-            </p>
-            <h3
-              style={{ fontFamily: MONO, fontSize: 13, letterSpacing: "0.04em", margin: "10px 0 0", fontWeight: 500 }}
-            >
-              {p.title}
-            </h3>
-            <p className="pro-body" style={{ margin: "8px 0 0" }}>
-              {p.summary}
-            </p>
-          </Link>
-        ))}
+      <div style={{ marginTop: 28 }}>
+        <AcademyCardGrid />
       </div>
     </section>
 
