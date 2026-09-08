@@ -27,6 +27,7 @@ export const ACADEMY_PRODUCTS: AcademyProduct[] = [
     formatLabel: "Apostila prática em PDF",
     status: "available",
     statusLabel: "Disponível",
+    price: "R$ 29,90",
     summary:
       "Um material de consulta rápida para conduzir o atendimento em inglês, do primeiro contato à orientação final.",
     description: [
