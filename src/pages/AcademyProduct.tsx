@@ -25,6 +25,7 @@ const AcademyProduct = () => {
   const { slug } = useParams();
   const { product } = useAcademyProduct(slug);
   const { prices } = useAcademyPrices();
+  const [loading, setLoading] = useState(false);
 
   if (!product) {
     return (
@@ -48,7 +49,6 @@ const AcademyProduct = () => {
   const available = remote ? remote.available : product.status === "available";
   const price = remote?.price ?? product.price ?? null;
   const buyLink = academyWhatsAppLink(product.title);
-  const [loading, setLoading] = useState(false);
 
   const startCheckout = async () => {
     setLoading(true);
