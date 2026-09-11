@@ -204,6 +204,9 @@ const QuickCard = () => {
         await Promise.all((data.downloads ?? []).map((d: { url: string }) => cacheAcademyPdf(d.url)));
         setToken("");
         setPopped(QUICK_CARD.filter((c) => !c.free).map((c) => c.id));
+        // Já abre no idioma que a compra liberou (espanhol, inglês ou os dois).
+        const bought = (data.langs ?? []).filter((l: string) => l !== "pt") as QuickCardLang[];
+        if (bought.length) setLang(bought[0]);
         await refresh();
       } else {
         setTokenError("Não encontramos esse link de acesso.");
@@ -305,7 +308,7 @@ const QuickCard = () => {
                     </button>
                     <div className="qc-node-label">{cat.label.toLowerCase()}</div>
                     <div className="qc-node-sub">
-                      {open ? `${count}/${total}` : "bloqueada"}
+                      {open ? `${count}/${total}` : `bloqueada em ${lang.toUpperCase()}`}
                       {open && count >= total ? " · concluída" : ""}
                     </div>
                   </div>
