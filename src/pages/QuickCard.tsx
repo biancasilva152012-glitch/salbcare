@@ -145,14 +145,19 @@ const QuickCard = () => {
     setStreak(bumpStreak());
   }, []);
 
-  const availableLangs = useMemo<QuickCardLang[]>(() => {
-    const base: QuickCardLang[] = ["pt"];
-    return access ? (langs.length ? langs : ["pt", "en", "es"]) : base.concat("en");
-  }, [access, langs]);
+  /** Idiomas liberados pela compra salva neste aparelho (ou pela assinatura PRO). */
+  const paidLangs = useMemo<QuickCardLang[]>(
+    () => (access ? (langs.length ? langs : ["pt", "en", "es"]) : []),
+    [access, langs],
+  );
 
-  const canUse = (l: QuickCardLang) => l === "pt" || l === "en" || availableLangs.includes(l);
+  // A categoria de emergência é grátis nos três idiomas, inclusive espanhol.
+  const canUse = (_l: QuickCardLang) => true;
 
-  const unlocked = useCallback((catFree: boolean) => catFree || access, [access]);
+  const unlocked = useCallback(
+    (catFree: boolean) => catFree || paidLangs.includes(lang),
+    [paidLangs, lang],
+  );
 
   const markSeen = (catId: string, key: string) => {
     setSeen((prev) => {
