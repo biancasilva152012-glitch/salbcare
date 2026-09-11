@@ -286,12 +286,88 @@ async function activateUserAccess(supabase: any, userId: string, paymentMethod: 
   logStep(`✅ Acesso liberado automaticamente via ${paymentMethod} → user: ${userId}`);
 }
 
+// ── Academy: compra avulsa de apostila ────────────────────────────────
+const ACADEMY_LANGS: Record<string, string[]> = {
+  "ingles-para-atendimento-em-saude": ["en"],
+  "espanhol-para-atendimento-em-saude": ["es"],
+  "international-healthcare-kit": ["en", "es"],
+  "pacote-completo": ["en", "es"],
+};
+
+const CERT_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const randomFrom = (alphabet: string, size: number) => {
+  const bytes = new Uint8Array(size);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
+};
+const newCertificateCode = () => "SC-" + randomFrom(CERT_ALPHABET, 8);
+const newPurchaseToken = () => randomFrom("0123456789abcdef", 48);
+
+/**
+ * Pagamento confirmado de apostila: grava a compra (token de acesso sem conta)
+ * e já emite o código do certificado, deixando /certificado/CODIGO liberado.
+ * O aproveitamento entra depois, quando a pessoa conclui o jogo.
+ */
+async function handleAcademyPurchase(supabase: any, session: Stripe.Checkout.Session, slug: string) {
+  if (session.payment_status !== "paid") {
+    logStep("Compra da Academy ainda não paga", { session: session.id });
+    return;
+  }
+
+  const email = session.customer_details?.email ?? session.customer_email ?? null;
+  const holder = session.customer_details?.name?.trim() || "Aluno SalbCare";
+
+  const { data: existing } = await supabase
+    .from("academy_purchases")
+    .select("id, slug")
+    .eq("stripe_session_id", session.id)
+    .maybeSingle();
+
+  let purchase = existing;
+  if (!purchase) {
+    const { data: inserted, error } = await supabase
+      .from("academy_purchases")
+      .insert({ token: newPurchaseToken(), email, slug, stripe_session_id: session.id })
+      .select("id, slug")
+      .single();
+    if (error) throw error;
+    purchase = inserted;
+  }
+
+  for (const language of ACADEMY_LANGS[slug] ?? ["en"]) {
+    const { data: cert } = await supabase
+      .from("academy_certificates")
+      .select("code")
+      .eq("purchase_id", purchase.id)
+      .eq("language", language)
+      .maybeSingle();
+    if (cert) continue;
+    const { error } = await supabase.from("academy_certificates").insert({
+      code: newCertificateCode(),
+      purchase_id: purchase.id,
+      holder_name: holder,
+      language,
+      score: 0,
+      slug,
+    });
+    if (error) logStep("Erro ao emitir certificado", { error: error.message, language });
+  }
+
+  logStep("Compra da Academy liberada com certificado", { slug, session: session.id });
+}
+
 // ── checkout.session.completed ────────────────────────────────────────
 async function handleCheckoutCompleted(
   stripe: Stripe,
   supabase: any,
   session: Stripe.Checkout.Session
 ) {
+  const academySlug = session.metadata?.academy_slug;
+  if (academySlug) {
+    await handleAcademyPurchase(supabase, session, academySlug);
+    return;
+  }
+
   const userId = session.metadata?.user_id;
   const customerId = typeof session.customer === "string" ? session.customer : null;
 

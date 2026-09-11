@@ -145,14 +145,19 @@ const QuickCard = () => {
     setStreak(bumpStreak());
   }, []);
 
-  const availableLangs = useMemo<QuickCardLang[]>(() => {
-    const base: QuickCardLang[] = ["pt"];
-    return access ? (langs.length ? langs : ["pt", "en", "es"]) : base.concat("en");
-  }, [access, langs]);
+  /** Idiomas liberados pela compra salva neste aparelho (ou pela assinatura PRO). */
+  const paidLangs = useMemo<QuickCardLang[]>(
+    () => (access ? (langs.length ? langs : ["pt", "en", "es"]) : []),
+    [access, langs],
+  );
 
-  const canUse = (l: QuickCardLang) => l === "pt" || l === "en" || availableLangs.includes(l);
+  // A categoria de emergência é grátis nos três idiomas, inclusive espanhol.
+  const canUse = (_l: QuickCardLang) => true;
 
-  const unlocked = useCallback((catFree: boolean) => catFree || access, [access]);
+  const unlocked = useCallback(
+    (catFree: boolean) => catFree || paidLangs.includes(lang),
+    [paidLangs, lang],
+  );
 
   const markSeen = (catId: string, key: string) => {
     setSeen((prev) => {
@@ -199,6 +204,9 @@ const QuickCard = () => {
         await Promise.all((data.downloads ?? []).map((d: { url: string }) => cacheAcademyPdf(d.url)));
         setToken("");
         setPopped(QUICK_CARD.filter((c) => !c.free).map((c) => c.id));
+        // Já abre no idioma que a compra liberou (espanhol, inglês ou os dois).
+        const bought = (data.langs ?? []).filter((l: string) => l !== "pt") as QuickCardLang[];
+        if (bought.length) setLang(bought[0]);
         await refresh();
       } else {
         setTokenError("Não encontramos esse link de acesso.");
@@ -300,7 +308,7 @@ const QuickCard = () => {
                     </button>
                     <div className="qc-node-label">{cat.label.toLowerCase()}</div>
                     <div className="qc-node-sub">
-                      {open ? `${count}/${total}` : "bloqueada"}
+                      {open ? `${count}/${total}` : `bloqueada em ${lang.toUpperCase()}`}
                       {open && count >= total ? " · concluída" : ""}
                     </div>
                   </div>
