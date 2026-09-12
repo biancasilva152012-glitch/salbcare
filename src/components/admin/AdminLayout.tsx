@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { label: "Adesões", icon: CreditCard, path: "/admin/subscriptions" },
   { label: "Profissionais Pro", icon: Stethoscope, path: "/admin/pro-accounts" },
   { label: "Academy e planos", icon: BookOpen, path: "/admin/academy" },
+  { label: "Vendas da Academy", icon: BarChart3, path: "/admin/academy-sales" },
   { label: "Usuários", icon: Users, path: "/admin/users" },
   { label: "Permissões", icon: ShieldCheck, path: "/admin/roles" },
   { label: "Financeiro", icon: BarChart3, path: "/admin/finance" },
