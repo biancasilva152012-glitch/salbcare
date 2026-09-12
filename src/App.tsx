@@ -99,6 +99,7 @@ const AdminKiteBookingDetailPage = lazyWithRetry(() => import("./pages/admin/Adm
 const AdminLocalPartnersPage = lazyWithRetry(() => import("./pages/admin/AdminLocalPartnersPage"), "AdminLocalPartnersPage");
 const AdminProAccountsPage = lazyWithRetry(() => import("./pages/admin/AdminProAccountsPage"), "AdminProAccountsPage");
 const AdminAcademyPage = lazyWithRetry(() => import("./pages/admin/AdminAcademyPage"), "AdminAcademyPage");
+const AdminAcademySalesPage = lazyWithRetry(() => import("./pages/admin/AdminAcademySalesPage"), "AdminAcademySalesPage");
 const AdminLogin = lazyWithRetry(() => import("./pages/AdminLogin"), "AdminLogin");
 const Pro = lazyWithRetry(() => import("./pages/Pro"), "Pro");
 const Academy = lazyWithRetry(() => import("./pages/Academy"), "Academy");
@@ -374,6 +375,7 @@ const App = () => (
               <Route path="/admin" element={<AdminOverviewPage />} />
               <Route path="/admin/pro-accounts" element={<AdminProAccountsPage />} />
               <Route path="/admin/academy" element={<AdminAcademyPage />} />
+              <Route path="/admin/academy-sales" element={<AdminAcademySalesPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/subscriptions" element={<AdminSubscriptionsPage />} />
               <Route path="/admin/finance" element={<AdminFinancePage />} />
