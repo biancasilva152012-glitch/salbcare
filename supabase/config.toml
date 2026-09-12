@@ -1,40 +1,31 @@
 project_id = "fevrdqmqmbahmeaymplq"
 
-[functions.get-teleconsultation]
-verify_jwt = false
-
-[functions.validate-pix-receipt]
-verify_jwt = false
-
-[functions.manage-booking]
-verify_jwt = false
-
-[functions.stripe-webhook]
-verify_jwt = false
-
-[functions.send-push-reminder]
-verify_jwt = false
-
-[functions.log-redirect-audit]
-verify_jwt = false
-
-[functions.create-kite-checkout]
-verify_jwt = false
-
-[functions.kite-webhook]
-verify_jwt = false
-
-[functions.get-kite-session]
-verify_jwt = false
-
-[functions.blog-sitemap]
-verify_jwt = false
-
-[functions.kite-whatsapp-booking]
-verify_jwt = false
-
-[functions.kite-bookings-retry]
-verify_jwt = false
-
-[functions.auth-gate]
-verify_jwt = false
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.auth-gate]
+    verify_jwt = false
+  [functions.blog-sitemap]
+    verify_jwt = false
+  [functions.create-kite-checkout]
+    verify_jwt = false
+  [functions.get-kite-session]
+    verify_jwt = false
+  [functions.get-teleconsultation]
+    verify_jwt = false
+  [functions.kite-bookings-retry]
+    verify_jwt = false
+  [functions.kite-webhook]
+    verify_jwt = false
+  [functions.kite-whatsapp-booking]
+    verify_jwt = false
+  [functions.log-redirect-audit]
+    verify_jwt = false
+  [functions.manage-booking]
+    verify_jwt = false
+  [functions.send-push-reminder]
+    verify_jwt = false
+  [functions.stripe-webhook]
+    verify_jwt = false
+  [functions.validate-pix-receipt]
+    verify_jwt = false
