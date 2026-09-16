@@ -29,3 +29,7 @@ project_id = "fevrdqmqmbahmeaymplq"
     verify_jwt = false
   [functions.validate-pix-receipt]
     verify_jwt = false
+  [functions.preview-transactional-email]
+    verify_jwt = false
+  [functions.academy-weekly-report]
+    verify_jwt = true
