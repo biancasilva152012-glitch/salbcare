@@ -154,10 +154,27 @@ const QuickCard = () => {
   // A categoria de emergência é grátis nos três idiomas, inclusive espanhol.
   const canUse = (_l: QuickCardLang) => true;
 
+  /**
+   * Quem comprou abre direto num idioma liberado, mesmo em visitas posteriores.
+   * Só acontece uma vez e nunca sobrescreve a escolha manual.
+   */
+  const alignedRef = useRef(false);
+  useEffect(() => {
+    if (alignedRef.current || !paidLangs.length) return;
+    if (paidLangs.includes(lang)) {
+      alignedRef.current = true;
+      return;
+    }
+    const preferred = paidLangs.find((l) => l !== "pt") ?? paidLangs[0];
+    alignedRef.current = true;
+    setLang(preferred);
+  }, [paidLangs, lang]);
+
   const unlocked = useCallback(
     (catFree: boolean) => catFree || paidLangs.includes(lang),
     [paidLangs, lang],
   );
+
 
   const markSeen = (catId: string, key: string) => {
     setSeen((prev) => {
