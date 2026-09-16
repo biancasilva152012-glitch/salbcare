@@ -1,4 +1,5 @@
 import type { ComponentType } from 'npm:react@18.3.1'
+import { template as academyWeeklyReport } from './academy-weekly-report.tsx'
 
 export interface TemplateEntry {
   component: ComponentType<any>
