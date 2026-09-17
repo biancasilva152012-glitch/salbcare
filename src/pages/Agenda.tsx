@@ -58,6 +58,7 @@ const Agenda = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [importing, setImporting] = useState(false);
+  const agendaImportRef = useRef<HTMLInputElement>(null);
   const [blockOpen, setBlockOpen] = useState(false);
   const [blockData, setBlockData] = useState(blockForm);
   const [filterStatus, setFilterStatus] = useState<string>("all");

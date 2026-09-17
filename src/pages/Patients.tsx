@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { MoreVertical } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { maskPhone } from "@/utils/masks";
 import { useFreemiumLimits } from "@/hooks/useFreemiumLimits";
 import PatientLimitWarning from "@/components/patients/PatientLimitWarning";
@@ -54,6 +56,7 @@ const Patients = () => {
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const patientsImportRef = useRef<HTMLInputElement>(null);
 
   // Progress celebration messages
   usePatientProgressMessages(patientsCount, isFree);
