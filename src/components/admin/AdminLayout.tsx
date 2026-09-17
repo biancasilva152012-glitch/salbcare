@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users, BarChart3, Database, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight,
-  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard, QrCode, FileLock2, Wind, Globe2, Stethoscope, BookOpen,
+  LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard, QrCode, FileLock2, Wind, Globe2, Stethoscope, BookOpen, ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { label: "Visão Geral", icon: LayoutDashboard, path: "/admin" },
   { label: "Adesões", icon: CreditCard, path: "/admin/subscriptions" },
   { label: "Profissionais Pro", icon: Stethoscope, path: "/admin/pro-accounts" },
+  { label: "Operação", icon: ClipboardList, path: "/admin/operacao" },
   { label: "Academy e planos", icon: BookOpen, path: "/admin/academy" },
   { label: "Vendas da Academy", icon: BarChart3, path: "/admin/academy-sales" },
   { label: "Usuários", icon: Users, path: "/admin/users" },
@@ -87,8 +88,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   if (authLoading || isAdmin === null) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[hsl(220,20%,8%)]">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
   }
@@ -108,24 +109,24 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   return (
     <RlsHealthGate>
-    <div className="flex min-h-screen bg-[hsl(220,20%,8%)]">
+    <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-white/[0.06] bg-[hsl(220,20%,6%)] transition-all duration-300",
+          "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-card transition-all duration-300",
           collapsed ? "w-16" : "w-60"
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center justify-between px-4 border-b border-white/[0.06]">
+        <div className="flex h-16 items-center justify-between border-b border-border px-4">
           {!collapsed && (
-            <span className="text-sm font-bold text-white tracking-widest">
-              SALB<span className="text-blue-400">ADMIN</span>
+            <span className="text-sm font-bold tracking-widest text-foreground">
+              SALB<span className="text-secondary">ADMIN</span>
             </span>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="rounded-lg p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 transition-colors"
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </button>
@@ -142,11 +143,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
                   active
-                    ? "bg-blue-600/15 text-blue-400 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.15)]"
-                    : "text-white/40 hover:bg-white/[0.04] hover:text-white/70"
+                    ? "bg-accent text-secondary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 )}
               >
-                <item.icon className={cn("h-[18px] w-[18px] shrink-0", active && "text-blue-400")} />
+                <item.icon className={cn("h-[18px] w-[18px] shrink-0", active && "text-secondary")} />
                 {!collapsed && <span>{item.label}</span>}
               </Link>
             );
@@ -154,10 +155,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         </nav>
 
         {/* Footer */}
-        <div className="p-3 border-t border-white/[0.06] space-y-1">
+        <div className="space-y-1 border-t border-border p-3">
           <Link
             to="/dashboard"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-white/30 hover:bg-white/[0.04] hover:text-white/60 transition-all"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-foreground"
           >
             <LogOut className="h-[18px] w-[18px] shrink-0" />
             {!collapsed && <span>Voltar ao App</span>}
@@ -168,16 +169,16 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       {/* Main content */}
       <main className={cn("flex-1 transition-all duration-300", collapsed ? "ml-16" : "ml-60")}>
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex items-center justify-between border-b border-white/[0.06] bg-[hsl(220,20%,8%)]/80 backdrop-blur-xl px-6 h-14">
+        <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/80 px-6 backdrop-blur-xl">
           <div />
           <div className="flex items-center gap-3">
             {/* Notification bell */}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="relative rounded-xl p-2 text-white/30 hover:bg-white/5 hover:text-white/60 transition-colors">
+                <button className="relative rounded-xl p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
                   <Bell className="h-[18px] w-[18px]" />
                   {notifications.length > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-blue-500 text-[9px] font-bold text-white flex items-center justify-center">
+                    <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-secondary text-[9px] font-bold text-secondary-foreground flex items-center justify-center">
                       {notifications.length}
                     </span>
                   )}
@@ -185,26 +186,26 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               </PopoverTrigger>
               <PopoverContent
                 align="end"
-                className="w-80 p-0 bg-[hsl(220,20%,10%)] border-white/10 text-white"
+                className="w-80 p-0 bg-card border-border text-foreground"
               >
-                <div className="px-4 py-3 border-b border-white/[0.06]">
-                  <p className="text-xs font-semibold text-white">Notificações</p>
-                  <p className="text-[10px] text-white/30">Últimas 24 horas</p>
+                <div className="px-4 py-3 border-b border-border">
+                  <p className="text-xs font-semibold text-foreground">Notificações</p>
+                  <p className="text-[10px] text-muted-foreground">Últimas 24 horas</p>
                 </div>
-                <div className="max-h-72 overflow-y-auto divide-y divide-white/[0.04]">
+                <div className="max-h-72 overflow-y-auto divide-y divide-border">
                   {notifications.length === 0 ? (
-                    <div className="py-8 text-center text-white/30 text-xs">Sem novidades</div>
+                    <div className="py-8 text-center text-muted-foreground text-xs">Sem novidades</div>
                   ) : (
                     notifications.map((n: any, i: number) => (
-                      <div key={i} className="px-4 py-3 hover:bg-white/[0.02]">
+                      <div key={i} className="px-4 py-3 hover:bg-accent">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="text-xs font-medium text-white">{n.name}</p>
-                            <p className="text-[10px] text-white/40 mt-0.5">
+                            <p className="text-xs font-medium text-foreground">{n.name}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
                               {typeLabels[n.professional_type] || n.professional_type} • {n.email}
                             </p>
                           </div>
-                          <span className="text-[10px] text-white/25 whitespace-nowrap ml-2">
+                          <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">
                             {timeSince(n.created_at)}
                           </span>
                         </div>
@@ -218,13 +219,13 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             <ChangePasswordButton />
 
             {/* Admin avatar */}
-            <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center">
-              <span className="text-xs font-bold text-blue-400">A</span>
+            <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
+              <span className="text-xs font-bold text-secondary-foreground">A</span>
             </div>
           </div>
         </div>
 
-        <div className="p-6 max-w-7xl mx-auto">{children}</div>
+        <div className="mx-auto max-w-7xl p-4 sm:p-6">{children}</div>
       </main>
     </div>
     </RlsHealthGate>

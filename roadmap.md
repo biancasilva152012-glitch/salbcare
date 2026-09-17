@@ -17,3 +17,10 @@
       inputs em creme com borda fina, ícones no menu lateral, resumo financeiro como
       card secundário à direita e o valor destacado em Gloock dourado
 - [ ] Confirmar com a Bianca se a paleta volta para navy/creme/teal/dourado
+
+## SalbCare 2.0 - etapa atual
+- [ ] Redesenhar cabeçalho, navegação inferior e header da agenda sem quebra em 360px e 390px
+- [ ] Redesenhar Home com bom dia, métricas do dia e card do Copilot sem duplicar atalhos existentes
+- [ ] Implementar Academy integrada ao app com trilhas de Inglês/Espanhol, lições e paywall com preços existentes
+- [ ] Criar painel admin para pacientes, consultas, receitas e despesas sem mexer na tela do profissional
+- [ ] Redesenhar Financeiro com lançamentos, cobranças, despesas, gráfico mês a mês e insights reais

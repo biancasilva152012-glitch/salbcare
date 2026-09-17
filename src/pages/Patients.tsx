@@ -253,7 +253,7 @@ const Patients = () => {
       <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
       <div className="space-y-1.5"><Label>Histórico médico</Label><Textarea placeholder="Histórico..." value={form.medical_history} onChange={(e) => setForm({ ...form, medical_history: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending || guestSyncLocked}>
-        {guestSyncLocked ? "Bloqueado — sincronize seus rascunhos" : isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Cadastrando..." : "Cadastrar")}
+        {guestSyncLocked ? "Bloqueado. Sincronize seus rascunhos" : isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Cadastrando..." : "Cadastrar")}
       </Button>
     </div>
   );
@@ -439,7 +439,7 @@ const Patients = () => {
             <EmptyState
               icon={Users}
               title="Sua lista está limpinha por aqui"
-              description="Cadastre o primeiro paciente à mão ou suba uma planilha CSV — em poucos minutos seu prontuário começa a tomar forma."
+              description="Cadastre o primeiro paciente à mão ou suba uma planilha CSV. Em poucos minutos seu prontuário começa a tomar forma."
               actionLabel={canAddPatient ? "Cadastrar paciente" : undefined}
               onAction={canAddPatient ? () => { setForm(emptyForm); setOpen(true); } : undefined}
               extra={
