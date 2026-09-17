@@ -97,6 +97,7 @@ const Profile = () => {
   const [councilNumber, setCouncilNumber] = useState("");
   const [councilState, setCouncilState] = useState("");
   const [officeAddress, setOfficeAddress] = useState("");
+  const [meetLink, setMeetLink] = useState("");
   const [savingRegistration, setSavingRegistration] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -120,8 +121,17 @@ const Profile = () => {
       setCouncilNumber((profile as any).council_number || "");
       setCouncilState((profile as any).council_state || "");
       setOfficeAddress((profile as any).office_address || "");
+      setMeetLink((profile as any).meet_link || "");
     }
   }, [profile]);
+
+  const isDirty =
+    !!profile &&
+    (bio !== (((profile as any).bio as string) || "") ||
+      councilNumber !== (((profile as any).council_number as string) || "") ||
+      councilState !== (((profile as any).council_state as string) || "") ||
+      officeAddress !== (((profile as any).office_address as string) || "") ||
+      meetLink !== (((profile as any).meet_link as string) || ""));
 
   // Auto-scroll to consultation settings when ?tab=consultation
   useEffect(() => {
@@ -133,7 +143,8 @@ const Profile = () => {
   const profConfig = getProfessionConfig(profile?.professional_type || "medico");
   const hasCouncil = !!councilNumber.trim();
 
-  const handleSaveRegistration = async () => {
+  /** Ação única de salvar: registro profissional, bio e link de teleconsulta. */
+  const handleSaveProfile = async () => {
     if (!user) return;
     setSavingRegistration(true);
     try {
@@ -143,13 +154,16 @@ const Profile = () => {
           council_number: councilNumber.trim() || null,
           council_state: councilState.trim().toUpperCase() || null,
           office_address: officeAddress.trim() || null,
+          bio: bio.trim() || null,
+          meet_link: meetLink.trim() || null,
         } as any)
         .eq("user_id", user.id);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
-      toast.success("Registro profissional atualizado!");
+      queryClient.invalidateQueries({ queryKey: ["profile-settings"] });
+      toast.success("Alterações salvas.");
     } catch {
-      toast.error("Erro ao salvar registro.");
+      toast.error("Não foi possível salvar. Tente novamente.");
     } finally {
       setSavingRegistration(false);
     }
