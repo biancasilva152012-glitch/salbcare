@@ -174,7 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .from("profiles")
           .select("plan, trial_start_date, payment_status")
           .eq("user_id", userId)
-          .single(),
+          .maybeSingle(),
       ]);
 
       const profile = profileResult.status === "fulfilled" ? profileResult.value.data : null;
