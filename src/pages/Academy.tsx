@@ -300,17 +300,17 @@ const Academy = () => {
 
       {!selectedTrack && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-          <header className="flex min-w-0 items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gold">SALB Academy</p>
-              <h1 className="mt-1 truncate text-2xl font-bold leading-tight text-foreground">Aprenda. Pratique. Evolua.</h1>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Lições curtas para usar idiomas no atendimento real.</p>
-            </div>
+          <header className="space-y-3">
             {isLoggedIn && (
-              <Button size="icon" variant="outline" aria-label="Voltar ao início" onClick={() => navigate("/dashboard")}>
-                <ArrowLeft className="h-4 w-4" />
+              <Button variant="ghost" className="h-12 px-0 text-muted-foreground" onClick={() => navigate("/dashboard")}>
+                <ArrowLeft className="h-4 w-4" /> Início
               </Button>
             )}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gold">SALB Academy</p>
+              <h1 className="mt-1 text-2xl font-bold leading-tight text-foreground">Aprenda. Pratique. Evolua.</h1>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Lições curtas para usar idiomas no atendimento real.</p>
+            </div>
           </header>
 
           <section className="rounded-2xl border border-gold/40 bg-card p-4 shadow-sm">

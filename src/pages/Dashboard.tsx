@@ -209,8 +209,12 @@ const Dashboard = () => {
       toast.info("Conclua seu perfil para gerar o link de agendamento.");
       return;
     }
-    await navigator.clipboard.writeText(bookingLink);
-    toast.success("Link copiado.");
+    try {
+      await navigator.clipboard.writeText(bookingLink);
+      toast.success("Link copiado.");
+    } catch {
+      toast.error("Não foi possível copiar o link.");
+    }
   };
 
   if (!user) return <GuestDashboard />;

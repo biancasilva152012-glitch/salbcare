@@ -27,7 +27,7 @@ const CookieConsent = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
+          className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-0 right-0 z-[100] p-4 md:bottom-0 md:pb-[calc(1rem+env(safe-area-inset-bottom))]"
         >
           <div className="mx-auto max-w-lg glass-card p-4 space-y-3 border border-border shadow-xl">
             <div className="flex items-start gap-2">

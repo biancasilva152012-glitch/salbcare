@@ -239,7 +239,7 @@ body[data-scroll-locked] {
 @layer utilities {
   .glass-card {
     @apply bg-card border rounded-2xl;
-    border-color: #E8ECEF;
+    border-color: hsl(var(--border));
     box-shadow: var(--shadow-card);
   }
 

@@ -41,7 +41,7 @@ type Charge = {
   id: string;
   patient_name: string;
   gross_amount: number;
-  appointment_date: string;
+  appointment_date: string | null;
   status: string;
 };
 
@@ -249,7 +249,7 @@ const Financial = () => {
   const income = monthTransactions.filter((transaction) => transaction.type === "income").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
   const expense = monthTransactions.filter((transaction) => transaction.type === "expense").reduce((sum, transaction) => sum + Number(transaction.amount), 0);
   const result = income - expense;
-  const monthCharges = charges.filter((charge) => charge.appointment_date.substring(0, 7) === filterKey);
+  const monthCharges = charges.filter((charge) => charge.appointment_date?.substring(0, 7) === filterKey);
   const receivable = monthCharges
     .filter((charge) => !["paid", "succeeded", "confirmed"].includes(charge.status))
     .reduce((sum, charge) => sum + Number(charge.gross_amount), 0);
@@ -443,7 +443,7 @@ const Financial = () => {
           </div>
         </section>
 
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {[
             ["all", "Lançamentos"],
             ["income", "Receitas"],
@@ -454,7 +454,7 @@ const Financial = () => {
               key={value}
               type="button"
               onClick={() => setFilterMode(value as typeof filterMode)}
-              className={`min-h-11 shrink-0 rounded-full px-4 text-xs font-semibold transition-colors ${filterMode === value ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"}`}
+              className={`min-h-12 rounded-full px-3 text-xs font-semibold transition-colors ${filterMode === value ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"}`}
             >
               {label}
             </button>
@@ -478,7 +478,9 @@ const Financial = () => {
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{charge.patient_name}</p>
-                    <p className="text-xs text-muted-foreground">{new Date(`${charge.appointment_date}T12:00:00`).toLocaleDateString("pt-BR")} · {charge.status}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {charge.appointment_date ? new Date(`${charge.appointment_date}T12:00:00`).toLocaleDateString("pt-BR") : "Sem data"} · {charge.status}
+                    </p>
                   </div>
                 </div>
                 <p className="shrink-0 font-mono text-sm font-semibold">{money(Number(charge.gross_amount))}</p>
