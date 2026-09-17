@@ -37,37 +37,40 @@ body[data-scroll-locked] {
 
 @layer base {
   :root {
-    /* Silicon Valley light theme — Linear / Vercel / Stripe inspired */
-    --background: 210 17% 98%;          /* #F8F9FA */
-    --foreground: 212 53% 11%;          /* #0D1B2A */
+    /* SalbCare product palette: navy #0F1F3A, cream #F4EEE2, teal #34BFB4, gold #CFA856 */
+    --background: 40 45% 92%;           /* #F4EEE2 cream */
+    --foreground: 218 59% 14%;          /* #0F1F3A navy */
 
     --card: 0 0% 100%;                  /* #FFFFFF */
-    --card-foreground: 212 53% 11%;
+    --card-foreground: 218 59% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 212 53% 11%;
+    --popover-foreground: 218 59% 14%;
 
-    --primary: 173 100% 35%;            /* #00B4A0 */
+    --primary: 218 59% 14%;             /* navy CTA, white text */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 173 100% 35%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 175 57% 48%;           /* teal, navy text */
+    --secondary-foreground: 218 59% 14%;
 
-    --muted: 210 17% 96%;
-    --muted-foreground: 220 9% 46%;     /* #6B7280 */
+    --muted: 40 32% 88%;
+    --muted-foreground: 218 22% 34%;    /* readable navy gray */
 
-    --accent: 180 50% 96%;              /* #F0FAFA — teal tint container */
-    --accent-foreground: 173 100% 25%;
+    --accent: 175 40% 93%;              /* soft teal container */
+    --accent-foreground: 218 59% 14%;
 
-    --destructive: 0 72% 51%;
+    --gold: 41 56% 57%;                 /* #CFA856 — Academy only */
+    --gold-foreground: 218 59% 14%;
+
+    --destructive: 0 62% 44%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 60% 40%;
+    --success: 168 52% 32%;
     --success-foreground: 0 0% 100%;
 
-    --border: 210 14% 92%;              /* #E8ECEF */
-    --input: 220 13% 83%;               /* #D1D5DB */
-    --ring: 173 100% 35%;
+    --border: 40 22% 84%;
+    --input: 40 20% 80%;
+    --ring: 175 57% 48%;
 
     /* Multi-product brand hub tokens (Pro + Kite verticals) */
     --brand-primary: 146 50% 24%;       /* #1F5C3F */
@@ -101,9 +104,9 @@ body[data-scroll-locked] {
     --sidebar-ring: 173 100% 35%;
 
     /* Enhanced tokens — soft, airy shadows (no heavy grays) */
-    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
-    --shadow-card-hover: 0 8px 30px rgba(15, 23, 42, 0.08);
-    --shadow-glow: 0 4px 14px rgba(0, 180, 160, 0.30);
+    --shadow-card: 0 1px 2px rgba(15, 31, 58, 0.08);
+    --shadow-card-hover: 0 2px 8px rgba(15, 31, 58, 0.10);
+    --shadow-glow: 0 1px 2px rgba(15, 31, 58, 0.08);
 
     /* ============================================================
        SalbCare editorial design system — dark navy + dual accents.
@@ -190,7 +193,12 @@ body[data-scroll-locked] {
   }
 
   /* Minimum touch target for mobile */
-  button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
+  button, [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  a, input[type="checkbox"], input[type="radio"] {
     min-height: 44px;
     min-width: 44px;
   }
@@ -244,16 +252,16 @@ body[data-scroll-locked] {
     transform: translateY(-2px);
   }
 
-  /* Solid teal CTA with colored shadow — no heavy gradients */
+  /* Primary action: flat navy, white text, neutral elevation */
   .gradient-primary {
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
-    box-shadow: 0 4px 14px rgba(0, 180, 160, 0.30);
-    transition: filter 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+    box-shadow: var(--shadow-card);
+    transition: background 180ms ease, box-shadow 180ms ease;
   }
   .gradient-primary:hover {
-    filter: brightness(1.05);
-    box-shadow: 0 6px 20px rgba(0, 180, 160, 0.36);
+    background: hsl(var(--primary) / 0.92);
+    box-shadow: var(--shadow-card-hover);
   }
 
   .gradient-text {
