@@ -31,7 +31,7 @@ import UpgradeModal from "@/components/UpgradeModal";
 type Transaction = {
   id: string;
   description: string;
-  amount: number | string;
+  amount: number;
   type: string;
   date: string;
   category: string | null;
@@ -40,7 +40,7 @@ type Transaction = {
 type Charge = {
   id: string;
   patient_name: string;
-  gross_amount: number | string;
+  gross_amount: number;
   appointment_date: string;
   status: string;
 };
