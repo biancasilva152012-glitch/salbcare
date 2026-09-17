@@ -346,6 +346,11 @@ const App = () => (
               <Route path="/cancelado" element={<ProfessionalRoute><Cancelado /></ProfessionalRoute>} />
               {/* Guest-friendly: localStorage-backed UI when !user */}
               <Route path="/dashboard" element={<ProfessionalRoute allowGuest><Dashboard /></ProfessionalRoute>} />
+              <Route path="/agenda" element={<Navigate to="/dashboard/agenda" replace />} />
+              <Route path="/patients" element={<Navigate to="/dashboard/pacientes" replace />} />
+              <Route path="/pacientes" element={<Navigate to="/dashboard/pacientes" replace />} />
+              <Route path="/financial" element={<Navigate to="/dashboard/financial" replace />} />
+              <Route path="/financeiro" element={<Navigate to="/dashboard/financial" replace />} />
               <Route path="/dashboard/agenda" element={<ProfessionalRoute allowGuest><Agenda /></ProfessionalRoute>} />
               <Route path="/dashboard/pacientes" element={<ProfessionalRoute allowGuest><Patients /></ProfessionalRoute>} />
               {/* Guest-paywall rendered inside the page when !user */}
