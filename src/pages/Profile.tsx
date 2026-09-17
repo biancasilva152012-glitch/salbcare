@@ -361,15 +361,6 @@ const Profile = () => {
                 className="bg-accent border-border"
               />
             </div>
-            <Button
-              onClick={handleSaveRegistration}
-              disabled={savingRegistration}
-              size="sm"
-              className="w-full gradient-primary font-semibold gap-1.5"
-            >
-              {savingRegistration ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {savingRegistration ? "Salvando..." : "Salvar registro profissional"}
-            </Button>
           </div>
         </div>
 
@@ -407,17 +398,6 @@ const Profile = () => {
               rows={3}
             />
             <p className="text-[10px] text-muted-foreground text-right">{bio.length}/300</p>
-            <Button
-              size="sm"
-              className="w-full gradient-primary font-semibold"
-              onClick={async () => {
-                await supabase.from("profiles").update({ bio: bio.trim() || null } as any).eq("user_id", user!.id);
-                queryClient.invalidateQueries({ queryKey: ["profile", user!.id] });
-                toast.success("Bio atualizada!");
-              }}
-            >
-              Salvar bio
-            </Button>
           </div>
         </div>
 
