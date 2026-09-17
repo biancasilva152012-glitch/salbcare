@@ -44,7 +44,7 @@ const emptyForm = { name: "", phone: "", email: "", birth_date: "", notes: "", m
 
 const Patients = () => {
   const { user } = useAuth();
-  if (!user) return <GuestPatients />;
+  const userId = user?.id ?? "";
   const sub = useSubscription();
   const { canAddPatient: canAddPatientFreemium, patientsCount, patientsLimit, isFree } = useFreemiumLimits();
   const [blockModalOpen, setBlockModalOpen] = useState(false);
@@ -131,16 +131,18 @@ const Patients = () => {
   const { data: patients = [], isLoading } = useQuery({
     queryKey: ["patients", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("patients").select("id, name, phone, email, birth_date, cpf, city, preferred_language, notes, medical_history, initial_anamnesis, procedure_performed, created_at, updated_at, user_id").eq("user_id", user!.id).order("name").limit(500);
+      if (!userId) return [];
+      const { data } = await supabase.from("patients").select("id, name, phone, email, birth_date, cpf, city, preferred_language, notes, medical_history, initial_anamnesis, procedure_performed, created_at, updated_at, user_id").eq("user_id", userId).order("name").limit(500);
       return data || [];
     },
-    enabled: !!user,
+    enabled: !!userId,
   });
 
   const addMutation = useMutation({
     mutationFn: async () => {
+      if (!userId) throw new Error("auth");
       const { error } = await supabase.from("patients").insert({
-        user_id: user!.id, name: form.name, phone: form.phone || null, email: form.email || null,
+        user_id: userId, name: form.name, phone: form.phone || null, email: form.email || null,
         birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
         initial_anamnesis: form.initial_anamnesis || null, procedure_performed: form.procedure_performed || null,
       });
@@ -157,11 +159,12 @@ const Patients = () => {
 
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (!editId) throw new Error("validation");
       const { error } = await supabase.from("patients").update({
         name: form.name, phone: form.phone || null, email: form.email || null,
         birth_date: form.birth_date || null, notes: form.notes || null, medical_history: form.medical_history || null,
         initial_anamnesis: form.initial_anamnesis || null, procedure_performed: form.procedure_performed || null,
-      }).eq("id", editId!);
+      }).eq("id", editId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -197,7 +200,7 @@ const Patients = () => {
   const handleExportPdf = async (patient: Tables<"patients">) => {
     try {
       const [{ data: appts }, { data: docs }] = await Promise.all([
-        supabase.from("appointments").select("date, time, appointment_type, notes, status").eq("user_id", user!.id).eq("patient_id", patient.id).order("date", { ascending: false }),
+        supabase.from("appointments").select("date, time, appointment_type, notes, status").eq("user_id", userId).eq("patient_id", patient.id).order("date", { ascending: false }),
         supabase.from("patient_documents").select("file_name, description, created_at").eq("patient_id", patient.id).order("created_at", { ascending: false }),
       ]);
 
@@ -257,6 +260,8 @@ const Patients = () => {
       </Button>
     </div>
   );
+
+  if (!user) return <GuestPatients />;
 
   if (isLoading) {
     return <PageContainer><PageSkeleton variant="list" /></PageContainer>;

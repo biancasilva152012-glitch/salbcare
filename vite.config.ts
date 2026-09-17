@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mcpPlugin(),
-    mode === "development" && componentTagger(),
+    mode === "development" && componentTagger({ jsxSource: false }),
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: false,

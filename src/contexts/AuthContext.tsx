@@ -122,7 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .from("profiles")
         .select("user_type")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
       setUserType((data?.user_type as UserType) || null);
     } catch {
       setUserType(null);
@@ -174,7 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .from("profiles")
           .select("plan, trial_start_date, payment_status")
           .eq("user_id", userId)
-          .single(),
+          .maybeSingle(),
       ]);
 
       const profile = profileResult.status === "fulfilled" ? profileResult.value.data : null;
@@ -231,7 +231,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               .from("profiles")
               .select("user_type, council_number")
               .eq("user_id", newSession.user.id)
-              .single()
+              .maybeSingle()
               .then(({ data: profile }) => {
                 if ((profile as any)?.user_type === "professional" && !(profile as any)?.council_number) {
                   const currentPath = window.location.pathname;

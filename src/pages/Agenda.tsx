@@ -42,7 +42,7 @@ const blockForm = { date: "", time: "", reason: "" };
 
 const Agenda = () => {
   const { user } = useAuth();
-  if (!user) return <GuestAgenda />;
+  const userId = user?.id ?? "";
   const { hasAccess } = useFeatureGate();
   const {
     isFree,
@@ -73,11 +73,11 @@ const Agenda = () => {
       const { count } = await supabase
         .from("service_requests")
         .select("*", { count: "exact", head: true })
-        .eq("professional_id", user!.id)
+        .eq("professional_id", userId)
         .in("status", ["pending_review", "pending_payment"]);
       return count || 0;
     },
-    enabled: !!user,
+    enabled: !!userId,
     refetchInterval: 30000,
   });
 
@@ -95,7 +95,7 @@ const Agenda = () => {
 
   const handleCsvImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !userId) return;
     e.target.value = "";
     setImporting(true);
 
@@ -113,7 +113,7 @@ const Agenda = () => {
       const toInsert = rows
         .filter((cols) => cols[0] && cols[1] && cols[2])
         .map((cols) => ({
-          user_id: user.id,
+          user_id: userId,
           patient_name: cols[0],
           date: parseDateBR(cols[1]) || cols[1],
           time: cols[2].length === 5 ? cols[2] : cols[2] + ":00",
@@ -143,26 +143,29 @@ const Agenda = () => {
   const { data: professionals = [] } = useQuery({
     queryKey: ["professionals", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("professionals").select("id, name, specialty").eq("user_id", user!.id).eq("status", "active").order("name");
+      if (!userId) return [];
+      const { data } = await supabase.from("professionals").select("id, name, specialty").eq("user_id", userId).eq("status", "active").order("name");
       return data || [];
     },
-    enabled: !!user && canUseTeam,
+    enabled: !!userId && canUseTeam,
   });
 
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["appointments", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("appointments").select("id, patient_name, patient_id, date, time, appointment_type, notes, status, professional_id, receipt_url").eq("user_id", user!.id).neq("status", "cancelled").order("date").order("time").limit(500);
+      if (!userId) return [];
+      const { data } = await supabase.from("appointments").select("id, patient_name, patient_id, date, time, appointment_type, notes, status, professional_id, receipt_url").eq("user_id", userId).neq("status", "cancelled").order("date").order("time").limit(500);
       return data || [];
     },
-    enabled: !!user,
+    enabled: !!userId,
   });
 
   const blockMutation = useMutation({
     mutationFn: async () => {
+      if (!userId) throw new Error("auth");
       const { error } = await supabase.from("appointments").insert({
-        user_id: user!.id,
-        patient_name: "🔒 Bloqueado",
+        user_id: userId,
+        patient_name: "Bloqueado",
         date: blockData.date,
         time: blockData.time,
         appointment_type: "blocked",
@@ -194,8 +197,9 @@ const Agenda = () => {
 
   const addMutation = useMutation({
     mutationFn: async () => {
+      if (!userId) throw new Error("auth");
       const { error } = await supabase.from("appointments").insert({
-        user_id: user!.id,
+        user_id: userId,
         patient_name: form.patient_name,
         patient_id: form.patient_id || null,
         date: form.date,
@@ -211,13 +215,13 @@ const Agenda = () => {
       setForm(emptyForm);
       setOpen(false);
       toast.success("Consulta agendada!");
-      toast("Você acaba de economizar R$ 0 em comissões comparado a outras plataformas. Continue crescendo com a SALBCARE! 🚀", { duration: 5000 });
     },
     onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (!editId) throw new Error("validation");
       const { error } = await supabase.from("appointments").update({
         patient_name: form.patient_name,
         patient_id: form.patient_id || null,
@@ -226,7 +230,7 @@ const Agenda = () => {
         appointment_type: form.appointment_type,
         notes: form.notes || null,
         professional_id: form.professional_id || null,
-      }).eq("id", editId!);
+      }).eq("id", editId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -245,12 +249,12 @@ const Agenda = () => {
       const { error } = await supabase.from("appointments").update({ status: "cancelled" }).eq("id", id);
       if (error) throw error;
       // Check if suspension should be applied (3+ cancellations/month)
-      await supabase.rpc("check_and_apply_suspension", { _user_id: user!.id });
+      if (userId) await supabase.rpc("check_and_apply_suspension", { _user_id: userId });
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       // Check if user got suspended
-      const { data: profile } = await supabase.from("profiles").select("suspended_until").eq("user_id", user!.id).single();
+      const { data: profile } = await supabase.from("profiles").select("suspended_until").eq("user_id", userId).single();
       if (profile?.suspended_until && new Date(profile.suspended_until) > new Date()) {
         toast.warning("Atenção: seu perfil foi suspenso das buscas por 7 dias devido a 3 cancelamentos no mês.");
       } else {
@@ -718,7 +722,7 @@ const Agenda = () => {
                       : null;
 
                     return (
-                      <div key={apt.id} className={cn("glass-card p-3 space-y-2", isPending && "ring-1 ring-orange-500/20")}>
+                      <div key={apt.id} className={cn("glass-card p-3 space-y-2", isPending && "ring-1 ring-secondary/20")}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
@@ -737,7 +741,7 @@ const Agenda = () => {
                                   </span>
                                 )}
                                 {isPending && (
-                                  <Badge variant="outline" className="text-[10px] border-orange-500/30 text-orange-600 px-1.5 py-0">
+                                  <Badge variant="outline" className="border-secondary/30 px-1.5 py-0 text-[10px] text-secondary">
                                     <Clock className="h-3 w-3 mr-0.5" /> {apt.status === "aguardando_comprovante" ? "Aguardando comprovante" : "Pendente"}
                                   </Badge>
                                 )}

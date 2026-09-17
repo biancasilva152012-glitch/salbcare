@@ -101,7 +101,7 @@ const GlobalStatusBanner = () => {
         severity: blocked ? ("danger" as const) : ("warn" as const),
         blocked,
         title: blocked
-          ? `Você está bloqueado — limite do modo visitante atingido (${counter})`
+          ? `Você está bloqueado: limite do modo visitante atingido (${counter})`
           : `Modo visitante: ${counter}`,
         description: blocked
           ? "Crie sua conta grátis para continuar e levar tudo o que você criou."
@@ -155,7 +155,7 @@ const GlobalStatusBanner = () => {
           severity: worst.blocked ? ("danger" as const) : ("warn" as const),
           blocked: worst.blocked,
           title: worst.blocked
-            ? `Você está bloqueado — limite grátis de ${worst.label} atingido (${counter})`
+            ? `Você está bloqueado: limite grátis de ${worst.label} atingido (${counter})`
             : `Você usou ${counter} do plano grátis`,
           description: worst.blocked
             ? "Faça upgrade para Essencial para continuar cadastrando."

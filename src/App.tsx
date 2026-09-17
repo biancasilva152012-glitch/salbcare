@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { forwardRef, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,7 +24,11 @@ import InstallPrompt from "@/components/pro/InstallPrompt";
 import { useTracking } from "@/hooks/useTracking";
 import { useLocation, useParams } from "react-router-dom";
 
-const TrackingProvider = () => { useTracking(); return null; };
+const TrackingProvider = forwardRef<HTMLDivElement>((_, ref) => {
+  useTracking();
+  return <div ref={ref} className="contents" aria-hidden />;
+});
+TrackingProvider.displayName = "TrackingProvider";
 
 // Generic redirect helper that preserves a single :slug param.
 const SlugRedirect = ({ to }: { to: (slug: string) => string }) => {
@@ -160,11 +164,12 @@ const queryClient = new QueryClient({
   },
 });
 
-const LazyFallback = () => (
-  <PageContainer>
+const LazyFallback = forwardRef<HTMLDivElement>((_, ref) => (
+  <PageContainer ref={ref}>
     <PageSkeleton variant="list" />
   </PageContainer>
-);
+));
+LazyFallback.displayName = "LazyFallback";
 
 const App = () => (
   <GlobalErrorBoundary>
@@ -346,6 +351,11 @@ const App = () => (
               <Route path="/cancelado" element={<ProfessionalRoute><Cancelado /></ProfessionalRoute>} />
               {/* Guest-friendly: localStorage-backed UI when !user */}
               <Route path="/dashboard" element={<ProfessionalRoute allowGuest><Dashboard /></ProfessionalRoute>} />
+              <Route path="/agenda" element={<Navigate to="/dashboard/agenda" replace />} />
+              <Route path="/patients" element={<Navigate to="/dashboard/pacientes" replace />} />
+              <Route path="/pacientes" element={<Navigate to="/dashboard/pacientes" replace />} />
+              <Route path="/financial" element={<Navigate to="/dashboard/financial" replace />} />
+              <Route path="/financeiro" element={<Navigate to="/dashboard/financial" replace />} />
               <Route path="/dashboard/agenda" element={<ProfessionalRoute allowGuest><Agenda /></ProfessionalRoute>} />
               <Route path="/dashboard/pacientes" element={<ProfessionalRoute allowGuest><Patients /></ProfessionalRoute>} />
               {/* Guest-paywall rendered inside the page when !user */}

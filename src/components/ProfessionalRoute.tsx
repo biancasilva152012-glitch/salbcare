@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useLocation } from "react-router-dom";
 
@@ -11,7 +12,7 @@ interface ProfessionalRouteProps {
   allowGuest?: boolean;
 }
 
-const ProfessionalRoute = ({ children, allowGuest = false }: ProfessionalRouteProps) => {
+const ProfessionalRoute = forwardRef<HTMLDivElement, ProfessionalRouteProps>(({ children, allowGuest = false }, ref) => {
   const { user, loading, userType, userTypeLoading } = useAuth();
   const location = useLocation();
 
@@ -24,12 +25,14 @@ const ProfessionalRoute = ({ children, allowGuest = false }: ProfessionalRoutePr
   }
 
   if (!user) {
-    if (allowGuest) return <>{children}</>;
+    if (allowGuest) return <div ref={ref} className="contents">{children}</div>;
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   if (userType === "patient") return <Navigate to="/patient-dashboard" replace />;
 
-  return <>{children}</>;
-};
+  return <div ref={ref} className="contents">{children}</div>;
+});
+
+ProfessionalRoute.displayName = "ProfessionalRoute";
 
 export default ProfessionalRoute;

@@ -64,7 +64,7 @@ const Dashboard = () => {
         .from("profiles")
         .select("name, profile_slug, referral_code, created_at, email")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       return data;
     },
     enabled: !!user,
@@ -209,8 +209,12 @@ const Dashboard = () => {
       toast.info("Conclua seu perfil para gerar o link de agendamento.");
       return;
     }
-    await navigator.clipboard.writeText(bookingLink);
-    toast.success("Link copiado.");
+    try {
+      await navigator.clipboard.writeText(bookingLink);
+      toast.success("Link copiado.");
+    } catch {
+      toast.error("Não foi possível copiar o link.");
+    }
   };
 
   if (!user) return <GuestDashboard />;

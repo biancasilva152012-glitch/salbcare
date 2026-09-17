@@ -2,6 +2,9 @@ import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
+import "@fontsource/gloock";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/ibm-plex-mono/600.css";
 import { attachSwDiagnostics } from "./lib/swDiagnostics";
 import { attachGlobalErrorHandlers, initErrorReporting } from "./lib/errorReporting";
 
@@ -37,7 +40,11 @@ if (canRegisterServiceWorker) {
     .catch(() => {});
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = document.getElementById("root");
+
+if (root) {
+  createRoot(root).render(<App />);
+}
 
 // Prefetch high-traffic public routes when the browser is idle so the first
 // navigation feels instant. Skip on the /bio route itself (already loaded) and

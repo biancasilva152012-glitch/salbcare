@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, memo } from "react";
+import { ReactNode, useCallback, memo, forwardRef } from "react";
 import { Loader2 } from "lucide-react";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import BackButton from "@/components/BackButton";
@@ -12,7 +12,7 @@ interface PageContainerProps {
   backLabel?: string;
 }
 
-const PageContainer = memo(({ children, className = "", onRefresh, backTo, backLabel }: PageContainerProps) => {
+const PageContainer = memo(forwardRef<HTMLDivElement, PageContainerProps>(({ children, className = "", onRefresh, backTo, backLabel }, ref) => {
   const { scrollRef, pullDistance, isRefreshing } = usePullToRefresh({
     onRefresh,
   });
@@ -27,7 +27,7 @@ const PageContainer = memo(({ children, className = "", onRefresh, backTo, backL
   const showIndicator = pullDistance > 0 || isRefreshing;
 
   return (
-    <div className={`flex flex-col min-h-[100dvh] ${className}`} style={{ WebkitOverflowScrolling: "touch" as any }}>
+    <div ref={ref} className={`flex flex-col min-h-[100dvh] ${className}`} style={{ WebkitOverflowScrolling: "touch" as any }}>
       <main
         ref={setRef}
         className="flex-1 overflow-y-auto overscroll-y-contain px-4 pt-5 pb-20 scroll-smooth will-change-scroll"
@@ -66,7 +66,7 @@ const PageContainer = memo(({ children, className = "", onRefresh, backTo, backL
       </main>
     </div>
   );
-});
+}));
 
 PageContainer.displayName = "PageContainer";
 
