@@ -569,7 +569,7 @@ const Agenda = () => {
               activeTab === "appointments" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            📅 Consultas
+            Consultas
           </button>
           <button
             onClick={() => setActiveTab("requests")}

@@ -156,8 +156,6 @@ const Dashboard = () => {
     staleTime: 2 * 60 * 1000,
   });
 
-  if (!user) return <GuestDashboard />;
-
   const handleEnablePush = async () => {
     const ok = await subscribe();
     if (ok) toast.success("Notificações ativadas.");
@@ -214,6 +212,8 @@ const Dashboard = () => {
     await navigator.clipboard.writeText(bookingLink);
     toast.success("Link copiado.");
   };
+
+  if (!user) return <GuestDashboard />;
 
   if (profileLoading || appointmentsLoading) {
     return <PageContainer><PageSkeleton variant="dashboard" /></PageContainer>;

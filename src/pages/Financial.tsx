@@ -148,8 +148,6 @@ const Financial = () => {
     staleTime: 90_000,
   });
 
-  if (!user) return <GuestFinancialPreview />;
-
   const validateForm = () => {
     if (!form.description.trim()) {
       toast.error("Preencha a descrição.");
@@ -349,6 +347,8 @@ const Financial = () => {
     );
   };
 
+  if (!user) return <GuestFinancialPreview />;
+
   if (isLoading) return <PageContainer><PageSkeleton variant="list" /></PageContainer>;
 
   return (
@@ -367,11 +367,17 @@ const Financial = () => {
             )}
           </div>
           <Dialog open={open} onOpenChange={(value) => { setOpen(value); if (value) setForm(emptyForm); }}>
-            <DialogTrigger asChild>
-              <Button className="w-full gap-2" onClick={() => { if (!canAddFinancial) setUpgradeOpen(true); }}>
+            {canAddFinancial ? (
+              <DialogTrigger asChild>
+                <Button className="w-full gap-2">
+                  <Plus className="h-4 w-4" /> Novo lançamento
+                </Button>
+              </DialogTrigger>
+            ) : (
+              <Button className="w-full gap-2" onClick={() => setUpgradeOpen(true)}>
                 <Plus className="h-4 w-4" /> Novo lançamento
               </Button>
-            </DialogTrigger>
+            )}
             {canAddFinancial && (
               <DialogContent className="bg-card border-border">
                 <DialogHeader><DialogTitle>Novo lançamento</DialogTitle></DialogHeader>
