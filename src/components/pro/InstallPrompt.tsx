@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CREAM_BG, MONO, NAVY_INK, SANS } from "./brand";
 
@@ -49,7 +49,7 @@ export function useInstallPrompt() {
 }
 
 /** Banner discreto de instalação. Não aparece no app já instalado. */
-const InstallPrompt = () => {
+const InstallPrompt = forwardRef<HTMLDivElement>((_, ref) => {
   const { canInstall, install } = useInstallPrompt();
   const [visible, setVisible] = useState(false);
   const [ios, setIos] = useState(false);
@@ -71,6 +71,7 @@ const InstallPrompt = () => {
 
   return (
     <div
+      ref={ref}
       role="region"
       aria-label="Instalar o app SalbCare"
       style={{
@@ -148,6 +149,8 @@ const InstallPrompt = () => {
       </button>
     </div>
   );
-};
+});
+
+InstallPrompt.displayName = "InstallPrompt";
 
 export default InstallPrompt;

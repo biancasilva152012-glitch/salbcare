@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { forwardRef, useState, useEffect } from "react";
 import { Cookie } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const COOKIE_KEY = "salbcare_cookie_consent";
 
-const CookieConsent = () => {
+const CookieConsent = forwardRef<HTMLDivElement>((_, ref) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const CookieConsent = () => {
 
   return (
     visible && (
-      <div className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-0 right-0 z-[100] p-4 md:bottom-0 md:pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <div ref={ref} className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-0 right-0 z-[100] p-4 md:bottom-0 md:pb-[calc(1rem+env(safe-area-inset-bottom))]">
         <div className="mx-auto max-w-lg glass-card p-4 space-y-3 border border-border shadow-xl">
           <div className="flex items-start gap-2">
             <Cookie className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -40,6 +40,8 @@ const CookieConsent = () => {
       </div>
     )
   );
-};
+});
+
+CookieConsent.displayName = "CookieConsent";
 
 export default CookieConsent;

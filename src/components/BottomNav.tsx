@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { forwardRef, memo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Home, Calendar, Users, DollarSign, GraduationCap, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,7 +28,7 @@ const prefetch = (to: string) => {
   prefetchers[to]?.().catch(() => prefetched.delete(to));
 };
 
-const BottomNav = memo(() => {
+const BottomNav = memo(forwardRef<HTMLElement>((_, ref) => {
   const location = useLocation();
   const { user } = useAuth();
 
@@ -45,7 +45,7 @@ const BottomNav = memo(() => {
   if (!showOn) return null;
 
   return (
-    <nav aria-label="Navegação principal" className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/90">
+    <nav ref={ref} aria-label="Navegação principal" className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/90">
       <div className="mx-auto grid max-w-lg grid-cols-6 px-0.5 pb-[env(safe-area-inset-bottom)]">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -79,7 +79,7 @@ const BottomNav = memo(() => {
       </div>
     </nav>
   );
-});
+}));
 
 BottomNav.displayName = "BottomNav";
 
