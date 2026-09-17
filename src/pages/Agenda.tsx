@@ -436,30 +436,46 @@ const Agenda = () => {
   return (
     <PageContainer backTo="/dashboard" onRefresh={() => { queryClient.invalidateQueries({ queryKey: ["appointments"] }); queryClient.invalidateQueries({ queryKey: ["service-requests"] }); queryClient.invalidateQueries({ queryKey: ["service-requests-count"] }); }}>
       <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Agenda</h1>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1"
-              onClick={() => downloadCsvTemplate("modelo-agenda.csv", AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE)}
-            >
-              <FileDown className="h-3.5 w-3.5" /> Modelo
-            </Button>
-            <label>
-              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing || guestSyncLocked} asChild>
-                <span>
-                  {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-                  {importing ? "..." : "Importar"}
-                </span>
-              </Button>
-              <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" disabled={guestSyncLocked} />
-            </label>
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="text-2xl font-bold whitespace-nowrap">Agenda</h1>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="outline" aria-label="Mais ações da agenda">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-card border-border">
+                <DropdownMenuItem
+                  onSelect={() => downloadCsvTemplate("modelo-agenda.csv", AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE)}
+                >
+                  <FileDown className="mr-2 h-4 w-4" /> Modelo
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={importing || guestSyncLocked}
+                  onSelect={(e) => { e.preventDefault(); agendaImportRef.current?.click(); }}
+                >
+                  {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                  {importing ? "Importando" : "Importar"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => { setBlockData(blockForm); setBlockOpen(true); }}>
+                  <Lock className="mr-2 h-4 w-4" /> Bloquear horário
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <input
+            ref={agendaImportRef}
+            type="file"
+            accept=".csv,.txt"
+            onChange={handleCsvImport}
+            className="hidden"
+            disabled={guestSyncLocked}
+          />
+
+          <div>
             <Dialog open={blockOpen} onOpenChange={(v) => { setBlockOpen(v); if (v) setBlockData(blockForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-1"><Lock className="h-3.5 w-3.5" /> Bloquear</Button>
-              </DialogTrigger>
               <DialogContent className="bg-card border-border">
                 <DialogHeader><DialogTitle>Bloquear Horário</DialogTitle></DialogHeader>
                 <div className="space-y-3 pt-2">
