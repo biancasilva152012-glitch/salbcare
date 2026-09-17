@@ -265,48 +265,64 @@ const Patients = () => {
   return (
     <PageContainer backTo="/dashboard" onRefresh={() => queryClient.invalidateQueries({ queryKey: ["patients"] })}>
       <div className="space-y-5">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold whitespace-nowrap">Pacientes</h1>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1"
-              onClick={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
-            >
-              <FileDown className="h-3.5 w-3.5" /> Modelo
-            </Button>
-            <label>
-              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing || !canAddPatient} asChild>
-                <span>
-                  {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-                  {importing ? "Importando..." : "Importar"}
-                </span>
-              </Button>
-              <input type="file" accept=".csv,.txt,.xls,.xlsx" onChange={handleCsvImport} className="hidden" disabled={!canAddPatient} />
-            </label>
-            {canAddPatient ? (
-              <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="gradient-primary gap-1"><Plus className="h-4 w-4" /> Novo</Button>
-                </DialogTrigger>
-                <DialogContent className="bg-card border-border">
-                  <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
-                  {renderPatientForm(false)}
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <Button size="sm" className="gradient-primary gap-1" onClick={() => {
-                logPremiumBlockAttempt("patients_limit", "limit_reached", {
-                  count: patientsCount,
-                  limit: patientsLimit,
-                });
-                setBlockModalOpen(true);
-              }}>
-                <Plus className="h-4 w-4" /> Novo
-              </Button>
-            )}
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="text-2xl font-bold whitespace-nowrap">Pacientes</h1>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="outline" aria-label="Mais ações de pacientes">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-card border-border">
+                <DropdownMenuItem
+                  onSelect={() => downloadCsvTemplate("modelo-pacientes.csv", PATIENT_TEMPLATE_HEADERS, PATIENT_TEMPLATE_SAMPLE)}
+                >
+                  <FileDown className="mr-2 h-4 w-4" /> Modelo
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={importing || !canAddPatient}
+                  onSelect={(e) => { e.preventDefault(); patientsImportRef.current?.click(); }}
+                >
+                  {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                  {importing ? "Importando" : "Importar"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+
+          <input
+            ref={patientsImportRef}
+            type="file"
+            accept=".csv,.txt,.xls,.xlsx"
+            onChange={handleCsvImport}
+            className="hidden"
+            disabled={!canAddPatient}
+          />
+
+          {canAddPatient ? (
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
+              <DialogTrigger asChild>
+                <Button className="gradient-primary w-full gap-2 font-semibold">
+                  <Plus className="h-4 w-4" /> Novo paciente
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-card border-border">
+                <DialogHeader><DialogTitle>Novo Paciente</DialogTitle></DialogHeader>
+                {renderPatientForm(false)}
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <Button className="gradient-primary w-full gap-2 font-semibold" onClick={() => {
+              logPremiumBlockAttempt("patients_limit", "limit_reached", {
+                count: patientsCount,
+                limit: patientsLimit,
+              });
+              setBlockModalOpen(true);
+            }}>
+              <Plus className="h-4 w-4" /> Novo paciente
+            </Button>
+          )}
         </div>
 
         {guestSyncLocked && <GuestSyncLockBanner section="pacientes" />}
