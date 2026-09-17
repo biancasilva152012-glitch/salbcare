@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock, Check, X, FileImage, ExternalLink, FilePlus } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock, Check, X, FileImage, ExternalLink, FilePlus, MoreVertical } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -529,8 +530,8 @@ const Agenda = () => {
             {canAddAppointment && !guestSyncLocked ? (
               <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="gradient-primary gap-1" data-testid="agenda-new-btn">
-                    <Plus className="h-4 w-4" /> Nova
+                  <Button className="gradient-primary w-full gap-2 font-semibold" data-testid="agenda-new-btn">
+                    <Plus className="h-4 w-4" /> Nova consulta
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-card border-border">
@@ -540,12 +541,11 @@ const Agenda = () => {
               </Dialog>
             ) : (
               <Button
-                size="sm"
-                className="gradient-primary gap-1"
+                className="gradient-primary w-full gap-2 font-semibold"
                 data-testid="agenda-new-btn-blocked"
                 onClick={() => guestSyncLocked ? toast.info("Sincronize seus rascunhos do modo guest antes de criar novas consultas.") : setUpgradeOpen(true)}
               >
-                <Plus className="h-4 w-4" /> Nova
+                <Plus className="h-4 w-4" /> Nova consulta
               </Button>
             )}
           </div>
