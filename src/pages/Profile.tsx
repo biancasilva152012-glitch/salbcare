@@ -411,7 +411,11 @@ const Profile = () => {
 
         {/* Consultation Settings */}
         <div ref={consultationRef}>
-          <ConsultationSettings />
+          <ConsultationSettings
+            value={meetLink}
+            onChange={setMeetLink}
+            savedLink={((profile as any)?.meet_link as string) || ""}
+          />
         </div>
 
         {/* LGPD - Privacy & Data Section */}
