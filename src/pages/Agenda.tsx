@@ -388,11 +388,11 @@ const Agenda = () => {
             className={cn(
               "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-all",
               form.appointment_type === "telehealth"
-                ? "border-blue-500 bg-blue-500/10 ring-1 ring-blue-500"
+                ? "border-secondary bg-accent ring-1 ring-secondary"
                 : "border-border bg-accent hover:bg-accent/80"
             )}
           >
-            <span className="flex items-center gap-1.5 text-sm font-medium">🎥 Online</span>
+            <span className="flex items-center gap-1.5 text-sm font-medium">Online</span>
             <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece via Google Meet. Link do seu perfil.</span>
           </button>
           <button
@@ -401,11 +401,11 @@ const Agenda = () => {
             className={cn(
               "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-all",
               form.appointment_type === "presencial"
-                ? "border-green-500 bg-green-500/10 ring-1 ring-green-500"
+                ? "border-primary bg-muted ring-1 ring-primary"
                 : "border-border bg-accent hover:bg-accent/80"
             )}
           >
-            <span className="flex items-center gap-1.5 text-sm font-medium">🏥 Presencial</span>
+            <span className="flex items-center gap-1.5 text-sm font-medium">Presencial</span>
             <span className="text-[10px] leading-tight text-muted-foreground">A consulta acontece no consultório. Nenhum link é gerado.</span>
           </button>
         </div>
@@ -418,7 +418,7 @@ const Agenda = () => {
             <SelectContent>
               <SelectItem value="none">Sem profissional</SelectItem>
               {professionals.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name} — {p.specialty}</SelectItem>
+                <SelectItem key={p.id} value={p.id}>{p.name} · {p.specialty}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -426,7 +426,7 @@ const Agenda = () => {
       )}
       <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending || guestSyncLocked}>
-        {guestSyncLocked ? "Bloqueado — sincronize seus rascunhos" : isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Agendando..." : "Agendar")}
+        {guestSyncLocked ? "Bloqueado. Sincronize seus rascunhos" : isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Agendando..." : "Agendar")}
       </Button>
     </div>
   );
@@ -662,7 +662,7 @@ const Agenda = () => {
             <EmptyState
               icon={CalendarX}
               title="Sua agenda está respirando"
-              description="Toque em + Nova para marcar a primeira consulta — o resto a gente organiza pra você."
+              description="Toque em + Nova para marcar a primeira consulta. O resto a gente organiza para você."
             />
           )}
           {Object.keys(grouped).length === 0 && search && (
@@ -697,7 +697,7 @@ const Agenda = () => {
                                 <p className="text-sm font-medium text-muted-foreground">Bloqueado</p>
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                   <Clock className="h-3 w-3" /> {apt.time.substring(0, 5)}
-                                  {apt.notes && apt.notes !== "Horário bloqueado" && <span>• {apt.notes}</span>}
+                                  {apt.notes && apt.notes !== "Horário bloqueado" && <span>{apt.notes}</span>}
                                 </div>
                               </div>
                             </div>
@@ -728,12 +728,12 @@ const Agenda = () => {
                               <div className="flex items-center gap-1.5 flex-wrap">
                                 <p className="text-sm font-medium">{apt.patient_name}</p>
                                 {isTelehealth ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/15 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:text-blue-400">
-                                    🎥 Online
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
+                                    Online
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400">
-                                    🏥 Presencial
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                                    Presencial
                                   </span>
                                 )}
                                 {isPending && (
@@ -742,8 +742,8 @@ const Agenda = () => {
                                   </Badge>
                                 )}
                                 {isStartingSoon && (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-400 animate-pulse">
-                                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Em breve
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground animate-pulse">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-secondary" /> Em breve
                                   </span>
                                 )}
                               </div>
@@ -761,7 +761,7 @@ const Agenda = () => {
                           {!isPending && (
                             <div className="flex items-center gap-2">
                               {isNow && (
-                                <a href="/telehealth" className="rounded-full bg-green-600 px-3 py-1.5 text-xs font-bold text-white animate-pulse hover:bg-green-700 transition-colors">
+                                <a href="/telehealth" className="rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground animate-pulse transition-colors">
                                   Entrar agora
                                 </a>
                               )}
@@ -823,7 +823,7 @@ const Agenda = () => {
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                className="flex-1 gap-1 bg-success hover:bg-success/90 text-white"
+                                className="flex-1 gap-1 bg-success text-success-foreground hover:bg-success/90"
                                 disabled={processingId === apt.id}
                                 onClick={() => handleBookingAction(apt.id, "approve")}
                               >

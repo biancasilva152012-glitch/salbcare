@@ -439,7 +439,7 @@ const Patients = () => {
             <EmptyState
               icon={Users}
               title="Sua lista está limpinha por aqui"
-              description="Cadastre o primeiro paciente à mão ou suba uma planilha CSV — em poucos minutos seu prontuário começa a tomar forma."
+              description="Cadastre o primeiro paciente à mão ou suba uma planilha CSV. Em poucos minutos seu prontuário começa a tomar forma."
               actionLabel={canAddPatient ? "Cadastrar paciente" : undefined}
               onAction={canAddPatient ? () => { setForm(emptyForm); setOpen(true); } : undefined}
               extra={
