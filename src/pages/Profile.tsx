@@ -465,7 +465,7 @@ const Profile = () => {
               <Trash2 className="h-5 w-5 text-destructive" />
               <div>
                 <span className="text-sm font-medium text-destructive">Excluir minha conta e dados</span>
-                <p className="text-[10px] text-muted-foreground">Ação irreversível — todos os dados serão apagados</p>
+                <p className="text-[10px] text-muted-foreground">Ação irreversível. Todos os dados serão apagados.</p>
               </div>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -475,7 +475,27 @@ const Profile = () => {
         <Button onClick={handleLogout} variant="outline" className="w-full border-border text-destructive gap-2">
           <LogOut className="h-4 w-4" /> Sair
         </Button>
+
+        {/* Espaço para a barra fixa de salvar não cobrir o conteúdo */}
+        {isDirty && <div className="h-24" aria-hidden />}
       </div>
+
+      {/* Barra fixa: ação única de salvar, visível apenas com alterações pendentes */}
+      {isDirty && (
+        <div className="fixed bottom-[68px] left-0 right-0 z-40 border-t border-border bg-card px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <div className="mx-auto flex max-w-md items-center gap-3">
+            <p className="flex-1 text-xs text-muted-foreground">Você tem alterações não salvas.</p>
+            <Button
+              onClick={handleSaveProfile}
+              disabled={savingRegistration}
+              className="gradient-primary font-semibold gap-2"
+            >
+              {savingRegistration ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {savingRegistration ? "Salvando" : "Salvar alterações"}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Correction Dialog */}
       <Dialog open={correctOpen} onOpenChange={setCorrectOpen}>
