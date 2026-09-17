@@ -64,7 +64,7 @@ const Dashboard = () => {
         .from("profiles")
         .select("name, profile_slug, referral_code, created_at, email")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       return data;
     },
     enabled: !!user,

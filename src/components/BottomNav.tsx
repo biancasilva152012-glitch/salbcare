@@ -45,7 +45,7 @@ const BottomNav = memo(() => {
   if (!showOn) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/90">
+    <nav aria-label="Navegação principal" className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/90">
       <div className="mx-auto grid max-w-lg grid-cols-6 px-0.5 pb-[env(safe-area-inset-bottom)]">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink

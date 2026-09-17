@@ -48,8 +48,8 @@ const RlsHealthGate = ({ children }: Props) => {
 
   if (loading && !health) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[hsl(220,20%,8%)]">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
   }
@@ -68,15 +68,15 @@ const RlsHealthGate = ({ children }: Props) => {
   if (health && !health.overall_ok) {
     const failing = health.failing_tables ?? [];
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[hsl(220,20%,8%)] px-4">
-        <div className="max-w-lg space-y-4 rounded-2xl border border-destructive/50 bg-[hsl(220,20%,10%)] p-6 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="max-w-lg space-y-4 rounded-2xl border border-destructive/50 bg-card p-6 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/15">
             <ShieldX className="h-6 w-6 text-destructive" />
           </div>
-          <h1 className="text-lg font-bold text-white">
+          <h1 className="text-lg font-bold text-foreground">
             Acesso administrativo bloqueado
           </h1>
-          <p className="text-sm text-white/70">
+          <p className="text-sm text-muted-foreground">
             A verificação automática detectou tabelas essenciais sem RLS ativo
             ou sem policy isolando por <code>auth.uid() = user_id</code>. Isto
             pode expor dados de outros usuários e o painel administrativo está
@@ -87,14 +87,14 @@ const RlsHealthGate = ({ children }: Props) => {
               <p className="text-[11px] uppercase tracking-wide text-destructive/80 mb-1.5">
                 Tabelas com problema
               </p>
-              <ul className="text-xs text-white/80 font-mono space-y-0.5">
+              <ul className="text-xs text-muted-foreground font-mono space-y-0.5">
                 {failing.map((t) => (
                   <li key={t}>• {t}</li>
                 ))}
               </ul>
             </div>
           )}
-          <p className="text-[11px] text-white/50">
+          <p className="text-[11px] text-muted-foreground">
             Verificado em {new Date(health.checked_at).toLocaleString("pt-BR")}.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">

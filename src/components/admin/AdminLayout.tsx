@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,7 +40,7 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminLayout = ({ children }: AdminLayoutProps) => {
+const AdminLayout = forwardRef<HTMLDivElement, AdminLayoutProps>(({ children }, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
@@ -109,7 +109,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   return (
     <RlsHealthGate>
-    <div className="flex min-h-screen bg-background">
+    <div ref={ref} className="flex min-h-screen bg-background">
       {/* Sidebar */}
       <aside
         className={cn(
@@ -230,6 +230,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     </div>
     </RlsHealthGate>
   );
-};
+});
+
+AdminLayout.displayName = "AdminLayout";
 
 export default AdminLayout;

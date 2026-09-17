@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { CloudUpload, Users, Calendar, X } from "lucide-react";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   hasGuestData,
@@ -43,7 +43,7 @@ const dismiss = () => {
  * Patients/Agenda). This one is a CTA-only nudge so the user can still merge
  * their work in instead of permanently losing it.
  */
-const GuestSyncReminderBanner = () => {
+const GuestSyncReminderBanner = forwardRef<HTMLDivElement>((_, ref) => {
   const [hidden, setHidden] = useState(() => wasDismissedRecently());
   if (hidden) return null;
   if (!hasGuestData()) return null;
@@ -53,6 +53,7 @@ const GuestSyncReminderBanner = () => {
 
   return (
     <div
+      ref={ref}
       className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 space-y-3"
       data-testid="guest-sync-reminder-banner"
       role="status"
@@ -105,6 +106,8 @@ const GuestSyncReminderBanner = () => {
       </div>
     </div>
   );
-};
+});
+
+GuestSyncReminderBanner.displayName = "GuestSyncReminderBanner";
 
 export default GuestSyncReminderBanner;
