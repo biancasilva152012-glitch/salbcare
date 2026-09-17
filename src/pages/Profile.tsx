@@ -97,6 +97,7 @@ const Profile = () => {
   const [councilNumber, setCouncilNumber] = useState("");
   const [councilState, setCouncilState] = useState("");
   const [officeAddress, setOfficeAddress] = useState("");
+  const [meetLink, setMeetLink] = useState("");
   const [savingRegistration, setSavingRegistration] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -120,8 +121,17 @@ const Profile = () => {
       setCouncilNumber((profile as any).council_number || "");
       setCouncilState((profile as any).council_state || "");
       setOfficeAddress((profile as any).office_address || "");
+      setMeetLink((profile as any).meet_link || "");
     }
   }, [profile]);
+
+  const isDirty =
+    !!profile &&
+    (bio !== (((profile as any).bio as string) || "") ||
+      councilNumber !== (((profile as any).council_number as string) || "") ||
+      councilState !== (((profile as any).council_state as string) || "") ||
+      officeAddress !== (((profile as any).office_address as string) || "") ||
+      meetLink !== (((profile as any).meet_link as string) || ""));
 
   // Auto-scroll to consultation settings when ?tab=consultation
   useEffect(() => {
@@ -133,7 +143,8 @@ const Profile = () => {
   const profConfig = getProfessionConfig(profile?.professional_type || "medico");
   const hasCouncil = !!councilNumber.trim();
 
-  const handleSaveRegistration = async () => {
+  /** Ação única de salvar: registro profissional, bio e link de teleconsulta. */
+  const handleSaveProfile = async () => {
     if (!user) return;
     setSavingRegistration(true);
     try {
@@ -143,13 +154,16 @@ const Profile = () => {
           council_number: councilNumber.trim() || null,
           council_state: councilState.trim().toUpperCase() || null,
           office_address: officeAddress.trim() || null,
+          bio: bio.trim() || null,
+          meet_link: meetLink.trim() || null,
         } as any)
         .eq("user_id", user.id);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
-      toast.success("Registro profissional atualizado!");
+      queryClient.invalidateQueries({ queryKey: ["profile-settings"] });
+      toast.success("Alterações salvas.");
     } catch {
-      toast.error("Erro ao salvar registro.");
+      toast.error("Não foi possível salvar. Tente novamente.");
     } finally {
       setSavingRegistration(false);
     }
@@ -347,15 +361,6 @@ const Profile = () => {
                 className="bg-accent border-border"
               />
             </div>
-            <Button
-              onClick={handleSaveRegistration}
-              disabled={savingRegistration}
-              size="sm"
-              className="w-full gradient-primary font-semibold gap-1.5"
-            >
-              {savingRegistration ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {savingRegistration ? "Salvando..." : "Salvar registro profissional"}
-            </Button>
           </div>
         </div>
 
@@ -393,17 +398,6 @@ const Profile = () => {
               rows={3}
             />
             <p className="text-[10px] text-muted-foreground text-right">{bio.length}/300</p>
-            <Button
-              size="sm"
-              className="w-full gradient-primary font-semibold"
-              onClick={async () => {
-                await supabase.from("profiles").update({ bio: bio.trim() || null } as any).eq("user_id", user!.id);
-                queryClient.invalidateQueries({ queryKey: ["profile", user!.id] });
-                toast.success("Bio atualizada!");
-              }}
-            >
-              Salvar bio
-            </Button>
           </div>
         </div>
 
@@ -417,7 +411,11 @@ const Profile = () => {
 
         {/* Consultation Settings */}
         <div ref={consultationRef}>
-          <ConsultationSettings />
+          <ConsultationSettings
+            value={meetLink}
+            onChange={setMeetLink}
+            savedLink={((profile as any)?.meet_link as string) || ""}
+          />
         </div>
 
         {/* LGPD - Privacy & Data Section */}
@@ -467,7 +465,7 @@ const Profile = () => {
               <Trash2 className="h-5 w-5 text-destructive" />
               <div>
                 <span className="text-sm font-medium text-destructive">Excluir minha conta e dados</span>
-                <p className="text-[10px] text-muted-foreground">Ação irreversível — todos os dados serão apagados</p>
+                <p className="text-[10px] text-muted-foreground">Ação irreversível. Todos os dados serão apagados.</p>
               </div>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -477,7 +475,27 @@ const Profile = () => {
         <Button onClick={handleLogout} variant="outline" className="w-full border-border text-destructive gap-2">
           <LogOut className="h-4 w-4" /> Sair
         </Button>
+
+        {/* Espaço para a barra fixa de salvar não cobrir o conteúdo */}
+        {isDirty && <div className="h-24" aria-hidden />}
       </div>
+
+      {/* Barra fixa: ação única de salvar, visível apenas com alterações pendentes */}
+      {isDirty && (
+        <div className="fixed bottom-[68px] left-0 right-0 z-40 border-t border-border bg-card px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <div className="mx-auto flex max-w-md items-center gap-3">
+            <p className="flex-1 text-xs text-muted-foreground">Você tem alterações não salvas.</p>
+            <Button
+              onClick={handleSaveProfile}
+              disabled={savingRegistration}
+              className="gradient-primary font-semibold gap-2"
+            >
+              {savingRegistration ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {savingRegistration ? "Salvando" : "Salvar alterações"}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Correction Dialog */}
       <Dialog open={correctOpen} onOpenChange={setCorrectOpen}>

@@ -1,18 +1,11 @@
-import { useState, useEffect } from "react";
-import { Save, Loader2, Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Video, CheckCircle, HelpCircle, ExternalLink, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 const MeetHelpModal = () => (
   <Dialog>
     <DialogTrigger asChild>
-      <button type="button" className="text-muted-foreground hover:text-primary transition-colors">
+      <button type="button" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Ajuda sobre o link do Google Meet">
         <HelpCircle className="h-4 w-4" />
       </button>
     </DialogTrigger>
@@ -52,96 +45,44 @@ const MeetHelpModal = () => (
           className="flex items-center gap-1.5 text-xs text-primary hover:underline"
         >
           <ExternalLink className="h-3 w-3" />
-          Como ativar a Sala de Espera →
+          Como ativar a Sala de Espera
         </a>
       </div>
     </DialogContent>
   </Dialog>
 );
 
-const ConsultationSettings = () => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
+interface ConsultationSettingsProps {
+  /** Valor atual do campo, controlado pela tela de perfil. */
+  value: string;
+  onChange: (value: string) => void;
+  /** Link já salvo no banco, usado para mostrar a confirmação. */
+  savedLink: string;
+}
 
-  const [meetLink, setMeetLink] = useState("");
-  const [meetSaved, setMeetSaved] = useState(false);
-
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ["profile-settings", user?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("meet_link")
-        .eq("user_id", user!.id)
-        .single();
-      return data;
-    },
-    enabled: !!user,
-  });
-
-  useEffect(() => {
-    if (profile) {
-      setMeetLink(profile.meet_link || "");
-      setMeetSaved(!!profile.meet_link);
-    }
-  }, [profile]);
-
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          meet_link: meetLink.trim() || null,
-        } as any)
-        .eq("user_id", user!.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile-settings"] });
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      setMeetSaved(!!meetLink.trim());
-      toast.success("Configurações salvas!");
-    },
-    onError: () => toast.error("Erro ao salvar. Tente novamente."),
-  });
-
-  if (isLoading) return null;
-
-  return (
-    <div className="space-y-5">
-      {/* Teleconsulta - Meet Link Section */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 px-1">
-          <Video className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold">Link de teleconsulta (Google Meet)</h2>
-          <MeetHelpModal />
-        </div>
-        <div className="glass-card p-3 space-y-3">
-          <Input
-            placeholder="https://meet.google.com/seu-link"
-            value={meetLink}
-            onChange={(e) => { setMeetLink(e.target.value); setMeetSaved(false); }}
-            className="bg-accent border-border"
-          />
-          {meetSaved && meetLink.trim() && (
-            <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
-              <CheckCircle className="h-3.5 w-3.5" />
-              <span>Link salvo com sucesso.</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <Button
-        onClick={() => saveMutation.mutate()}
-        disabled={saveMutation.isPending}
-        className="w-full gradient-primary font-semibold gap-2"
-      >
-        {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-        {saveMutation.isPending ? "Salvando..." : "Salvar configurações"}
-      </Button>
+/** Campo de link de teleconsulta. O salvamento acontece na ação única do perfil. */
+const ConsultationSettings = ({ value, onChange, savedLink }: ConsultationSettingsProps) => (
+  <div className="space-y-3">
+    <div className="flex items-center gap-2 px-1">
+      <Video className="h-4 w-4 text-primary" />
+      <h2 className="text-sm font-semibold">Link de teleconsulta (Google Meet)</h2>
+      <MeetHelpModal />
     </div>
-  );
-};
+    <div className="glass-card p-3 space-y-3">
+      <Input
+        placeholder="https://meet.google.com/seu-link"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-accent border-border"
+      />
+      {!!savedLink.trim() && savedLink.trim() === value.trim() && (
+        <div className="flex items-center gap-2 text-xs text-success">
+          <CheckCircle className="h-3.5 w-3.5" />
+          <span>Link salvo com sucesso.</span>
+        </div>
+      )}
+    </div>
+  </div>
+);
 
 export default ConsultationSettings;

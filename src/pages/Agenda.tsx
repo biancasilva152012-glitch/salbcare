@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock, Check, X, FileImage, ExternalLink, FilePlus } from "lucide-react";
+import { Plus, Search, Clock, MapPin, Video, Pencil, Trash2, UserCog, CalendarIcon, Upload, FileDown, Loader2, Lock, Unlock, Check, X, FileImage, ExternalLink, FilePlus, MoreVertical } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -57,6 +58,7 @@ const Agenda = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [importing, setImporting] = useState(false);
+  const agendaImportRef = useRef<HTMLInputElement>(null);
   const [blockOpen, setBlockOpen] = useState(false);
   const [blockData, setBlockData] = useState(blockForm);
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -436,30 +438,46 @@ const Agenda = () => {
   return (
     <PageContainer backTo="/dashboard" onRefresh={() => { queryClient.invalidateQueries({ queryKey: ["appointments"] }); queryClient.invalidateQueries({ queryKey: ["service-requests"] }); queryClient.invalidateQueries({ queryKey: ["service-requests-count"] }); }}>
       <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Agenda</h1>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1"
-              onClick={() => downloadCsvTemplate("modelo-agenda.csv", AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE)}
-            >
-              <FileDown className="h-3.5 w-3.5" /> Modelo
-            </Button>
-            <label>
-              <Button size="sm" variant="outline" className="gap-1 cursor-pointer" disabled={importing || guestSyncLocked} asChild>
-                <span>
-                  {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-                  {importing ? "..." : "Importar"}
-                </span>
-              </Button>
-              <input type="file" accept=".csv,.txt" onChange={handleCsvImport} className="hidden" disabled={guestSyncLocked} />
-            </label>
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="text-2xl font-bold whitespace-nowrap">Agenda</h1>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="outline" aria-label="Mais ações da agenda">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-card border-border">
+                <DropdownMenuItem
+                  onSelect={() => downloadCsvTemplate("modelo-agenda.csv", AGENDA_TEMPLATE_HEADERS, AGENDA_TEMPLATE_SAMPLE)}
+                >
+                  <FileDown className="mr-2 h-4 w-4" /> Modelo
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={importing || guestSyncLocked}
+                  onSelect={(e) => { e.preventDefault(); agendaImportRef.current?.click(); }}
+                >
+                  {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                  {importing ? "Importando" : "Importar"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => { setBlockData(blockForm); setBlockOpen(true); }}>
+                  <Lock className="mr-2 h-4 w-4" /> Bloquear horário
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <input
+            ref={agendaImportRef}
+            type="file"
+            accept=".csv,.txt"
+            onChange={handleCsvImport}
+            className="hidden"
+            disabled={guestSyncLocked}
+          />
+
+          <div>
             <Dialog open={blockOpen} onOpenChange={(v) => { setBlockOpen(v); if (v) setBlockData(blockForm); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-1"><Lock className="h-3.5 w-3.5" /> Bloquear</Button>
-              </DialogTrigger>
               <DialogContent className="bg-card border-border">
                 <DialogHeader><DialogTitle>Bloquear Horário</DialogTitle></DialogHeader>
                 <div className="space-y-3 pt-2">
@@ -513,8 +531,8 @@ const Agenda = () => {
             {canAddAppointment && !guestSyncLocked ? (
               <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) setForm(emptyForm); }}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="gradient-primary gap-1" data-testid="agenda-new-btn">
-                    <Plus className="h-4 w-4" /> Nova
+                  <Button className="gradient-primary w-full gap-2 font-semibold" data-testid="agenda-new-btn">
+                    <Plus className="h-4 w-4" /> Nova consulta
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-card border-border">
@@ -524,12 +542,11 @@ const Agenda = () => {
               </Dialog>
             ) : (
               <Button
-                size="sm"
-                className="gradient-primary gap-1"
+                className="gradient-primary w-full gap-2 font-semibold"
                 data-testid="agenda-new-btn-blocked"
                 onClick={() => guestSyncLocked ? toast.info("Sincronize seus rascunhos do modo guest antes de criar novas consultas.") : setUpgradeOpen(true)}
               >
-                <Plus className="h-4 w-4" /> Nova
+                <Plus className="h-4 w-4" /> Nova consulta
               </Button>
             )}
           </div>
