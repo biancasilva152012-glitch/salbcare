@@ -253,14 +253,14 @@ export default function AdminLgpdAuditPage() {
                       {new Date(r.created_at).toLocaleString("pt-BR")}
                     </td>
                     <td className="px-3 py-2 text-xs">
-                      {r.actor_email || r.actor_user_id?.slice(0, 8) || "—"}
+                      {r.actor_email || r.actor_user_id?.slice(0, 8) || "-"}
                     </td>
                     <td className="px-3 py-2 text-xs">
                       {r.actor_status ? (
                         <Badge variant="outline" className="text-[10px]">
                           {STATUS_LABEL[r.actor_status] || r.actor_status}
                         </Badge>
-                      ) : "—"}
+                      ) : "-"}
                     </td>
                     <td className="px-3 py-2">
                       <Badge variant={ACTION_VARIANT[r.action] || "outline"}>
@@ -269,16 +269,16 @@ export default function AdminLgpdAuditPage() {
                     </td>
                     <td className="px-3 py-2 font-mono text-xs">{r.resource_table}</td>
                     <td className="px-3 py-2">
-                      <div>{r.patient_name || "—"}</div>
+                      <div>{r.patient_name || "-"}</div>
                       {r.patient_id && (
                         <div className="text-[10px] text-muted-foreground font-mono">
                           {r.patient_id.slice(0, 8)}…
                         </div>
                       )}
                     </td>
-                    <td className="px-3 py-2 text-xs text-muted-foreground">{r.reason || "—"}</td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground">{r.reason || "-"}</td>
                     <td className="px-3 py-2 text-[10px] font-mono text-muted-foreground" title={r.row_hash || ""}>
-                      {r.row_hash ? r.row_hash.slice(0, 10) + "…" : "—"}
+                      {r.row_hash ? r.row_hash.slice(0, 10) + "…" : "-"}
                     </td>
                   </tr>
                 ))}
@@ -286,7 +286,7 @@ export default function AdminLgpdAuditPage() {
             </table>
           </div>
           <div className="px-3 py-2 text-xs text-muted-foreground border-t">
-            Mostrando {rows.length} registros (máx. 500). Trilha append-only — alterações são bloqueadas por trigger.
+            Mostrando {rows.length} registros (máx. 500). Trilha append-only - alterações são bloqueadas por trigger.
           </div>
         </div>
       </div>

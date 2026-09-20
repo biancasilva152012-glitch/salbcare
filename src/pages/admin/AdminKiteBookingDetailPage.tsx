@@ -39,7 +39,7 @@ function statusBadge(s: string) {
       : s === "erro" || s === "cancelled"
       ? "bg-red-500/15 text-red-300"
       : s === "pending_whatsapp"
-      ? "bg-blue-500/15 text-blue-300"
+      ? "bg-primary/10 text-primary"
       : "bg-amber-500/15 text-amber-300";
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${tone}`}>
@@ -110,17 +110,17 @@ export default function AdminKiteBookingDetailPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : !booking ? (
-          <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-8 text-center text-white/40 text-sm">
+          <div className="rounded-xl border border-white/[0.06] bg-card p-8 text-center text-white/40 text-sm">
             Reserva não encontrada.
           </div>
         ) : (
           <div className="grid lg:grid-cols-3 gap-5">
             {/* Patient & booking info */}
             <div className="lg:col-span-2 space-y-5">
-              <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-5">
+              <div className="rounded-xl border border-white/[0.06] bg-card p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-[10px] uppercase tracking-wide text-white/40">Reserva</p>
@@ -131,10 +131,10 @@ export default function AdminKiteBookingDetailPage() {
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4 mt-5 text-sm">
-                  <Info icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={booking.email || "—"} />
+                  <Info icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={booking.email || "-"} />
                   <Info icon={<Tag className="h-3.5 w-3.5" />} label="Serviço" value={`${booking.procedure} (${booking.type})`} />
-                  <Info icon={<Calendar className="h-3.5 w-3.5" />} label="Data preferida" value={booking.preferred_date || "—"} />
-                  <Info icon={<Clock className="h-3.5 w-3.5" />} label="Horário preferido" value={booking.time_preference || "—"} />
+                  <Info icon={<Calendar className="h-3.5 w-3.5" />} label="Data preferida" value={booking.preferred_date || "-"} />
+                  <Info icon={<Clock className="h-3.5 w-3.5" />} label="Horário preferido" value={booking.time_preference || "-"} />
                   <Info icon={<User className="h-3.5 w-3.5" />} label="Criada em" value={new Date(booking.created_at).toLocaleString("pt-BR")} />
                   <Info icon={<Tag className="h-3.5 w-3.5" />} label="Saldo" value={`Pago R$ ${booking.amount_paid} / Restante R$ ${booking.remaining_balance}`} />
                 </div>
@@ -191,7 +191,7 @@ export default function AdminKiteBookingDetailPage() {
             </div>
 
             {/* Timeline */}
-            <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-5">
+            <div className="rounded-xl border border-white/[0.06] bg-card p-5">
               <h2 className="text-sm font-semibold text-white">Timeline</h2>
               <p className="text-[11px] text-white/40 mt-0.5">Criação, mudanças de status e tentativas.</p>
 
@@ -201,13 +201,13 @@ export default function AdminKiteBookingDetailPage() {
                 )}
                 {(events || []).map((ev) => (
                   <li key={ev.id} className="relative">
-                    <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-blue-400 ring-4 ring-[hsl(220,20%,10%)]" />
+                    <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-secondary ring-4 ring-card" />
                     <div className="text-xs text-white/80 font-semibold capitalize">
                       {ev.event_type.replace(/_/g, " ")}
                     </div>
                     {ev.event_type === "status_change" && (
                       <div className="text-[11px] text-white/50 mt-0.5">
-                        {ev.from_status || "—"} → <span className="text-white/80">{ev.to_status}</span>
+                        {ev.from_status || "-"} → <span className="text-white/80">{ev.to_status}</span>
                       </div>
                     )}
                     {ev.note && <div className="text-[11px] text-white/50 mt-0.5">{ev.note}</div>}

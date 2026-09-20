@@ -238,7 +238,7 @@ export default function AdminBlogEditorPage() {
               onChange={(e) => patchArticle({ category_id: e.target.value || null })}
               className="w-full border rounded-md px-3 py-2 text-sm bg-background"
             >
-              <option value="">—</option>
+              <option value="">-</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name_en}</option>
               ))}
@@ -251,7 +251,7 @@ export default function AdminBlogEditorPage() {
               onChange={(e) => patchArticle({ author_id: e.target.value || null })}
               className="w-full border rounded-md px-3 py-2 text-sm bg-background"
             >
-              <option value="">—</option>
+              <option value="">-</option>
               {authors.map((a) => (
                 <option key={a.id} value={a.id}>{a.name}</option>
               ))}

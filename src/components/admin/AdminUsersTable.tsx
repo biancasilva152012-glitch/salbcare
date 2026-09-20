@@ -29,7 +29,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   active: { label: "Ativo", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" },
-  trialing: { label: "Trial", color: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
+  trialing: { label: "Trial", color: "bg-primary/10 text-primary border-primary/20" },
   past_due: { label: "Inadimplente", color: "bg-amber-500/15 text-amber-400 border-amber-500/20" },
   canceled: { label: "Cancelado", color: "bg-red-500/15 text-red-400 border-red-500/20" },
   suspended: { label: "Suspenso", color: "bg-red-500/15 text-red-400 border-red-500/20" },
@@ -46,7 +46,7 @@ function getEffectiveStatus(user: AdminUser): string {
 }
 
 function formatDate(ts: string | number | null): string {
-  if (!ts) return "—";
+  if (!ts) return "-";
   const d = typeof ts === "number" ? new Date(ts * 1000) : new Date(ts);
   return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 }
@@ -192,7 +192,7 @@ const AdminUsersTable = () => {
       <div className="rounded-xl border border-white/5 overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-secondary" />
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -262,14 +262,14 @@ const AdminUsersTable = () => {
                             <span className="text-white/30">/mês</span>
                           </span>
                         ) : (
-                          <span className="text-xs text-white/20">—</span>
+                          <span className="text-xs text-white/20">-</span>
                         )}
                       </TableCell>
                       <TableCell>
                         <span className="text-xs text-white/50">
                           {user.stripe?.subscription?.current_period_end
                             ? formatDate(user.stripe.subscription.current_period_end)
-                            : "—"}
+                            : "-"}
                         </span>
                       </TableCell>
                       <TableCell>

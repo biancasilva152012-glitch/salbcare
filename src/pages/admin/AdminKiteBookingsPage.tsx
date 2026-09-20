@@ -28,7 +28,7 @@ type Booking = {
 const STATUSES: { value: string; label: string; tone: string }[] = [
   { value: "all", label: "Todos", tone: "bg-white/10 text-white/80" },
   { value: "pending", label: "Pendente", tone: "bg-amber-500/15 text-amber-300" },
-  { value: "pending_whatsapp", label: "Aguardando WhatsApp", tone: "bg-blue-500/15 text-blue-300" },
+  { value: "pending_whatsapp", label: "Aguardando WhatsApp", tone: "bg-primary/10 text-primary" },
   { value: "confirmado", label: "Confirmado", tone: "bg-emerald-500/15 text-emerald-300" },
   { value: "paid", label: "Pago", tone: "bg-emerald-500/15 text-emerald-300" },
   { value: "cancelled", label: "Cancelado", tone: "bg-red-500/15 text-red-300" },
@@ -109,24 +109,24 @@ async function exportPdf(rows: Booking[]) {
   const agg = await fetchEventAggregates(rows.map((b) => b.id));
   const doc = new jsPDF({ orientation: "landscape" });
   doc.setFontSize(14);
-  doc.text("SalbCare Kite — Reservas", 14, 14);
+  doc.text("SalbCare Kite - Reservas", 14, 14);
   doc.setFontSize(9);
   doc.text(`Gerado em ${new Date().toLocaleString("pt-BR")} · ${rows.length} registros`, 14, 20);
   autoTable(doc, {
     startY: 26,
     head: [["Criada", "Paciente", "Serviço", "Data", "Hora", "Status", "Retries", "Último evento", "Timeline"]],
     body: rows.map((b) => {
-      const a = agg[b.id] || { retry_count: 0, last_event_type: "—", events_summary: "—" };
+      const a = agg[b.id] || { retry_count: 0, last_event_type: "-", events_summary: "-" };
       return [
         new Date(b.created_at).toLocaleString("pt-BR"),
         b.patient_name,
         `${b.procedure} (${b.type})`,
-        b.preferred_date || "—",
-        b.time_preference || "—",
+        b.preferred_date || "-",
+        b.time_preference || "-",
         b.status,
         String(a.retry_count),
-        a.last_event_type || "—",
-        a.events_summary || "—",
+        a.last_event_type || "-",
+        a.events_summary || "-",
       ];
     }),
     styles: { fontSize: 7 },
@@ -265,11 +265,11 @@ export default function AdminKiteBookingsPage() {
         {/* Platform snapshot */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Inscritos (profissionais)", value: snapshot?.signups ?? "—" },
-            { label: "Pagantes / Trial", value: snapshot?.paying ?? "—" },
-            { label: "Reservas Kite (total)", value: snapshot?.kite ?? "—" },
+            { label: "Inscritos (profissionais)", value: snapshot?.signups ?? "-" },
+            { label: "Pagantes / Trial", value: snapshot?.paying ?? "-" },
+            { label: "Reservas Kite (total)", value: snapshot?.kite ?? "-" },
           ].map((m) => (
-            <div key={m.label} className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4">
+            <div key={m.label} className="rounded-xl border border-white/[0.06] bg-card p-4">
               <p className="text-[10px] uppercase tracking-wide text-white/40">{m.label}</p>
               <p className="text-2xl font-bold text-white mt-1">{m.value}</p>
             </div>
@@ -277,7 +277,7 @@ export default function AdminKiteBookingsPage() {
         </div>
 
         {/* Filters */}
-        <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4 space-y-3">
+        <div className="rounded-xl border border-white/[0.06] bg-card p-4 space-y-3">
           <div className="grid sm:grid-cols-[1fr_auto_auto] gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
@@ -285,21 +285,21 @@ export default function AdminKiteBookingsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nome, email ou observação…"
-                className="pl-9 bg-[hsl(220,20%,8%)] border-white/10 text-white placeholder:text-white/30"
+                className="pl-9 bg-muted border-white/10 text-white placeholder:text-white/30"
               />
             </div>
             <Input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              className="bg-muted border-white/10 text-white w-[150px]"
               aria-label="Data inicial"
             />
             <Input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              className="bg-muted border-white/10 text-white w-[150px]"
               aria-label="Data final"
             />
           </div>
@@ -310,7 +310,7 @@ export default function AdminKiteBookingsPage() {
                 onClick={() => setStatusFilter(s.value)}
                 className={`px-3 py-1 rounded-full text-[11px] font-semibold border transition ${
                   statusFilter === s.value
-                    ? "border-blue-500/40 bg-blue-500/15 text-blue-300"
+                    ? "border-primary/20 bg-primary/10 text-primary"
                     : "border-white/10 text-white/50 hover:text-white/80 hover:border-white/20"
                 }`}
               >
@@ -322,10 +322,10 @@ export default function AdminKiteBookingsPage() {
         </div>
 
         {/* Table */}
-        <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] overflow-hidden">
+        <div className="rounded-xl border border-white/[0.06] bg-card overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-16 text-center text-white/40 text-sm">
@@ -360,7 +360,7 @@ export default function AdminKiteBookingsPage() {
                         <div className="text-white/40 text-[10px]">{b.type}</div>
                       </td>
                       <td className="px-4 py-3 text-white/60 whitespace-nowrap">
-                        {b.preferred_date || "—"}{" "}
+                        {b.preferred_date || "-"}{" "}
                         <span className="text-white/30">{b.time_preference || ""}</span>
                       </td>
                       <td className="px-4 py-3">{statusBadge(b.status)}</td>
@@ -371,7 +371,7 @@ export default function AdminKiteBookingsPage() {
                           onChange={(e) =>
                             updateStatus.mutate({ id: b.id, status: e.target.value })
                           }
-                          className="bg-[hsl(220,20%,8%)] border border-white/10 rounded-md px-2 py-1 text-[11px] text-white/80"
+                          className="bg-muted border border-white/10 rounded-md px-2 py-1 text-[11px] text-white/80"
                         >
                           {[b.status, ...NEXT_STATUS_OPTIONS.filter((s) => s !== b.status)].map(
                             (s) => (
@@ -385,7 +385,7 @@ export default function AdminKiteBookingsPage() {
                       <td className="px-4 py-3">
                         <Link
                           to={`/admin/kite-bookings/${b.id}`}
-                          className="inline-flex items-center gap-1 text-blue-300 hover:text-blue-200 text-[11px] font-medium"
+                          className="inline-flex items-center gap-1 text-primary hover:text-primary-hover text-[11px] font-medium"
                         >
                           Ver <ExternalLink className="h-3 w-3" />
                         </Link>

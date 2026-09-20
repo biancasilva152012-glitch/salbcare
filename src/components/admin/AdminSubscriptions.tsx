@@ -15,7 +15,7 @@ import { formatBRL } from "@/utils/currencyMask";
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   active: { label: "Pagante", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" },
-  trialing: { label: "Em trial", color: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
+  trialing: { label: "Em trial", color: "bg-primary/10 text-primary border-primary/20" },
   past_due: { label: "Atrasado", color: "bg-amber-500/15 text-amber-400 border-amber-500/20" },
   canceled: { label: "Cancelado", color: "bg-red-500/15 text-red-400 border-red-500/20" },
   none: { label: "Sem adesão", color: "bg-white/5 text-white/40 border-white/10" },
@@ -28,7 +28,7 @@ function getStatus(u: AdminUser): string {
 }
 
 function fmtDate(ts: string | number | null): string {
-  if (!ts) return "—";
+  if (!ts) return "-";
   const d = typeof ts === "number" ? new Date(ts * 1000) : new Date(ts);
   return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 }
@@ -114,7 +114,7 @@ const AdminSubscriptions = () => {
           name: u.name,
           message: `Teste termina ${days <= 0 ? "hoje" : `em ${days} dia(s)`}. Bom momento para lembrar da assinatura.`,
           tag: "Fim do teste",
-          color: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+          color: "bg-primary/10 text-primary border-primary/20",
         });
       } else if (s === "active" && days !== null && days <= 7) {
         out.push({
@@ -146,10 +146,10 @@ const AdminSubscriptions = () => {
         u.name,
         u.email,
         u.phone || "",
-        STATUS_MAP[getStatus(u)]?.label || "—",
+        STATUS_MAP[getStatus(u)]?.label || "-",
         u.stripe?.subscription ? ((u.stripe.subscription.plan_amount || 0) / 100).toFixed(2) : "0",
         fmtDate(u.created_at),
-        u.stripe?.subscription?.current_period_end ? fmtDate(u.stripe.subscription.current_period_end) : "—",
+        u.stripe?.subscription?.current_period_end ? fmtDate(u.stripe.subscription.current_period_end) : "-",
       ]),
     ];
     const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
@@ -162,7 +162,7 @@ const AdminSubscriptions = () => {
 
   const kpis = [
     { label: "MRR", value: `R$ ${formatBRL(stats.mrr)}`, icon: TrendingUp, color: "text-emerald-400" },
-    { label: "Pagantes", value: stats.paying, icon: CreditCard, color: "text-blue-400" },
+    { label: "Pagantes", value: stats.paying, icon: CreditCard, color: "text-primary" },
     { label: "Em trial", value: stats.trial, icon: UsersIcon, color: "text-amber-400" },
     { label: "Cancelados", value: stats.canceled, icon: AlertCircle, color: "text-red-400" },
   ];
@@ -224,7 +224,7 @@ const AdminSubscriptions = () => {
       <div className="rounded-xl border border-white/[0.06] overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-secondary" />
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -260,7 +260,7 @@ const AdminSubscriptions = () => {
                             <span className="text-white/30">/mês</span>
                           </span>
                         ) : (
-                          <span className="text-xs text-white/20">—</span>
+                          <span className="text-xs text-white/20">-</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -270,7 +270,7 @@ const AdminSubscriptions = () => {
                         <span className="text-xs text-white/50">
                           {u.stripe?.subscription?.current_period_end
                             ? fmtDate(u.stripe.subscription.current_period_end)
-                            : "—"}
+                            : "-"}
                         </span>
                       </TableCell>
                     </TableRow>
@@ -292,7 +292,7 @@ const AdminSubscriptions = () => {
       {/* Próximos vencimentos */}
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <div className="flex items-center gap-2">
-          <CalendarClock className="h-4 w-4 text-blue-400" />
+          <CalendarClock className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-semibold text-white">Próximos vencimentos (30 dias)</h3>
         </div>
         <div className="mt-3 space-y-2">
@@ -346,7 +346,7 @@ const AdminSubscriptions = () => {
         </div>
         {financeLoading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+            <Loader2 className="h-5 w-5 animate-spin text-secondary" />
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -363,7 +363,7 @@ const AdminSubscriptions = () => {
                 {(finance?.recent_charges ?? []).map((c) => (
                   <TableRow key={c.id} className="border-white/[0.04] hover:bg-white/[0.02]">
                     <TableCell className="text-xs text-white/50">{fmtDate(c.created)}</TableCell>
-                    <TableCell className="text-xs text-white/70">{c.customer_email || "—"}</TableCell>
+                    <TableCell className="text-xs text-white/70">{c.customer_email || "-"}</TableCell>
                     <TableCell className="text-xs text-white/70">R$ {formatBRL(c.amount)}</TableCell>
                     <TableCell>
                       <Badge

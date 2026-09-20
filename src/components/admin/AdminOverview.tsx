@@ -134,7 +134,7 @@ const AdminOverview = () => {
   if (loadingUsers || loadingMRR) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+        <Loader2 className="h-6 w-6 animate-spin text-secondary" />
       </div>
     );
   }
@@ -163,8 +163,8 @@ const AdminOverview = () => {
           label="Profissionais"
           value={professionals.length}
           icon={Users}
-          accent="text-blue-400"
-          bgAccent="bg-blue-500/10"
+          accent="text-primary"
+          bgAccent="bg-primary/10"
         />
         <StatCard
           label="Assinantes Ativos"
@@ -193,7 +193,7 @@ const AdminOverview = () => {
       <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-blue-400" />
+            <TrendingUp className="h-4 w-4 text-primary" />
             Evolução de Cadastros
           </h3>
           <div className="flex items-center gap-2 flex-wrap">
@@ -209,7 +209,7 @@ const AdminOverview = () => {
                   onClick={() => setChartWeeks(opt.value)}
                   className={`px-3 py-1.5 text-[11px] font-medium transition-colors ${
                     chartWeeks === opt.value
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-white"
                       : "text-white/40 hover:text-white/60 hover:bg-white/[0.04]"
                   }`}
                 >
@@ -221,15 +221,15 @@ const AdminOverview = () => {
             <select
               value={chartType}
               onChange={(e) => setChartType(e.target.value)}
-              className="rounded-lg border border-white/[0.08] bg-transparent text-[11px] text-white/60 px-3 py-1.5 focus:outline-none focus:border-blue-500/40"
+              className="rounded-lg border border-white/[0.08] bg-transparent text-[11px] text-white/60 px-3 py-1.5 focus:outline-none focus:border-primary/20"
             >
-              <option value="all" className="bg-[hsl(220,20%,10%)]">Todos os tipos</option>
-              <option value="medico" className="bg-[hsl(220,20%,10%)]">Médico</option>
-              <option value="dentista" className="bg-[hsl(220,20%,10%)]">Dentista</option>
-              <option value="psicologo" className="bg-[hsl(220,20%,10%)]">Psicólogo</option>
-              <option value="nutricionista" className="bg-[hsl(220,20%,10%)]">Nutricionista</option>
-              <option value="fisioterapeuta" className="bg-[hsl(220,20%,10%)]">Fisioterapeuta</option>
-              <option value="outro" className="bg-[hsl(220,20%,10%)]">Outro</option>
+              <option value="all" className="bg-card">Todos os tipos</option>
+              <option value="medico" className="bg-card">Médico</option>
+              <option value="dentista" className="bg-card">Dentista</option>
+              <option value="psicologo" className="bg-card">Psicólogo</option>
+              <option value="nutricionista" className="bg-card">Nutricionista</option>
+              <option value="fisioterapeuta" className="bg-card">Fisioterapeuta</option>
+              <option value="outro" className="bg-card">Outro</option>
             </select>
           </div>
         </div>
@@ -330,10 +330,10 @@ const AdminOverview = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Activity className="h-4 w-4 text-blue-400" />
+              <Activity className="h-4 w-4 text-primary" />
               Cadastros Recentes
             </h3>
-            <Badge variant="outline" className="text-[10px] border-blue-500/20 text-blue-400 bg-blue-500/10 animate-pulse">
+            <Badge variant="outline" className="text-[10px] border-primary/20 text-primary bg-primary/10 animate-pulse">
               LIVE
             </Badge>
           </div>
@@ -388,7 +388,7 @@ const AdminOverview = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 w-7 p-0 text-white/20 hover:text-blue-400 hover:bg-blue-500/10"
+                      className="h-7 w-7 p-0 text-white/20 hover:text-primary hover:bg-primary-hover/10"
                       onClick={() =>
                         setConfirmAction({
                           type: s.plan === "essential" ? "downgrade" : "upgrade",
@@ -420,7 +420,7 @@ const AdminOverview = () => {
               mrr.recent_charges.slice(0, 8).map((c: any) => (
                 <div key={c.id} className="flex items-center justify-between px-4 py-3 hover:bg-white/[0.02] transition-colors">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-white truncate">{c.customer_email || "—"}</p>
+                    <p className="text-sm text-white truncate">{c.customer_email || "-"}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <Clock className="h-3 w-3 text-white/20" />
                       <span className="text-[11px] text-white/30">
@@ -449,7 +449,7 @@ const AdminOverview = () => {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
-        <AlertDialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white">
+        <AlertDialogContent className="bg-card border-white/10 text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">
               {confirmAction && confirmLabels[confirmAction.type]?.title}
@@ -468,7 +468,7 @@ const AdminOverview = () => {
               className={
                 confirmAction?.type === "suspend" || confirmAction?.type === "downgrade"
                   ? "bg-red-600 hover:bg-red-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-primary hover:bg-primary-hover text-white"
               }
             >
               {confirmAction && confirmLabels[confirmAction.type]?.action}

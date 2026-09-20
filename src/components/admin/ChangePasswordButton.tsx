@@ -43,39 +43,39 @@ const ChangePasswordButton = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-white/40 hover:bg-white/[0.04] hover:text-white/70 transition-colors">
+        <button className="flex min-h-9 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
           <KeyRound className="h-[14px] w-[14px]" />
           Trocar senha
         </button>
       </DialogTrigger>
-      <DialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white">
+      <DialogContent className="border-border bg-card text-foreground">
         <DialogHeader>
           <DialogTitle>Trocar senha</DialogTitle>
-          <DialogDescription className="text-white/50">
+          <DialogDescription className="text-muted-foreground">
             Defina uma nova senha para sua conta. Mínimo de 6 caracteres.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="new-password" className="text-xs text-white/70">Nova senha</Label>
+            <Label htmlFor="new-password" className="text-xs text-muted-foreground">Nova senha</Label>
             <Input
               id="new-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/5 border-white/10 text-white"
+              className="h-11 rounded-lg"
               autoComplete="new-password"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirm-password" className="text-xs text-white/70">Confirmar senha</Label>
+            <Label htmlFor="confirm-password" className="text-xs text-muted-foreground">Confirmar senha</Label>
             <Input
               id="confirm-password"
               type="password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="bg-white/5 border-white/10 text-white"
+              className="h-11 rounded-lg"
               autoComplete="new-password"
               required
             />

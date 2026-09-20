@@ -47,7 +47,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const input =
-  "w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-blue-500/60 focus:outline-none";
+  "w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-secondary focus:outline-none";
 const label = "block text-[11px] uppercase tracking-wider text-white/40 mb-1.5";
 
 const AdminProAccounts = () => {
@@ -187,7 +187,7 @@ const AdminProAccounts = () => {
               onChange={(e) => setForm({ ...form, profession: e.target.value })}
             >
               {PROFESSIONS.map((p) => (
-                <option key={p} value={p} className="bg-[hsl(220,20%,10%)]">
+                <option key={p} value={p} className="bg-card">
                   {p}
                 </option>
               ))}
@@ -216,8 +216,8 @@ const AdminProAccounts = () => {
               value={form.plan}
               onChange={(e) => setForm({ ...form, plan: e.target.value })}
             >
-              <option value="monthly" className="bg-[hsl(220,20%,10%)]">Mensal</option>
-              <option value="annual" className="bg-[hsl(220,20%,10%)]">Anual</option>
+              <option value="monthly" className="bg-card">Mensal</option>
+              <option value="annual" className="bg-card">Anual</option>
             </select>
           </div>
           <div>
@@ -228,7 +228,7 @@ const AdminProAccounts = () => {
               onChange={(e) => setForm({ ...form, status: e.target.value })}
             >
               {Object.entries(STATUS_LABEL).map(([v, l]) => (
-                <option key={v} value={v} className="bg-[hsl(220,20%,10%)]">
+                <option key={v} value={v} className="bg-card">
                   {l}
                 </option>
               ))}
@@ -238,7 +238,7 @@ const AdminProAccounts = () => {
             <button
               type="submit"
               disabled={create.isPending}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-hover disabled:opacity-60"
             >
               {create.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Cadastrar profissional
@@ -313,8 +313,8 @@ const ProRow = ({
             value={plan}
             onChange={(e) => setPlan(e.target.value)}
           >
-            <option value="monthly" className="bg-[hsl(220,20%,10%)]">Mensal</option>
-            <option value="annual" className="bg-[hsl(220,20%,10%)]">Anual</option>
+            <option value="monthly" className="bg-card">Mensal</option>
+            <option value="annual" className="bg-card">Anual</option>
           </select>
           <select
             className={`${input} w-auto`}
@@ -322,7 +322,7 @@ const ProRow = ({
             onChange={(e) => setStatus(e.target.value)}
           >
             {Object.entries(STATUS_LABEL).map(([v, l]) => (
-              <option key={v} value={v} className="bg-[hsl(220,20%,10%)]">
+              <option key={v} value={v} className="bg-card">
                 {l}
               </option>
             ))}

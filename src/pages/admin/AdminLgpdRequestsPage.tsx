@@ -268,7 +268,7 @@ export default function AdminLgpdRequestsPage() {
                       {new Date(r.created_at).toLocaleString("pt-BR")}
                     </td>
                     <td className="px-3 py-2 text-xs">
-                      <div>{r.subject_name || r.subject_email || "—"}</div>
+                      <div>{r.subject_name || r.subject_email || "-"}</div>
                       {r.subject_email && r.subject_name && (
                         <div className="text-[10px] text-muted-foreground">{r.subject_email}</div>
                       )}
@@ -278,7 +278,7 @@ export default function AdminLgpdRequestsPage() {
                     </td>
                     <td className="px-3 py-2"><Badge variant="outline">{TYPE_LABEL[r.request_type]}</Badge></td>
                     <td className="px-3 py-2"><Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>
-                    <td className="px-3 py-2 text-xs text-muted-foreground max-w-xs">{r.notes || "—"}</td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground max-w-xs">{r.notes || "-"}</td>
                     <td className="px-3 py-2">
                       <div className="flex gap-1 flex-wrap">
                         {r.status === "pending" && (

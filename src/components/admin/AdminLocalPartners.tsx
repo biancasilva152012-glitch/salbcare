@@ -175,7 +175,7 @@ const AdminLocalPartners = () => {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-500 text-white">
+            <Button className="bg-primary hover:bg-primary-hover text-white">
               <Plus className="h-4 w-4 mr-1" /> Novo parceiro
             </Button>
           </DialogTrigger>
@@ -188,7 +188,7 @@ const AdminLocalPartners = () => {
         </Dialog>
       </div>
 
-      <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)]">
+      <div className="rounded-xl border border-white/[0.06] bg-card">
         <Table>
           <TableHeader>
             <TableRow className="border-white/[0.06] hover:bg-transparent">
@@ -242,7 +242,7 @@ const AdminLocalPartners = () => {
                   <TableCell className="text-xs text-white/60">
                     {CATEGORIES.find((c) => c.value === p.category)?.label || p.category}
                   </TableCell>
-                  <TableCell className="text-xs text-white/60">{p.location || "—"}</TableCell>
+                  <TableCell className="text-xs text-white/60">{p.location || "-"}</TableCell>
                   <TableCell className="text-center">
                     <button
                       onClick={() => toggle.mutate({ p, field: "featured" })}
@@ -335,7 +335,7 @@ const PartnerFormDialog = ({
   };
 
   return (
-    <DialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white max-w-2xl max-h-[85vh] overflow-y-auto">
+    <DialogContent className="bg-card border-white/10 text-white max-w-2xl max-h-[85vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{editing ? "Editar parceiro" : "Novo parceiro"}</DialogTitle>
       </DialogHeader>
@@ -356,7 +356,7 @@ const PartnerFormDialog = ({
               <SelectTrigger className="bg-white/[0.03] border-white/10">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[hsl(220,20%,12%)] text-white border-white/10">
+              <SelectContent className="bg-muted text-white border-white/10">
                 {CATEGORIES.map((c) => (
                   <SelectItem key={c.value} value={c.value}>
                     {c.group} · {c.label}
@@ -483,7 +483,7 @@ const PartnerFormDialog = ({
         <Button
           disabled={!valid || loading}
           onClick={() => onSubmit(form)}
-          className="bg-blue-600 hover:bg-blue-500 text-white"
+          className="bg-primary hover:bg-primary-hover text-white"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {editing ? "Salvar" : "Cadastrar"}

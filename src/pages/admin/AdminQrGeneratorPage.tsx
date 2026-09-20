@@ -142,7 +142,7 @@ const AdminQrGenerator = () => {
   return (
     <div className="space-y-8 text-white">
       <div>
-        <span className="inline-block px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-[10px] font-bold tracking-widest">
+        <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest">
           ADMIN TOOL
         </span>
         <h1 className="mt-3 text-3xl font-bold">Gerador de QR Code para Pousadas</h1>
@@ -236,10 +236,10 @@ const AdminQrGenerator = () => {
                   <TableCell className="text-white/80">{row.scan_count}</TableCell>
                   <TableCell className="text-white/60 text-xs">{new Date(row.created_at).toLocaleDateString("pt-BR")}</TableCell>
                   <TableCell className="text-right space-x-2 whitespace-nowrap">
-                    <button onClick={() => setLatest(row)} className="text-xs text-blue-400 hover:underline">Ver</button>
-                    <button onClick={() => downloadPng(row.full_url, row.slug)} className="text-xs text-blue-400 hover:underline">PNG</button>
-                    <button onClick={() => copyUrl(row.full_url)} className="text-xs text-blue-400 hover:underline">Copiar</button>
-                    <Link to={`/admin/qr-generator/print/${row.id}`} target="_blank" className="text-xs text-blue-400 hover:underline">Print</Link>
+                    <button onClick={() => setLatest(row)} className="text-xs text-primary hover:underline">Ver</button>
+                    <button onClick={() => downloadPng(row.full_url, row.slug)} className="text-xs text-primary hover:underline">PNG</button>
+                    <button onClick={() => copyUrl(row.full_url)} className="text-xs text-primary hover:underline">Copiar</button>
+                    <Link to={`/admin/qr-generator/print/${row.id}`} target="_blank" className="text-xs text-primary hover:underline">Print</Link>
                     <button onClick={() => deleteRow(row.id)} className="text-xs text-red-400 hover:underline">Excluir</button>
                   </TableCell>
                 </TableRow>

@@ -26,7 +26,7 @@ const AdminFinanceDashboard = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
   }
@@ -90,21 +90,21 @@ const AdminFinanceDashboard = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-white/40 uppercase tracking-wider">MRR</p>
                 <p className="text-2xl font-bold text-white mt-1">{formatBRL(mrr)}</p>
               </div>
-              <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-blue-400" />
+              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -118,7 +118,7 @@ const AdminFinanceDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -132,7 +132,7 @@ const AdminFinanceDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -149,7 +149,7 @@ const AdminFinanceDashboard = () => {
 
       {/* Revenue Chart */}
       {monthlyRevenue.length > 0 && (
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-white/60">
               Receita Mensal (últimos 6 meses)
@@ -188,7 +188,7 @@ const AdminFinanceDashboard = () => {
       )}
 
       {/* Transactions Table */}
-      <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+      <Card className="bg-card border-white/5">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <CardTitle className="text-sm font-medium text-white/60">
@@ -242,7 +242,7 @@ const AdminFinanceDashboard = () => {
                         {new Date(c.created * 1000).toLocaleDateString("pt-BR")}
                       </TableCell>
                       <TableCell className="text-white/70 text-xs">
-                        {c.customer_email || "—"}
+                        {c.customer_email || "-"}
                       </TableCell>
                       <TableCell className="text-white font-medium text-xs">
                         {formatBRL(c.amount)}

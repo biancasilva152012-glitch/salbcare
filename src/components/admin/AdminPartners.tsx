@@ -131,7 +131,7 @@ const AdminPartners = () => {
         </div>
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-500 text-white">
+            <Button className="bg-primary hover:bg-primary-hover text-white">
               <Plus className="h-4 w-4 mr-1" /> Novo parceiro
             </Button>
           </DialogTrigger>
@@ -155,7 +155,7 @@ const AdminPartners = () => {
       </div>
 
       {/* Partners table */}
-      <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)]">
+      <div className="rounded-xl border border-white/[0.06] bg-card">
         <Table>
           <TableHeader>
             <TableRow className="border-white/[0.06] hover:bg-transparent">
@@ -185,7 +185,7 @@ const AdminPartners = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <code className="text-xs text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded">{p.slug}</code>
+                    <code className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded">{p.slug}</code>
                     <button onClick={() => copyLink(p.slug)} className="text-white/30 hover:text-white/70" title="Copiar link">
                       <Copy className="h-3.5 w-3.5" />
                     </button>
@@ -231,7 +231,7 @@ const AdminPartners = () => {
 
       {/* Referrals dialog */}
       <Dialog open={!!selectedSlug} onOpenChange={(o) => !o && setSelectedSlug(null)}>
-        <DialogContent className="max-w-3xl bg-[hsl(220,20%,10%)] border-white/10 text-white">
+        <DialogContent className="max-w-3xl bg-card border-white/10 text-white">
           <DialogHeader>
             <DialogTitle>Indicados de "{selectedSlug}"</DialogTitle>
           </DialogHeader>
@@ -278,7 +278,7 @@ const AdminPartners = () => {
 };
 
 const StatCard = ({ icon: Icon, label, value }: { icon: any; label: string; value: string }) => (
-  <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-5">
+  <div className="rounded-xl border border-white/[0.06] bg-card p-5">
     <div className="flex items-center gap-2 text-white/40 text-xs">
       <Icon className="h-3.5 w-3.5" />
       <span>{label}</span>
@@ -307,7 +307,7 @@ const PartnerDialog = ({
   const valid = form.name && form.contact_name && form.contact_email && form.slug;
 
   return (
-    <DialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white">
+    <DialogContent className="bg-card border-white/10 text-white">
       <DialogHeader>
         <DialogTitle>{editing ? "Editar parceiro" : "Novo parceiro"}</DialogTitle>
       </DialogHeader>
@@ -359,7 +359,7 @@ const PartnerDialog = ({
         <Button
           disabled={!valid || loading}
           onClick={() => onSubmit(form)}
-          className="bg-blue-600 hover:bg-blue-500 text-white"
+          className="bg-primary hover:bg-primary-hover text-white"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {editing ? "Salvar" : "Cadastrar"}

@@ -123,9 +123,9 @@ const PlatformSettingsTab = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Profissionais", value: stats?.totalProfiles ?? "—" },
-          { label: "Pacientes", value: stats?.totalPatients ?? "—" },
-          { label: "Consultas", value: stats?.totalAppointments ?? "—" },
+          { label: "Profissionais", value: stats?.totalProfiles ?? "-" },
+          { label: "Pacientes", value: stats?.totalPatients ?? "-" },
+          { label: "Consultas", value: stats?.totalAppointments ?? "-" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border/30 bg-card/50 p-4 text-center">
             <p className="text-2xl font-bold">{s.value}</p>
