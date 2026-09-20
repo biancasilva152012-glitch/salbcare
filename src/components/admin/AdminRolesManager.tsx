@@ -251,7 +251,7 @@ const AdminRolesManager = () => {
               para <strong className="text-white">{pending && ROLE_META[pending.newRole].label}</strong>.
               {pending?.newRole === "admin" && (
                 <span className="block mt-2 text-amber-400 text-xs">
-                  ⚠️ Este usuário terá acesso total ao painel administrativo.
+                  Atenção: este usuário terá acesso total ao painel administrativo.
                 </span>
               )}
             </AlertDialogDescription>

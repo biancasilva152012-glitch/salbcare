@@ -26,9 +26,9 @@
 - [x] Redesenhar Financeiro com lançamentos, cobranças, despesas, gráfico mês a mês e insights reais
 
 ## Integração administrativa e visual móvel (20/09/2026)
-- [ ] Ajustar a instalação PWA e adicionar entrada direta para a administração
-- [ ] Integrar criação de contas, e-mails pendentes e permissões em /admin/operacao
-- [ ] Criar início administrativo e ajuda dentro do app
-- [ ] Explicar métricas e simplificar o menu administrativo em português
-- [ ] Unificar Agenda, Pacientes e Financeiro com o visual navy/off-white/teal em 360px
-- [ ] Validar instalação, acessos e responsividade sem alterar dados ou regras existentes
+- [x] Ajustar a instalação PWA e adicionar entrada direta para a administração
+- [x] Integrar criação de contas, e-mails pendentes e permissões em /admin/operacao
+- [x] Criar início administrativo e ajuda dentro do app
+- [x] Explicar métricas e simplificar o menu administrativo em português
+- [x] Unificar Agenda, Pacientes e Financeiro com o visual navy/off-white/teal em 360px
+- [x] Validar instalação, acessos e responsividade sem alterar dados ou regras existentes
