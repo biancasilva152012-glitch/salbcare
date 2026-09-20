@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarDays, DollarSign, Pencil, Plus, Search, ShieldCheck, Stethoscope, Trash2, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, DollarSign, HelpCircle, Pencil, Plus, Search, ShieldCheck, Stethoscope, Trash2, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { maskCurrency, parseBRL } from "@/utils/currencyMask";
 import AdminAcademySalesSummary from "@/components/admin/AdminAcademySalesSummary";
 import { cn } from "@/lib/utils";
+import AdminAccountCenter from "@/components/admin/AdminAccountCenter";
 
 type Mode = "patients" | "appointments" | "income" | "expense";
 
@@ -152,7 +154,9 @@ const prettyDate = (value: string) => {
 const PAGE_SIZE = 12;
 
 const AdminOperationsManager = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const area = searchParams.get("area") === "contas" ? "accounts" : "records";
   const [mode, setMode] = useState<Mode>("patients");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -170,6 +174,26 @@ const AdminOperationsManager = () => {
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
+    },
+  });
+
+  const { data: summary } = useQuery({
+    queryKey: ["admin-operation-summary"],
+    queryFn: async () => {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+      const [patients, appointments, transactions] = await Promise.all([
+        supabase.from("patients").select("id", { count: "exact", head: true }),
+        supabase.from("appointments").select("id", { count: "exact", head: true }).gte("date", monthStart),
+        supabase.from("financial_transactions").select("amount, type").gte("date", monthStart),
+      ]);
+      const rows = transactions.data || [];
+      return {
+        patients: patients.count || 0,
+        appointments: appointments.count || 0,
+        income: rows.filter((row) => row.type === "income").reduce((sum, row) => sum + Number(row.amount), 0),
+        expense: rows.filter((row) => row.type === "expense").reduce((sum, row) => sum + Number(row.amount), 0),
+      };
     },
   });
 
@@ -307,12 +331,27 @@ const AdminOperationsManager = () => {
           <h1 className="text-2xl leading-tight sm:text-3xl">Administração do consultório</h1>
           <p className="text-sm text-muted-foreground">Gerencie dados reais sem entrar na tela do profissional.</p>
         </div>
-        <Button className="min-h-11 gap-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover" onClick={openCreate}>
-          <Plus className="h-4 w-4" /> Novo registro
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="icon" className="h-12 w-12" aria-label="Ajuda da administração"><Link to="/admin/ajuda"><HelpCircle className="h-5 w-5" /></Link></Button>
+          {area === "records" && <Button className="min-h-12 flex-1 gap-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover sm:flex-none" onClick={openCreate}><Plus className="h-4 w-4" /> Novo registro</Button>}
+        </div>
       </header>
 
-      {/* Segmented tabs */}
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-border bg-card p-2 shadow-sm">
+        <Button variant={area === "records" ? "default" : "ghost"} className="min-h-12 gap-2" onClick={() => setSearchParams({})}><ClipboardList className="h-4 w-4" /> Registros</Button>
+        <Button variant={area === "accounts" ? "default" : "ghost"} className="min-h-12 gap-2" onClick={() => setSearchParams({ area: "contas" })}><UserPlus className="h-4 w-4" /> Contas e acessos</Button>
+      </div>
+
+      {area === "records" ? <>
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { label: "Pacientes", value: summary?.patients || 0, note: "Total de pacientes cadastrados", icon: Users },
+          { label: "Consultas", value: summary?.appointments || 0, note: "Consultas marcadas neste mês", icon: CalendarDays },
+          { label: "Receitas", value: `R$ ${(summary?.income || 0).toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`, note: "Receitas lançadas neste mês", icon: DollarSign },
+          { label: "Despesas", value: `R$ ${(summary?.expense || 0).toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`, note: "Despesas lançadas neste mês", icon: Stethoscope },
+        ].map(({ label, value, note, icon: Icon }) => <div key={label} className="admin-card min-w-0 p-4"><div className="flex items-start justify-between gap-2"><p className="admin-eyebrow">{label}</p><Icon className="h-4 w-4 shrink-0 text-secondary" /></div><p className="admin-num mt-2 truncate text-xl font-semibold sm:text-2xl">{value}</p><p className="mt-2 text-xs leading-relaxed text-muted-foreground">{note}</p></div>)}
+      </section>
+
       <div className="grid grid-cols-2 gap-2 rounded-xl border border-border bg-card p-2 shadow-sm sm:grid-cols-4">
         {(Object.keys(configs) as Mode[]).map((key) => {
           const item = configs[key];
@@ -512,10 +551,11 @@ const AdminOperationsManager = () => {
             Troque a permissão para Admin e confirme.
           </li>
         </ol>
-        <Button variant="outline" className="mt-4 min-h-11 w-full gap-2 rounded-lg sm:w-auto" onClick={() => window.location.assign("/admin/roles")}>
-          <ShieldCheck className="h-4 w-4 text-secondary" /> Abrir permissões
+        <Button variant="outline" className="mt-4 min-h-11 w-full gap-2 rounded-lg sm:w-auto" onClick={() => setSearchParams({ area: "contas" })}>
+          <ShieldCheck className="h-4 w-4 text-secondary" /> Gerenciar nesta tela
         </Button>
       </section>
+      </> : <AdminAccountCenter />}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="border-border bg-card">

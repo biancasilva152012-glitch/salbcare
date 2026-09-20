@@ -443,11 +443,11 @@ const Agenda = () => {
   }
 
   return (
-    <PageContainer backTo="/dashboard" onRefresh={() => { queryClient.invalidateQueries({ queryKey: ["appointments"] }); queryClient.invalidateQueries({ queryKey: ["service-requests"] }); queryClient.invalidateQueries({ queryKey: ["service-requests-count"] }); }}>
+    <PageContainer className="admin-theme" backTo="/dashboard" onRefresh={() => { queryClient.invalidateQueries({ queryKey: ["appointments"] }); queryClient.invalidateQueries({ queryKey: ["service-requests"] }); queryClient.invalidateQueries({ queryKey: ["service-requests-count"] }); }}>
       <div className="space-y-5">
         <div className="space-y-3">
           <div className="flex items-start justify-between gap-2">
-            <h1 className="text-2xl font-bold whitespace-nowrap">Agenda</h1>
+            <div><p className="admin-eyebrow">Consultório</p><h1 className="text-2xl whitespace-nowrap">Agenda</h1></div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="icon" variant="outline" aria-label="Mais ações da agenda">

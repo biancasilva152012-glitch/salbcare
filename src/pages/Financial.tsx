@@ -352,13 +352,13 @@ const Financial = () => {
   if (isLoading) return <PageContainer><PageSkeleton variant="list" /></PageContainer>;
 
   return (
-    <PageContainer>
+    <PageContainer className="admin-theme">
       <div className="space-y-5">
         <header className="space-y-3">
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Financeiro</p>
-              <h1 className="truncate text-2xl font-bold leading-tight">Como está seu negócio?</h1>
+              <p className="admin-eyebrow">Financeiro</p>
+              <h1 className="truncate text-2xl leading-tight">Como está seu negócio?</h1>
             </div>
             {hasAccess("pdf_export") && (
               <Button size="icon" variant="outline" aria-label="Exportar PDF" onClick={() => exportFinancialPdf(transactions, filterMonth)}>

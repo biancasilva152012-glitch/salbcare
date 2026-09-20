@@ -26,7 +26,8 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger({ jsxSource: false }),
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: false,
+      injectRegister: null,
+      devOptions: { enabled: false },
       includeAssets: ["favicon.ico", "pwa-icon-192.png", "pwa-icon-512.png"],
       workbox: {
         cleanupOutdatedCaches: true,
@@ -77,6 +78,11 @@ export default defineConfig(({ mode }) => ({
         orientation: "portrait",
         scope: "/",
         start_url: "/?source=pwa",
+        shortcuts: [
+          { name: "Painel", short_name: "Painel", url: "/dashboard" },
+          { name: "Administração", short_name: "Admin", url: "/admin/operacao" },
+          { name: "Quick Card", short_name: "Quick Card", url: "/quick-card" },
+        ],
         icons: [
           {
             src: "/pwa-icon-192.png",

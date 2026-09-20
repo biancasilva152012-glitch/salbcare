@@ -1,7 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { CREAM, NAVY, ProLabel, ProWordmark, SANS, proStyles } from "@/components/pro/brand";
 import { isIos, useInstallPrompt } from "@/components/pro/InstallPrompt";
+import { Download, LayoutDashboard, ShieldCheck, Smartphone } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const STEPS_ANDROID = [
   "Abra salbcare.com no Chrome ou no Edge.",
@@ -23,59 +24,37 @@ const Install = () => {
   const steps = ios ? STEPS_IOS : STEPS_ANDROID;
 
   return (
-    <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
+    <div className="admin-theme min-h-screen bg-background text-foreground">
       <Helmet>
         <title>Instalar o app SalbCare</title>
         <meta name="description" content="Como instalar o SalbCare no seu celular e abrir o painel e o Quick Card sem navegador." />
       </Helmet>
-      <style>{proStyles}</style>
-
-      <header style={{ borderBottom: "1px solid rgba(10,22,40,0.12)" }}>
-        <div className="pro-wrap" style={{ paddingTop: 18, paddingBottom: 18 }}>
-          <Link to="/" style={{ textDecoration: "none" }}>
-            <ProWordmark size={30} />
-          </Link>
-        </div>
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4"><Link to="/" className="font-heading text-xl font-semibold">SalbCare</Link><span className="admin-eyebrow">Instalação</span></div>
       </header>
 
-      <section className="pro-wrap pro-section">
-        <ProLabel>Instalar</ProLabel>
-        <h1 className="pro-h1" style={{ maxWidth: 620 }}>
-          Tenha o SalbCare como app no seu celular.
-        </h1>
-        <p className="pro-lead" style={{ marginTop: 18, maxWidth: 560 }}>
-          Instalado, o SalbCare abre em tela cheia, carrega mais rápido e o Quick Card funciona mesmo sem internet.
-        </p>
+      <main className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:py-12">
+        <section><span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground"><Smartphone className="h-6 w-6" /></span><p className="admin-eyebrow mt-5">Instalar</p><h1 className="mt-1 max-w-xl text-3xl sm:text-4xl">Tenha o SalbCare como app no seu celular.</h1><p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">Depois de instalado, o SalbCare abre em tela cheia. Administradores podem entrar diretamente em Operação pelo atalho do app.</p>
 
         {canInstall && (
-          <div style={{ marginTop: 28 }}>
-            <button className="pro-cta" onClick={() => void install()}>
-              Instalar agora
-            </button>
-          </div>
+          <Button className="mt-6 min-h-12 w-full gap-2 sm:w-auto" onClick={() => void install()}><Download className="h-4 w-4" /> Instalar agora</Button>
         )}
 
-        <ol className="pro-body" style={{ marginTop: 32, paddingLeft: 20, display: "grid", gap: 12, maxWidth: 560 }}>
+        <ol className="mt-8 grid max-w-xl gap-3">
           {steps.map((s) => (
-            <li key={s}>{s}</li>
+            <li key={s} className="admin-card flex gap-3 p-4 text-sm leading-relaxed"><span className="admin-num flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">{steps.indexOf(s) + 1}</span>{s}</li>
           ))}
         </ol>
 
-        <p className="pro-note" style={{ marginTop: 28 }}>
+        <p className="mt-5 text-sm text-muted-foreground">
           {ios
             ? "No iPhone a instalação é feita pelo Safari. Em outros navegadores a opção não aparece."
             : "No iPhone, abra este mesmo endereço no Safari e use Adicionar à Tela de Início."}
         </p>
 
-        <div style={{ marginTop: 32, display: "flex", flexWrap: "wrap", gap: 16 }}>
-          <Link to="/quick-card" className="pro-link">
-            Abrir o Quick Card
-          </Link>
-          <Link to="/pro" className="pro-link">
-            Conhecer o SalbCare PRO
-          </Link>
-        </div>
-      </section>
+        </section>
+        <section className="grid gap-3 sm:grid-cols-2"><Button asChild variant="outline" className="min-h-12 justify-start gap-2"><Link to="/dashboard"><LayoutDashboard className="h-4 w-4 text-secondary" /> Abrir painel profissional</Link></Button><Button asChild variant="outline" className="min-h-12 justify-start gap-2"><Link to="/admin/operacao"><ShieldCheck className="h-4 w-4 text-secondary" /> Abrir administração</Link></Button></section>
+      </main>
     </div>
   );
 };

@@ -17,6 +17,7 @@
   ],
   "shortcuts": [
     { "name": "Quick Card", "url": "/quick-card" },
-    { "name": "Painel", "url": "/pro/painel" }
+    { "name": "Painel", "url": "/dashboard" },
+    { "name": "Administração", "short_name": "Admin", "url": "/admin/operacao" }
   ]
 }

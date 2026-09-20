@@ -258,7 +258,7 @@ function NewClientTab({ onCreated }: { onCreated: () => void }) {
       return data;
     },
     onSuccess: (data) => {
-      toast.success(`✅ ${form.name} cadastrado(a) com sucesso! Email de boas-vindas enviado.`);
+      toast.success(`${form.name} cadastrado(a) com sucesso. E-mail de boas-vindas enviado.`);
       qc.invalidateQueries({ queryKey: ["admin-quick-users"] });
       qc.invalidateQueries({ queryKey: ["admin-quick-metrics"] });
       qc.invalidateQueries({ queryKey: ["admin-quick-leads"] });

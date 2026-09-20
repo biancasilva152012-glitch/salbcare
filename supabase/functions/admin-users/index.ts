@@ -105,6 +105,17 @@ serve(async (req) => {
           .select("*")
           .order("created_at", { ascending: false });
 
+        const authUsers: Array<{ id: string; email_confirmed_at?: string | null; invited_at?: string | null; last_sign_in_at?: string | null }> = [];
+        let page = 1;
+        while (page <= 10) {
+          const { data: authPage, error: authError } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+          if (authError) throw authError;
+          authUsers.push(...authPage.users);
+          if (authPage.users.length < 1000) break;
+          page += 1;
+        }
+        const authById = new Map(authUsers.map((authUser) => [authUser.id, authUser]));
+
         // Enrich with Stripe data if available
         const enriched = [];
         for (const p of profiles || []) {
@@ -142,7 +153,14 @@ serve(async (req) => {
               // Stripe lookup failed, continue with database profile data only.
             }
           }
-          enriched.push({ ...p, stripe: stripeData });
+          const authUser = authById.get(p.user_id);
+          enriched.push({
+            ...p,
+            stripe: stripeData,
+            email_confirmed_at: authUser?.email_confirmed_at ?? null,
+            invited_at: authUser?.invited_at ?? null,
+            last_sign_in_at: authUser?.last_sign_in_at ?? null,
+          });
         }
         return new Response(JSON.stringify({ users: enriched }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
