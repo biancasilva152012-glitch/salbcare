@@ -224,7 +224,7 @@ const AdminSubscriptions = () => {
       <div className="rounded-xl border border-white/[0.06] overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-secondary" />
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -346,7 +346,7 @@ const AdminSubscriptions = () => {
         </div>
         {financeLoading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+            <Loader2 className="h-5 w-5 animate-spin text-secondary" />
           </div>
         ) : (
           <div className="overflow-x-auto">

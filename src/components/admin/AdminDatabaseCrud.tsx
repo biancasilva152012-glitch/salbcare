@@ -264,7 +264,7 @@ const AdminDatabaseCrud = () => {
               <CardContent className="p-0">
                 {isLoading ? (
                   <div className="flex justify-center py-12">
-                    <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                    <Loader2 className="h-6 w-6 animate-spin text-secondary" />
                   </div>
                 ) : (
                   <div className="overflow-x-auto">

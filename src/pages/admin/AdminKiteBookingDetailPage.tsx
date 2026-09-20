@@ -201,7 +201,7 @@ export default function AdminKiteBookingDetailPage() {
                 )}
                 {(events || []).map((ev) => (
                   <li key={ev.id} className="relative">
-                    <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-blue-400 ring-4 ring-[hsl(220,20%,10%)]" />
+                    <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-secondary ring-4 ring-card" />
                     <div className="text-xs text-white/80 font-semibold capitalize">
                       {ev.event_type.replace(/_/g, " ")}
                     </div>

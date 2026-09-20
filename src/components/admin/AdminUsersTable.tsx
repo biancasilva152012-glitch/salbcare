@@ -192,7 +192,7 @@ const AdminUsersTable = () => {
       <div className="rounded-xl border border-white/5 overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-secondary" />
           </div>
         ) : (
           <div className="overflow-x-auto">

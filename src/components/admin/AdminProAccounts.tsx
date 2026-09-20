@@ -47,7 +47,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const input =
-  "w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-blue-500/60 focus:outline-none";
+  "w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-secondary focus:outline-none";
 const label = "block text-[11px] uppercase tracking-wider text-white/40 mb-1.5";
 
 const AdminProAccounts = () => {

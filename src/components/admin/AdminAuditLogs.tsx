@@ -211,7 +211,7 @@ const AdminAuditLogs = () => {
             </CardHeader>
             <CardContent className="p-0">
               {adminLogs.isLoading ? (
-                <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>
+                <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-secondary" /></div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
@@ -276,7 +276,7 @@ const AdminAuditLogs = () => {
             </CardHeader>
             <CardContent className="p-0">
               {signups.isLoading ? (
-                <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>
+                <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-secondary" /></div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
@@ -331,7 +331,7 @@ const AdminAuditLogs = () => {
             </CardHeader>
             <CardContent className="p-0">
               {requests.isLoading ? (
-                <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>
+                <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-secondary" /></div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
