@@ -407,8 +407,8 @@ const AdminOperationsManager = () => {
               <thead>
                 <tr className="border-b border-border text-left">
                   <th className="admin-eyebrow px-5 py-3 font-semibold">{mode === "patients" ? "Paciente" : mode === "appointments" ? "Paciente" : "Descrição"}</th>
-                  <th className="admin-eyebrow w-44 px-5 py-3 font-semibold">Data</th>
-                  <th className="admin-eyebrow w-36 px-5 py-3 font-semibold">{mode === "appointments" ? "Status" : "Valor"}</th>
+                  <th className="admin-eyebrow w-44 px-5 py-3 font-semibold">{mode === "patients" ? "Cadastro" : "Data"}</th>
+                  <th className="admin-eyebrow w-36 px-5 py-3 font-semibold">{mode === "appointments" ? "Status" : mode === "patients" ? "Telefone" : "Valor"}</th>
                   <th className="admin-eyebrow w-28 px-5 py-3 text-right font-semibold">Ações</th>
                 </tr>
               </thead>
