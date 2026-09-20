@@ -1,7 +1,7 @@
 /**
  * Sistema de marca compartilhado das páginas SalbCare (/pro, /pro/painel, /quick-card, /instalar).
  * Paleta oficial: navy #0A1628, teal #2DD4BF, creme #F7F3EA, dourado #C9A227.
- * Tipografia: Gloock para títulos e valores de preço, IBM Plex Mono para labels curtos,
+ * Tipografia: Outfit para títulos e valores de preço, IBM Plex Mono para labels curtos,
  * Karla (sans) para corpo de texto e botões.
  *
  * Fontes self-hosted via @fontsource (arquivos estáticos, não variáveis) para preservar
@@ -34,7 +34,7 @@ export const COFFEE = NAVY_INK;
 export const OLIVE = TEAL_DEEP;
 
 export const MONO = "'IBM Plex Mono', ui-monospace, monospace";
-export const DISPLAY = "'Gloock', Georgia, serif";
+export const DISPLAY = "'Outfit', system-ui, sans-serif";
 export const SANS = "'Karla', system-ui, -apple-system, 'Segoe UI', sans-serif";
 
 /** Fontes são self-hosted; mantido vazio para compatibilidade de imports. */

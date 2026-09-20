@@ -12,7 +12,7 @@ const PainShockSection = () => {
       style={{
         background: NAVY,
         padding: "96px 0",
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        fontFamily: "'Figtree', system-ui, sans-serif",
       }}
     >
       <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center">
