@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['"Gloock"', 'Georgia', 'serif'],
-        body: ['system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
-        ui: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['"Outfit"', 'system-ui', 'sans-serif'],
+        body: ['"Figtree"', 'system-ui', '-apple-system', 'sans-serif'],
+        ui: ['"Figtree"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['"IBM Plex Mono"', '"SFMono-Regular"', 'Consolas', 'monospace'],
         serif: ['"Fraunces"', 'Georgia', 'serif'],
         display: ['"Fraunces"', 'Georgia', 'serif'],
