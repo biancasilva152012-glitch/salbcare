@@ -326,6 +326,9 @@ const Agenda = () => {
   const allDateKeys = Object.keys(grouped).sort();
   const pagination = usePagination(allDateKeys);
   const paginatedGroupKeys = pagination.paginatedItems;
+
+  // Guest mode: logged-out visitors get the local-storage agenda.
+  if (!user) return <GuestAgenda />;
   const renderAppointmentForm = (isEdit: boolean) => (
     <div className="space-y-3 pt-2">
       <div className="space-y-1.5">
