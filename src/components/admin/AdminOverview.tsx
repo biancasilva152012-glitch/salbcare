@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useAdminUsers, useAdminMRR, useSuspendUser, useActivateUser, useChangePlan } from "@/hooks/useAdminData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Users, DollarSign, TrendingUp, TrendingDown, Loader2, Ban, CheckCircle, UserCheck,
-  Clock, ArrowUpRight, Activity,
+  Clock, ArrowUpRight, Activity, ClipboardList, HelpCircle, Smartphone, ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -151,10 +152,24 @@ const AdminOverview = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">{greeting}, Admin 👋</h1>
+        <p className="admin-eyebrow">Administração</p>
+        <h1 className="mt-1 text-2xl text-white">{greeting}, Admin</h1>
         <p className="text-sm text-white/40 mt-1">
           {now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
         </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { to: "/admin/operacao", icon: ClipboardList, label: "Abrir Operação", note: "Pacientes, consultas e finanças" },
+          { to: "/admin/operacao?area=contas", icon: ShieldCheck, label: "Contas e acessos", note: "Convites e administradores" },
+          { to: "/admin/ajuda", icon: HelpCircle, label: "Ajuda", note: "Orientações do painel" },
+          { to: "/instalar", icon: Smartphone, label: "Instalar SalbCare", note: "Abrir sem navegador" },
+        ].map(({ to, icon: Icon, label, note }) => (
+          <Link key={to} to={to} className="admin-card flex min-h-28 flex-col p-4 transition-colors hover:border-secondary/50 hover:bg-accent/40">
+            <Icon className="h-5 w-5 text-secondary" /><span className="mt-3 text-sm font-semibold text-foreground">{label}</span><span className="mt-1 text-xs leading-snug text-muted-foreground">{note}</span>
+          </Link>
+        ))}
       </div>
 
       {/* KPI Grid */}
