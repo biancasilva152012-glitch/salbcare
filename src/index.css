@@ -336,7 +336,7 @@ body[data-scroll-locked] {
   .salb-surface { background: var(--salb-surface); color: var(--ink-100); }
 
   .salb-eyebrow {
-    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    font-family: "Figtree", system-ui, sans-serif;
     text-transform: uppercase;
     font-size: 12px;
     letter-spacing: 0.14em;
@@ -346,16 +346,15 @@ body[data-scroll-locked] {
   .salb-eyebrow-kite { color: var(--kite); }
 
   .salb-display {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 400;
-    font-style: italic;
+    font-family: "Outfit", system-ui, sans-serif;
+    font-weight: 500;
     font-size: clamp(40px, 7vw, 72px);
     line-height: 1.05;
     letter-spacing: -0.015em;
     color: var(--ink-100);
   }
   .salb-h1 {
-    font-family: "Fraunces", Georgia, serif;
+    font-family: "Outfit", system-ui, sans-serif;
     font-weight: 500;
     font-size: clamp(32px, 5vw, 48px);
     line-height: 1.1;
@@ -363,14 +362,14 @@ body[data-scroll-locked] {
     color: var(--ink-100);
   }
   .salb-h2 {
-    font-family: "Fraunces", Georgia, serif;
+    font-family: "Outfit", system-ui, sans-serif;
     font-weight: 500;
     font-size: 28px;
     line-height: 1.2;
     color: var(--ink-100);
   }
   .salb-body {
-    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    font-family: "Figtree", system-ui, sans-serif;
     font-size: 17px;
     line-height: 1.6;
     color: var(--ink-300);
@@ -401,7 +400,7 @@ body[data-scroll-locked] {
     gap: 8px;
     padding: 16px 28px;
     border-radius: 9999px;
-    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    font-family: "Figtree", system-ui, sans-serif;
     font-weight: 600;
     font-size: 15px;
     line-height: 1;
@@ -462,10 +461,10 @@ body[data-scroll-locked] {
    Blog typography — shared + per-publication variants
    ============================================================ */
 .font-journal { font-family: "Fraunces", Georgia, "Times New Roman", serif; }
-.font-pro     { font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif; }
+.font-pro     { font-family: "Figtree", system-ui, -apple-system, sans-serif; }
 
 .blog-prose {
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  font-family: "Figtree", system-ui, -apple-system, sans-serif;
   font-size: 1.0625rem;
   line-height: 1.75;
   color: inherit;
@@ -561,28 +560,28 @@ body[data-scroll-locked] {
   --shadow-card: 0 1px 2px rgba(11, 31, 58, 0.06);
   --shadow-card-hover: 0 4px 12px rgba(11, 31, 58, 0.08);
 
-  font-family: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  font-family: "Figtree", system-ui, -apple-system, sans-serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
 }
 
 .admin-theme h1,
 .admin-theme h2 {
-  font-family: "Gloock", Georgia, serif;
-  letter-spacing: -0.015em;
-  font-weight: 400;
+  font-family: "Outfit", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  font-weight: 500;
 }
 
 .admin-theme h3,
 .admin-theme h4,
 .admin-theme h5,
 .admin-theme h6 {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Figtree", system-ui, sans-serif;
   letter-spacing: -0.01em;
 }
 
 .admin-eyebrow {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Figtree", system-ui, sans-serif;
   font-size: 11px;
   line-height: 1.2;
   font-weight: 600;

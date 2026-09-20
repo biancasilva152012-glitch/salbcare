@@ -27,7 +27,7 @@ const WhatsAppFab = () => {
       className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full pl-3 pr-4 py-3 text-white font-semibold text-sm shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transition-shadow"
       style={{
         backgroundColor: "#25D366",
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        fontFamily: "'Figtree', system-ui, sans-serif",
       }}
     >
       <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
@@ -69,7 +69,7 @@ export const WhatsAppDemoButton = ({
       } ${className}`}
       style={{
         backgroundColor: "#25D366",
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        fontFamily: "'Figtree', system-ui, sans-serif",
         minHeight: 52,
       }}
       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#128C7E")}

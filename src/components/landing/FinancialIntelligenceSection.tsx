@@ -40,7 +40,7 @@ const FinancialIntelligenceSection = () => {
       style={{
         background: NAVY,
         padding: "96px 0",
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        fontFamily: "'Figtree', system-ui, sans-serif",
         borderTop: `1px solid ${NAVY_BORDER}`,
       }}
     >

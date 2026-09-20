@@ -62,7 +62,7 @@ const PublicSalbScore = () => {
         <meta property="og:image" content="https://salbcare.com/og-image.png" />
       </Helmet>
 
-      <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
+      <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'Figtree', system-ui, sans-serif" }}>
         {/* Nav */}
         <nav style={{ borderBottom: `1px solid ${C.border}`, background: "rgba(250,250,247,0.85)", backdropFilter: "blur(10px)", position: "sticky", top: 0, zIndex: 50 }}>
           <div className="mx-auto max-w-6xl px-5 sm:px-6 flex items-center justify-between" style={{ height: 64 }}>

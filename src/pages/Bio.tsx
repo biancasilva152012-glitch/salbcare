@@ -16,7 +16,7 @@ const CSS = `
     background:var(--navy);
     background-image:radial-gradient(900px 520px at 50% -6%, #17304f 0%, var(--navy) 52%, var(--navy-deep) 100%);
     color:var(--cream);
-    font-family:'Inter',sans-serif;
+    font-family:'Figtree',sans-serif;
     min-height:100vh;
   }
   body.bio-page #root{display:flex;justify-content:center;padding:24px 18px 44px;min-height:100vh;box-sizing:border-box}
@@ -41,7 +41,7 @@ const CSS = `
   .bio-root .logo{position:relative;z-index:1;width:96px;height:auto;display:block;margin:0 auto;
     filter:drop-shadow(0 10px 24px rgba(0,0,0,.45));}
   .bio-root .brand h1{
-    font-family:'Gloock',serif;font-weight:400;
+    font-family:'Outfit',sans-serif;font-weight:400;
     font-size:clamp(34px,10vw,42px);letter-spacing:.01em;line-height:1;
   }
   .bio-root .brand .rule{width:54px;height:2px;background:var(--gold);margin:14px auto 12px;border-radius:2px}
@@ -58,7 +58,7 @@ const CSS = `
     background:var(--cream);color:var(--navy);
     border-radius:var(--radius);padding:18px;
     text-decoration:none;border:none;cursor:pointer;
-    font-family:'Inter',sans-serif;
+    font-family:'Figtree',sans-serif;
     transition:transform .22s ease, box-shadow .22s ease;
     opacity:0;transform:translateY(14px);animation:bio-rise .55s ease forwards;
   }
@@ -80,7 +80,7 @@ const CSS = `
     font-family:'IBM Plex Mono',monospace;
     font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;font-weight:600;
   }
-  .bio-root .card h2{font-family:'Gloock',serif;font-weight:400;font-size:19.5px;line-height:1.15;margin-bottom:4px}
+  .bio-root .card h2{font-family:'Outfit',sans-serif;font-weight:400;font-size:19.5px;line-height:1.15;margin-bottom:4px}
   .bio-root .card p{font-size:12px;line-height:1.55;color:var(--ink-soft)}
   .bio-root .arrow{flex:0 0 auto;color:var(--navy);opacity:.55;transition:transform .22s ease,opacity .22s ease}
   @media(hover:hover){.bio-root .card:hover .arrow{transform:translateX(4px);opacity:1}}
@@ -111,7 +111,7 @@ const CSS = `
     color:var(--navy);background:var(--gold);padding:4px 10px;border-radius:999px;white-space:nowrap;
   }
   .bio-root footer{margin-top:34px;text-align:center}
-  .bio-root footer .mark{font-family:'Gloock',serif;font-size:16px}
+  .bio-root footer .mark{font-family:'Outfit',sans-serif;font-size:16px}
   .bio-root footer p{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(244,238,226,.45);margin-top:8px}
   .bio-root footer a{color:var(--gold);text-decoration:none;font-size:11px;letter-spacing:.08em}
   .bio-overlay{
@@ -127,11 +127,11 @@ const CSS = `
     max-height:88vh;overflow-y:auto;
     padding:22px 22px calc(26px + env(safe-area-inset-bottom));
     transform:translateY(105%);transition:transform .38s cubic-bezier(.32,.72,.28,1);
-    font-family:'Inter',sans-serif;
+    font-family:'Figtree',sans-serif;
   }
   .bio-sheet.open{transform:translateY(0)}
   .bio-sheet .grab{width:42px;height:4px;border-radius:99px;background:rgba(15,31,58,.18);margin:0 auto 18px}
-  .bio-sheet h3{font-family:'Gloock',serif;font-weight:400;font-size:24px;line-height:1.15;margin-bottom:6px}
+  .bio-sheet h3{font-family:'Outfit',sans-serif;font-weight:400;font-size:24px;line-height:1.15;margin-bottom:6px}
   .bio-sheet .lead{font-size:13px;line-height:1.6;color:var(--ink-soft);margin-bottom:18px}
   .bio-sheet label{
     display:block;font-family:'IBM Plex Mono',monospace;
@@ -139,7 +139,7 @@ const CSS = `
     font-weight:600;color:var(--navy);margin:14px 0 6px;
   }
   .bio-sheet input,.bio-sheet select{
-    width:100%;font-family:'Inter',sans-serif;font-size:15px;color:var(--navy);
+    width:100%;font-family:'Figtree',sans-serif;font-size:15px;color:var(--navy);
     background:#fff;border:1px solid rgba(15,31,58,.18);border-radius:12px;
     padding:13px 14px;outline:none;transition:border-color .2s ease, box-shadow .2s ease;
     -webkit-appearance:none;appearance:none;
@@ -147,7 +147,7 @@ const CSS = `
   .bio-sheet input:focus,.bio-sheet select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(52,191,180,.18)}
   .bio-btn{
     display:block;width:100%;text-align:center;text-decoration:none;cursor:pointer;
-    font-family:'Inter',sans-serif;font-weight:600;font-size:15px;letter-spacing:.01em;
+    font-family:'Figtree',sans-serif;font-weight:600;font-size:15px;letter-spacing:.01em;
     border:none;border-radius:14px;padding:16px;margin-top:20px;
     transition:transform .15s ease, opacity .2s ease;
   }
@@ -174,7 +174,7 @@ const CSS = `
     padding:18px 16px;background:rgba(207,168,86,.08);text-align:left;
   }
   .bio-sheet .offer .pill{margin-bottom:8px;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--navy);background:var(--gold);padding:3px 9px;border-radius:999px}
-  .bio-sheet .offer .price{font-family:'Gloock',serif;font-size:26px;line-height:1.1}
+  .bio-sheet .offer .price{font-family:'Outfit',sans-serif;font-size:26px;line-height:1.1}
   .bio-sheet .offer .per{font-size:12px;color:var(--ink-soft);margin-top:4px}
   .bio-sheet .offer ul{list-style:none;margin-top:12px;padding:0}
   .bio-sheet .offer li{font-size:12.5px;line-height:1.7;color:var(--navy);padding-left:18px;position:relative}
@@ -656,7 +656,7 @@ export default function Bio() {
         <link rel="dns-prefetch" href="https://chat.whatsapp.com" />
         <link rel="preload" as="image" href="/salbcare-logo.png" fetchPriority="high" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Gloock&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
           rel="stylesheet"
         />
         <style>{CSS}</style>

@@ -89,7 +89,7 @@ const AllToolsSection = () => {
       style={{
         background: SURFACE,
         padding: "96px 0",
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        fontFamily: "'Figtree', system-ui, sans-serif",
       }}
     >
       <style>{`
