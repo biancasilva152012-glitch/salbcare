@@ -385,7 +385,7 @@ export default function AdminKiteBookingsPage() {
                       <td className="px-4 py-3">
                         <Link
                           to={`/admin/kite-bookings/${b.id}`}
-                          className="inline-flex items-center gap-1 text-primary hover:text-blue-200 text-[11px] font-medium"
+                          className="inline-flex items-center gap-1 text-primary hover:text-primary-hover text-[11px] font-medium"
                         >
                           Ver <ExternalLink className="h-3 w-3" />
                         </Link>
