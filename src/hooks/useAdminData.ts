@@ -18,6 +18,9 @@ export interface AdminUser {
   council_number: string | null;
   council_state: string | null;
   availability_online: boolean;
+  email_confirmed_at: string | null;
+  invited_at: string | null;
+  last_sign_in_at: string | null;
   stripe: {
     customer_id: string;
     subscription: {

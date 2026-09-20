@@ -268,11 +268,11 @@ const Patients = () => {
   }
 
   return (
-    <PageContainer backTo="/dashboard" onRefresh={() => queryClient.invalidateQueries({ queryKey: ["patients"] })}>
+    <PageContainer className="admin-theme" backTo="/dashboard" onRefresh={() => queryClient.invalidateQueries({ queryKey: ["patients"] })}>
       <div className="space-y-5">
         <div className="space-y-3">
           <div className="flex items-start justify-between gap-2">
-            <h1 className="text-2xl font-bold whitespace-nowrap">Pacientes</h1>
+            <div><p className="admin-eyebrow">Consultório</p><h1 className="text-2xl whitespace-nowrap">Pacientes</h1></div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="icon" variant="outline" aria-label="Mais ações de pacientes">

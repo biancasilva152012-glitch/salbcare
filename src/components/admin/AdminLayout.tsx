@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Users, BarChart3, Database, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight,
   LayoutDashboard, Bell, Loader2, Handshake, ShieldCheck, CreditCard, QrCode, FileLock2, Wind, Globe2, Stethoscope, BookOpen, ClipboardList,
-  Menu, X,
+  Menu, X, HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -17,24 +17,25 @@ import ChangePasswordButton from "./ChangePasswordButton";
 import RlsHealthGate from "./RlsHealthGate";
 
 const NAV_ITEMS = [
-  { label: "Visão Geral", icon: LayoutDashboard, path: "/admin" },
-  { label: "Adesões", icon: CreditCard, path: "/admin/subscriptions" },
+  { label: "Início", icon: LayoutDashboard, path: "/admin" },
+  { label: "Assinaturas", icon: CreditCard, path: "/admin/subscriptions" },
   { label: "Profissionais Pro", icon: Stethoscope, path: "/admin/pro-accounts" },
   { label: "Operação", icon: ClipboardList, path: "/admin/operacao" },
-  { label: "Academy e planos", icon: BookOpen, path: "/admin/academy" },
-  { label: "Vendas da Academy", icon: BarChart3, path: "/admin/academy-sales" },
-  { label: "Usuários", icon: Users, path: "/admin/users" },
-  { label: "Permissões", icon: ShieldCheck, path: "/admin/roles" },
+  { label: "Academy", icon: BookOpen, path: "/admin/academy" },
+  { label: "Vendas Academy", icon: BarChart3, path: "/admin/academy-sales" },
+  { label: "Contas", icon: Users, path: "/admin/users" },
+  { label: "Acessos", icon: ShieldCheck, path: "/admin/roles" },
   { label: "Financeiro", icon: BarChart3, path: "/admin/finance" },
   { label: "Parcerias", icon: Handshake, path: "/admin/partners" },
-  { label: "Banco de Dados", icon: Database, path: "/admin/database" },
-  { label: "Logs", icon: ScrollText, path: "/admin/logs" },
+  { label: "Dados", icon: Database, path: "/admin/database" },
+  { label: "Histórico", icon: ScrollText, path: "/admin/logs" },
   { label: "Auditoria LGPD", icon: FileLock2, path: "/admin/lgpd-audit" },
   { label: "Solicitações LGPD", icon: FileLock2, path: "/admin/lgpd-requests" },
   { label: "QR Pousadas", icon: QrCode, path: "/admin/qr-generator" },
   { label: "Reservas Kite", icon: Wind, path: "/admin/kite-bookings" },
-  { label: "Local Partner Network", icon: Globe2, path: "/admin/local-partners" },
+  { label: "Parceiros locais", icon: Globe2, path: "/admin/local-partners" },
   { label: "Configurações", icon: Settings, path: "/admin/settings" },
+  { label: "Ajuda", icon: HelpCircle, path: "/admin/ajuda" },
 ];
 
 interface AdminLayoutProps {
