@@ -313,29 +313,31 @@ const Academy = () => {
             </div>
           </header>
 
-          <section className="rounded-2xl border border-gold/40 bg-card p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Continuar aprendendo</p>
-                <h2 className="mt-1 text-lg font-bold">How to take a patient's medical history</h2>
+          <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Continuar aprendendo</p>
+                <h2 className="mt-1 text-base font-semibold leading-snug text-foreground">
+                  How to take a patient&apos;s medical history
+                </h2>
               </div>
-              <GraduationCap className="h-6 w-6 text-gold" />
+              <GraduationCap className="h-5 w-5 shrink-0 text-muted-foreground" />
             </div>
-            <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-xl bg-background p-3">
-                <p className="font-mono text-xl font-semibold">{streak}</p>
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Sequência</p>
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl border border-border bg-background p-2.5">
+                <p className="font-mono text-base font-semibold text-foreground">{streak}</p>
+                <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Sequência</p>
               </div>
-              <div className="rounded-xl bg-background p-3">
-                <p className="font-mono text-xl font-semibold">{progress}%</p>
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Progresso</p>
+              <div className="rounded-xl border border-border bg-background p-2.5">
+                <p className="font-mono text-base font-semibold text-foreground">{progress}%</p>
+                <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Progresso</p>
               </div>
-              <div className="rounded-xl bg-background p-3">
-                <p className="font-mono text-xl font-semibold">{completed.length}</p>
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Lições</p>
+              <div className="rounded-xl border border-border bg-background p-2.5">
+                <p className="font-mono text-base font-semibold text-foreground">{completed.length}</p>
+                <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Lições</p>
               </div>
             </div>
-            <Button className="mt-4 w-full gap-2" onClick={() => startLesson(tracks[0], Math.min(completed.length, 1))}>
+            <Button className="mt-3 w-full gap-2" onClick={() => startLesson(tracks[0], Math.min(completed.length, 1))}>
               Continuar <ArrowRight className="h-4 w-4" />
             </Button>
           </section>

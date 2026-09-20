@@ -114,13 +114,13 @@ const AdminLayout = forwardRef<HTMLDivElement, AdminLayoutProps>(({ children }, 
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-card transition-all duration-300",
-          collapsed ? "w-16" : "w-60"
+          collapsed ? "w-16" : "w-16 lg:w-60"
         )}
       >
         {/* Logo */}
         <div className="flex h-16 items-center justify-between border-b border-border px-4">
           {!collapsed && (
-            <span className="text-sm font-bold tracking-widest text-foreground">
+            <span className="hidden text-sm font-bold tracking-widest text-foreground lg:inline">
               SALB<span className="text-secondary">ADMIN</span>
             </span>
           )}
@@ -148,7 +148,7 @@ const AdminLayout = forwardRef<HTMLDivElement, AdminLayoutProps>(({ children }, 
                 )}
               >
                 <item.icon className={cn("h-[18px] w-[18px] shrink-0", active && "text-secondary")} />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && <span className="hidden lg:inline">{item.label}</span>}
               </Link>
             );
           })}
@@ -161,15 +161,15 @@ const AdminLayout = forwardRef<HTMLDivElement, AdminLayoutProps>(({ children }, 
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-foreground"
           >
             <LogOut className="h-[18px] w-[18px] shrink-0" />
-            {!collapsed && <span>Voltar ao App</span>}
+            {!collapsed && <span className="hidden lg:inline">Voltar ao App</span>}
           </Link>
         </div>
       </aside>
 
       {/* Main content */}
-      <main className={cn("flex-1 transition-all duration-300", collapsed ? "ml-16" : "ml-60")}>
+      <main className={cn("min-w-0 flex-1 overflow-x-hidden transition-all duration-300", collapsed ? "ml-16" : "ml-16 lg:ml-60")}>
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/80 px-6 backdrop-blur-xl">
+        <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-xl sm:px-6">
           <div />
           <div className="flex items-center gap-3">
             {/* Notification bell */}

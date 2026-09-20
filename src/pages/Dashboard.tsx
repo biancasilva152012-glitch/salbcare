@@ -353,7 +353,14 @@ const Dashboard = () => {
                   <span className="block truncate text-xs text-muted-foreground">{appointment.appointment_type || "Consulta"}</span>
                 </span>
                 <span className="rounded-full bg-muted px-2 py-1 text-[10px] font-semibold text-muted-foreground">
-                  {appointment.status === "scheduled" ? "Agendada" : appointment.status}
+                  {{
+                    scheduled: "Agendada",
+                    confirmed: "Confirmada",
+                    completed: "Concluída",
+                    pending: "Pendente",
+                    aguardando_confirmacao: "Aguardando",
+                    aguardando_comprovante: "Aguardando",
+                  }[appointment.status] || appointment.status}
                 </span>
               </button>
             ))}

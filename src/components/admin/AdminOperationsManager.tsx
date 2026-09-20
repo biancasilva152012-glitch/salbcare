@@ -13,6 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { maskCurrency, parseBRL } from "@/utils/currencyMask";
+import AdminAcademySalesSummary from "@/components/admin/AdminAcademySalesSummary";
 
 type Mode = "patients" | "appointments" | "income" | "expense";
 
@@ -264,6 +265,21 @@ const AdminOperationsManager = () => {
             </div>
           ))}
         </div>
+      </section>
+
+      <AdminAcademySalesSummary />
+
+      <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Permissões</p>
+        <h2 className="mt-1 text-lg font-bold">Cadastrar outros administradores</h2>
+        <ol className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+          <li>1. Peça para a pessoa criar a conta no SalbCare com o e-mail dela.</li>
+          <li>2. Abra a tela de permissões e busque pelo nome ou e-mail.</li>
+          <li>3. Troque a permissão para Admin e confirme.</li>
+        </ol>
+        <Button variant="outline" className="mt-3 w-full sm:w-auto" onClick={() => window.location.assign("/admin/roles")}>
+          Abrir permissões
+        </Button>
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
