@@ -223,13 +223,13 @@ const AdminOverview = () => {
               onChange={(e) => setChartType(e.target.value)}
               className="rounded-lg border border-white/[0.08] bg-transparent text-[11px] text-white/60 px-3 py-1.5 focus:outline-none focus:border-blue-500/40"
             >
-              <option value="all" className="bg-[hsl(220,20%,10%)]">Todos os tipos</option>
-              <option value="medico" className="bg-[hsl(220,20%,10%)]">Médico</option>
-              <option value="dentista" className="bg-[hsl(220,20%,10%)]">Dentista</option>
-              <option value="psicologo" className="bg-[hsl(220,20%,10%)]">Psicólogo</option>
-              <option value="nutricionista" className="bg-[hsl(220,20%,10%)]">Nutricionista</option>
-              <option value="fisioterapeuta" className="bg-[hsl(220,20%,10%)]">Fisioterapeuta</option>
-              <option value="outro" className="bg-[hsl(220,20%,10%)]">Outro</option>
+              <option value="all" className="bg-card">Todos os tipos</option>
+              <option value="medico" className="bg-card">Médico</option>
+              <option value="dentista" className="bg-card">Dentista</option>
+              <option value="psicologo" className="bg-card">Psicólogo</option>
+              <option value="nutricionista" className="bg-card">Nutricionista</option>
+              <option value="fisioterapeuta" className="bg-card">Fisioterapeuta</option>
+              <option value="outro" className="bg-card">Outro</option>
             </select>
           </div>
         </div>
@@ -449,7 +449,7 @@ const AdminOverview = () => {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
-        <AlertDialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white">
+        <AlertDialogContent className="bg-card border-white/10 text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">
               {confirmAction && confirmLabels[confirmAction.type]?.title}

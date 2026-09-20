@@ -155,7 +155,7 @@ const AdminPartners = () => {
       </div>
 
       {/* Partners table */}
-      <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)]">
+      <div className="rounded-xl border border-white/[0.06] bg-card">
         <Table>
           <TableHeader>
             <TableRow className="border-white/[0.06] hover:bg-transparent">
@@ -231,7 +231,7 @@ const AdminPartners = () => {
 
       {/* Referrals dialog */}
       <Dialog open={!!selectedSlug} onOpenChange={(o) => !o && setSelectedSlug(null)}>
-        <DialogContent className="max-w-3xl bg-[hsl(220,20%,10%)] border-white/10 text-white">
+        <DialogContent className="max-w-3xl bg-card border-white/10 text-white">
           <DialogHeader>
             <DialogTitle>Indicados de "{selectedSlug}"</DialogTitle>
           </DialogHeader>
@@ -278,7 +278,7 @@ const AdminPartners = () => {
 };
 
 const StatCard = ({ icon: Icon, label, value }: { icon: any; label: string; value: string }) => (
-  <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-5">
+  <div className="rounded-xl border border-white/[0.06] bg-card p-5">
     <div className="flex items-center gap-2 text-white/40 text-xs">
       <Icon className="h-3.5 w-3.5" />
       <span>{label}</span>
@@ -307,7 +307,7 @@ const PartnerDialog = ({
   const valid = form.name && form.contact_name && form.contact_email && form.slug;
 
   return (
-    <DialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white">
+    <DialogContent className="bg-card border-white/10 text-white">
       <DialogHeader>
         <DialogTitle>{editing ? "Editar parceiro" : "Novo parceiro"}</DialogTitle>
       </DialogHeader>

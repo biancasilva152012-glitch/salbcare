@@ -90,7 +90,7 @@ const AdminFinanceDashboard = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -104,7 +104,7 @@ const AdminFinanceDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -118,7 +118,7 @@ const AdminFinanceDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -132,7 +132,7 @@ const AdminFinanceDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -149,7 +149,7 @@ const AdminFinanceDashboard = () => {
 
       {/* Revenue Chart */}
       {monthlyRevenue.length > 0 && (
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-white/60">
               Receita Mensal (últimos 6 meses)
@@ -188,7 +188,7 @@ const AdminFinanceDashboard = () => {
       )}
 
       {/* Transactions Table */}
-      <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+      <Card className="bg-card border-white/5">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <CardTitle className="text-sm font-medium text-white/60">

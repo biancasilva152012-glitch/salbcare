@@ -269,7 +269,7 @@ export default function AdminKiteBookingsPage() {
             { label: "Pagantes / Trial", value: snapshot?.paying ?? "—" },
             { label: "Reservas Kite (total)", value: snapshot?.kite ?? "—" },
           ].map((m) => (
-            <div key={m.label} className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4">
+            <div key={m.label} className="rounded-xl border border-white/[0.06] bg-card p-4">
               <p className="text-[10px] uppercase tracking-wide text-white/40">{m.label}</p>
               <p className="text-2xl font-bold text-white mt-1">{m.value}</p>
             </div>
@@ -277,7 +277,7 @@ export default function AdminKiteBookingsPage() {
         </div>
 
         {/* Filters */}
-        <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-4 space-y-3">
+        <div className="rounded-xl border border-white/[0.06] bg-card p-4 space-y-3">
           <div className="grid sm:grid-cols-[1fr_auto_auto] gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
@@ -285,21 +285,21 @@ export default function AdminKiteBookingsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nome, email ou observação…"
-                className="pl-9 bg-[hsl(220,20%,8%)] border-white/10 text-white placeholder:text-white/30"
+                className="pl-9 bg-muted border-white/10 text-white placeholder:text-white/30"
               />
             </div>
             <Input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              className="bg-muted border-white/10 text-white w-[150px]"
               aria-label="Data inicial"
             />
             <Input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="bg-[hsl(220,20%,8%)] border-white/10 text-white w-[150px]"
+              className="bg-muted border-white/10 text-white w-[150px]"
               aria-label="Data final"
             />
           </div>
@@ -322,7 +322,7 @@ export default function AdminKiteBookingsPage() {
         </div>
 
         {/* Table */}
-        <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] overflow-hidden">
+        <div className="rounded-xl border border-white/[0.06] bg-card overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
               <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
@@ -371,7 +371,7 @@ export default function AdminKiteBookingsPage() {
                           onChange={(e) =>
                             updateStatus.mutate({ id: b.id, status: e.target.value })
                           }
-                          className="bg-[hsl(220,20%,8%)] border border-white/10 rounded-md px-2 py-1 text-[11px] text-white/80"
+                          className="bg-muted border border-white/10 rounded-md px-2 py-1 text-[11px] text-white/80"
                         >
                           {[b.status, ...NEXT_STATUS_OPTIONS.filter((s) => s !== b.status)].map(
                             (s) => (

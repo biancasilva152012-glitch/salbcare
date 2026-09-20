@@ -187,7 +187,7 @@ const AdminProAccounts = () => {
               onChange={(e) => setForm({ ...form, profession: e.target.value })}
             >
               {PROFESSIONS.map((p) => (
-                <option key={p} value={p} className="bg-[hsl(220,20%,10%)]">
+                <option key={p} value={p} className="bg-card">
                   {p}
                 </option>
               ))}
@@ -216,8 +216,8 @@ const AdminProAccounts = () => {
               value={form.plan}
               onChange={(e) => setForm({ ...form, plan: e.target.value })}
             >
-              <option value="monthly" className="bg-[hsl(220,20%,10%)]">Mensal</option>
-              <option value="annual" className="bg-[hsl(220,20%,10%)]">Anual</option>
+              <option value="monthly" className="bg-card">Mensal</option>
+              <option value="annual" className="bg-card">Anual</option>
             </select>
           </div>
           <div>
@@ -228,7 +228,7 @@ const AdminProAccounts = () => {
               onChange={(e) => setForm({ ...form, status: e.target.value })}
             >
               {Object.entries(STATUS_LABEL).map(([v, l]) => (
-                <option key={v} value={v} className="bg-[hsl(220,20%,10%)]">
+                <option key={v} value={v} className="bg-card">
                   {l}
                 </option>
               ))}
@@ -313,8 +313,8 @@ const ProRow = ({
             value={plan}
             onChange={(e) => setPlan(e.target.value)}
           >
-            <option value="monthly" className="bg-[hsl(220,20%,10%)]">Mensal</option>
-            <option value="annual" className="bg-[hsl(220,20%,10%)]">Anual</option>
+            <option value="monthly" className="bg-card">Mensal</option>
+            <option value="annual" className="bg-card">Anual</option>
           </select>
           <select
             className={`${input} w-auto`}
@@ -322,7 +322,7 @@ const ProRow = ({
             onChange={(e) => setStatus(e.target.value)}
           >
             {Object.entries(STATUS_LABEL).map(([v, l]) => (
-              <option key={v} value={v} className="bg-[hsl(220,20%,10%)]">
+              <option key={v} value={v} className="bg-card">
                 {l}
               </option>
             ))}

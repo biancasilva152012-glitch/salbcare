@@ -188,7 +188,7 @@ const AdminLocalPartners = () => {
         </Dialog>
       </div>
 
-      <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)]">
+      <div className="rounded-xl border border-white/[0.06] bg-card">
         <Table>
           <TableHeader>
             <TableRow className="border-white/[0.06] hover:bg-transparent">
@@ -335,7 +335,7 @@ const PartnerFormDialog = ({
   };
 
   return (
-    <DialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white max-w-2xl max-h-[85vh] overflow-y-auto">
+    <DialogContent className="bg-card border-white/10 text-white max-w-2xl max-h-[85vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{editing ? "Editar parceiro" : "Novo parceiro"}</DialogTitle>
       </DialogHeader>
@@ -356,7 +356,7 @@ const PartnerFormDialog = ({
               <SelectTrigger className="bg-white/[0.03] border-white/10">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[hsl(220,20%,12%)] text-white border-white/10">
+              <SelectContent className="bg-muted text-white border-white/10">
                 {CATEGORIES.map((c) => (
                   <SelectItem key={c.value} value={c.value}>
                     {c.group} · {c.label}

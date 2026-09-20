@@ -224,7 +224,7 @@ const AdminRolesManager = () => {
                       <SelectTrigger className="w-[160px] h-8 bg-white/[0.03] border-white/10 text-white text-xs">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white">
+                      <SelectContent className="bg-card border-white/10 text-white">
                         <SelectItem value="user">Usuário (sem role)</SelectItem>
                         <SelectItem value="contador">Contador</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
@@ -240,7 +240,7 @@ const AdminRolesManager = () => {
 
       {/* Confirmation */}
       <AlertDialog open={!!pending} onOpenChange={(o) => !o && setPending(null)}>
-        <AlertDialogContent className="bg-[hsl(220,20%,10%)] border-white/10 text-white">
+        <AlertDialogContent className="bg-card border-white/10 text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <ShieldOff className="h-5 w-5 text-amber-400" />

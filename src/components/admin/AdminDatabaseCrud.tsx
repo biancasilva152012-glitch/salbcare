@@ -233,7 +233,7 @@ const AdminDatabaseCrud = () => {
 
         {TABS.map((tab) => (
           <TabsContent key={tab.key} value={tab.key} className="mt-4">
-            <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+            <Card className="bg-card border-white/5">
               <CardHeader className="pb-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <CardTitle className="text-sm font-medium text-white/60">
@@ -332,7 +332,7 @@ const AdminDatabaseCrud = () => {
 
       {/* Edit Dialog */}
       <Dialog open={!!editRow} onOpenChange={(open) => !open && setEditRow(null)}>
-        <DialogContent className="bg-[hsl(220,20%,12%)] border-white/10 text-white max-w-lg">
+        <DialogContent className="bg-muted border-white/10 text-white max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-white">Editar Registro</DialogTitle>
           </DialogHeader>

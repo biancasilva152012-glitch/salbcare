@@ -135,7 +135,7 @@ const AdminAuditLogs = () => {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5 flex items-center gap-4">
             <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
               <Shield className="h-5 w-5 text-blue-400" />
@@ -146,7 +146,7 @@ const AdminAuditLogs = () => {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5 flex items-center gap-4">
             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
               <Users className="h-5 w-5 text-emerald-400" />
@@ -157,7 +157,7 @@ const AdminAuditLogs = () => {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+        <Card className="bg-card border-white/5">
           <CardContent className="p-5 flex items-center gap-4">
             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
               <Activity className="h-5 w-5 text-amber-400" />
@@ -185,7 +185,7 @@ const AdminAuditLogs = () => {
 
         {/* Admin Actions */}
         <TabsContent value="admin" className="mt-4">
-          <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+          <Card className="bg-card border-white/5">
             <CardHeader className="pb-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <CardTitle className="text-sm font-medium text-white/60">Histórico de Ações Administrativas</CardTitle>
@@ -259,7 +259,7 @@ const AdminAuditLogs = () => {
 
         {/* Signups */}
         <TabsContent value="signups" className="mt-4">
-          <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+          <Card className="bg-card border-white/5">
             <CardHeader className="pb-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <CardTitle className="text-sm font-medium text-white/60">Cadastros Recentes</CardTitle>
@@ -325,7 +325,7 @@ const AdminAuditLogs = () => {
 
         {/* Service Requests */}
         <TabsContent value="requests" className="mt-4">
-          <Card className="bg-[hsl(220,20%,10%)] border-white/5">
+          <Card className="bg-card border-white/5">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-white/60">Solicitações de Serviço</CardTitle>
             </CardHeader>

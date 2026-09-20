@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         heading: ['"Gloock"', 'Georgia', 'serif'],
         body: ['system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        ui: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['"IBM Plex Mono"', '"SFMono-Regular"', 'Consolas', 'monospace'],
         serif: ['"Fraunces"', 'Georgia', 'serif'],
         display: ['"Fraunces"', 'Georgia', 'serif'],
@@ -29,6 +30,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover, var(--primary)))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

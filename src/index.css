@@ -514,3 +514,153 @@ body[data-scroll-locked] {
 
 /* Pro variant — sans, teal accents */
 .blog-prose.pro blockquote { border-left-color: hsl(var(--blog-pro)); }
+
+/* ============================================================
+   SALBADMIN design system (navy + teal, premium SaaS)
+   Tokens are scoped to `.admin-theme` so the professional app
+   keeps its own palette. Reusable anywhere by adding the class.
+   ============================================================ */
+.admin-theme {
+  --background: 40 20% 97%;            /* #F8F7F4 warm off-white */
+  --foreground: 222 47% 11%;           /* #0F172A */
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  --primary: 214 68% 14%;              /* #0B1F3A navy */
+  --primary-foreground: 0 0% 100%;
+  --primary-hover: 215 65% 21%;        /* #13305A */
+
+  --secondary: 173 80% 40%;            /* #14B8A6 teal */
+  --secondary-foreground: 222 47% 11%;
+
+  --muted: 40 14% 95%;
+  --muted-foreground: 215 16% 47%;     /* #64748B */
+
+  --accent: 173 60% 95%;
+  --accent-foreground: 214 68% 14%;
+
+  --gold: 46 68% 47%;                  /* #C9A227 pontual */
+  --gold-foreground: 0 0% 100%;
+
+  --destructive: 0 72% 51%;            /* #DC2626 */
+  --destructive-foreground: 0 0% 100%;
+  --success: 173 80% 32%;
+  --success-foreground: 0 0% 100%;
+
+  --border: 220 13% 91%;               /* #E5E7EB */
+  --input: 220 13% 91%;
+  --ring: 173 80% 40%;
+
+  --admin-nav: 214 68% 14%;
+  --admin-nav-hover: 215 65% 21%;
+
+  --radius: 0.75rem;
+  --shadow-card: 0 1px 2px rgba(11, 31, 58, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(11, 31, 58, 0.08);
+
+  font-family: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.admin-theme h1,
+.admin-theme h2 {
+  font-family: "Gloock", Georgia, serif;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+
+.admin-theme h3,
+.admin-theme h4,
+.admin-theme h5,
+.admin-theme h6 {
+  font-family: "Inter", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.admin-eyebrow {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: hsl(var(--muted-foreground));
+}
+
+.admin-num {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.admin-card {
+  border-radius: 12px;
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  box-shadow: var(--shadow-card);
+}
+
+.admin-theme button,
+.admin-theme input,
+.admin-theme select,
+.admin-theme textarea,
+.admin-theme a {
+  transition-duration: 150ms;
+}
+
+.admin-theme :focus-visible {
+  outline: 2px solid hsl(var(--secondary));
+  outline-offset: 2px;
+}
+
+/* Legacy dark utilities inside the admin content area are remapped to the
+   light navy system so every /admin screen stays legible (WCAG AA). */
+.admin-theme main .text-white,
+.admin-theme main .text-white\/90,
+.admin-theme main .text-white\/80,
+.admin-theme main .text-white\/70 { color: hsl(var(--foreground)); }
+
+.admin-theme main .text-white\/60,
+.admin-theme main .text-white\/50,
+.admin-theme main .text-white\/40,
+.admin-theme main .text-white\/30 { color: hsl(var(--muted-foreground)); }
+
+.admin-theme main .bg-white\/5,
+.admin-theme main .bg-white\/10,
+.admin-theme main .bg-white\/\[0\.02\],
+.admin-theme main .bg-white\/\[0\.03\],
+.admin-theme main .bg-white\/\[0\.04\] { background-color: hsl(var(--muted)); }
+
+.admin-theme main .border-white\/5,
+.admin-theme main .border-white\/10,
+.admin-theme main .border-white\/20,
+.admin-theme main .border-white\/\[0\.06\],
+.admin-theme main .border-white\/\[0\.08\] { border-color: hsl(var(--border)); }
+
+.admin-theme main .divide-white\/5 > :not([hidden]) ~ :not([hidden]),
+.admin-theme main .divide-white\/10 > :not([hidden]) ~ :not([hidden]) { border-color: hsl(var(--border)); }
+
+.admin-theme main .hover\:bg-white\/5:hover,
+.admin-theme main .hover\:bg-white\/10:hover,
+.admin-theme main .hover\:bg-white\/\[0\.04\]:hover,
+.admin-theme main .hover\:bg-white\/\[0\.06\]:hover { background-color: hsl(var(--muted)); }
+
+.admin-theme main .hover\:text-white:hover,
+.admin-theme main .hover\:text-white\/70:hover,
+.admin-theme main .hover\:text-white\/90:hover { color: hsl(var(--foreground)); }
+
+.admin-theme main input::placeholder,
+.admin-theme main textarea::placeholder { color: hsl(var(--muted-foreground)); opacity: 1; }
+.admin-theme main .placeholder\:text-white\/30::placeholder,
+.admin-theme main .placeholder\:text-white\/40::placeholder,
+.admin-theme main .placeholder\:text-white\/50::placeholder { color: hsl(var(--muted-foreground)); }
+
+/* Legacy hardcoded dark panels become white cards in the admin content area. */
+.admin-theme main [class*="bg-[hsl(220,20%,"] {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}

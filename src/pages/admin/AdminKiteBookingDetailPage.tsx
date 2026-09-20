@@ -113,14 +113,14 @@ export default function AdminKiteBookingDetailPage() {
             <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
           </div>
         ) : !booking ? (
-          <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-8 text-center text-white/40 text-sm">
+          <div className="rounded-xl border border-white/[0.06] bg-card p-8 text-center text-white/40 text-sm">
             Reserva não encontrada.
           </div>
         ) : (
           <div className="grid lg:grid-cols-3 gap-5">
             {/* Patient & booking info */}
             <div className="lg:col-span-2 space-y-5">
-              <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-5">
+              <div className="rounded-xl border border-white/[0.06] bg-card p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-[10px] uppercase tracking-wide text-white/40">Reserva</p>
@@ -191,7 +191,7 @@ export default function AdminKiteBookingDetailPage() {
             </div>
 
             {/* Timeline */}
-            <div className="rounded-xl border border-white/[0.06] bg-[hsl(220,20%,10%)] p-5">
+            <div className="rounded-xl border border-white/[0.06] bg-card p-5">
               <h2 className="text-sm font-semibold text-white">Timeline</h2>
               <p className="text-[11px] text-white/40 mt-0.5">Criação, mudanças de status e tentativas.</p>
 
