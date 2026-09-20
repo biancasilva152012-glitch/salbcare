@@ -223,7 +223,7 @@ const AdminDatabaseCrud = () => {
             <TabsTrigger
               key={t.key}
               value={t.key}
-              className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-white/50 gap-1.5"
+              className="text-xs data-[state=active]:bg-primary data-[state=active]:text-white text-white/50 gap-1.5"
             >
               <t.icon className="h-3.5 w-3.5" />
               {t.label}
@@ -291,14 +291,14 @@ const AdminDatabaseCrud = () => {
                             <TableRow key={row.id} className="border-white/5 hover:bg-white/[0.02]">
                               {tab.columns.map((c) => (
                                 <TableCell key={c.key} className="text-white/70 text-xs max-w-[200px] truncate">
-                                  {String(row[c.key] ?? "—")}
+                                  {String(row[c.key] ?? "-")}
                                 </TableCell>
                               ))}
                               <TableCell className="text-right whitespace-nowrap">
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 w-7 p-0 text-white/30 hover:text-blue-400 hover:bg-blue-500/10"
+                                  className="h-7 w-7 p-0 text-white/30 hover:text-primary hover:bg-primary-hover/10"
                                   onClick={() => openEdit(row)}
                                 >
                                   <Pencil className="h-3.5 w-3.5" />
@@ -371,7 +371,7 @@ const AdminDatabaseCrud = () => {
               size="sm"
               onClick={saveEdit}
               disabled={updateMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary-hover text-white"
             >
               {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
               Salvar

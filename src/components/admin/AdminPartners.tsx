@@ -131,7 +131,7 @@ const AdminPartners = () => {
         </div>
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-500 text-white">
+            <Button className="bg-primary hover:bg-primary-hover text-white">
               <Plus className="h-4 w-4 mr-1" /> Novo parceiro
             </Button>
           </DialogTrigger>
@@ -185,7 +185,7 @@ const AdminPartners = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <code className="text-xs text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded">{p.slug}</code>
+                    <code className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded">{p.slug}</code>
                     <button onClick={() => copyLink(p.slug)} className="text-white/30 hover:text-white/70" title="Copiar link">
                       <Copy className="h-3.5 w-3.5" />
                     </button>
@@ -359,7 +359,7 @@ const PartnerDialog = ({
         <Button
           disabled={!valid || loading}
           onClick={() => onSubmit(form)}
-          className="bg-blue-600 hover:bg-blue-500 text-white"
+          className="bg-primary hover:bg-primary-hover text-white"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {editing ? "Salvar" : "Cadastrar"}

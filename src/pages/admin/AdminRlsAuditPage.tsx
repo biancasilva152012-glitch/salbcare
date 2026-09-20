@@ -143,9 +143,9 @@ const AdminRlsAuditPage = () => {
     const bodyText = body.join("\n");
     const hash = await sha256Hex(bodyText);
     const csv =
-      `# SALBCARE — Auditoria RLS\n` +
+      `# SALBCARE - Auditoria RLS\n` +
       `# Gerado em: ${lastRunAt.toISOString()}\n` +
-      `# Executado por: ${user?.id ?? "desconhecido"} (${user?.email ?? "—"})\n` +
+      `# Executado por: ${user?.id ?? "desconhecido"} (${user?.email ?? "-"})\n` +
       `# SHA-256 (corpo): ${hash}\n` +
       `${bodyText}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -178,11 +178,11 @@ const AdminRlsAuditPage = () => {
 
     const doc = new jsPDF({ orientation: "landscape" });
     doc.setFontSize(14);
-    doc.text("SALBCARE — Auditoria de RLS", 14, 14);
+    doc.text("SALBCARE - Auditoria de RLS", 14, 14);
     doc.setFontSize(9);
     doc.setTextColor(120);
     doc.text(`Gerado em ${lastRunAt.toLocaleString("pt-BR")}`, 14, 20);
-    doc.text(`Executado por: ${user?.email ?? "—"} (${user?.id ?? "—"})`, 14, 25);
+    doc.text(`Executado por: ${user?.email ?? "-"} (${user?.id ?? "-"})`, 14, 25);
     doc.text(
       `Resumo: ${counts.ok} OK • ${counts.warning} atenção • ${counts.fail} falha(s)`,
       14, 30,
@@ -394,7 +394,7 @@ const AdminRlsAuditPage = () => {
                         <li key={p.policy_name} className="text-[11px] space-y-1">
                           <p className="font-medium">{p.policy_name}</p>
                           <p className="text-muted-foreground">
-                            roles: {p.roles?.join(", ") || "—"} • {p.permissive}
+                            roles: {p.roles?.join(", ") || "-"} • {p.permissive}
                           </p>
                           {p.using_expr && (
                             <pre className="rounded bg-muted/50 p-2 overflow-x-auto"><code>USING: {p.using_expr}</code></pre>

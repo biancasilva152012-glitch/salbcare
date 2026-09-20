@@ -78,7 +78,7 @@ const actionLabels: Record<string, string> = {
 const actionColors: Record<string, string> = {
   suspend_user: "border-red-500/30 text-red-400 bg-red-500/10",
   activate_user: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10",
-  change_plan: "border-blue-500/30 text-blue-400 bg-blue-500/10",
+  change_plan: "border-primary/20 text-primary bg-primary/10",
   refund_charge: "border-amber-500/30 text-amber-400 bg-amber-500/10",
 };
 
@@ -137,8 +137,8 @@ const AdminAuditLogs = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="bg-card border-white/5">
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-              <Shield className="h-5 w-5 text-blue-400" />
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Shield className="h-5 w-5 text-primary" />
             </div>
             <div>
               <p className="text-xs text-white/40 uppercase tracking-wider">Ações Admin</p>
@@ -172,13 +172,13 @@ const AdminAuditLogs = () => {
 
       <Tabs value={tab} onValueChange={(v) => { setTab(v); setSearch(""); }}>
         <TabsList className="bg-white/5 border border-white/10 h-auto gap-1 p-1">
-          <TabsTrigger value="admin" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-white/50 gap-1.5">
+          <TabsTrigger value="admin" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-white text-white/50 gap-1.5">
             <Shield className="h-3.5 w-3.5" /> Ações Admin
           </TabsTrigger>
-          <TabsTrigger value="signups" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-white/50 gap-1.5">
+          <TabsTrigger value="signups" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-white text-white/50 gap-1.5">
             <Users className="h-3.5 w-3.5" /> Cadastros
           </TabsTrigger>
-          <TabsTrigger value="requests" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-white/50 gap-1.5">
+          <TabsTrigger value="requests" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-white text-white/50 gap-1.5">
             <Activity className="h-3.5 w-3.5" /> Solicitações
           </TabsTrigger>
         </TabsList>
@@ -235,10 +235,10 @@ const AdminAuditLogs = () => {
                                 {actionLabels[log.action] || log.action}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-white/50 text-xs">{log.target_table || "—"}</TableCell>
-                            <TableCell className="text-white/50 text-xs font-mono truncate max-w-[120px]">{log.target_id || "—"}</TableCell>
+                            <TableCell className="text-white/50 text-xs">{log.target_table || "-"}</TableCell>
+                            <TableCell className="text-white/50 text-xs font-mono truncate max-w-[120px]">{log.target_id || "-"}</TableCell>
                             <TableCell className="text-white/40 text-xs truncate max-w-[200px]">
-                              {log.details ? JSON.stringify(log.details).slice(0, 80) : "—"}
+                              {log.details ? JSON.stringify(log.details).slice(0, 80) : "-"}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -300,14 +300,14 @@ const AdminAuditLogs = () => {
                             <TableCell className="text-white/60 text-xs">{s.email}</TableCell>
                             <TableCell className="text-white/50 text-xs">{s.professional_type}</TableCell>
                             <TableCell>
-                              <Badge variant="outline" className="text-[10px] border-blue-500/30 text-blue-400 bg-blue-500/10">
+                              <Badge variant="outline" className="text-[10px] border-primary/20 text-primary bg-primary/10">
                                 {s.plan}
                               </Badge>
                             </TableCell>
                             <TableCell>
                               <Badge variant="outline" className={`text-[10px] ${
                                 s.payment_status === "active" ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/10" :
-                                s.payment_status === "trial" ? "border-blue-500/30 text-blue-400 bg-blue-500/10" :
+                                s.payment_status === "trial" ? "border-primary/20 text-primary bg-primary/10" :
                                 "border-white/20 text-white/40"
                               }`}>
                                 {s.payment_status}
@@ -348,7 +348,7 @@ const AdminAuditLogs = () => {
                       {(requests.data || []).map((r) => (
                         <TableRow key={r.id} className="border-white/5 hover:bg-white/[0.02]">
                           <TableCell className="text-white/70 text-xs whitespace-nowrap">{fmt(r.created_at)}</TableCell>
-                          <TableCell className="text-white/80 text-xs">{r.patient_name || "—"}</TableCell>
+                          <TableCell className="text-white/80 text-xs">{r.patient_name || "-"}</TableCell>
                           <TableCell className="text-white/60 text-xs">{r.service_type}</TableCell>
                           <TableCell>
                             <Badge variant="outline" className={`text-[10px] ${

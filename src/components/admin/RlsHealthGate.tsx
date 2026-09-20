@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
 /**
- * Backend RLS gate — calls public.check_rls_health() on mount and BLOCKS the
+ * Backend RLS gate - calls public.check_rls_health() on mount and BLOCKS the
  * admin shell when any essential table (patients/appointments/financial_*
  * /teleconsultations/etc.) has no RLS or no auth.uid()=user_id policy.
  *
@@ -55,7 +55,7 @@ const RlsHealthGate = ({ children }: Props) => {
   }
 
   if (error) {
-    // Network/permission error — don't block the admin completely, but warn.
+    // Network/permission error - don't block the admin completely, but warn.
     return (
       <div className="bg-destructive/10 border-b border-destructive/40 px-4 py-2 text-xs text-destructive">
         Verificação de RLS indisponível: {error}.{" "}

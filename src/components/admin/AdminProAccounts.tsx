@@ -238,7 +238,7 @@ const AdminProAccounts = () => {
             <button
               type="submit"
               disabled={create.isPending}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-hover disabled:opacity-60"
             >
               {create.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Cadastrar profissional

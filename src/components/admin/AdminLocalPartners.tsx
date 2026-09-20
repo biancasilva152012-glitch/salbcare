@@ -175,7 +175,7 @@ const AdminLocalPartners = () => {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-500 text-white">
+            <Button className="bg-primary hover:bg-primary-hover text-white">
               <Plus className="h-4 w-4 mr-1" /> Novo parceiro
             </Button>
           </DialogTrigger>
@@ -242,7 +242,7 @@ const AdminLocalPartners = () => {
                   <TableCell className="text-xs text-white/60">
                     {CATEGORIES.find((c) => c.value === p.category)?.label || p.category}
                   </TableCell>
-                  <TableCell className="text-xs text-white/60">{p.location || "—"}</TableCell>
+                  <TableCell className="text-xs text-white/60">{p.location || "-"}</TableCell>
                   <TableCell className="text-center">
                     <button
                       onClick={() => toggle.mutate({ p, field: "featured" })}
@@ -483,7 +483,7 @@ const PartnerFormDialog = ({
         <Button
           disabled={!valid || loading}
           onClick={() => onSubmit(form)}
-          className="bg-blue-600 hover:bg-blue-500 text-white"
+          className="bg-primary hover:bg-primary-hover text-white"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {editing ? "Salvar" : "Cadastrar"}

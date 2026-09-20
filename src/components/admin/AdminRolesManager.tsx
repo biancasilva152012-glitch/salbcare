@@ -37,7 +37,7 @@ interface PendingChange {
 }
 
 const ROLE_META: Record<AppRole, { label: string; color: string; icon: React.ElementType }> = {
-  admin: { label: "Admin", color: "border-blue-500/20 text-blue-400 bg-blue-500/10", icon: ShieldCheck },
+  admin: { label: "Admin", color: "border-primary/20 text-primary bg-primary/10", icon: ShieldCheck },
   contador: { label: "Contador", color: "border-violet-500/20 text-violet-400 bg-violet-500/10", icon: Shield },
   user: { label: "Usuário", color: "border-white/10 text-white/40", icon: UserCog },
 };
@@ -148,7 +148,7 @@ const AdminRolesManager = () => {
       <div className="grid grid-cols-3 gap-4">
         <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-4">
           <div className="flex items-center gap-2 text-white/40 text-[11px] uppercase tracking-wider">
-            <ShieldCheck className="h-3.5 w-3.5 text-blue-400" /> Admins
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Admins
           </div>
           <p className="text-2xl font-bold text-white mt-2">{adminCount}</p>
         </div>
@@ -262,7 +262,7 @@ const AdminRolesManager = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmChange}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary-hover text-white"
             >
               Confirmar
             </AlertDialogAction>

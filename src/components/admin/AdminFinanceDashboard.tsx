@@ -97,8 +97,8 @@ const AdminFinanceDashboard = () => {
                 <p className="text-xs text-white/40 uppercase tracking-wider">MRR</p>
                 <p className="text-2xl font-bold text-white mt-1">{formatBRL(mrr)}</p>
               </div>
-              <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-blue-400" />
+              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -242,7 +242,7 @@ const AdminFinanceDashboard = () => {
                         {new Date(c.created * 1000).toLocaleDateString("pt-BR")}
                       </TableCell>
                       <TableCell className="text-white/70 text-xs">
-                        {c.customer_email || "—"}
+                        {c.customer_email || "-"}
                       </TableCell>
                       <TableCell className="text-white font-medium text-xs">
                         {formatBRL(c.amount)}
