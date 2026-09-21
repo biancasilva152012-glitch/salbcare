@@ -1,5 +1,5 @@
-- [ ] Adicionar aviso profissional de Google Play e App Store em breve na landing page.
-- [ ] Conferir pop-ups administrativos em /admin/operacao com conta da Bianca.
-- [ ] Conferir /admin/operacao, Agenda, Pacientes e Financeiro em 360px.
+- [x] Adicionar aviso profissional de Google Play e App Store em breve na landing page.
+- [x] Conferir pop-ups administrativos em /admin/operacao com conta da Bianca.
+- [x] Conferir /admin/operacao, Agenda, Pacientes e Financeiro em 360px.
 - [ ] Publicar a versão validada.
 - [ ] Revisar status do app instalado e orientar próximo passo para lojas.
