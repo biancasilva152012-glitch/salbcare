@@ -224,7 +224,7 @@ const AdminRolesManager = () => {
                       <SelectTrigger className="w-[160px] h-8 bg-white/[0.03] border-white/10 text-white text-xs">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-card border-white/10 text-white">
+                      <SelectContent className="border-border bg-popover text-popover-foreground">
                         <SelectItem value="user">Usuário (sem role)</SelectItem>
                         <SelectItem value="contador">Contador</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
@@ -240,15 +240,15 @@ const AdminRolesManager = () => {
 
       {/* Confirmation */}
       <AlertDialog open={!!pending} onOpenChange={(o) => !o && setPending(null)}>
-        <AlertDialogContent className="bg-card border-white/10 text-white">
+        <AlertDialogContent className="border-border bg-card text-card-foreground">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <ShieldOff className="h-5 w-5 text-amber-400" />
               Confirmar alteração de permissão
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
-              Você está prestes a alterar a role de <strong className="text-white">{pending?.userName}</strong>{" "}
-              para <strong className="text-white">{pending && ROLE_META[pending.newRole].label}</strong>.
+            <AlertDialogDescription className="text-muted-foreground">
+              Você está prestes a alterar a role de <strong className="text-foreground">{pending?.userName}</strong>{" "}
+              para <strong className="text-foreground">{pending && ROLE_META[pending.newRole].label}</strong>.
               {pending?.newRole === "admin" && (
                 <span className="block mt-2 text-amber-400 text-xs">
                   Atenção: este usuário terá acesso total ao painel administrativo.
@@ -257,12 +257,12 @@ const AdminRolesManager = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/[0.04] border-white/10 text-white hover:bg-white/[0.08]">
+            <AlertDialogCancel className="border-border bg-background text-foreground hover:bg-muted">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmChange}
-              className="bg-primary hover:bg-primary-hover text-white"
+              className="bg-primary text-primary-foreground hover:bg-primary-hover"
             >
               Confirmar
             </AlertDialogAction>

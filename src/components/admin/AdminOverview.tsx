@@ -464,26 +464,26 @@ const AdminOverview = () => {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
-        <AlertDialogContent className="bg-card border-white/10 text-white">
+        <AlertDialogContent className="border-border bg-card text-card-foreground">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
+            <AlertDialogTitle className="text-foreground">
               {confirmAction && confirmLabels[confirmAction.type]?.title}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-white/50">
-              <span className="font-medium text-white">{confirmAction?.userName}</span>{" "}
+            <AlertDialogDescription className="text-muted-foreground">
+              <span className="font-medium text-foreground">{confirmAction?.userName}</span>{" "}
               {confirmAction && confirmLabels[confirmAction.type]?.desc}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-white/10 text-white/60 hover:bg-white/5 hover:text-white">
+            <AlertDialogCancel className="border-border text-foreground hover:bg-muted hover:text-foreground">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               className={
                 confirmAction?.type === "suspend" || confirmAction?.type === "downgrade"
-                  ? "bg-red-600 hover:bg-red-700 text-white"
-                  : "bg-primary hover:bg-primary-hover text-white"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : "bg-primary text-primary-foreground hover:bg-primary-hover"
               }
             >
               {confirmAction && confirmLabels[confirmAction.type]?.action}
