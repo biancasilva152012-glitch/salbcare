@@ -66,6 +66,11 @@ const FEATURES = [
 const LANDING_STYLES = `
   .pro-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
   .pro-hero-mock { min-width: 0; }
+  .pro-store-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .pro-store-badge { display: inline-flex; min-height: 54px; min-width: 168px; align-items: center; gap: 12px; border: 1px solid rgba(10,22,40,0.16); border-radius: 12px; background: #FFFFFF; padding: 10px 14px; box-shadow: 0 8px 20px rgba(10,22,40,0.06); color: ${CREAM}; }
+  .pro-store-icon { display: flex; height: 32px; width: 32px; flex: none; align-items: center; justify-content: center; border-radius: 9px; background: rgba(20,184,166,0.10); color: ${TEAL}; font-family: ${MONO}; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; }
+  .pro-store-kicker { display: block; font-family: ${MONO}; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #64748B; }
+  .pro-store-name { display: block; margin-top: 2px; font-family: ${SANS}; font-size: 15px; font-weight: 700; line-height: 1.15; color: ${CREAM}; }
   .pro-pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .pro-pain-card {
     background: rgba(94,71,54,0.05);
@@ -273,6 +278,22 @@ const Pro = () => {
           <p className="pro-note" style={{ marginTop: 14 }}>
             Sem cartão de crédito. Configuração em cerca de 10 minutos.
           </p>
+          <div className="pro-store-strip" aria-label="Disponibilidade do aplicativo">
+            <div className="pro-store-badge">
+              <span className="pro-store-icon">iOS</span>
+              <span>
+                <span className="pro-store-kicker">Em breve na</span>
+                <span className="pro-store-name">App Store</span>
+              </span>
+            </div>
+            <div className="pro-store-badge">
+              <span className="pro-store-icon">AND</span>
+              <span>
+                <span className="pro-store-kicker">Em breve no</span>
+                <span className="pro-store-name">Google Play</span>
+              </span>
+            </div>
+          </div>
         </div>
         <div className="pro-hero-mock">
           <ProAgendaMini />
