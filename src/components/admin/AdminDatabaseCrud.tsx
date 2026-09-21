@@ -332,27 +332,27 @@ const AdminDatabaseCrud = () => {
 
       {/* Edit Dialog */}
       <Dialog open={!!editRow} onOpenChange={(open) => !open && setEditRow(null)}>
-        <DialogContent className="bg-muted border-white/10 text-white max-w-lg">
+        <DialogContent className="max-w-lg border-border bg-card text-card-foreground">
           <DialogHeader>
-            <DialogTitle className="text-white">Editar Registro</DialogTitle>
+            <DialogTitle className="text-foreground">Editar Registro</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
             {tabConfig.columns
               .filter((c) => c.editable)
               .map((c) => (
                 <div key={c.key} className="space-y-1">
-                  <label className="text-xs text-white/50 font-medium">{c.label}</label>
+                  <label className="text-xs font-medium text-muted-foreground">{c.label}</label>
                   {(c.key === "bio" || c.key === "notes" || c.key === "treatment_plan") ? (
                     <Textarea
                       value={editValues[c.key] ?? ""}
                       onChange={(e) => setEditValues((p) => ({ ...p, [c.key]: e.target.value }))}
-                      className="bg-white/5 border-white/10 text-white text-sm min-h-[80px]"
+                      className="min-h-[80px] border-input bg-background text-sm text-foreground"
                     />
                   ) : (
                     <Input
                       value={editValues[c.key] ?? ""}
                       onChange={(e) => setEditValues((p) => ({ ...p, [c.key]: e.target.value }))}
-                      className="bg-white/5 border-white/10 text-white text-sm h-9"
+                      className="h-9 border-input bg-background text-sm text-foreground"
                     />
                   )}
                 </div>
@@ -363,7 +363,7 @@ const AdminDatabaseCrud = () => {
               variant="outline"
               size="sm"
               onClick={() => setEditRow(null)}
-              className="border-white/10 text-white/60"
+              className="border-border text-foreground hover:bg-muted"
             >
               Cancelar
             </Button>
@@ -371,7 +371,7 @@ const AdminDatabaseCrud = () => {
               size="sm"
               onClick={saveEdit}
               disabled={updateMutation.isPending}
-              className="bg-primary hover:bg-primary-hover text-white"
+              className="bg-primary text-primary-foreground hover:bg-primary-hover"
             >
               {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
               Salvar
