@@ -66,11 +66,22 @@ const FEATURES = [
 const LANDING_STYLES = `
   .pro-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
   .pro-hero-mock { min-width: 0; }
-  .pro-store-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-  .pro-store-badge { display: inline-flex; min-height: 54px; min-width: 168px; align-items: center; gap: 12px; border: 1px solid rgba(10,22,40,0.16); border-radius: 12px; background: #FFFFFF; padding: 10px 14px; box-shadow: 0 8px 20px rgba(10,22,40,0.06); color: ${CREAM}; }
-  .pro-store-icon { display: flex; height: 32px; width: 32px; flex: none; align-items: center; justify-content: center; border-radius: 9px; background: rgba(20,184,166,0.10); color: ${TEAL}; font-family: ${MONO}; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; }
-  .pro-store-kicker { display: block; font-family: ${MONO}; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #64748B; }
-  .pro-store-name { display: block; margin-top: 2px; font-family: ${SANS}; font-size: 15px; font-weight: 700; line-height: 1.15; color: ${CREAM}; }
+  .pro-store-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .pro-store-badge { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; border: 1px solid rgba(10,22,40,0.14); border-radius: 10px; background: #FFFFFF; padding: 6px 12px 6px 10px; color: ${CREAM}; }
+  .pro-store-icon { display: flex; height: 20px; width: 20px; flex: none; align-items: center; justify-content: center; color: ${CREAM}; }
+  .pro-store-kicker { display: block; font-family: ${MONO}; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #64748B; }
+  .pro-store-name { display: block; font-family: ${SANS}; font-size: 12.5px; font-weight: 600; line-height: 1.2; color: ${CREAM}; }
+  .pro-mobile-cta { display: none; }
+  @media (max-width: 899px) {
+    .pro-mobile-cta {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+      display: block; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(248,247,244,0.96); backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(10,22,40,0.12);
+    }
+    .pro-mobile-cta .pro-cta { width: 100%; min-height: 52px; }
+    .pro-mobile-spacer { height: 86px; }
+  }
   .pro-pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .pro-pain-card {
     background: rgba(94,71,54,0.05);
