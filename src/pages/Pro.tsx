@@ -635,6 +635,13 @@ const Pro = () => {
           </p>
         </div>
       </footer>
+
+      <div className="pro-mobile-spacer" aria-hidden />
+      <div className="pro-mobile-cta">
+        <button className="pro-cta" onClick={startTrial}>
+          {isActive ? "Ir para o painel" : "Testar 7 dias grátis"}
+        </button>
+      </div>
     </div>
   );
 };
