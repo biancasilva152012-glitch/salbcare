@@ -291,14 +291,25 @@ const Pro = () => {
           </p>
           <div className="pro-store-strip" aria-label="Disponibilidade do aplicativo">
             <div className="pro-store-badge">
-              <span className="pro-store-icon">iOS</span>
+              <span className="pro-store-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M16.36 12.9c.02-2.2 1.79-3.25 1.87-3.3-1.02-1.5-2.6-1.7-3.16-1.73-1.34-.1-2.62.78-3.3.78-.7 0-1.75-.76-2.87-.74-1.48.02-2.84.86-3.6 2.18-1.54 2.67-.4 6.62 1.1 8.8.73 1.06 1.6 2.25 2.74 2.2 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.94-1.08 2.66-2.15.84-1.23 1.18-2.42 1.2-2.48-.03-.01-2.3-.88-2.32-3.5zM14.3 5.9c.6-.73 1-1.74.89-2.75-.87.04-1.92.58-2.54 1.3-.55.64-1.03 1.67-.9 2.65.97.08 1.95-.49 2.55-1.2z" />
+                </svg>
+              </span>
               <span>
                 <span className="pro-store-kicker">Em breve na</span>
                 <span className="pro-store-name">App Store</span>
               </span>
             </div>
             <div className="pro-store-badge">
-              <span className="pro-store-icon">AND</span>
+              <span className="pro-store-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path d="M3.9 2.3c-.25.26-.4.66-.4 1.18v17.04c0 .52.15.92.4 1.18l9.06-9.7L3.9 2.3z" fill="#34A853" />
+                  <path d="M16.4 15.16l-3.44-3.16-9.06 9.7c.36.38.94.43 1.6.06l10.9-6.6z" fill="#EA4335" />
+                  <path d="M16.4 8.84L5.5 2.24c-.66-.37-1.24-.32-1.6.06l9.06 9.7 3.44-3.16z" fill="#4285F4" />
+                  <path d="M16.4 8.84l-3.44 3.16 3.44 3.16 3.66-2.22c.7-.43.7-1.45 0-1.88L16.4 8.84z" fill="#FBBC04" />
+                </svg>
+              </span>
               <span>
                 <span className="pro-store-kicker">Em breve no</span>
                 <span className="pro-store-name">Google Play</span>
