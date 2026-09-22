@@ -14,7 +14,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
-import ProPanelMock, { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
+import { ProAgendaMini, panelMockStyles } from "@/components/pro/ProPanelMock";
+import ProScreensCarousel, { proScreensStyles } from "@/components/pro/ProScreensCarousel";
 import { AcademyCardGrid } from "@/components/academy/AcademyCards";
 import ProSandbox from "@/components/pro/ProSandbox";
 
