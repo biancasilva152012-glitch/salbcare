@@ -371,11 +371,11 @@ const Pro = () => {
         <h2 className="pro-h2" style={{ marginTop: 14 }}>
           É simples assim por dentro.
         </h2>
-        <div style={{ marginTop: 28 }}>
-          <ProPanelMock />
-          <p className="pro-mono" style={{ marginTop: 12 }}>
-            Agenda do dia, cadastro do atendimento e o resultado do mês na mesma tela.
-          </p>
+        <p className="pro-body" style={{ marginTop: 14, maxWidth: 560 }}>
+          Telas reais do SalbCare no celular. Arraste para ver cada parte.
+        </p>
+        <div style={{ marginTop: 24 }}>
+          <ProScreensCarousel />
         </div>
       </section>
 
