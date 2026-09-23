@@ -1,5 +1,5 @@
-- [x] Adicionar aviso profissional de Google Play e App Store em breve na landing page.
-- [x] Conferir pop-ups administrativos em /admin/operacao com conta da Bianca.
-- [x] Conferir /admin/operacao, Agenda, Pacientes e Financeiro em 360px.
-- [x] Solicitar publicação da versão validada.
-- [x] Revisar status do app instalado e orientar próximo passo para lojas.
+- [ ] Encurtar a landing removendo a demonstração e blocos antigos.
+- [ ] Completar o carrossel com prints reais e selos menores.
+- [ ] Ligar cadastro direto aos primeiros passos, com confirmação e reenvio como fallback.
+- [ ] Desligar confirmação de e-mail para entrada direta.
+- [ ] Validar em 390px, criar conta nova, recarregar logado e publicar.

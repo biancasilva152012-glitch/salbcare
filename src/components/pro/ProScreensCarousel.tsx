@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import inicio from "@/assets/screens/inicio.webp";
-import agenda from "@/assets/screens/agenda.webp";
-import pacientes from "@/assets/screens/pacientes.webp";
-import financeiro from "@/assets/screens/financeiro.webp";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CREAM, MONO, TEAL } from "./brand";
 
 const SCREENS = [
-  { src: inicio, title: "Início", line: "Seu dia resumido em uma tela." },
-  { src: agenda, title: "Agenda", line: "Os atendimentos do dia, em ordem." },
-  { src: pacientes, title: "Pacientes", line: "Contato e histórico organizados." },
-  { src: financeiro, title: "Financeiro", line: "Receitas, despesas e resultado." },
+  { src: "/screens/inicio.webp", title: "Início", line: "Seu dia inteiro em 30 segundos." },
+  { src: "/screens/agenda.webp", title: "Agenda", line: "Marque, edite e confirme consultas em poucos toques." },
+  { src: "/screens/pacientes.webp", title: "Pacientes", line: "Cada paciente a um toque." },
+  { src: "/screens/financeiro.webp", title: "Financeiro", line: "Quanto entra, quanto sai, quanto sobra." },
+  { src: "/screens/mentora.webp", title: "Mentora Financeira", line: "Pergunte. Ela já conhece seus números." },
+  { src: "/screens/academy.webp", title: "Academy", line: "Inglês e espanhol para o atendimento, 5 minutos por dia." },
 ];
 
 export const proScreensStyles = `
+  .screens-shell { position: relative; }
   .screens-track {
     display: flex;
-    gap: 18px;
+    gap: 16px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -26,20 +26,23 @@ export const proScreensStyles = `
   .screens-slide {
     flex: 0 0 auto;
     scroll-snap-align: center;
-    width: 232px;
+    width: min(76vw, 252px);
   }
   .screens-phone {
-    border-radius: 30px;
-    border: 1px solid rgba(10,22,40,0.18);
+    border-radius: 44px;
+    border: 9px solid #0B1F3A;
     background: #0B1F3A;
-    padding: 8px;
-    box-shadow: 0 18px 40px rgba(10,22,40,0.14);
+    overflow: hidden;
+    box-shadow: 0 18px 42px rgba(10,22,40,0.16);
+    aspect-ratio: 390 / 844;
   }
   .screens-phone img {
     display: block;
     width: 100%;
-    height: auto;
-    border-radius: 24px;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 34px;
   }
   .screens-caption { margin-top: 12px; }
   .screens-dots { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
@@ -53,10 +56,42 @@ export const proScreensStyles = `
     background: rgba(10,22,40,0.24); transition: all 150ms ease;
   }
   .screens-dot[aria-current="true"] span { width: 22px; background: ${TEAL}; }
+  .screens-arrow { display: none; }
   @media (min-width: 900px) {
-    .screens-slide { width: 264px; }
+    .screens-track { gap: 22px; scroll-padding: 0; }
+    .screens-slide { width: calc((100% - 44px) / 3); scroll-snap-align: start; }
+    .screens-arrow {
+      position: absolute; top: 38%; z-index: 2;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border-radius: 999px;
+      border: 1px solid rgba(10,22,40,0.18); background: rgba(255,255,255,0.92);
+      color: ${CREAM}; cursor: pointer; box-shadow: 0 12px 24px rgba(10,22,40,0.12);
+    }
+    .screens-arrow-left { left: -22px; }
+    .screens-arrow-right { right: -22px; }
   }
 `;
+
+export const PhoneMockup = ({
+  src,
+  alt,
+  eager = false,
+}: {
+  src: string;
+  alt: string;
+  eager?: boolean;
+}) => (
+  <div className="screens-phone">
+    <img
+      src={src}
+      alt={alt}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      width={390}
+      height={844}
+    />
+  </div>
+);
 
 /** Carrossel com prints reais do app, navegável por arraste ou pelas bolinhas. */
 const ProScreensCarousel = () => {
@@ -92,14 +127,17 @@ const ProScreensCarousel = () => {
     el.scrollTo({ left: slide.offsetLeft - (el.clientWidth - slide.offsetWidth) / 2, behavior: "smooth" });
   };
 
+  const move = (direction: -1 | 1) => goTo(Math.max(0, Math.min(SCREENS.length - 1, active + direction)));
+
   return (
-    <div>
+    <div className="screens-shell">
+      <button type="button" className="screens-arrow screens-arrow-left" aria-label="Tela anterior" onClick={() => move(-1)}>
+        <ChevronLeft size={18} aria-hidden />
+      </button>
       <div className="screens-track" ref={trackRef} role="group" aria-label="Telas reais do aplicativo">
         {SCREENS.map((s) => (
           <div className="screens-slide" key={s.title}>
-            <div className="screens-phone">
-              <img src={s.src} alt={`Tela ${s.title} do SalbCare no celular`} loading="lazy" decoding="async" />
-            </div>
+            <PhoneMockup src={s.src} alt={`Tela ${s.title} do SalbCare no celular`} />
             <div className="screens-caption">
               <div style={{ fontFamily: MONO, fontSize: 12, letterSpacing: "0.08em", color: TEAL }}>
                 {s.title.toUpperCase()}
@@ -109,6 +147,9 @@ const ProScreensCarousel = () => {
           </div>
         ))}
       </div>
+      <button type="button" className="screens-arrow screens-arrow-right" aria-label="Próxima tela" onClick={() => move(1)}>
+        <ChevronRight size={18} aria-hidden />
+      </button>
       <div className="screens-dots">
         {SCREENS.map((s, i) => (
           <button
