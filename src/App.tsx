@@ -118,6 +118,7 @@ const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
 const Offline = lazyWithRetry(() => import("./pages/Offline"), "Offline");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
+const Welcome = lazyWithRetry(() => import("./pages/Welcome"), "Welcome");
 const ProDashboard = lazyWithRetry(() => import("./pages/ProDashboard"), "ProDashboard");
 
 const About = lazyWithRetry(() => import("./pages/About"), "About");
@@ -351,6 +352,8 @@ const App = () => (
               <Route path="/subscription-success" element={<ProfessionalRoute><SubscriptionSuccess /></ProfessionalRoute>} />
               <Route path="/cancelado" element={<ProfessionalRoute><Cancelado /></ProfessionalRoute>} />
               {/* Guest-friendly: localStorage-backed UI when !user */}
+              <Route path="/primeiros-passos" element={<ProfessionalRoute><Welcome /></ProfessionalRoute>} />
+              <Route path="/welcome" element={<Navigate to="/primeiros-passos" replace />} />
               <Route path="/dashboard" element={<ProfessionalRoute allowGuest><Dashboard /></ProfessionalRoute>} />
               <Route path="/agenda" element={<Navigate to="/dashboard/agenda" replace />} />
               <Route path="/patients" element={<Navigate to="/dashboard/pacientes" replace />} />

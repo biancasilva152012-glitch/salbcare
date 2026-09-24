@@ -238,7 +238,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                   const publicPaths = ["/", "/login", "/register", "/profile", "/como-funciona", "/terms", "/privacy", "/agenda", "/patient-dashboard"];
                   const isPublicPath = publicPaths.some(p => currentPath === p || currentPath.startsWith("/agenda/") || currentPath.startsWith("/patient-dashboard") || currentPath.startsWith("/acompanhamento") || currentPath.startsWith("/perfil/salbscore"));
                   // Skip the auto-redirect right after signup so the user lands
-                  // on /dashboard. They can complete the profile later.
+                  // on the Welcome onboarding. They can complete the profile later.
                   const justSignedUp = sessionStorage.getItem("salbcare_just_signed_up") === "1";
                   if (justSignedUp) sessionStorage.removeItem("salbcare_just_signed_up");
                   if (!isPublicPath && !justSignedUp) {
