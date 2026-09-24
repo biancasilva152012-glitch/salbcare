@@ -172,12 +172,11 @@ const Register = () => {
 
       setLoading(false);
       toast.success("Conta criada com sucesso! Bem-vindo ao seu consultório digital.");
-      // Skip the AuthContext auto-redirect to /complete-profile so newly
-      // signed-up users land directly on the dashboard. They can finish their
-      // profile later from the dashboard banner.
+      // Skip the AuthContext auto-redirect to /complete-profile. New users go
+      // through the Welcome onboarding (profile + booking link) instead.
       sessionStorage.setItem("salbcare_just_signed_up", "1");
       // Honor `next` so users (e.g. coming from /profile) return to where they were.
-      navigate(safeNext || "/dashboard", { replace: true });
+      navigate(safeNext || "/primeiros-passos", { replace: true });
     } catch (err) {
       console.error("[Register] Unexpected signup error:", err);
       setLoading(false);

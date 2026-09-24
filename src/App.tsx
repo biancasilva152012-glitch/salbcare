@@ -118,6 +118,7 @@ const Install = lazyWithRetry(() => import("./pages/Install"), "Install");
 const Offline = lazyWithRetry(() => import("./pages/Offline"), "Offline");
 const ProObrigado = lazyWithRetry(() => import("./pages/ProObrigado"), "ProObrigado");
 const ProOnboarding = lazyWithRetry(() => import("./pages/ProOnboarding"), "ProOnboarding");
+const Welcome = lazyWithRetry(() => import("./pages/Welcome"), "Welcome");
 const ProDashboard = lazyWithRetry(() => import("./pages/ProDashboard"), "ProDashboard");
 
 const About = lazyWithRetry(() => import("./pages/About"), "About");
