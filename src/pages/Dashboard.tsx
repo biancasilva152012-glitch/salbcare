@@ -62,7 +62,7 @@ const Dashboard = () => {
       if (!user) return null;
       const { data } = await supabase
         .from("profiles")
-        .select("name, profile_slug, referral_code, created_at, email")
+        .select("name, profile_slug, referral_code, created_at, email, council_number, phone")
         .eq("user_id", user.id)
         .maybeSingle();
       return data;
@@ -230,6 +230,17 @@ const Dashboard = () => {
         <motion.div variants={item}>
           <GuestSyncReminderBanner />
         </motion.div>
+
+        {profile && (!profile.council_number || !profile.phone || !profile.profile_slug) && (
+          <motion.section variants={item} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Primeiros passos</p>
+            <h2 className="mt-1 text-lg font-bold text-foreground">Termine de configurar seu consultório</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Complete seu perfil e ative seu link de agendamento para receber pacientes.</p>
+            <Button className="mt-3 h-12 w-full gap-2" onClick={() => navigate("/primeiros-passos")}>
+              Completar agora <ArrowRight className="h-4 w-4" />
+            </Button>
+          </motion.section>
+        )}
 
         <motion.header variants={item} className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
