@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProfessionalRoute from "@/components/ProfessionalRoute";
 import ProRoute from "@/components/pro/ProRoute";
+import RedirectIfAuthed from "@/components/RedirectIfAuthed";
 
 import PremiumRoute from "@/components/PremiumRoute";
 import BottomNav from "@/components/BottomNav";
@@ -191,7 +192,7 @@ const App = () => (
           <Suspense fallback={<LazyFallback />}>
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<Pro />} />
+              <Route path="/" element={<RedirectIfAuthed><Pro /></RedirectIfAuthed>} />
               {/* Brand hub + alias for current SaaS landing (Index) */}
               <Route path="/hub" element={<Navigate to="/" replace />} />
               <Route path="/pro" element={<Pro />} />
@@ -210,9 +211,9 @@ const App = () => (
 
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/cadastro" element={<Register />} />
+              <Route path="/login" element={<RedirectIfAuthed><Login /></RedirectIfAuthed>} />
+              <Route path="/register" element={<RedirectIfAuthed><Register /></RedirectIfAuthed>} />
+              <Route path="/cadastro" element={<RedirectIfAuthed><Register /></RedirectIfAuthed>} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />

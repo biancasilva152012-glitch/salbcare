@@ -27,6 +27,20 @@ const Register = () => {
   const nextQs = safeNext ? `?next=${encodeURIComponent(safeNext)}` : "";
   const [loading, setLoading] = useState(false);
   const [showRef, setShowRef] = useState(!!refCode);
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [resending, setResending] = useState(false);
+
+  const resendEmail = async () => {
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: pendingEmail,
+      options: { emailRedirectTo: `${window.location.origin}/primeiros-passos` },
+    });
+    setResending(false);
+    if (error) toast.error("Não foi possível reenviar agora. Tente em alguns minutos.");
+    else toast.success("E-mail reenviado. Confira sua caixa de entrada e o spam.");
+  };
 
   const [form, setForm] = useState({
     name: "",
@@ -65,7 +79,7 @@ const Register = () => {
       const { data: signUpData, error } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
-        options: { data: metadata, emailRedirectTo: window.location.origin },
+        options: { data: metadata, emailRedirectTo: `${window.location.origin}/primeiros-passos` },
       });
 
       if (error) {
@@ -131,15 +145,16 @@ const Register = () => {
       const hasReferral = !!form.referral_code?.trim();
 
       // Auto-confirm está habilitado: se a sessão não vier, fazemos login imediatamente
+      sessionStorage.setItem("salbcare_just_signed_up", "1");
+      sessionStorage.setItem("salbcare_onboarding_pending", "1");
       if (!signUpData.session) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
         });
         if (signInError) {
-          toast.success("Conta criada! Faça login para continuar.");
           setLoading(false);
-          navigate(`/login${nextQs}`);
+          setPendingEmail(form.email);
           return;
         }
       }
@@ -183,6 +198,23 @@ const Register = () => {
       toast.error("Não conseguimos criar sua conta agora. Tente novamente em instantes.");
     }
   };
+
+  if (pendingEmail) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
+        <div className="w-full max-w-sm space-y-5 rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
+          <h1 className="text-2xl font-bold text-foreground">Confirme seu e-mail</h1>
+          <p className="text-sm text-muted-foreground">
+            Enviamos um link para <span className="font-semibold text-foreground">{pendingEmail}</span>. Toque no link e você entra direto na plataforma.
+          </p>
+          <Button className="h-12 w-full" onClick={resendEmail} disabled={resending}>
+            {resending ? "Reenviando..." : "Reenviar e-mail"}
+          </Button>
+          <Link to={`/login${nextQs}`} className="block text-sm text-muted-foreground underline">Já confirmei, quero entrar</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

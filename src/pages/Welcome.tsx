@@ -165,7 +165,7 @@ const Welcome = () => {
             <button
               type="button"
               className="w-full text-xs text-muted-foreground"
-              onClick={() => navigate("/dashboard", { replace: true })}
+              onClick={() => { try { sessionStorage.removeItem("salbcare_onboarding_pending"); } catch { /* ignore */ } navigate("/dashboard", { replace: true }); }}
             >
               Fazer isso depois
             </button>
@@ -179,7 +179,7 @@ const Welcome = () => {
             )}
             <Button
               className="h-12 w-full font-semibold"
-              onClick={() => navigate("/dashboard", { replace: true })}
+              onClick={() => { try { sessionStorage.removeItem("salbcare_onboarding_pending"); } catch { /* ignore */ } navigate("/dashboard", { replace: true }); }}
             >
               Ir para o painel
             </Button>
