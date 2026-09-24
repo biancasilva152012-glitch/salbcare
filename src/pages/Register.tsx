@@ -146,6 +146,7 @@ const Register = () => {
 
       // Auto-confirm está habilitado: se a sessão não vier, fazemos login imediatamente
       sessionStorage.setItem("salbcare_just_signed_up", "1");
+      sessionStorage.setItem("salbcare_onboarding_pending", "1");
       if (!signUpData.session) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: form.email,

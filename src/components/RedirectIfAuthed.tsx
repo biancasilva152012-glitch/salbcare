@@ -7,7 +7,7 @@ const RedirectIfAuthed = ({ children }: { children: ReactNode }) => {
   const { user, loading } = useAuth();
   if (!loading && user) {
     let justSignedUp = false;
-    try { justSignedUp = sessionStorage.getItem("salbcare_just_signed_up") === "1"; } catch { /* ignore */ }
+    try { justSignedUp = sessionStorage.getItem("salbcare_onboarding_pending") === "1"; } catch { /* ignore */ }
     return <Navigate to={justSignedUp ? "/primeiros-passos" : "/dashboard"} replace />;
   }
   return <>{children}</>;
