@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import BookingLinkBlock from "@/components/BookingLinkBlock";
 import { PROFESSION_CONFIG, ProfessionalType } from "@/config/professions";
+import { PRO_PLANS, brl } from "@/components/pro/brand";
 
 const TYPES = Object.keys(PROFESSION_CONFIG) as ProfessionalType[];
 
@@ -22,6 +23,19 @@ const Welcome = () => {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [slug, setSlug] = useState<string | null>(null);
+  const [paying, setPaying] = useState<string | null>(null);
+
+  const choosePlan = async (key: "essencial" | "completo") => {
+    setPaying(key);
+    try { sessionStorage.removeItem("salbcare_onboarding_pending"); } catch { /* ignore */ }
+    const { data, error } = await supabase.functions.invoke("pro-checkout", { body: { priceId: PRO_PLANS[key].id } });
+    if (error || !data?.url) {
+      setPaying(null);
+      toast.error("Não foi possível abrir o pagamento agora. Tente de novo.");
+      return;
+    }
+    window.location.href = data.url;
+  };
   const [form, setForm] = useState({
     name: "",
     professional_type: "medico" as ProfessionalType,
@@ -177,12 +191,35 @@ const Welcome = () => {
             {user && (
               <BookingLinkBlock userId={user.id} profileName={form.name} profileSlug={slug} />
             )}
-            <Button
-              className="h-12 w-full font-semibold"
+            <div className="space-y-3 pt-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Passo final</p>
+              <h2 className="text-lg font-bold text-foreground">Escolha seu plano</h2>
+              <p className="text-sm text-muted-foreground">7 dias grátis. Cancele quando quiser.</p>
+              {(["essencial", "completo"] as const).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  disabled={!!paying}
+                  onClick={() => choosePlan(k)}
+                  className="flex min-h-[64px] w-full items-center justify-between rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary disabled:opacity-60"
+                >
+                  <span>
+                    <span className="block font-semibold text-foreground">{PRO_PLANS[k].label}</span>
+                    <span className="block text-xs text-muted-foreground">{PRO_PLANS[k].tagline}</span>
+                  </span>
+                  <span className="shrink-0 pl-3 font-mono text-sm text-foreground">
+                    {paying === k ? "Abrindo..." : `${brl(PRO_PLANS[k].amount)}/mês`}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="w-full py-3 text-xs text-muted-foreground"
               onClick={() => { try { sessionStorage.removeItem("salbcare_onboarding_pending"); } catch { /* ignore */ } navigate("/dashboard", { replace: true }); }}
             >
-              Ir para o painel
-            </Button>
+              Escolher depois e ir para o painel
+            </button>
           </div>
         )}
       </div>
