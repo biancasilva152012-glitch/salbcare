@@ -6,3 +6,4 @@
 
 - [x] Depois dos primeiros passos, escolher Essencial ou Completo e ir direto ao pagamento
 - [ ] Evolução completa da Agenda (plano aguardando aprovação)
+- [ ] Slide da Mentora com conversa (reserva de emergência, preço da consulta) e outro nome no lugar de Bianca
