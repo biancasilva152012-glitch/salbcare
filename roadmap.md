@@ -4,5 +4,5 @@
 - [ ] Desligar confirmação de e-mail para entrada direta.
 - [ ] Validar em 390px, criar conta nova, recarregar logado e publicar.
 
-- [ ] Depois dos primeiros passos, escolher Essencial ou Completo e ir direto ao pagamento
+- [x] Depois dos primeiros passos, escolher Essencial ou Completo e ir direto ao pagamento
 - [ ] Evolução completa da Agenda (plano aguardando aprovação)
