@@ -83,7 +83,6 @@ serve(async (req) => {
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
       allow_promotion_codes: true,
-      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
       metadata: { user_id: user.id, product: "salbcare_pro" },
       subscription_data: {
         trial_period_days: 7,
