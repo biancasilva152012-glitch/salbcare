@@ -11,8 +11,6 @@ import {
   MONO,
   NAVY,
   PRO_PLANS,
-  annualEquivalentMonthly,
-  annualSaving,
   brl,
   ProLabel,
   ProPlanKey,
@@ -315,7 +313,7 @@ const Pro = () => {
         </div>
 
         <p className="pro-mono" style={{ marginTop: 20, fontSize: 12.5 }}>
-          {planSummary} No anual fundador, o Completo sai por {brl(annualEquivalentMonthly)} por mês e economiza {brl(annualSaving)} por ano.
+          {planSummary}
         </p>
         <p className="pro-plan-note pro-body">
           Apostilas avulsas da Academy a partir de R$ 29,90. <Link to="/academy" className="pro-link" style={{ color: TEAL }}>Ver Academy</Link>
