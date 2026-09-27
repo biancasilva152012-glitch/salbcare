@@ -12,6 +12,8 @@ import {
   NAVY,
   PRO_PLANS,
   brl,
+  annualEquivalentMonthly,
+  annualSaving,
   ProLabel,
   ProPlanKey,
   ProWordmark,
@@ -190,8 +192,11 @@ const Pro = () => {
     }
   };
 
-  const planSummary = `Plano ${PRO_PLANS[plan].label} selecionado. ${brl(PRO_PLANS[plan].amount)} por mês, cobrado todo mês.`;
-  const visiblePlans: ProPlanKey[] = ["essencial", "completo"];
+  const planSummary =
+    plan === "anual"
+      ? `Plano ${PRO_PLANS.anual.label} selecionado. ${brl(PRO_PLANS.anual.amount)} por ano, equivale a ${brl(annualEquivalentMonthly)} por mês e economiza ${brl(annualSaving)} em relação ao Completo mensal.`
+      : `Plano ${PRO_PLANS[plan].label} selecionado. ${brl(PRO_PLANS[plan].amount)} por mês, cobrado todo mês.`;
+  const visiblePlans: ProPlanKey[] = ["essencial", "completo", "anual"];
 
   return (
     <div style={{ background: NAVY, minHeight: "100vh", color: CREAM, fontFamily: SANS }}>
@@ -296,9 +301,14 @@ const Pro = () => {
                 <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", gap: 6 }}>
                   <span className="pro-price">{brl(p.amount)}</span>
                   <span className="pro-mono" style={{ fontSize: 12.5 }}>
-                    /mês
+                    {p.interval === "year" ? "/ano" : "/mês"}
                   </span>
                 </div>
+                {p.interval === "year" && (
+                  <p className="pro-mono" style={{ margin: "6px 0 0", fontSize: 12.5, color: TEAL }}>
+                    {brl(annualEquivalentMonthly)} por mês. Economia de {brl(annualSaving)} por ano.
+                  </p>
+                )}
                 <p className="pro-body" style={{ margin: "12px 0 0", fontSize: 14.5 }}>
                   {p.tagline}
                 </p>
