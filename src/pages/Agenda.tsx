@@ -36,6 +36,10 @@ import ServiceRequestsPanel from "@/components/agenda/ServiceRequestsPanel";
 import GuestAgenda from "@/components/guest/GuestAgenda";
 import GuestSyncLockBanner from "@/components/GuestSyncLockBanner";
 import { isGuestSyncLocked, hasGuestData } from "@/lib/guestStorage";
+import AgendaCalendar, { type CalendarView } from "@/components/agenda/AgendaCalendar";
+import AppointmentDetailSheet from "@/components/agenda/AppointmentDetailSheet";
+import RemindersPanel from "@/components/agenda/RemindersPanel";
+import { findConflicts, nextFreeSlots } from "@/lib/agenda/availability";
 
 const emptyForm = { patient_name: "", patient_id: "", date: "", time: "", appointment_type: "presencial", notes: "", professional_id: "" };
 const blockForm = { date: "", time: "", reason: "" };
@@ -65,6 +69,10 @@ const Agenda = () => {
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"appointments" | "requests">("appointments");
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [view, setView] = useState<"lista" | CalendarView>("dia");
+  const [calView, setCalView] = useState<CalendarView>("dia");
+  const [cursor, setCursor] = useState(new Date());
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   // Fetch service requests count for badge
   const { data: requestsCount = 0 } = useQuery({
@@ -264,6 +272,30 @@ const Agenda = () => {
     onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase.from("appointments").update({ status }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success("Status atualizado.");
+    },
+    onError: () => toast.error("Não conseguimos salvar. Tente de novo em instantes."),
+  });
+
+  const { data: myProfile } = useQuery({
+    queryKey: ["agenda-profile", userId],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("name, slot_duration").eq("user_id", userId).maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+  const slotDuration = myProfile?.slot_duration || 50;
+  const myName = myProfile?.name || "";
+  const detailApt = appointments.find((a) => a.id === detailId) || null;
+
   const openEdit = (apt: typeof appointments[0]) => {
     setEditId(apt.id);
     setForm({
@@ -431,6 +463,24 @@ const Agenda = () => {
           </Select>
         </div>
       )}
+      {(() => {
+        const conflicts = findConflicts(appointments, form.date, form.time, slotDuration, isEdit ? editId : null);
+        if (!conflicts.length) return null;
+        const free = nextFreeSlots(appointments, form.date, form.time, slotDuration, 3, isEdit ? editId : null);
+        return (
+          <div role="alert" className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm">
+            <p className="font-medium text-destructive">Este horário se sobrepõe a {conflicts.map((c) => `${c.appointment_type === "blocked" ? "um bloqueio" : c.patient_name} (${c.time.slice(0, 5)})`).join(", ")}.</p>
+            {free.length > 0 && (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="text-xs text-muted-foreground">Próximos livres:</span>
+                {free.map((t) => (
+                  <button key={t} type="button" onClick={() => setForm({ ...form, time: t })} className="rounded-md border border-border bg-card px-2 py-1 font-mono text-xs">{t}</button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
       <div className="space-y-1.5"><Label>Observações</Label><Textarea placeholder="Notas..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="bg-accent border-border" /></div>
       <Button onClick={() => isEdit ? updateMutation.mutate() : addMutation.mutate()} className="w-full gradient-primary font-semibold" disabled={addMutation.isPending || updateMutation.isPending || guestSyncLocked}>
         {guestSyncLocked ? "Bloqueado. Sincronize seus rascunhos" : isEdit ? (updateMutation.isPending ? "Salvando..." : "Salvar") : (addMutation.isPending ? "Agendando..." : "Agendar")}
@@ -664,7 +714,40 @@ const Agenda = () => {
           </DialogContent>
         </Dialog>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+        <RemindersPanel appointments={appointments} professionalName={myName} />
+
+        <div className="flex rounded-lg border border-border p-1">
+          {(["lista", "calendario"] as const).map((m) => (
+            <button key={m} onClick={() => setView(m === "lista" ? "lista" : calView)} className={cn("flex-1 rounded-md py-2 text-xs font-medium", (m === "lista") === (view === "lista") ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
+              {m === "lista" ? "Lista" : "Calendário"}
+            </button>
+          ))}
+        </div>
+
+        {view !== "lista" && (
+          <AgendaCalendar
+            view={view}
+            onView={(v) => { setView(v); setCalView(v); }}
+            cursor={cursor}
+            onCursor={setCursor}
+            appointments={filtered}
+            duration={slotDuration}
+            onSelect={(id) => setDetailId(id)}
+            onSlot={(date, time) => { setForm({ ...emptyForm, date, time }); setOpen(true); }}
+          />
+        )}
+
+        <AppointmentDetailSheet
+          appointment={detailApt as any}
+          conflicts={detailApt ? findConflicts(appointments, detailApt.date, detailApt.time, slotDuration, detailApt.id).length : 0}
+          professionalName={myName}
+          onClose={() => setDetailId(null)}
+          onEdit={() => { if (detailApt) openEdit(detailApt); setDetailId(null); }}
+          onCancel={() => { if (detailApt && confirm("Cancelar esta consulta?")) { deleteMutation.mutate(detailApt.id); setDetailId(null); } }}
+          onStatus={(s) => { if (detailApt) statusMutation.mutate({ id: detailApt.id, status: s }); setDetailId(null); }}
+        />
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn("space-y-4", view !== "lista" && "hidden")}>
           {Object.keys(grouped).length === 0 && !search && (
             <EmptyState
               icon={CalendarX}
