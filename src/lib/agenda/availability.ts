@@ -8,7 +8,7 @@ export const fromMinutes = (n: number) =>
   `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
 
 /** Consultas no mesmo dia cujo intervalo [início, início+duração) cruza o novo horário. */
-export function findConflicts(items: AgendaItem[], date: string, time: string, duration: number, ignoreId?: string | null) {
+export function findConflicts<T extends AgendaItem>(items: T[], date: string, time: string, duration: number, ignoreId?: string | null) {
   if (!date || !time) return [];
   const start = toMinutes(time);
   const end = start + duration;
