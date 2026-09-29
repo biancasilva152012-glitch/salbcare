@@ -22,7 +22,7 @@ export function findConflicts<T extends AgendaItem>(items: T[], date: string, ti
 /** Próximos horários livres no dia, a partir do horário pedido (grade de 30 min, 7h às 21h). */
 export function nextFreeSlots(items: AgendaItem[], date: string, fromTime: string, duration: number, count = 3, ignoreId?: string | null) {
   const out: string[] = [];
-  for (let m = toMinutes(fromTime || "07:00"); m + duration <= 21 * 60 && out.length < count; m += 30) {
+  for (let m = toMinutes(fromTime || "07:00"); m + duration <= 21 * 60 && out.length < count; m += 10) {
     const t = fromMinutes(m);
     if (findConflicts(items, date, t, duration, ignoreId).length === 0) out.push(t);
   }
