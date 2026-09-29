@@ -407,10 +407,10 @@ const Agenda = () => {
             <SelectTrigger className="bg-accent border-border">
               <SelectValue placeholder="Horário" />
             </SelectTrigger>
-            <SelectContent className="max-h-48">
-              {Array.from({ length: 28 }, (_, i) => {
-                const h = Math.floor(i / 2) + 7;
-                const m = i % 2 === 0 ? "00" : "30";
+            <SelectContent className="max-h-64">
+              {Array.from({ length: 85 }, (_, i) => {
+                const h = Math.floor(i / 6) + 7;
+                const m = String((i % 6) * 10).padStart(2, "0");
                 const val = `${String(h).padStart(2, "0")}:${m}`;
                 return <SelectItem key={val} value={val}>{val}</SelectItem>;
               })}
@@ -564,10 +564,10 @@ const Agenda = () => {
                       <Label>Hora</Label>
                       <Select value={blockData.time} onValueChange={(v) => setBlockData({ ...blockData, time: v })}>
                         <SelectTrigger className="bg-accent border-border"><SelectValue placeholder="Horário" /></SelectTrigger>
-                        <SelectContent className="max-h-48">
-                          {Array.from({ length: 28 }, (_, i) => {
-                            const h = Math.floor(i / 2) + 7;
-                            const m = i % 2 === 0 ? "00" : "30";
+                        <SelectContent className="max-h-64">
+                          {Array.from({ length: 85 }, (_, i) => {
+                            const h = Math.floor(i / 6) + 7;
+                            const m = String((i % 6) * 10).padStart(2, "0");
                             const val = `${String(h).padStart(2, "0")}:${m}`;
                             return <SelectItem key={val} value={val}>{val}</SelectItem>;
                           })}

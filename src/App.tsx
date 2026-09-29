@@ -174,6 +174,23 @@ const LazyFallback = forwardRef<HTMLDivElement>((_, ref) => (
 ));
 LazyFallback.displayName = "LazyFallback";
 
+// Pré-carrega as telas principais do app quando o navegador fica ocioso,
+// para que trocar de aba no app instalado seja instantâneo.
+if (typeof window !== "undefined") {
+  const preload = () => {
+    [
+      () => import("./pages/Dashboard"),
+      () => import("./pages/Agenda"),
+      () => import("./pages/Patients"),
+      () => import("./pages/Financial"),
+      () => import("./pages/Academy"),
+      () => import("./pages/Profile"),
+    ].forEach((load) => load().catch(() => undefined));
+  };
+  const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback;
+  window.addEventListener("load", () => (ric ? ric(preload) : setTimeout(preload, 1500)), { once: true });
+}
+
 const App = () => (
   <GlobalErrorBoundary>
   <HelmetProvider>
