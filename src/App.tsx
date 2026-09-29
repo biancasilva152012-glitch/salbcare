@@ -61,6 +61,7 @@ const DashboardTeleconsulta = lazyWithRetry(() => import("./pages/DashboardTelec
 const Financial = lazyWithRetry(() => import("./pages/Financial"), "Financial");
 const Accounting = lazyWithRetry(() => import("./pages/Accounting"), "Accounting");
 const Agenda = lazyWithRetry(() => import("./pages/Agenda"), "Agenda");
+const Agendamentos = lazyWithRetry(() => import("./pages/Agendamentos"), "Agendamentos");
 const Patients = lazyWithRetry(() => import("./pages/Patients"), "Patients");
 const Legal = lazyWithRetry(() => import("./pages/Legal"), "Legal");
 const Telehealth = lazyWithRetry(() => import("./pages/Telehealth"), "Telehealth");
@@ -181,6 +182,7 @@ if (typeof window !== "undefined") {
     [
       () => import("./pages/Dashboard"),
       () => import("./pages/Agenda"),
+      () => import("./pages/Agendamentos"),
       () => import("./pages/Patients"),
       () => import("./pages/Financial"),
       () => import("./pages/Academy"),
@@ -378,6 +380,7 @@ const App = () => (
               <Route path="/pacientes" element={<Navigate to="/dashboard/pacientes" replace />} />
               <Route path="/financial" element={<Navigate to="/dashboard/financial" replace />} />
               <Route path="/financeiro" element={<Navigate to="/dashboard/financial" replace />} />
+              <Route path="/dashboard/agendamentos" element={<ProfessionalRoute><Agendamentos /></ProfessionalRoute>} />
               <Route path="/dashboard/agenda" element={<ProfessionalRoute allowGuest><Agenda /></ProfessionalRoute>} />
               <Route path="/dashboard/pacientes" element={<ProfessionalRoute allowGuest><Patients /></ProfessionalRoute>} />
               {/* Guest-paywall rendered inside the page when !user */}
