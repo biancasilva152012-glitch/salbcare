@@ -60,8 +60,7 @@ const DashboardMentoria = lazyWithRetry(() => import("./pages/DashboardMentoria"
 const DashboardTeleconsulta = lazyWithRetry(() => import("./pages/DashboardTeleconsulta"), "DashboardTeleconsulta");
 const Financial = lazyWithRetry(() => import("./pages/Financial"), "Financial");
 const Accounting = lazyWithRetry(() => import("./pages/Accounting"), "Accounting");
-const Agenda = lazyWithRetry(() => import("./pages/Agenda"),
-      () => import("./pages/Agendamentos"), "Agenda");
+const Agenda = lazyWithRetry(() => import("./pages/Agenda"), "Agenda");
 const Agendamentos = lazyWithRetry(() => import("./pages/Agendamentos"), "Agendamentos");
 const Patients = lazyWithRetry(() => import("./pages/Patients"), "Patients");
 const Legal = lazyWithRetry(() => import("./pages/Legal"), "Legal");
