@@ -82,7 +82,7 @@ const FAQ = [
   },
   {
     q: "Quanto custa e existe taxa por consulta?",
-    a: "O plano Essencial custa R$ 49 por mês e o Completo custa R$ 89 por mês. A SalbCare não cobra comissão por consulta.",
+    a: "O plano Essencial custa R$ 49 por mês e o Completo custa R$ 89 por mês. No Anual Fundador você paga R$ 797 por ano, o que equivale a R$ 66,42 por mês. A SalbCare não cobra comissão por consulta.",
   },
   {
     q: "Meus dados ficam seguros?",
@@ -306,7 +306,7 @@ const Pro = () => {
                 </div>
                 {p.interval === "year" && (
                   <p className="pro-mono" style={{ margin: "6px 0 0", fontSize: 12.5, color: TEAL }}>
-                    {brl(annualEquivalentMonthly)} por mês. Economia de {brl(annualSaving)} por ano.
+                    Equivale a {brl(annualEquivalentMonthly)} por mês. Você economiza {brl(annualSaving)} por ano em relação ao Completo mensal.
                   </p>
                 )}
                 <p className="pro-body" style={{ margin: "12px 0 0", fontSize: 14.5 }}>
