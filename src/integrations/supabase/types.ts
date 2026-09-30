@@ -2688,6 +2688,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_professionals_overview: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          name: string
+          next_appointment: string
+          payment_status: string
+          plan: string
+          professional_type: string
+          sub_plan: string
+          sub_status: string
+          total_appointments: number
+          upcoming_count: number
+          user_id: string
+        }[]
+      }
       audit_rls_coverage: {
         Args: never
         Returns: {
