@@ -570,6 +570,20 @@ const DashboardMentoriaInner = () => {
               </ul>
               <p><strong className="text-foreground">Dica importante:</strong></p>
               <p>Mantenha o controle mensal aqui na SalbCare para facilitar a declaração anual.</p>
+              <div className="rounded-xl border border-border bg-accent/50 p-4 space-y-2 mt-4">
+                <p className="text-sm font-semibold text-foreground">Precisa de ajuda para declarar?</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Fale com um contador parceiro pelo WhatsApp. Ele te orienta passo a passo na sua declaração.
+                </p>
+                <a
+                  href={`https://wa.me/5588996924700?text=${encodeURIComponent("quero declarar meu imposto de renda")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-12 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-semibold"
+                >
+                  Entrar em contato com contador
+                </a>
+              </div>
             </motion.div>
           )}
         </motion.div>
