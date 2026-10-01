@@ -80,6 +80,7 @@ const DashboardLimits = lazyWithRetry(() => import("./pages/DashboardLimits"), "
 const SyncGuestData = lazyWithRetry(() => import("./pages/SyncGuestData"), "SyncGuestData");
 const SyncGuestDataDone = lazyWithRetry(() => import("./pages/SyncGuestDataDone"), "SyncGuestDataDone");
 const Experimente = lazyWithRetry(() => import("./pages/Experimente"), "Experimente");
+const EditProfile = lazyWithRetry(() => import("./pages/EditProfile"), "EditProfile");
 const GuestEntry = lazyWithRetry(() => import("./pages/GuestEntry"), "GuestEntry");
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "NotFound");
 const Bio = lazyWithRetry(() => import("./pages/Bio"), "Bio");
@@ -249,8 +250,9 @@ const App = () => (
               <Route path="/parcerias" element={<Parcerias />} />
               <Route path="/planos" element={<Pricing />} />
               <Route path="/precos" element={<Pricing />} />
-              <Route path="/experimente" element={<Experimente />} />
-              <Route path="/guest" element={<GuestEntry />} />
+              <Route path="/experimente" element={<Navigate to="/login" replace />} />
+              <Route path="/guest" element={<Navigate to="/login" replace />} />
+              <Route path="/dashboard/editar-perfil" element={<ProfessionalRoute><EditProfile /></ProfessionalRoute>} />
               <Route path="/upgrade" element={<Upgrade />} />
               <Route path="/kite" element={<Navigate to="/" replace />} />
               <Route path="/international" element={<Navigate to="/" replace />} />
