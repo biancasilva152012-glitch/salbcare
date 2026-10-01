@@ -4,15 +4,11 @@ import { Navigate, useLocation } from "react-router-dom";
 
 interface ProfessionalRouteProps {
   children: React.ReactNode;
-  /**
-   * When true, visitors without an auth session are allowed in (guest mode).
-   * Guest pages must handle the `!user` case themselves — typically by
-   * rendering a localStorage-backed view or the GuestPaywall.
-   */
+  /** Mantido por compatibilidade. Acesso sem login foi desativado: sempre exige login. */
   allowGuest?: boolean;
 }
 
-const ProfessionalRoute = forwardRef<HTMLDivElement, ProfessionalRouteProps>(({ children, allowGuest = false }, ref) => {
+const ProfessionalRoute = forwardRef<HTMLDivElement, ProfessionalRouteProps>(({ children }, ref) => {
   const { user, loading, userType, userTypeLoading } = useAuth();
   const location = useLocation();
 
@@ -24,10 +20,7 @@ const ProfessionalRoute = forwardRef<HTMLDivElement, ProfessionalRouteProps>(({ 
     );
   }
 
-  if (!user) {
-    if (allowGuest) return <div ref={ref} className="contents">{children}</div>;
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
   if (userType === "patient") return <Navigate to="/patient-dashboard" replace />;
 
   return <div ref={ref} className="contents">{children}</div>;
