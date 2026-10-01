@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import AdminProfessionalsBoard from "@/components/admin/AdminProfessionalsBoard";
+import AdminRecentLogins from "@/components/admin/AdminRecentLogins";
 import { useAdminUsers, useAdminMRR, useSuspendUser, useActivateUser, useChangePlan } from "@/hooks/useAdminData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -151,6 +152,7 @@ const AdminOverview = () => {
 
   return (
     <div className="space-y-8">
+      <AdminRecentLogins />
       <AdminProfessionalsBoard />
       {/* Header */}
       <div>
