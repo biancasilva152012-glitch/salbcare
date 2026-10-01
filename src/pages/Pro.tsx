@@ -213,7 +213,7 @@ const Pro = () => {
         <div className="pro-wrap pro-header-inner">
           <ProWordmark size={30} />
           <div className="pro-header-actions">
-            <Link to={isActive ? "/dashboard" : "/login"} className="pro-link">
+            <Link to={isActive ? "/dashboard" : "/login"} className="pro-link" style={{ display: "inline-flex", alignItems: "center", minHeight: 40, padding: "0 10px", lineHeight: 1 }}>
               Entrar
             </Link>
             <Link to="/cadastro?next=%2Fprimeiros-passos" className="pro-mini-cta">
@@ -240,9 +240,6 @@ const Pro = () => {
             Sem cartão de crédito. Configuração em cerca de 10 minutos.
           </p>
           <StoreBadges />
-        </div>
-        <div className="pro-hero-phone">
-          <PhoneMockup src="/screens/inicio.webp" alt="Tela Início do SalbCare no celular" eager />
         </div>
       </section>
 
