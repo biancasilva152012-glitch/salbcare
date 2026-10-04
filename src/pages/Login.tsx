@@ -298,16 +298,6 @@ const Login = () => {
               Teste grátis
             </Link>
           </p>
-          <p className="text-xs text-muted-foreground">
-            ou{" "}
-            <Link
-              to="/guest"
-              className="underline underline-offset-2 hover:text-foreground"
-              data-testid="login-guest-cta"
-            >
-              entrar como visitante (sem login)
-            </Link>
-          </p>
         </motion.div>
       </motion.div>
     </div>
