@@ -15,4 +15,4 @@
 - [ ] Lembretes com status compartilhado Enviado: depende do Cloud disponível.
 - [ ] Link de agendamento na lista /admin: depende de consulta segura com Cloud disponível.
 - [ ] Conferir Agenda em 390px com consultas reais: depende de login e Cloud disponível.
-- [ ] Publicar: verificar segurança e disponibilidade do Cloud.
+- [ ] Publicação solicitada para salbcare.com; conclusão não confirmada. Verificação de segurança não completou com Cloud pausado.
