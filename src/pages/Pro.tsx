@@ -32,6 +32,11 @@ const LANDING_STYLES = `
     min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 14px;
   }
   .pro-header-actions { display: flex; align-items: center; gap: 8px; }
+  .pro-header-actions .pro-login {
+    display: inline-flex; align-items: center; justify-content: center;
+    align-self: center; min-height: 48px; padding: 0 10px;
+    line-height: 1; text-align: center;
+  }
   .pro-mini-cta {
     display: inline-flex; align-items: center; justify-content: center;
     min-height: 40px; border-radius: 999px; padding: 10px 14px;
@@ -213,7 +218,7 @@ const Pro = () => {
         <div className="pro-wrap pro-header-inner">
           <ProWordmark size={30} />
           <div className="pro-header-actions">
-            <Link to={isActive ? "/dashboard" : "/login"} className="pro-link" style={{ display: "inline-flex", alignItems: "center", minHeight: 40, padding: "0 10px", lineHeight: 1 }}>
+            <Link to={isActive ? "/dashboard" : "/login"} className="pro-link pro-login">
               Entrar
             </Link>
             <Link to="/cadastro?next=%2Fprimeiros-passos" className="pro-mini-cta">
