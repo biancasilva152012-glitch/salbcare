@@ -122,7 +122,7 @@ const AdminUsersTable = () => {
         formatDate(u.created_at),
       ]),
     ];
-    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const csv = toCsv(rows);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

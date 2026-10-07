@@ -184,10 +184,8 @@ const AdminDatabaseCrud = () => {
   const exportCSV = () => {
     const header = tabConfig.columns.map((c) => c.label);
     const csvRows = [
-      header.join(","),
-      ...filtered.map((r: any) =>
-        tabConfig.columns.map((c) => `"${String(r[c.key] ?? "").replace(/"/g, '""')}"`).join(",")
-      ),
+      csvRow(header),
+      ...filtered.map((r: any) => csvRow(tabConfig.columns.map((c) => r[c.key]))),
     ];
     const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
     const url = URL.createObjectURL(blob);

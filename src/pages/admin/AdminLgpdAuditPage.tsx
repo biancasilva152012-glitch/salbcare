@@ -115,8 +115,8 @@ export default function AdminLgpdAuditPage() {
       (r.patient_name || "").replace(/[\r\n,;]/g, " "),
       (r.reason || "").replace(/[\r\n,;]/g, " "),
       r.row_hash || "",
-    ].map(c => `"${String(c).replace(/"/g, '""')}"`).join(","));
-    const csv = [header.join(","), ...lines].join("\n");
+    ].map(csvCell).join(","));
+    const csv = [header.map(csvCell).join(","), ...lines].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
