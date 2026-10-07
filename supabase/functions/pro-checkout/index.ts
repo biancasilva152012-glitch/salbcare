@@ -29,14 +29,6 @@ const PRO_PRICES: Record<string, string> = {
 };
 const DEFAULT_PRICE = "price_1UDSXKBUEEEAHx2hNK74eScH";
 
-const ALLOWED_ORIGINS = [
-  "https://salbcare.com",
-  "https://www.salbcare.com",
-  "https://salbcare.com.br",
-  "https://www.salbcare.com.br",
-  "https://salbcare.lovable.app",
-];
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
