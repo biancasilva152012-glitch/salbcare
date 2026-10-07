@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-import { resolveSafePath } from "../_shared/safeRedirect.ts";
+import { resolveSafePath, trustedOrigin, TRUSTED_APP_ORIGINS } from "../_shared/safeRedirect.ts";
 import { logRedirectAudit } from "../_shared/auditRedirect.ts";
 
 const IMPORT_URLS = {
@@ -65,8 +65,8 @@ serve(async (req) => {
 
     let body: any = {};
     try { body = await req.json(); } catch { /* empty body is ok */ }
-    const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
-    const allowedOrigins = [origin, "https://salbcare.lovable.app", "https://salbcare.com.br", "https://www.salbcare.com.br"];
+    const origin = trustedOrigin(req.headers.get("origin"));
+    const allowedOrigins = [origin, ...TRUSTED_APP_ORIGINS];
     const returnResult = resolveSafePath({
       candidates: [body?.returnUrl, "/subscription"],
       allowedOrigins,

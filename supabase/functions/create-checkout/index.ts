@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-import { resolveSafePath } from "../_shared/safeRedirect.ts";
+import { resolveSafePath, trustedOrigin, TRUSTED_APP_ORIGINS } from "../_shared/safeRedirect.ts";
 import { logRedirectAudit } from "../_shared/auditRedirect.ts";
 
 const corsHeaders = {
@@ -61,7 +61,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    const origin = req.headers.get("origin") || "https://salbcare.lovable.app";
+    const origin = trustedOrigin(req.headers.get("origin"));
 
     // Check if user already had a trial
     const supabaseService = createClient(
@@ -74,7 +74,7 @@ serve(async (req) => {
     logStep("Cobrança imediata — sem trial");
 
     // Validate optional success_url/cancel_url paths from client through allowlist.
-    const allowedOrigins = [origin, "https://salbcare.lovable.app", "https://salbcare.com.br", "https://www.salbcare.com.br"];
+    const allowedOrigins = [origin, ...TRUSTED_APP_ORIGINS];
     const successResult = resolveSafePath({
       candidates: [body?.successUrl, "/dashboard"],
       allowedOrigins,

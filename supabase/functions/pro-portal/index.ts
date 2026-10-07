@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
+import { trustedOrigin } from "../_shared/safeRedirect.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -41,9 +42,7 @@ serve(async (req) => {
     if (!customerId) throw new Error("no_customer");
 
     const reqOrigin = req.headers.get("origin") ?? "";
-    const origin = ALLOWED_ORIGINS.includes(reqOrigin) || reqOrigin.startsWith("http://localhost")
-      ? reqOrigin
-      : ALLOWED_ORIGINS[0];
+    const origin = trustedOrigin(reqOrigin);
 
     const portal = await stripe.billingPortal.sessions.create({
       customer: customerId,

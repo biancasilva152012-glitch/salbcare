@@ -3,6 +3,7 @@
 // Login opcional: convidados informam o e-mail no proprio Stripe Checkout.
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
+import { trustedOrigin } from "../_shared/safeRedirect.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -54,25 +55,8 @@ async function resolvePrice(stripe: Stripe, slug: string): Promise<string | unde
 
 
 
-const ALLOWED_ORIGIN_SUFFIX = [".lovable.app", ".lovableproject.com", ".sandbox.lovable.dev"];
-const ALLOWED_ORIGINS = [
-  "https://salbcare.com",
-  "https://www.salbcare.com",
-  "https://salbcare.com.br",
-  "https://www.salbcare.com.br",
-];
-
 function safeOrigin(origin: string | null): string {
-  if (!origin) return "https://salbcare.com";
-  try {
-    const u = new URL(origin);
-    if (ALLOWED_ORIGINS.includes(origin)) return origin;
-    if (u.hostname === "localhost" || u.hostname === "127.0.0.1") return origin;
-    if (ALLOWED_ORIGIN_SUFFIX.some((s) => u.hostname.endsWith(s))) return origin;
-  } catch {
-    /* ignora */
-  }
-  return "https://salbcare.com";
+  return trustedOrigin(origin);
 }
 
 serve(async (req) => {
