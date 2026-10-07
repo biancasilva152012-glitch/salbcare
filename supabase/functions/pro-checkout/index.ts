@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
+import { trustedOrigin } from "../_shared/safeRedirect.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -27,14 +28,6 @@ const PRO_PRICES: Record<string, string> = {
   "price_1TyCJeBUEEEAHx2hvxyCs0Dz": "annual",
 };
 const DEFAULT_PRICE = "price_1UDSXKBUEEEAHx2hNK74eScH";
-
-const ALLOWED_ORIGINS = [
-  "https://salbcare.com",
-  "https://www.salbcare.com",
-  "https://salbcare.com.br",
-  "https://www.salbcare.com.br",
-  "https://salbcare.lovable.app",
-];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -64,11 +57,7 @@ serve(async (req) => {
     const priceId = PRO_PRICES[requested] ? requested : DEFAULT_PRICE;
 
     const reqOrigin = req.headers.get("origin") ?? "";
-    const origin = ALLOWED_ORIGINS.includes(reqOrigin)
-      ? reqOrigin
-      : reqOrigin.startsWith("http://localhost")
-        ? reqOrigin
-        : ALLOWED_ORIGINS[0];
+    const origin = trustedOrigin(reqOrigin);
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",

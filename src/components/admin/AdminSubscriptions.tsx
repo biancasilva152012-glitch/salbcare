@@ -1,3 +1,4 @@
+import { toCsv } from "@/lib/csv";
 import { useMemo, useState } from "react";
 import { useAdminUsers, useAdminMRR, AdminUser } from "@/hooks/useAdminData";
 import { Input } from "@/components/ui/input";
@@ -152,7 +153,7 @@ const AdminSubscriptions = () => {
         u.stripe?.subscription?.current_period_end ? fmtDate(u.stripe.subscription.current_period_end) : "-",
       ]),
     ];
-    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const csv = toCsv(rows);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);

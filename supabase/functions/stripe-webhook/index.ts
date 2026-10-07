@@ -262,7 +262,7 @@ async function handlePaymentIntentSucceeded(
     if (profile) {
       await activateUserAccess(supabase, profile.user_id, paymentMethod || "pix");
     } else {
-      logStep("payment_intent.succeeded → perfil não encontrado", { email: customer.email });
+      logStep("payment_intent.succeeded → perfil não encontrado", { customerId: customer.id });
     }
   }
 }

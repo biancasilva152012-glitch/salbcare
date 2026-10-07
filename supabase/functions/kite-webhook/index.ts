@@ -71,16 +71,18 @@ serve(async (req) => {
   try {
     const resendKey = Deno.env.get("RESEND_API_KEY");
     if (resendKey) {
+      const esc = (v: unknown) =>
+        String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
       const html = `
-        <h2>New Kite Booking — ${md.procedure_label || md.procedure}</h2>
-        <p><strong>Type:</strong> ${md.type}</p>
-        <p><strong>Patient:</strong> ${md.patient_name} (${md.email})</p>
-        <p><strong>Preferred date:</strong> ${md.preferred_date || "—"} / ${md.time_preference || "any"}</p>
-        <p><strong>Notes:</strong> ${md.notes || "—"}</p>
-        <p><strong>Pousada ref:</strong> ${md.pousada_ref || "—"}</p>
+        <h2>New Kite Booking - ${esc(md.procedure_label || md.procedure)}</h2>
+        <p><strong>Type:</strong> ${esc(md.type)}</p>
+        <p><strong>Patient:</strong> ${esc(md.patient_name)} (${esc(md.email)})</p>
+        <p><strong>Preferred date:</strong> ${esc(md.preferred_date || "-")} / ${esc(md.time_preference || "any")}</p>
+        <p><strong>Notes:</strong> ${esc(md.notes || "-")}</p>
+        <p><strong>Pousada ref:</strong> ${esc(md.pousada_ref || "-")}</p>
         <p><strong>Paid:</strong> R$ ${amount_paid.toFixed(2)} · <strong>Remaining (clinic):</strong> R$ ${remaining.toFixed(2)}</p>
-        <p>Stripe session: ${session.id}</p>
-        <p>—<br/>SalbDental · salbcare.com</p>
+        <p>Stripe session: ${esc(session.id)}</p>
+        <p>-<br/>SalbDental · salbcare.com</p>
       `;
       await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -88,7 +90,7 @@ serve(async (req) => {
         body: JSON.stringify({
           from: "SalbDental <onboarding@resend.dev>",
           to: ["biancadealbuquerquep@gmail.com"],
-          subject: `[Kite] New booking — ${md.procedure_label || md.procedure}`,
+          subject: `[Kite] New booking - ${String(md.procedure_label || md.procedure || "").replace(/[\r\n]/g, " ").slice(0, 120)}`,
           html,
         }),
       });

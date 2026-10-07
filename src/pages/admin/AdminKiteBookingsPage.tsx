@@ -1,3 +1,4 @@
+import { csvCell } from "@/lib/csv";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -81,10 +82,7 @@ async function exportCsv(rows: Booking[]) {
     "Status", "Paid", "Remaining", "Notes",
     "Retries", "LastEvent", "LastEventAt", "Timeline",
   ];
-  const escape = (v: any) => {
-    const s = v == null ? "" : String(v);
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
+  const escape = (v: any) => csvCell(v);
   const lines = [headers.join(",")];
   for (const b of rows) {
     const a = agg[b.id] || { retry_count: 0, last_event_type: "", last_event_at: "", events_summary: "" };

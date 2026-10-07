@@ -174,3 +174,42 @@ export function safeRedirectUrl(
   const url = new URL(result.path, input.baseOrigin).toString();
   return { url, result };
 }
+
+/**
+ * Exact allowlist of app origins that may be used as the base of a Stripe
+ * success/cancel/return URL. Never derive trust from prefixes or suffixes.
+ */
+export const TRUSTED_APP_ORIGINS: readonly string[] = [
+  "https://salbcare.com",
+  "https://www.salbcare.com",
+  "https://salbcare.com.br",
+  "https://www.salbcare.com.br",
+  "https://salbcare.lovable.app",
+  "https://id-preview--c3311971-a1d5-4219-b58a-86c1977e9015.lovable.app",
+];
+
+export const DEFAULT_APP_ORIGIN = "https://salbcare.com";
+
+/**
+ * Returns the request Origin only when it exactly matches a trusted app
+ * origin (or is a genuine local dev host: http://localhost[:port] /
+ * http://127.0.0.1[:port]). Anything else falls back to the default origin.
+ */
+export function trustedOrigin(reqOrigin: string | null | undefined): string {
+  const raw = (reqOrigin ?? "").trim();
+  if (!raw) return DEFAULT_APP_ORIGIN;
+  if (TRUSTED_APP_ORIGINS.includes(raw)) return raw;
+  try {
+    const u = new URL(raw);
+    if (
+      u.protocol === "http:" &&
+      (u.hostname === "localhost" || u.hostname === "127.0.0.1") &&
+      u.origin === raw
+    ) {
+      return u.origin;
+    }
+  } catch {
+    // ignore
+  }
+  return DEFAULT_APP_ORIGIN;
+}
