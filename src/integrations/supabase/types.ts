@@ -2741,6 +2741,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_professional_slugs: {
+        Args: never
+        Returns: {
+          profile_slug: string
+          user_id: string
+        }[]
+      }
       admin_professionals_overview: {
         Args: never
         Returns: {

@@ -8,6 +8,13 @@
       "when": 1792100266582,
       "tag": "0000_patient_consents",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792100553189,
+      "tag": "0001_admin_professional_slugs",
+      "breakpoints": true
     }
   ]
 }

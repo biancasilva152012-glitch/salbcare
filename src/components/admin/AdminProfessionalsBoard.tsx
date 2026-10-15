@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 type Row = {
   user_id: string;
@@ -16,6 +17,7 @@ type Row = {
   upcoming_count: number;
   total_appointments: number;
   next_appointment: string | null;
+  profile_slug?: string | null;
 };
 
 const isPaid = (r: Row) =>
@@ -31,9 +33,13 @@ export default function AdminProfessionalsBoard() {
   const { data = [], isLoading, error } = useQuery({
     queryKey: ["admin-professionals-overview"],
     queryFn: async () => {
-      const { data, error } = await (supabase.rpc as any)("admin_professionals_overview");
+      const [{ data, error }, slugs] = await Promise.all([
+        (supabase.rpc as any)("admin_professionals_overview"),
+        (supabase.rpc as any)("admin_professional_slugs"),
+      ]);
       if (error) throw error;
-      return (data || []) as Row[];
+      const map = new Map<string, string | null>((slugs.data || []).map((s: any) => [s.user_id, s.profile_slug]));
+      return ((data || []) as Row[]).map((r) => ({ ...r, profile_slug: map.get(r.user_id) ?? null }));
     },
     refetchInterval: 30_000,
   });
@@ -116,6 +122,22 @@ export default function AdminProfessionalsBoard() {
               <div><span className="text-muted-foreground">Próxima </span><span className="font-mono text-foreground">{fmtDate(r.next_appointment)}</span></div>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">Cadastro em {fmtDate(r.created_at)}</div>
+            {r.profile_slug ? (
+              <div className="mt-2 flex items-center gap-2">
+                <a href={`/agendar/${r.profile_slug}`} target="_blank" rel="noopener noreferrer" className="min-w-0 flex-1 truncate font-mono text-xs text-primary underline">
+                  salbcare.com/agendar/{r.profile_slug}
+                </a>
+                <button
+                  type="button"
+                  className="h-10 shrink-0 rounded-lg border border-border px-3 text-xs"
+                  onClick={() => { navigator.clipboard.writeText(`https://salbcare.com/agendar/${r.profile_slug}`); toast.success("Link copiado."); }}
+                >
+                  Copiar link
+                </button>
+              </div>
+            ) : (
+              <div className="mt-2 text-xs text-muted-foreground">Sem link de agendamento ainda.</div>
+            )}
           </li>
         ))}
         {!isLoading && rows.length === 0 && <li className="text-sm text-muted-foreground">Nenhuma profissional encontrada.</li>}
