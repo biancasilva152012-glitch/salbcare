@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import PageContainer from "@/components/PageContainer";
 import PatientDocuments from "@/components/patients/PatientDocuments";
 import PatientMedicalRecords from "@/components/patients/PatientMedicalRecords";
+import PatientConsents from "@/components/patients/PatientConsents";
 import PatientPrescriptions from "@/components/patients/PatientPrescriptions";
 import PatientCertificates from "@/components/patients/PatientCertificates";
 import { useAuth } from "@/contexts/AuthContext";
@@ -419,6 +420,9 @@ const Patients = () => {
 
             {/* Medical Records History */}
             <PatientMedicalRecords patientId={selected.id} patientName={selected.name} />
+
+            {/* Consent terms with digital signature */}
+            <PatientConsents patientId={selected.id} patientName={selected.name} />
 
             {/* Documents Section */}
             <PatientDocuments patientId={selected.id} />
