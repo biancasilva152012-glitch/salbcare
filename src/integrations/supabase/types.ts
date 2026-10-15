@@ -1810,6 +1810,59 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_consents: {
+        Row: {
+          content: string
+          council: string | null
+          created_at: string
+          id: string
+          patient_cpf: string | null
+          patient_id: string
+          patient_name: string
+          procedure_name: string
+          professional_name: string
+          signature_data: string
+          signed_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          council?: string | null
+          created_at?: string
+          id?: string
+          patient_cpf?: string | null
+          patient_id: string
+          patient_name: string
+          procedure_name: string
+          professional_name: string
+          signature_data: string
+          signed_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          council?: string | null
+          created_at?: string
+          id?: string
+          patient_cpf?: string | null
+          patient_id?: string
+          patient_name?: string
+          procedure_name?: string
+          professional_name?: string
+          signature_data?: string
+          signed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_consents_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_documents: {
         Row: {
           created_at: string
