@@ -78,6 +78,41 @@ const LANDING_STYLES = `
     .pro-mobile-cta .pro-cta { width: 100%; min-height: 52px; max-width: none; }
     .pro-mobile-spacer { height: 84px; }
   }
+  /* Evolucao editorial */
+  .pro-sand { background: #EFE7DA; }
+  .pro-section { padding-block: 128px; }
+  .pro-h1, .pro-h2 { font-family: 'Gloock', Georgia, serif !important; font-weight: 400 !important; letter-spacing: -0.01em; line-height: 1.1; }
+  .pro-body, .pro-lead { line-height: 1.7; }
+  .pro-eyebrow { font-family: ${MONO}; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B86F52; }
+  .pro-header.is-top { background: transparent; border-bottom-color: transparent; backdrop-filter: none; }
+  .pro-header { transition: background .3s ease, border-color .3s ease; }
+  .pro-mini-cta { background: transparent; color: ${CREAM}; border: 1px solid ${CREAM}; min-height: 44px; border-radius: 10px; }
+  .pro-mini-cta:hover { background: ${CREAM}; color: #F7F3EA; }
+  .pro-mini-cta:focus-visible, .pro-ghost:focus-visible { outline: 2px solid ${TEAL}; outline-offset: 3px; }
+  .pro-ghost { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 28px;
+    border: 1px solid ${CREAM}; border-radius: 10px; background: transparent; color: ${CREAM};
+    font-family: ${SANS}; font-size: 15px; font-weight: 500; cursor: pointer; transition: background .2s, color .2s; }
+  .pro-ghost:hover { background: ${CREAM}; color: #F7F3EA; }
+  .pro-photo { position: relative; width: 100%; min-height: 340px; border-radius: 4px; overflow: hidden;
+    background: linear-gradient(160deg, #E6DCCB 0%, #D9C7AE 55%, #C9B193 100%);
+    display: flex; align-items: flex-end; padding: 18px; }
+  .pro-photo-tag { font-family: ${MONO}; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: #3B2A20;
+    background: rgba(247,243,234,0.85); padding: 6px 10px; border-radius: 4px; }
+  .pro-hero { grid-template-columns: 1fr 1fr; gap: 64px; padding-top: 72px; }
+  .pro-split { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 64px; align-items: center; }
+  .pro-plans { gap: 0 !important; grid-template-columns: 1fr !important; border-top: 1px solid rgba(10,22,40,0.14); }
+  .pro-plan { border: none !important; border-bottom: 1px solid rgba(10,22,40,0.14) !important; border-radius: 0 !important;
+    background: transparent !important; box-shadow: none !important; padding: 28px 4px 28px 20px !important; border-left: 2px solid transparent !important; }
+  .pro-plan[aria-checked="true"] { border-left-color: ${TEAL} !important; background: rgba(255,255,255,0.35) !important; }
+  .pro-plan-note { background: transparent; border: none; border-top: 1px solid rgba(10,22,40,0.12); border-radius: 0; padding: 16px 0; }
+  .pro-footer { background: #3B2A20; color: #EFE7DA; }
+  .pro-footer .pro-link, .pro-footer .pro-mono { color: #EFE7DA; }
+  @media (max-width: 899px) {
+    .pro-section { padding-block: 88px; }
+    .pro-hero { grid-template-columns: 1fr; gap: 40px; padding-top: 40px; }
+    .pro-split { grid-template-columns: 1fr; gap: 36px; }
+    .pro-photo { min-height: 300px; margin-inline: -20px; width: calc(100% + 40px); border-radius: 0; }
+  }
 `;
 
 const FAQ = [
@@ -144,9 +179,10 @@ const Pro = () => {
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [showMobileCta, setShowMobileCta] = useState(false);
+  const [atTop, setAtTop] = useState(true);
 
   useEffect(() => {
-    const onScroll = () => setShowMobileCta(window.scrollY > Math.min(window.innerHeight * 0.72, 620));
+    const onScroll = () => { setAtTop(window.scrollY < 24); setShowMobileCta(window.scrollY > Math.min(window.innerHeight * 0.72, 620)); };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -211,10 +247,11 @@ const Pro = () => {
           name="description"
           content="Agenda, pacientes, financeiro e sua própria página de agendamento em um só lugar. Teste o SalbCare Pro por 7 dias, sem cartão de crédito."
         />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&display=swap" />
       </Helmet>
       <style>{proStyles + proScreensStyles + LANDING_STYLES}</style>
 
-      <header className="pro-header">
+      <header className={`pro-header ${atTop ? "is-top" : ""}`}>
         <div className="pro-wrap pro-header-inner">
           <ProWordmark size={30} />
           <div className="pro-header-actions">
@@ -230,26 +267,29 @@ const Pro = () => {
 
       <section className="pro-wrap pro-section pro-hero">
         <div className="pro-hero-copy">
-          <h1 className="pro-h1" style={{ maxWidth: 700 }}>
-            Seu consultório organizado, do agendamento ao financeiro.
+          <span className="pro-eyebrow">Gestão para profissionais da saúde</span>
+          <h1 className="pro-h1" style={{ maxWidth: 640, marginTop: 20 }}>
+            A tecnologia organiza. A experiência transforma.
           </h1>
-          <p className="pro-lead" style={{ marginTop: 20, maxWidth: 560 }}>
-            Agenda, pacientes, financeiro e sua própria página de agendamento. E quando chegar um paciente que só fala inglês, você está pronto.
+          <p className="pro-lead" style={{ marginTop: 24, maxWidth: 520 }}>
+            Agenda, pacientes e financeiro do seu consultório em um só lugar, com mais leveza no dia a dia.
           </p>
-          <div style={{ marginTop: 28 }}>
-            <button className="pro-cta" onClick={startTrial}>
+          <div style={{ marginTop: 36 }}>
+            <button className="pro-ghost" onClick={startTrial}>
               {isActive ? "Ir para o painel" : "Testar 7 dias grátis"}
             </button>
           </div>
-          <p className="pro-note" style={{ marginTop: 12 }}>
+          <p className="pro-note" style={{ marginTop: 14 }}>
             Sem cartão de crédito. Configuração em cerca de 10 minutos.
           </p>
           <StoreBadges />
         </div>
+        <div className="pro-photo" role="img" aria-label="Espaço reservado para foto editorial">
+          <span className="pro-photo-tag">Foto editorial do hero: enviar</span>
+        </div>
       </section>
 
-      <hr className="pro-rule" />
-
+      <div className="pro-sand">
       <section id="produto" className="pro-wrap pro-section" style={{ scrollMarginTop: 88 }}>
         <ProLabel>Por dentro do app</ProLabel>
         <h2 className="pro-h2" style={{ marginTop: 14 }}>
@@ -257,6 +297,20 @@ const Pro = () => {
         </h2>
         <div style={{ marginTop: 24 }}>
           <ProScreensCarousel />
+        </div>
+      </section>
+      </div>
+
+      <section className="pro-wrap pro-section pro-split">
+        <div className="pro-photo" role="img" aria-label="Espaço reservado para foto do consultório">
+          <span className="pro-photo-tag">Foto do consultório: enviar</span>
+        </div>
+        <div>
+          <span className="pro-eyebrow">Mais leve, mais humano</span>
+          <h2 className="pro-h2" style={{ marginTop: 16 }}>Menos planilha. Mais tempo com quem você atende.</h2>
+          <p className="pro-body" style={{ marginTop: 20, maxWidth: 480 }}>
+            Saúde, tecnologia e gestão podem ser mais leves, inteligentes e humanas. A SalbCare cuida da rotina para você cuidar das pessoas.
+          </p>
         </div>
       </section>
 
@@ -341,8 +395,7 @@ const Pro = () => {
         </div>
       </section>
 
-      <hr className="pro-rule" />
-
+      <div className="pro-sand">
       <section className="pro-wrap pro-section">
         <ProLabel>Perguntas frequentes</ProLabel>
         <div style={{ marginTop: 20 }}>
@@ -381,8 +434,7 @@ const Pro = () => {
           })}
         </div>
       </section>
-
-      <hr className="pro-rule" />
+      </div>
 
       <section className="pro-wrap pro-section" style={{ textAlign: "center" }}>
         <h2 className="pro-h2">Comece hoje a organizar seu consultório.</h2>
@@ -390,14 +442,15 @@ const Pro = () => {
           Teste o sistema completo por 7 dias, sem cartão de crédito.
         </p>
         <div style={{ marginTop: 28, display: "flex", justifyContent: "center" }}>
-          <button className="pro-cta" onClick={startTrial}>
+          <button className="pro-ghost" onClick={startTrial}>
             {isActive ? "Ir para o painel" : "Testar 7 dias grátis"}
           </button>
         </div>
       </section>
 
-      <footer style={{ borderTop: "1px solid rgba(10,22,40,0.12)" }}>
-        <div className="pro-wrap" style={{ paddingTop: 28, paddingBottom: 44, textAlign: "center" }}>
+      <footer className="pro-footer">
+        <div className="pro-wrap" style={{ paddingTop: 80, paddingBottom: 72, textAlign: "center" }}>
+          <p className="pro-eyebrow" style={{ color: "#C9A227", marginBottom: 28 }}>SalbCare</p>
           <div className="pro-final-footer" style={{ fontFamily: MONO, fontSize: 12 }}>
             <Link to="/terms" className="pro-link">Termos de uso</Link>
             <Link to="/privacy" className="pro-link">Política de privacidade</Link>
