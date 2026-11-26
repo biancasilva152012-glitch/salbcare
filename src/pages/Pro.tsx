@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProSubscription } from "@/hooks/useProSubscription";
+import heroImg from "@/assets/editorial/hero_professional.jpg";
+import deskImg from "@/assets/editorial/desk_workspace.jpg";
 import ProScreensCarousel, { PhoneMockup, proScreensStyles } from "@/components/pro/ProScreensCarousel";
 import {
   CREAM,
@@ -96,6 +98,7 @@ const LANDING_STYLES = `
   .pro-photo { position: relative; width: 100%; min-height: 340px; border-radius: 4px; overflow: hidden;
     background: linear-gradient(160deg, #E6DCCB 0%, #D9C7AE 55%, #C9B193 100%);
     display: flex; align-items: flex-end; padding: 18px; }
+  .pro-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .pro-photo-tag { font-family: ${MONO}; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: #3B2A20;
     background: rgba(247,243,234,0.85); padding: 6px 10px; border-radius: 4px; }
   .pro-hero { grid-template-columns: 1fr 1fr; gap: 64px; padding-top: 72px; }
@@ -284,8 +287,8 @@ const Pro = () => {
           </p>
           <StoreBadges />
         </div>
-        <div className="pro-photo" role="img" aria-label="Espaço reservado para foto editorial">
-          <span className="pro-photo-tag">Foto editorial do hero: enviar</span>
+        <div className="pro-photo">
+          <img src={heroImg} alt="Profissional da saúde organizando a rotina em uma mesa de madeira com luz natural" width={1920} height={1088} fetchPriority="high" />
         </div>
       </section>
 
@@ -302,8 +305,8 @@ const Pro = () => {
       </div>
 
       <section className="pro-wrap pro-section pro-split">
-        <div className="pro-photo" role="img" aria-label="Espaço reservado para foto do consultório">
-          <span className="pro-photo-tag">Foto do consultório: enviar</span>
+        <div className="pro-photo">
+          <img src={deskImg} alt="Mesa de trabalho com notebook aberto na agenda e no financeiro" width={1440} height={1088} loading="lazy" />
         </div>
         <div>
           <span className="pro-eyebrow">Mais leve, mais humano</span>

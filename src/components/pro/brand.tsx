@@ -34,7 +34,7 @@ export const COFFEE = NAVY_INK;
 export const OLIVE = TEAL_DEEP;
 
 export const MONO = "'IBM Plex Mono', ui-monospace, monospace";
-export const DISPLAY = "'Outfit', system-ui, sans-serif";
+export const DISPLAY = "'Gloock', Georgia, serif";
 export const SANS = "'Karla', system-ui, -apple-system, 'Segoe UI', sans-serif";
 
 /** Fontes são self-hosted; mantido vazio para compatibilidade de imports. */
@@ -113,8 +113,8 @@ const TEXT_MUTED = "#3D4B5C";
 
 export const proStyles = `
   .pro-wrap { max-width: 920px; margin: 0 auto; padding: 0 22px; }
-  .pro-section { padding-block: 72px; }
-  @media (min-width: 768px) { .pro-section { padding-block: 104px; } }
+  .pro-section { padding-block: 88px; }
+  @media (min-width: 768px) { .pro-section { padding-block: 136px; } }
   .pro-rule { border: 0; border-top: 1px solid ${RULE}; margin: 0; }
   .pro-h1 { font-family: ${DISPLAY}; font-size: clamp(36px, 9vw, 62px); line-height: 1.06; margin: 20px 0 0; font-weight: 400; letter-spacing: -0.015em; color: ${NAVY_INK}; text-wrap: balance; }
   .pro-h2 { font-family: ${DISPLAY}; font-size: clamp(27px, 6vw, 40px); line-height: 1.16; margin: 0; font-weight: 400; letter-spacing: -0.01em; color: ${NAVY_INK}; text-wrap: balance; }

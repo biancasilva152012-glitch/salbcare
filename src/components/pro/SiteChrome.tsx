@@ -26,7 +26,7 @@ export function SiteHeader() {
   const accountLabel = isActive ? "Meu painel" : "Entrar";
 
   return (
-    <header style={{ borderBottom: "1px solid rgba(31,31,31,0.12)" }}>
+    <header style={{ borderBottom: "1px solid rgba(31,31,31,0.08)", background: "#F7F3EA" }}>
       <div
         className="pro-wrap"
         style={{
@@ -94,8 +94,10 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer style={{ borderTop: "1px solid rgba(31,31,31,0.12)" }}>
-      <div className="pro-wrap" style={{ paddingTop: 32, paddingBottom: 48 }}>
+    <footer className="site-footer" style={{ background: "#3B2A20", color: "#EFE7DA" }}>
+      <style>{`.site-footer .pro-link, .site-footer .pro-mono { color: #EFE7DA; } .site-footer .pro-link:hover { color: #FFFFFF; }`}</style>
+      <div className="pro-wrap" style={{ paddingTop: 80, paddingBottom: 72 }}>
+        <p style={{ fontFamily: MONO, fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: "#C9A227", margin: "0 0 28px" }}>SalbCare</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 20, fontFamily: MONO, fontSize: 12 }}>
           <Link to="/pro" className="pro-link">
             SalbCare PRO

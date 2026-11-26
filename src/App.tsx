@@ -406,10 +406,10 @@ const App = () => (
               <Route path="/perfil/salbscore" element={<ProfessionalRoute><SalbScore /></ProfessionalRoute>} />
               <Route path="/perfil/salbscore/diagnostico" element={<ProfessionalRoute><SalbScoreDiagnostico /></ProfessionalRoute>} />
               <Route path="/perfil/salbscore/selo-exemplo" element={<ProfessionalRoute><SalbScoreSeloPreview /></ProfessionalRoute>} />
-              <Route path="/salbscore" element={<PublicSalbScore />} />
+              <Route path="/salbscore" element={<Navigate to="/" replace />} />
               <Route path="/verificar" element={<VerifyDocument />} />
               <Route path="/verificar/:hash" element={<VerifyDocument />} />
-              <Route path="/verificado/:slug" element={<SalbScoreSelo />} />
+              <Route path="/verificado/:slug" element={<Navigate to="/" replace />} />
               <Route path="/subscription" element={<ProfessionalRoute><Subscription /></ProfessionalRoute>} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminOverviewPage />} />
